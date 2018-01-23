@@ -655,7 +655,7 @@ strong {
 	.tagline-mobile {
 		
 		display: block;
-		position: fixed;
+		position: absolute;
 		height: 100%;
 		background-color: #404040;
 		overflow: scroll;
@@ -691,7 +691,7 @@ strong {
 	.tagline-mobile {
 		
 		display: block;
-		position: fixed;
+		position: absolute;
 		height: 100%;
 		background-color: #404040;
 		overflow: scroll;
@@ -727,7 +727,7 @@ strong {
 	.tagline-mobile {
 		
 		display: block;
-		position: fixed;
+		position: absolute;
 		height: 100%;
 		background-color: #404040;
 		overflow: scroll;

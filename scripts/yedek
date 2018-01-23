@@ -1,0 +1,62 @@
+jQuery(document).ready(function($){
+    var isLateralNavAnimating = false;
+    
+    //open/close lateral navigation
+    $('.cd-nav-trigger').on('click', function(event){
+        event.preventDefault();
+        //stop if nav animation is running 
+        if( !isLateralNavAnimating ) {
+            if($(this).parents('.csstransitions').length > 0 ) isLateralNavAnimating = true; 
+            
+            $('body').toggleClass('navigation-is-open');
+            $('.cd-navigation-wrapper').one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(){
+                //animation is over
+                isLateralNavAnimating = false;
+            });
+        }
+    });
+});
+
+
+! function(a) {
+    "use strict";
+    a(document).ready(function() {
+        function b() {
+            window.location = i
+        }
+        a(".video").fitVids(), a(".thumbnail-description").dotdotdot();
+        var c = a("#mobile-nav-button"),
+            d = a("#mobile-nav"),
+            e = a(".site-title"),
+            f = a("body");
+        c.on("click", function(a) {
+            a.preventDefault();
+            var b = e.outerHeight();
+            d.css("paddingTop", b + 30), f.hasClass("nav-shown") ? e.css("height", "auto") : e.css("height", b), f.toggleClass("nav-shown")
+        }), setTimeout(function() {
+            f.addClass("loaded")
+        }, 150);
+        var g = a(".project-assets").children("div");
+        a.each(g, function(b, c) {
+            var d = a(this);
+            d.imagesLoaded(function() {
+                setTimeout(function() {
+                    d.addClass("loaded")
+                }, 50 + 150 * b)
+            })
+        });
+        var h = a(".projects-feed .project");
+        a.each(h, function(b, c) {
+            var d = a(this);
+            d.imagesLoaded(function() {
+                setTimeout(function() {
+                    d.addClass("loaded")
+                }, 50 + 50 * b)
+            })
+        });
+        var i;
+        a("a").on("click", function(a) {
+            return "" == this.href || null == this.href ? void a.preventDefault() : void(-1 == this.href.indexOf("#") && -1 == this.href.indexOf("mailto:") && -1 == this.href.indexOf("javascript:") && "_blank" != this.target && (a.preventDefault(), i = this.href, f.removeClass("loaded"), setTimeout(b, 250)))
+        })
+    })
+}(window.jQuery);

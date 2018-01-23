@@ -705,8 +705,6 @@ strong {
 		position: absolute;
 		height: 100%;
 		background-color: #404040;
-		overflow-y: scroll;
-		-webkit-overflow-scrolling: touch;
 		
 	}
 	
@@ -720,6 +718,8 @@ strong {
 		margin-top: 6%;
 		margin-left: 8%;
 		margin-right: 8%;
+		overflow-y: scroll;
+		-webkit-overflow-scrolling: touch;
 		
 	}
 	
@@ -741,8 +741,6 @@ strong {
 		position: absolute;
 		height: 100%;
 		background-color: #404040;
-		overflow-y: scroll;
-		-webkit-overflow-scrolling: touch;
 		
 	}
 	
@@ -756,6 +754,8 @@ strong {
 		margin-top: 6%;
 		margin-left: 8%;
 		margin-right: 8%;
+		overflow-y: scroll;
+		-webkit-overflow-scrolling: touch;
 		
 	}
 	
@@ -777,8 +777,6 @@ strong {
 		position: absolute;
 		height: 100%;
 		background-color: #404040;
-		overflow-y: scroll;
-		-webkit-overflow-scrolling: touch;
 		
 	}
 	
@@ -792,6 +790,8 @@ strong {
 		margin-top: 6%;
 		margin-left: 8%;
 		margin-right: 8%;
+		overflow-y: scroll;
+		-webkit-overflow-scrolling: touch;
 		
 	}
 	

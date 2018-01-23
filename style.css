@@ -702,11 +702,11 @@ strong {
 	.tagline-mobile {
 		
 		display: block;
-		position: fixed;
+		position: absolute;
 		height: 100%;
 		background-color: #404040;
-		overflow: scroll;
-		
+		overflow-y: scroll;
+
 	}
 	
 	.tagline-mobile p {
@@ -737,10 +737,10 @@ strong {
 	.tagline-mobile {
 		
 		display: block;
-		position: fixed;
+		position: absolute;
 		height: 100%;
 		background-color: #404040;
-		overflow: scroll;
+		overflow-y: scroll;
 		
 	}
 	
@@ -772,10 +772,10 @@ strong {
 	.tagline-mobile {
 		
 		display: block;
-		position: fixed;
+		position: absolute;
 		height: 100%;
 		background-color: #404040;
-		overflow: scroll;
+		overflow-y: scroll;
 		
 	}
 	

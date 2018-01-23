@@ -702,7 +702,7 @@ strong {
 	.tagline-mobile {
 		
 		display: block;
-		position: absolute;
+		position: fixed;
 		height: 100%;
 		background-color: #404040;
 		
@@ -738,7 +738,7 @@ strong {
 	.tagline-mobile {
 		
 		display: block;
-		position: absolute;
+		position: fixed;
 		height: 100%;
 		background-color: #404040;
 		
@@ -774,7 +774,7 @@ strong {
 	.tagline-mobile {
 		
 		display: block;
-		position: absolute;
+		position: fixed;
 		height: 100%;
 		background-color: #404040;
 		

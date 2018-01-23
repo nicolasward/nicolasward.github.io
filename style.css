@@ -706,7 +706,8 @@ strong {
 		height: 100%;
 		background-color: #404040;
 		overflow-y: scroll;
-
+		-webkit-overflow-scrolling: touch;
+		
 	}
 	
 	.tagline-mobile p {
@@ -741,6 +742,7 @@ strong {
 		height: 100%;
 		background-color: #404040;
 		overflow-y: scroll;
+		-webkit-overflow-scrolling: touch;
 		
 	}
 	
@@ -776,6 +778,7 @@ strong {
 		height: 100%;
 		background-color: #404040;
 		overflow-y: scroll;
+		-webkit-overflow-scrolling: touch;
 		
 	}
 	

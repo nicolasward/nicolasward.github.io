@@ -634,53 +634,6 @@ strong {
 	p, button, li, i {font-size: 19px;}
 }
 
-@media only screen and (min-width: 360px) {
-
-    .site-tagline {
-        margin-bottom: 50px;
-        width: 50%;
-    }
-	
-    .site-tagline p { 
-        font-size: 20px;
-    }
-	
-	.contenu ul {
-	
-	display: flex;
-	position: absolute;
-	top: 60%;
-	left: 50%;
-	transform: translate(-50%,-50%);
-	
-	}
-	
-	.contenu a {
-	
-	width: 20px;
-	height: 20px;
-	background: #fff;
-	text-align: center;
-	line-height: 110px;
-	font-size: 50px;	
-	margin: 0 20px;
-	display: block;
-	border-radius: 50%;
-	position: relative;
-	overflow: hidden;
-	border: 1px #424242 solid;
-
-	}
-
-	.site-footer p {
-	
-	font-size: 10px;
-	top: 88%;
-	
-	}
-
-}
-
 @media only screen and (min-width: 600px) {
 
     .site-tagline {

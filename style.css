@@ -658,7 +658,7 @@ strong {
 		position: absolute;
 		height: 100%;
 		background-color: #404040;
-		overflow: scroll;
+		overflow-y: scroll!important;	
 		-webkit-overflow-scrolling: touch;
 		
 	}
@@ -694,7 +694,7 @@ strong {
 		position: absolute;
 		height: 100%;
 		background-color: #404040;
-		overflow: scroll;
+		overflow-y: scroll!important;
 		-webkit-overflow-scrolling: touch;
 		
 	}
@@ -730,7 +730,7 @@ strong {
 		position: absolute;
 		height: 100%;
 		background-color: #404040;
-		overflow: scroll;
+		overflow-y: scroll!important;
 		-webkit-overflow-scrolling: touch;
 		
 	}

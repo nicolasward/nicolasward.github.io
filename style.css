@@ -15,6 +15,31 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 		
 }
 
+.lite-en {
+	
+	font-family: 'Oxygen', sans-serif;
+	background-color: #fff;
+	margin-top: 4%;
+	margin-left: 3%;
+	font-size: 60px;
+	line-height: 70px;
+	color: #cacaca;
+	
+}
+
+.lite-en a {
+	
+	color: #039BE5;
+	
+}
+
+.lite-en a:hover {
+	
+	color: #cacaca;
+	transition: 0.2s color ease-in-out;
+	
+}
+
 #contenu {
 	
 	margin: 0;
@@ -702,7 +727,7 @@ strong {
 	.tagline-mobile p {
 
 		font-weight: 500;
-		font-size: 37px;
+		font-size: 36px;
 		color: #fff;
 		line-height: 150%;
 		text-align: left;

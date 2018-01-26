@@ -673,43 +673,7 @@ strong {
 
 }
 
-@media only screen and (min-width: 300px) {
-	
-	.site-tagline, .contenu, .site-footer { display: none; }
-	
-	.tagline-mobile {
-		
-		display: block;
-		position: absolute;
-		height: 100%;
-		background-color: #2c2c2c;
-		overflow-y: scroll!important;	
-		-webkit-overflow-scrolling: touch;
-		
-	}
-	
-	.tagline-mobile p {
-
-		font-weight: 500;
-		font-size: 32px;
-		color: #fff;
-		line-height: 150%;
-		text-align: left;
-		margin-top: 6%;
-		margin-left: 8%;
-		margin-right: 8%;
-		
-	}
-	
-	.tagline-mobile a {
-		
-		color: #03dfe5;
-		
-	}
-	
-}
-
-@media only screen and (min-width: 360px) {
+@media only screen and (max-width: 420px) {
 	
 	.site-tagline, .contenu, .site-footer { display: none; }
 	
@@ -727,7 +691,7 @@ strong {
 	.tagline-mobile p {
 
 		font-weight: 500;
-		font-size: 36px;
+		font-size: 35px;
 		color: #fff;
 		line-height: 150%;
 		text-align: left;
@@ -745,41 +709,6 @@ strong {
 	
 }
 
-@media only screen and (min-width: 412px) {
-	
-	.site-tagline, .contenu, .site-footer { display: none; }
-	
-	.tagline-mobile {
-		
-		display: block;
-		position: absolute;
-		height: 100%;
-		background-color: #2c2c2c;
-		overflow-y: scroll!important;
-		-webkit-overflow-scrolling: touch;
-		
-	}
-	
-	.tagline-mobile p {
-
-		font-weight: 500;
-		font-size: 40px;
-		color: #fff;
-		line-height: 150%;
-		text-align: left;
-		margin-top: 6%;
-		margin-left: 8%;
-		margin-right: 8%;
-		
-	}
-	
-	.tagline-mobile a {
-		
-		color: #03dfe5;
-		
-	}
-	
-}
 
 @media only screen and (min-width: 1024px) {
 

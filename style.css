@@ -567,6 +567,37 @@ strong {
 	
 }
 
+.about-design {
+	
+	background-color : #fff;
+    width : 80%;
+	height: 70%;
+  	margin-left: 10%;
+	margin-top: 12%;
+	position: fixed;
+	color: #424242;	
+		
+}
+
+.about-design .headline-design {
+	
+	color: #424242;
+	font-size: 22px;
+	font-weight: 600;
+	
+}
+
+.about-design p {
+	
+	font-weight: 400;
+	font-size: 20px;
+	text-align: justify;
+	margin-bottom: -2%;
+	margin-top: -1%;
+	color: #5c5c5c;
+	
+}
+
 .about-light {
 	
 	background-color : #fff;
@@ -691,7 +722,7 @@ strong {
 	.tagline-mobile p {
 
 		font-weight: 500;
-		font-size: 33px;
+		font-size: 35px;
 		color: #fff;
 		line-height: 150%;
 		text-align: left;

@@ -90,8 +90,8 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 	line-height: 130%;
 	overflow: auto;
 	position: absolute;
-	text-align: justify;
-	top: 20%;
+	text-align: left;
+	top: 25%;
 	width: 80%;
 	height: 75%;
 	font-size: 25px;

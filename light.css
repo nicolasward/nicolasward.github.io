@@ -129,20 +129,11 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 
 }
 
-
-#contenu {
-
-	margin: 0;
-	padding: 0;
-	background: #FFF;
-
-}
-
 .contenu ul {
 
 	display: flex;
 	position: absolute;
-	top: 63%;
+	top: 60%;
 	left: 50%;
 	transform: translate(-50%,-50%);
 
@@ -156,13 +147,13 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 
 .contenu a {
 
-	width: 80px;
-	height: 80px;
+	width: 95px;
+	height: 95px;
 	background: #fff;
 	text-align: center;
-	line-height: 80px;
-	font-size: 30px;
-	margin: 0 15px;
+	line-height: 92px;
+	font-size: 37px;
+	margin: 0 13px;
 	display: block;
 	border-radius: 50%;
 	position: relative;
@@ -304,8 +295,8 @@ strong {
 
 .site-tagline {
 	clear: both;
-    margin-bottom: 40px;
-    width: 100%;
+	margin-bottom: 20px;
+	width: 75%;
 	position: fixed;
 	top: 15%;
 	left: 17%;
@@ -313,14 +304,8 @@ strong {
 }
 .site-tagline p {
     color: #404040;
-    font-size: 40px;
+    font-size: 50px;
     width: 90%;
-}
-.site-tagline a,
-.site-tagline a:visited { color: #ff0033; }
-.site-tagline a:hover {
-    color: #111;
-	transition: color 0.2s ease-in-out;
 }
 
 .zone {
@@ -548,7 +533,7 @@ strong {
 	width: 100%;
 	text-align: center;
 }
-.site-footer p { font-size: 16px; font-weight: 400; position: fixed; top: 87%; text-align: center; left: 25%; right: 25%;}
+.site-footer p { font-size: 18px; font-weight: 400; position: fixed; top: 87%; text-align: center; left: 25%; right: 25%;}
 .site-footer a,
 .site-footer a:visited {
 	color: transparent;

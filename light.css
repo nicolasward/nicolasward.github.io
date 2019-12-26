@@ -568,9 +568,9 @@ strong {
 /* MEDIA QUERIES */
 
 @media only screen
-and (min-width : 370px)
-and (max-width : 736px)
-and (orientation : portrait) {
+  and (min-width: 375px)
+  and (max-width: 812px)
+  and (-webkit-min-device-pixel-ratio: 3) {
 
 	.toggle a {
 
@@ -635,16 +635,16 @@ and (orientation : portrait) {
 	}
 
 	.intro {
-		left: 11%;
+		left: 10%;
 		padding-right: 10%;
 		line-height: 130%;
 		overflow: auto;
 		position: absolute;
 		text-align: left;
-		top: 17%;
+		top: 16%;
 		width: 90%;
-		height: 75%;
-		font-size: 25px;
+		height: 80%;
+		font-size: 27px;
 		font-weight: 400;
 
 	}
@@ -652,7 +652,7 @@ and (orientation : portrait) {
 	.intro br {
 		display: block;
 		content: ""; /* clears default height */
-	  margin-top: 1.5%; /* change this to whatever height you want it */
+	  margin-top: 6%; /* change this to whatever height you want it */
 	}
 
 	.intro a, a:visited {

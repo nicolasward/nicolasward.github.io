@@ -573,7 +573,7 @@ strong {
 
 			.toggle a:hover {
 
-				color: #fff;
+				color: #404040;
 				/*background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
 				-webkit-background-clip: text;*/
 
@@ -594,7 +594,7 @@ strong {
 
 			.home a:hover {
 
-				color: #fff;
+				color: #404040;
 				/*background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
 				-webkit-background-clip: text;*/
 
@@ -615,15 +615,15 @@ strong {
 
 			.flag a:hover {
 
-				color: #fff;
+				color: #404040;
 				/*background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
 				-webkit-background-clip: text;*/
 
 			}
 
 			.intro {
-				left: 10%;
-				padding-right: 10%;
+				left: 8%;
+				padding-right: 8%;
 				line-height: 130%;
 				overflow: auto;
 				position: absolute;
@@ -631,7 +631,7 @@ strong {
 				top: 16%;
 				width: 90%;
 				height: 80%;
-				font-size: 27px;
+				font-size: 30px;
 				font-weight: 400;
 
 			}
@@ -651,7 +651,7 @@ strong {
 			}
 
 			.intro a:hover {
-				color: #fff;
+				color: #404040;
 				/*background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 				-webkit-background-clip: text;*/
 			}

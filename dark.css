@@ -603,15 +603,16 @@ strong {
 			}
 
 			.intro {
+				box-sizing: border-box;
 				left: 12%;
 				padding-right: 13%;
 				line-height: 130%;
 				overflow: auto;
 				position: absolute;
 				text-align: left;
-				top: 16%;
+				top: 18%;
 				width: 90%;
-				height: 80%;
+				height: 77%;
 				font-size: 22px;
 				font-weight: 400;
 

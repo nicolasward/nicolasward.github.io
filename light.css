@@ -554,7 +554,7 @@ strong {
 			.site-tagline p {
 			    color: #404040;
 			    font-size: 36px;
-					font-weight: 400;
+					font-weight: 300;
 			    width: 100%;
 			}
 
@@ -577,7 +577,7 @@ strong {
 
 			}
 
-			.contenu a, a:visited {
+			.contenu a, a:visited, a:hover {
 
 				width: 89px;
 				height: 89px;

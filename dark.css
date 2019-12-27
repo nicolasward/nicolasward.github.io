@@ -576,7 +576,7 @@ strong {
 
 			}
 
-			.contenu a, a:visited {
+			.contenu a, a:visited, a:hover {
 
 				width: 89px;
 				height: 89px;

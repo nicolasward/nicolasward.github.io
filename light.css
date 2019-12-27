@@ -577,7 +577,7 @@ strong {
 
 			}
 
-			.contenu a, a:visited, a:hover {
+			.contenu a, a:visited {
 
 				width: 89px;
 				height: 89px;
@@ -593,10 +593,26 @@ strong {
 
 			}
 
-			.contenu a .fas, a .fab {
+			.contenu a:before {
 
-				position: relative;
-				font-size: inherit;
+				display: none;
+
+			}
+
+			.contenu a:hover:before {
+
+				display: none;
+
+			}
+
+			.contenu a .fas, a .fab, a:hover .fab {
+
+				color: #404040;
+
+			}
+
+			.contenu a:hover .fas {
+
 				color: #404040;
 
 			}
@@ -613,14 +629,6 @@ strong {
 				position: fixed;
 				top: 7%;
 				right: 8%;
-
-			}
-
-			.toggle a:hover {
-
-				color: #404040;
-				/*background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
-				-webkit-background-clip: text;*/
 
 			}
 

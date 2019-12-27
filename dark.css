@@ -592,10 +592,26 @@ strong {
 
 			}
 
-			.contenu a .fas, a .fab {
+			.contenu a:before {
 
-				position: relative;
-				font-size: inherit;
+				display: none;
+
+			}
+
+			.contenu a:hover:before {
+
+				display: none;
+
+			}
+
+			.contenu a .fas, a .fab, a:hover .fab {
+
+				color: #fff;
+
+			}
+
+			.contenu a:hover .fas {
+
 				color: #fff;
 
 			}

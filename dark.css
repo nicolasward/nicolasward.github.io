@@ -541,6 +541,75 @@ strong {
     and (orientation : portrait)
     and (-webkit-min-device-pixel-ratio : 2) {
 
+			.site-tagline {
+				clear: both;
+				margin-bottom: 20px;
+				width: 100%;
+				position: fixed;
+				top: 15%;
+				left: 3%;
+				text-align: center;
+			}
+			.site-tagline p {
+			    color: #fff;
+			    font-size: 35px;
+			    width: 100%;
+			}
+
+			.contenu ul {
+
+				display: flex;
+    		flex-wrap: wrap;
+				justify-content: space-around;
+				padding-top: 30%;
+				margin: -14% -30% 0 0;
+				transform: translate(-50%,-50%);
+
+			}
+
+			.contenu li {
+
+				flex-basis: 33%;
+    		min-width: 33%;
+				flex: 0;
+
+			}
+
+			.contenu a, a:visited {
+
+				width: 80px;
+				height: 80px;
+				background: #000;
+				text-align: center;
+				line-height: 79px;
+				font-size: 30px;
+				display: block;
+				border-radius: 50%;
+				position: relative;
+				overflow: hidden;
+				border: 1.5px #fff solid;
+
+			}
+
+			.contenu a .fas, a .fab {
+
+				position: relative;
+				font-size: inherit;
+				color: #fff;
+
+			}
+
+			.site-footer {
+
+				position: absolute;
+				left: 0%;
+				width: 100%;
+
+			}
+			.site-footer p {
+				font-size: 14px;
+			}
+
 			.toggle a, a:visited {
 
 				color: transparent;

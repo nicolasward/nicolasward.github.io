@@ -93,12 +93,7 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 }
 
 .intro p {
-
-	font-weight: 400;
-	font-size: 42px;
-	margin-bottom: 1%;
-	margin-top: 2%;
-
+	display: none;
 }
 
 .intro br {
@@ -568,7 +563,7 @@ strong {
     and (orientation : portrait)
     and (-webkit-min-device-pixel-ratio : 2) {
 
-			.toggle a, a:visited {
+			.toggle a:active, a:visited {
 
 				color: transparent;
 				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
@@ -588,7 +583,7 @@ strong {
 
 			}
 
-			.home a, a:visited {
+			.home a:active, a:visited {
 
 				color: transparent;
 				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
@@ -609,7 +604,7 @@ strong {
 
 			}
 
-			.flag a, a:visited {
+			.flag a:active, a:visited {
 
 				color: transparent;
 				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
@@ -632,7 +627,7 @@ strong {
 
 			.intro {
 				left: 12%;
-				padding-right: 12%;
+				padding-right: 13%;
 				line-height: 130%;
 				overflow: auto;
 				position: absolute;
@@ -640,7 +635,7 @@ strong {
 				top: 16%;
 				width: 90%;
 				height: 80%;
-				font-size: 20px;
+				font-size: 22px;
 				font-weight: 400;
 
 			}
@@ -659,7 +654,7 @@ strong {
 			  margin-top: 4%; /* change this to whatever height you want it */
 			}
 
-			.intro a, a:visited {
+			.intro a:active, a:visited {
 				color: transparent;
 				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 				-webkit-background-clip: text;

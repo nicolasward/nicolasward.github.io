@@ -112,22 +112,6 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 	transition: color 0.2s ease-in-out;
 }
 
-.boldtitle {
-
-	background: -webkit-linear-gradient(to right, #d754ad, #f96785, #fe7333);
-	-webkit-background-clip: text;
-	font-weight: 800;
-	font-size: 35px;
-	padding-bottom: 1%;
-
-}
-
-.mobile-blue {
-
-	color: #03dfe5;
-
-}
-
 .contenu ul {
 
 	display: flex;
@@ -564,12 +548,13 @@ strong {
 				width: 100%;
 				position: fixed;
 				top: 13%;
-				left: 3%;
+				left: 2%;
 				text-align: center;
 			}
 			.site-tagline p {
 			    color: #404040;
 			    font-size: 36px;
+					font-weight: 400;
 			    width: 100%;
 			}
 

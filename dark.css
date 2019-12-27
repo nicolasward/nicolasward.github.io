@@ -3,7 +3,7 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 
 /* interesting color: #039BE5 */
 
-.toggle a, a:active, a:visited {
+.toggle a, a:visited {
 
 	color: transparent;
 	background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
@@ -26,7 +26,7 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 
 }
 
-.home a, a:active, a:visited {
+.home a, a:visited {
 
 	color: transparent;
 	background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
@@ -49,7 +49,7 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 
 }
 
-.flag a, a:active, a:visited {
+.flag a, a:visited {
 
 	color: transparent;
 	background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
@@ -96,7 +96,7 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
   margin-top: 1%; /* change this to whatever height you want it */
 }
 
-.intro a, a:active, a:visited {
+.intro a, a:visited {
 	color: transparent;
 	background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 	-webkit-background-clip: text;
@@ -128,7 +128,7 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 
 }
 
-.contenu a {
+.contenu a, a:visited {
 
 	width: 95px;
 	height: 95px;
@@ -541,7 +541,7 @@ strong {
     and (orientation : portrait)
     and (-webkit-min-device-pixel-ratio : 2) {
 
-			.toggle a, a:active, a:visited {
+			.toggle a, a:visited {
 
 				color: transparent;
 				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
@@ -561,7 +561,7 @@ strong {
 
 			}
 
-			.home a, a:active, a:visited {
+			.home a, a:visited {
 
 				color: transparent;
 				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
@@ -582,7 +582,7 @@ strong {
 
 			}
 
-			.flag a, a:active, a:visited {
+			.flag a, a:visited {
 
 				color: transparent;
 				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
@@ -634,7 +634,7 @@ strong {
 			  margin-top: 4%; /* change this to whatever height you want it */
 			}
 
-			.intro a, a:active, a:visited {
+			.intro a, a:visited {
 				color: transparent;
 				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 				-webkit-background-clip: text;
@@ -658,7 +658,7 @@ strong {
   and (max-width: 812px)
   and (-webkit-min-device-pixel-ratio: 3) {
 
-	.toggle a, a:active, a:visited {
+	.toggle a, a:visited {
 
 		color: transparent;
 		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
@@ -678,7 +678,7 @@ strong {
 
 	}
 
-	.home a, a:active, a:visited {
+	.home a, a:visited {
 
 		color: transparent;
 		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
@@ -699,7 +699,7 @@ strong {
 
 	}
 
-	.flag a, a:active, a:visited {
+	.flag a, a:visited {
 
 		color: transparent;
 		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
@@ -741,7 +741,7 @@ strong {
 	  margin-top: 6%; /* change this to whatever height you want it */
 	}
 
-	.intro a, a:active, a:visited {
+	.intro a, a:visited {
 		color: transparent;
 		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 		-webkit-background-clip: text;
@@ -762,7 +762,7 @@ and (min-width : 737px)
 and (max-width : 1000px)
 and (orientation : portrait) {
 
-	.toggle a, a:active, a:visited {
+	.toggle a, a:visited {
 
 		color: transparent;
 		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
@@ -782,7 +782,7 @@ and (orientation : portrait) {
 
 	}
 
-	.home a, a:active, a:visited {
+	.home a, a:visited {
 
 		color: transparent;
 		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
@@ -803,7 +803,7 @@ and (orientation : portrait) {
 
 	}
 
-	.flag a, a:active, a:visited {
+	.flag a, a:visited {
 
 		color: transparent;
 		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
@@ -845,7 +845,7 @@ and (orientation : portrait) {
 	  margin-top: 2.5%; /* change this to whatever height you want it */
 	}
 
-	.intro a, a:active, a:visited {
+	.intro a {
 		color: transparent;
 		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 		-webkit-background-clip: text;

@@ -552,6 +552,113 @@ strong {
 
 /* MEDIA QUERIES */
 
+/* iPhone 6*/
+@media only screen
+    and (min-width : 375px)
+    and (max-width : 667px)
+    and (orientation : portrait)
+    and (-webkit-min-device-pixel-ratio : 2) {
+
+			.toggle a {
+
+				color: transparent;
+				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
+				-webkit-background-clip: text;
+				font-size: 35px;
+				position: fixed;
+				top: 7%;
+				right: 8%;
+
+			}
+
+			.toggle a:hover {
+
+				color: #fff;
+				/*background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
+				-webkit-background-clip: text;*/
+
+			}
+
+			.home a {
+
+				color: transparent;
+				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
+				-webkit-background-clip: text;
+				font-size: 35px;
+				position: fixed;
+				top: 7%;
+				left: 8%;
+				vertical-align: middle;
+
+			}
+
+			.home a:hover {
+
+				color: #fff;
+				/*background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
+				-webkit-background-clip: text;*/
+
+			}
+
+			.flag a {
+
+				color: transparent;
+				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
+				-webkit-background-clip: text;
+				font-size: 35px;
+				position: fixed;
+				top: 7%;
+				left: 46%;
+				vertical-align: middle;
+
+			}
+
+			.flag a:hover {
+
+				color: #fff;
+				/*background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
+				-webkit-background-clip: text;*/
+
+			}
+
+			.intro {
+				left: 10%;
+				padding-right: 10%;
+				line-height: 130%;
+				overflow: auto;
+				position: absolute;
+				text-align: left;
+				top: 16%;
+				width: 90%;
+				height: 80%;
+				font-size: 27px;
+				font-weight: 400;
+
+			}
+
+			.intro br {
+				display: block;
+				content: ""; /* clears default height */
+			  margin-top: 6%; /* change this to whatever height you want it */
+			}
+
+			.intro a, a:visited {
+				color: transparent;
+				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
+				-webkit-background-clip: text;
+				/*-webkit-animation: sk-rotateplane 1.2s infinite ease-in-out;
+				animation: sk-rotateplane 1.2s infinite ease-in-out;*/
+			}
+
+			.intro a:hover {
+				color: #fff;
+				/*background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
+				-webkit-background-clip: text;*/
+			}
+
+}
+
+/* iPhone X */
 @media only screen
   and (min-width: 375px)
   and (max-width: 812px)

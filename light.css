@@ -558,6 +558,72 @@ strong {
     and (orientation : portrait)
     and (-webkit-min-device-pixel-ratio : 2) {
 
+			.site-tagline {
+				clear: both;
+				margin-bottom: 20px;
+				width: 100%;
+				position: fixed;
+				top: 13%;
+				left: 3%;
+				text-align: center;
+			}
+			.site-tagline p {
+			    color: #404040;
+			    font-size: 36px;
+			    width: 100%;
+			}
+
+			.contenu ul {
+
+				display: flex;
+    		flex-wrap: wrap;
+				justify-content: space-around;
+				padding-top: 30%;
+				margin: -14% -35% 0 0;
+				transform: translate(-50%,-50%);
+
+			}
+
+			.contenu li {
+
+				flex-basis: 33%;
+    		min-width: 33%;
+				flex: 0;
+
+			}
+
+			.contenu a, a:visited {
+
+				width: 89px;
+				height: 89px;
+				background: #fff;
+				text-align: center;
+				line-height: 87px;
+				font-size: 35px;
+				display: block;
+				border-radius: 50%;
+				position: relative;
+				overflow: hidden;
+				border: 1px #404040 solid;
+
+			}
+
+			.contenu a .fas, a .fab {
+
+				position: relative;
+				font-size: inherit;
+				color: #404040;
+
+			}
+
+			.site-footer {
+
+				width: 100%;
+
+			}
+
+			.site-footer p { font-size: 15px; font-weight: 400; position: fixed; top: 90%; text-align: center; left: 15%; right: 15%;}
+
 			.toggle a, a:visited {
 
 				color: transparent;

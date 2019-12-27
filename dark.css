@@ -546,13 +546,13 @@ strong {
 				margin-bottom: 20px;
 				width: 100%;
 				position: fixed;
-				top: 15%;
+				top: 12%;
 				left: 3%;
 				text-align: center;
 			}
 			.site-tagline p {
 			    color: #fff;
-			    font-size: 35px;
+			    font-size: 36px;
 			    width: 100%;
 			}
 
@@ -562,7 +562,7 @@ strong {
     		flex-wrap: wrap;
 				justify-content: space-around;
 				padding-top: 30%;
-				margin: -14% -30% 0 0;
+				margin: -14% -35% 0 0;
 				transform: translate(-50%,-50%);
 
 			}
@@ -577,12 +577,12 @@ strong {
 
 			.contenu a, a:visited {
 
-				width: 80px;
-				height: 80px;
+				width: 89px;
+				height: 89px;
 				background: #000;
 				text-align: center;
-				line-height: 79px;
-				font-size: 30px;
+				line-height: 87px;
+				font-size: 35px;
 				display: block;
 				border-radius: 50%;
 				position: relative;
@@ -601,14 +601,11 @@ strong {
 
 			.site-footer {
 
-				position: absolute;
-				left: 0%;
 				width: 100%;
 
 			}
-			.site-footer p {
-				font-size: 14px;
-			}
+
+			.site-footer p { font-size: 15px; font-weight: 400; position: fixed; top: 90%; text-align: center; left: 15%; right: 15%;}
 
 			.toggle a, a:visited {
 

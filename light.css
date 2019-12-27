@@ -616,14 +616,8 @@ strong {
 
 			}
 
-			.site-footer {
-
-				width: 100%;
-
-			}
-
 			.site-footer p { font-size: 15px; font-weight: 400; position: fixed; top: 90%; text-align: center; left: 15%; right: 15%;}
-			.site-footer a { display: inline;}
+			.site-footer a, a:visited { display: inline;}
 
 			.toggle a, a:visited {
 

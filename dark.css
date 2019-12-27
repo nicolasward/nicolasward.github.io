@@ -75,21 +75,30 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 .intro {
 	left: 15%;
 	padding-right: 10%;
-	line-height: 130%;
+	line-height: 120%;
 	overflow: auto;
 	position: absolute;
 	text-align: left;
 	top: 25%;
 	width: 80%;
-	height: 75%;
+	height: 70%;
 	font-size: 25px;
+
+}
+
+.intro p {
+
+	font-weight: 400;
+	font-size: 42px;
+	margin-bottom: 1%;
+	margin-top: 2%;
 
 }
 
 .intro br {
 	display: block;
 	content: ""; /* clears default height */
-  margin-top: 1.5%; /* change this to whatever height you want it */
+  margin-top: 1%; /* change this to whatever height you want it */
 }
 
 .intro a, a:visited {

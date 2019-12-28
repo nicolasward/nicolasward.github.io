@@ -125,7 +125,7 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 	overflow: auto;
 	position: absolute;
 	text-align: left;
-	top: 25%;
+	top: 21%;
 	width: 80%;
 	height: 70%;
 	font-size: 25px;
@@ -134,6 +134,15 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 
 .intro p {
 	display: none;
+}
+
+.intro .bigscreen {
+
+	display: block;
+	font-size: 50px;
+	font-weight: 600;
+	margin-bottom: 1%;
+
 }
 
 .intro br {
@@ -147,14 +156,10 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 	background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 	-webkit-background-clip: text;
 	display: inline;
-	/*-webkit-animation: sk-rotateplane 1.2s infinite ease-in-out;
-	animation: sk-rotateplane 1.2s infinite ease-in-out;*/
 }
 
 .intro a:hover {
 	color: #404040;
-	/*background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-	-webkit-background-clip: text;*/
 	transition: color 0.2s ease-in-out;
 }
 
@@ -749,6 +754,10 @@ strong {
 
 			}
 
+			.intro .bigscreen {
+				display: none;
+			}
+
 			.intro br {
 				display: block;
 				content: ""; /* clears default height */
@@ -760,15 +769,12 @@ strong {
 				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 				-webkit-background-clip: text;
 				display: inline;
-				/*-webkit-animation: sk-rotateplane 1.2s infinite ease-in-out;
-				animation: sk-rotateplane 1.2s infinite ease-in-out;*/
 			}
 
 			.intro a:hover {
 				color: transparent;
 				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 				-webkit-background-clip: text;
-				display: inline;
 			}
 
 			.site-footer p { font-size: 15px; font-weight: 400; position: fixed; top: 90%; text-align: center; left: 15%; right: 15%;}
@@ -877,15 +883,13 @@ strong {
 		color: transparent;
 		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 		-webkit-background-clip: text;
-		/*-webkit-animation: sk-rotateplane 1.2s infinite ease-in-out;
-		animation: sk-rotateplane 1.2s infinite ease-in-out;*/
+		display: inline;
 	}
 
 	.intro a:hover {
-		color: #fff;
-		/*background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;*/
-		transition: color 0.2s ease-in-out;
+		color: transparent;
+		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
+		-webkit-background-clip: text;
 	}
 
 	.intro br {
@@ -988,14 +992,13 @@ and (orientation : portrait) {
 		color: transparent;
 		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 		-webkit-background-clip: text;
-		/*-webkit-animation: sk-rotateplane 1.2s infinite ease-in-out;
-		animation: sk-rotateplane 1.2s infinite ease-in-out;*/
+		display: inline;
 	}
 
 	.intro a:hover {
-		color: #404040;
-		/*background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;*/
+		color: transparent;
+		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
+		-webkit-background-clip: text;
 	}
 
 }

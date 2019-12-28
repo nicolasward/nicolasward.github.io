@@ -37,7 +37,7 @@
     $(function(){
 
         $("#typed").typed({
-			strings: ["Hey, je suis Nico.^2000 \n Ravi de vous voir :-)"],
+			strings: ['Hey<div class="coloris">,</div> je suis Nico<div class="coloris">.\n</div> ^2000 Bienvenue <div class="coloris">:-)</div>'],
             typeSpeed: 40,
             backDelay: 1500,
             loop: true,
@@ -59,46 +59,6 @@
     function foo(){ console.log("Callback"); }
 
     </script>
-
-    <style>
-          .typed-cursor{
-            color: transparent;
-            background-image: linear-gradient(to bottom, #d754ad, #f96785, #fe7333);
-          	-webkit-background-clip: text;
-              opacity: 1;
-              font-weight: 300;
-              -webkit-animation: blink 0.9s infinite;
-              -moz-animation: blink 0.9s infinite;
-              -ms-animation: blink 0.9s infinite;
-              -o-animation: blink 0.9 infinite;
-              animation: blink 1.1s infinite;
-          }
-          @-keyframes blink{
-              0% { opacity:1; }
-              50% { opacity:0; }
-              100% { opacity:1; }
-          }
-          @-webkit-keyframes blink{
-              0% { opacity:1; }
-              50% { opacity:0; }
-              100% { opacity:1; }
-          }
-          @-moz-keyframes blink{
-              0% { opacity:1; }
-              50% { opacity:0; }
-              100% { opacity:1; }
-          }
-          @-ms-keyframes blink{
-              0% { opacity:1; }
-              50% { opacity:0; }
-              100% { opacity:1; }
-          }
-          @-o-keyframes blink{
-              0% { opacity:1; }
-              50% { opacity:0; }
-              100% { opacity:1; }
-          }
-      </style>
 
 </head>
 

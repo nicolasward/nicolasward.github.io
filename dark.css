@@ -3,6 +3,52 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 
 /* interesting color: #039BE5 */
 
+.typed-cursor{
+/*  color: transparent;
+	background-image: linear-gradient(to bottom, #d754ad 0%, #f96785 67%, #fe7333 100%);
+	-webkit-background-clip: text; */
+		color: #fff;
+		opacity: 1;
+		font-weight: 300;
+		-webkit-animation: blink 0.9s infinite;
+		-moz-animation: blink 0.9s infinite;
+		-ms-animation: blink 0.9s infinite;
+		-o-animation: blink 0.9 infinite;
+		animation: blink 1.1s infinite;
+}
+		@-keyframes blink{
+				0% { opacity:1; }
+				50% { opacity:0; }
+				100% { opacity:1; }
+		}
+		@-webkit-keyframes blink{
+				0% { opacity:1; }
+				50% { opacity:0; }
+				100% { opacity:1; }
+		}
+		@-moz-keyframes blink{
+				0% { opacity:1; }
+				50% { opacity:0; }
+				100% { opacity:1; }
+		}
+		@-ms-keyframes blink{
+				0% { opacity:1; }
+				50% { opacity:0; }
+				100% { opacity:1; }
+		}
+		@-o-keyframes blink{
+				0% { opacity:1; }
+				50% { opacity:0; }
+				100% { opacity:1; }
+		}
+
+.coloris {
+	display: inline;
+	color: transparent;
+	background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
+	-webkit-background-clip: text;
+}
+
 .toggle a, a:visited {
 
 	color: transparent;
@@ -616,9 +662,6 @@ strong {
 
 			}
 
-			.site-footer p { font-size: 15px; font-weight: 400; position: fixed; top: 90%; text-align: center; left: 15%; right: 15%;}
-			.site-footer a, a:visited { display: inline;}
-
 			.toggle a, a:visited {
 
 				color: transparent;
@@ -722,6 +765,16 @@ strong {
 			}
 
 			.intro a:hover {
+				color: transparent;
+				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
+				-webkit-background-clip: text;
+			}
+
+			.site-footer p { font-size: 15px; font-weight: 600; position: fixed; top: 90%; text-align: center; left: 15%; right: 15%;}
+			.site-footer a, a:visited {
+				display: inline-block;
+			}
+			.site-footer a:hover {
 				color: transparent;
 				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 				-webkit-background-clip: text;

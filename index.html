@@ -38,8 +38,9 @@
     $(function(){
 
         $("#typed").typed({
-			strings: ["Hi, I'm Nico.^2000 \n Glad you're here :-)"],
-            typeSpeed: 40,
+			strings: ['Hi<div class = "coloris">,</div> I\'m Nico<div class = "coloris">.\n</div> ^2000 Glad you\'re here <div class = "coloris">:-)</div>'],
+            smartBackspace: true,
+            typeSpeed: 50,
             backDelay: 0,
             loop: false,
             contentType: 'html', // or text
@@ -60,46 +61,6 @@
     function foo(){ console.log("Callback"); }
 
     </script>
-
-	<style>
-        .typed-cursor{
-          color: transparent;
-          background-image: linear-gradient(to bottom, #d754ad 0%, #f96785 67%, #fe7333 100%);
-        	-webkit-background-clip: text;
-            opacity: 1;
-            font-weight: 300;
-            -webkit-animation: blink 0.9s infinite;
-            -moz-animation: blink 0.9s infinite;
-            -ms-animation: blink 0.9s infinite;
-            -o-animation: blink 0.9 infinite;
-            animation: blink 1.1s infinite;
-        }
-        @-keyframes blink{
-            0% { opacity:1; }
-            50% { opacity:0; }
-            100% { opacity:1; }
-        }
-        @-webkit-keyframes blink{
-            0% { opacity:1; }
-            50% { opacity:0; }
-            100% { opacity:1; }
-        }
-        @-moz-keyframes blink{
-            0% { opacity:1; }
-            50% { opacity:0; }
-            100% { opacity:1; }
-        }
-        @-ms-keyframes blink{
-            0% { opacity:1; }
-            50% { opacity:0; }
-            100% { opacity:1; }
-        }
-        @-o-keyframes blink{
-            0% { opacity:1; }
-            50% { opacity:0; }
-            100% { opacity:1; }
-        }
-    </style>
 
 </head>
 

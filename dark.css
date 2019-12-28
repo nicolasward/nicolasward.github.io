@@ -593,13 +593,13 @@ strong {
 				width: 100%;
 				position: fixed;
 				top: 13%;
-				left: 2%;
+				left: 0%;
 				text-align: center;
 			}
 			.site-tagline p {
 			    color: #fff;
 			    font-size: 36px;
-					font-weight: 400;
+					font-weight: 200;
 			    width: 100%;
 			}
 
@@ -607,17 +607,18 @@ strong {
 
 				display: flex;
     		flex-wrap: wrap;
+				position: fixed;
 				justify-content: space-around;
 				padding-top: 30%;
-				margin: -14% -35% 0 0;
-				transform: translate(-50%,-50%);
+				margin: -14% -33% 0 -1%;
+				transform: translate(-50%, -50%);
 
 			}
 
 			.contenu li {
 
-				flex-basis: 33%;
-    		min-width: 33%;
+				flex-basis: 33.33%;
+    		min-width: 33.33%;
 				flex: 0;
 
 			}

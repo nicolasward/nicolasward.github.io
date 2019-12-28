@@ -594,7 +594,7 @@ strong {
 				width: 100%;
 				position: fixed;
 				top: 13%;
-				left: 2%;
+				left: 0%;
 				text-align: center;
 			}
 			.site-tagline p {
@@ -608,10 +608,11 @@ strong {
 
 				display: flex;
     		flex-wrap: wrap;
+				position: fixed;
 				justify-content: space-around;
 				padding-top: 30%;
-				margin: -14% -35% 0 0;
-				transform: translate(-50%,-50%);
+				margin: -14% -33% 0 -1%;
+				transform: translate(-50%, -50%);
 
 			}
 
@@ -661,11 +662,6 @@ strong {
 
 				color: #404040;
 
-			}
-
-			.site-footer p { font-size: 15px; font-weight: 400; position: fixed; top: 90%; text-align: center; left: 15%; right: 15%;}
-			.site-footer a, a:visited {
-				display: inline-block;
 			}
 
 			.toggle a, a:visited {
@@ -774,7 +770,7 @@ strong {
 				-webkit-background-clip: text;
 			}
 
-			.site-footer p { font-size: 15px; font-weight: 600; position: fixed; top: 90%; text-align: center; left: 15%; right: 15%;}
+			.site-footer p { font-size: 15px; font-weight: 400; position: fixed; top: 90%; text-align: center; left: 15%; right: 15%;}
 			.site-footer a, a:visited {
 				display: inline-block;
 			}

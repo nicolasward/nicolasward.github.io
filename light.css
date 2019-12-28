@@ -732,7 +732,7 @@ strong {
 				overflow: auto;
 				position: absolute;
 				text-align: left;
-				top: 18%;
+				top: 16%;
 				width: 90%;
 				height: 77%;
 				font-size: 22px;
@@ -755,7 +755,7 @@ strong {
 			  margin-top: 4%; /* change this to whatever height you want it */
 			}
 
-			.intro a, a:visited {
+			.intro a {
 				color: transparent;
 				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 				-webkit-background-clip: text;

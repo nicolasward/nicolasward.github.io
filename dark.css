@@ -670,7 +670,7 @@ strong {
 				-webkit-background-clip: text;
 				font-size: 35px;
 				position: fixed;
-				top: 7%;
+				top: 6%;
 				right: 8%;
 
 			}
@@ -690,7 +690,7 @@ strong {
 				-webkit-background-clip: text;
 				font-size: 35px;
 				position: fixed;
-				top: 7%;
+				top: 6%;
 				left: 8%;
 				vertical-align: middle;
 
@@ -711,7 +711,7 @@ strong {
 				-webkit-background-clip: text;
 				font-size: 35px;
 				position: fixed;
-				top: 7%;
+				top: 6%;
 				left: 46%;
 				vertical-align: middle;
 
@@ -727,16 +727,16 @@ strong {
 
 			.intro {
 				box-sizing: border-box;
-				left: 12%;
-				padding-right: 13%;
+				left: 11%;
+				padding-right: 11%;
 				line-height: 130%;
 				overflow: auto;
-				position: absolute;
+				position: fixed;
 				text-align: left;
-				top: 16%;
+				top: 15%;
 				width: 90%;
 				height: 77%;
-				font-size: 22px;
+				font-size: 20px;
 				font-weight: 400;
 
 			}
@@ -756,7 +756,7 @@ strong {
 			  margin-top: 4%; /* change this to whatever height you want it */
 			}
 
-			.intro a, {
+			.intro a {
 				color: transparent;
 				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 				-webkit-background-clip: text;
@@ -769,6 +769,7 @@ strong {
 				color: transparent;
 				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 				-webkit-background-clip: text;
+				display: inline;
 			}
 
 			.site-footer p { font-size: 15px; font-weight: 600; position: fixed; top: 90%; text-align: center; left: 15%; right: 15%;}

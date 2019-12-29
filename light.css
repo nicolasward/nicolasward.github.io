@@ -120,6 +120,7 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 
 .intro {
 	left: 15%;
+	color: #737373;
 	padding-right: 10%;
 	line-height: 120%;
 	overflow: auto;
@@ -129,6 +130,7 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 	width: 80%;
 	height: 70%;
 	font-size: 25px;
+	font-weight: 400;
 
 }
 
@@ -138,6 +140,7 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 
 .intro .bigscreen {
 
+	color: #404040;
 	display: block;
 	font-size: 50px;
 	font-weight: 600;
@@ -747,6 +750,7 @@ strong {
 
 			.intro p {
 
+				color: #404040;
 				display: block;
 				font-weight: 600;
 				font-size: 40px;

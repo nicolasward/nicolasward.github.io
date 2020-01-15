@@ -42,6 +42,13 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 				100% { opacity:1; }
 		}
 
+::selection {
+  background: #c90042; /* WebKit/Blink Browsers */
+}
+::-moz-selection {
+  background: #c90042; /* Gecko Browsers */
+}
+
 .coloris {
 	display: inline;
 	color: transparent;

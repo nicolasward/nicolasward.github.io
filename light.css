@@ -42,6 +42,13 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 				100% { opacity:1; }
 		}
 
+::selection {
+  background: #1a1a1a; /* WebKit/Blink Browsers */
+}
+::-moz-selection {
+  background: #1a1a1a; /* Gecko Browsers */
+}
+
 .coloris {
 	display: inline;
 	color: transparent;
@@ -622,6 +629,7 @@ strong {
 				left: 0%;
 				text-align: center;
 			}
+
 			.site-tagline p {
 			    color: #404040;
 			    font-size: 36px;
@@ -749,6 +757,23 @@ strong {
 
 			}
 
+			.tweak a, a:visited {
+
+				color: #404040;
+				font-size: 35px;
+				vertical-align: middle;
+
+			}
+
+			.tweak a:hover {
+
+				color: transparent;
+				background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
+				-webkit-background-clip: text;
+				transition: color 0.2s ease-in-out;
+
+			}
+
 			.intro {
 				box-sizing: border-box;
 				left: 11%;
@@ -786,9 +811,7 @@ strong {
 			}
 
 			.intro a {
-				color: transparent;
-				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-				-webkit-background-clip: text;
+				color: #000;
 				display: inline;
 			}
 

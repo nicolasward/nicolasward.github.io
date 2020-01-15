@@ -52,7 +52,7 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 .toggle a, a:visited {
 
 	color: transparent;
-	background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
+	background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
 	-webkit-background-clip: text;
 	font-size: 35px;
 	position: fixed;
@@ -75,7 +75,7 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 .home a, a:visited {
 
 	color: transparent;
-	background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
+	background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
 	-webkit-background-clip: text;
 	font-size: 35px;
 	position: fixed;
@@ -98,7 +98,7 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 .flag a, a:visited {
 
 	color: transparent;
-	background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
+	background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
 	-webkit-background-clip: text;
 	font-size: 35px;
 	position: fixed;
@@ -156,7 +156,7 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 
 .intro a, a:visited {
 	color: transparent;
-	background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
+	background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
 	-webkit-background-clip: text;
 	display: inline;
 }

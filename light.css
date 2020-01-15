@@ -757,7 +757,7 @@ strong {
 
 			}
 
-			.tweak a, a:visited {
+			.tweak a:focus, a:visited {
 
 				color: #404040;
 				font-size: 35px;

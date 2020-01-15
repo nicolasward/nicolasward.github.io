@@ -757,15 +757,13 @@ strong {
 
 			}
 
-			.tweak a, a:visited {
+			.tweak a, .tweak a:visited {
 
 				color: #404040;
 				font-size: 35px;
 				vertical-align: middle;
 
 			}
-
-			.tweak a:focus {color: #404040;}
 
 			.tweak a:hover {
 
@@ -812,7 +810,7 @@ strong {
 			  margin-top: 4%; /* change this to whatever height you want it */
 			}
 
-			.intro a {
+			.intro a, .intro a:visited {
 				color: #000;
 				display: inline;
 			}

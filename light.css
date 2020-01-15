@@ -757,13 +757,15 @@ strong {
 
 			}
 
-			.tweak a:focus, a:visited {
+			.tweak a, a:visited {
 
 				color: #404040;
 				font-size: 35px;
 				vertical-align: middle;
 
 			}
+
+			.tweak a:focus {color: #404040;}
 
 			.tweak a:hover {
 

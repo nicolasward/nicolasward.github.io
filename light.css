@@ -767,10 +767,7 @@ strong {
 
 			.tweak a:hover {
 
-				color: transparent;
-				background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
-				-webkit-background-clip: text;
-				transition: color 0.2s ease-in-out;
+				color: #404040;
 
 			}
 
@@ -816,9 +813,7 @@ strong {
 			}
 
 			.intro a:hover {
-				color: transparent;
-				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-				-webkit-background-clip: text;
+				color: #404040;
 			}
 
 			.site-footer p { font-size: 15px; font-weight: 400; position: fixed; top: 90%; text-align: center; left: 15%; right: 15%;}

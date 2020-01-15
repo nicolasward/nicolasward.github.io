@@ -33,73 +33,139 @@
   </script>
 
 	<script src="jquery-3.3.1.min.js"></script>
-	<script src="typed.js" type="text/javascript"></script>
-	<script>
-    $(function(){
 
-        $("#typed").typed({
-			strings: ["Hi, I'm Nico.^2000 \n Welcome to my home :-)"],
-            typeSpeed: 40,
-            backDelay: 0,
-            loop: false,
-            contentType: 'html', // or text
-            // defaults to false for infinite loop
-            loopCount: 1,
-            callback: function(){ foo(); },
-            resetCallback: function() { newTyped(); }
-        });
+  <script>
+      (function($) {
 
-        $(".reset").click(function(){
-            $("#typed").typed('reset');
-        });
+      'use strict';
 
-    });
+      var $filters = $('.filter [data-filter]'),
+        $boxes = $('.boxes [data-category]');
 
-    function newTyped(){ /* A new typed object */ }
+      $filters.on('click', function(e) {
+        e.preventDefault();
+        var $this = $(this);
 
-    function foo(){ console.log("Callback"); }
+        $filters.removeClass('active');
+        $this.addClass('active');
 
-    </script>
+        var $filterColor = $this.attr('data-filter');
 
-	<style>
-        .typed-cursor{
-          color: transparent;
-          background-image: linear-gradient(to bottom, #d754ad 0%, #f96785 67%, #fe7333 100%);
-        	-webkit-background-clip: text;
-            opacity: 1;
-            font-weight: 300;
-            -webkit-animation: blink 0.9s infinite;
-            -moz-animation: blink 0.9s infinite;
-            -ms-animation: blink 0.9s infinite;
-            -o-animation: blink 0.9 infinite;
-            animation: blink 1.1s infinite;
+        if ($filterColor == 'all') {
+          $boxes.removeClass('is-animated')
+            .fadeOut().finish().promise().done(function() {
+              $boxes.each(function(i) {
+                $(this).addClass('is-animated').delay((i++) * 200).fadeIn();
+              });
+            });
+        } else {
+          $boxes.removeClass('is-animated')
+            .fadeOut().finish().promise().done(function() {
+              $boxes.filter('[data-category = "' + $filterColor + '"]').each(function(i) {
+                $(this).addClass('is-animated').delay((i++) * 200).fadeIn();
+              });
+            });
         }
-        @-keyframes blink{
-            0% { opacity:1; }
-            50% { opacity:0; }
-            100% { opacity:1; }
-        }
-        @-webkit-keyframes blink{
-            0% { opacity:1; }
-            50% { opacity:0; }
-            100% { opacity:1; }
-        }
-        @-moz-keyframes blink{
-            0% { opacity:1; }
-            50% { opacity:0; }
-            100% { opacity:1; }
-        }
-        @-ms-keyframes blink{
-            0% { opacity:1; }
-            50% { opacity:0; }
-            100% { opacity:1; }
-        }
-        @-o-keyframes blink{
-            0% { opacity:1; }
-            50% { opacity:0; }
-            100% { opacity:1; }
-        }
-    </style>
+      });
+
+      })(jQuery);
+  </script>
+
+  <style>
+  * {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+html {
+font: 18px/1.65 sans-serif;
+text-align: center;
+}
+
+li {
+list-style-type: none;
+}
+
+a {
+text-decoration: none;
+display: block;
+color: #333;
+}
+
+h2 {
+color: #333;
+padding: 10px 0;
+}
+
+.filter {
+margin: 30px 0 10px;
+}
+
+.filter a {
+display: inline-block;
+padding: 10px;
+border: 2px solid #333;
+position: relative;
+margin-right: 20px;
+margin-bottom: 20px;
+}
+
+.boxes {
+    display: flex;
+    flex-wrap: wrap;
+    }
+
+    .boxes a {
+    width: 23%;
+    border: 2px solid #333;
+    margin: 0 1% 20px 1%;
+    line-height: 60px;
+    }
+
+    .all {
+    background: khaki;
+    }
+
+    .green {
+    background: lightgreen;
+    }
+
+    .blue {
+    background: lightblue;
+    }
+
+    .red {
+    background: lightcoral;
+    }
+
+    .filter a.active:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 15px 15px 0 0;
+    border-color: #333 transparent transparent transparent;
+    }
+
+    .is-animated {
+    animation: .6s zoom-in;
+    }
+
+    @keyframes zoom-in {
+    0% {
+     transform: scale(.1);
+    }
+    100% {
+      transform: none;
+    }
+    }
+  </style>
+
 
 </head>
 
@@ -110,6 +176,32 @@
   <div class="flag"><a href = "apropos.html" class = "fas fa-feather-alt" title = "Version française"></a></div>
 
       <header class="site-header cf">
+
+      <div class="cta filter">
+          <a class="all active" data-filter="all" href="#" role="button">Show All</a>
+          <a class="green" data-filter="green" href="#" role="button">Show Green Boxes</a>
+          <a class="blue" data-filter="blue" href="#" role="button">Show Blue Boxes</a>
+          <a class="red" data-filter="red" href="#" role="button">Show Red Boxes</a>
+      </div>
+
+      <div class="boxes">
+          <a class="red" data-category="red" href="#">Box1</a>
+          <a class="green" data-category="green" href="#">Box2</a>
+          <a class="blue" data-category="blue" href="#">Box3</a>
+          <a class="green" data-category="green" href="#">Box4</a>
+          <a class="red" data-category="red" href="#">Box5</a>
+          <a class="green" data-category="green" href="#">Box6</a>
+          <a class="blue" data-category="blue" href="#">Box7</a>
+          <a class="red" data-category="red" href="#">Box8</a>
+          <a class="green" data-category="green" href="#">Box9</a>
+          <a class="blue" data-category="blue" href="#">Box10</a>
+          <a class="red" data-category="red" href="#">Box11</a>
+          <a class="green" data-category="green" href="#">Box12</a>
+          <a class="blue" data-category="blue" href="#">Box13</a>
+          <a class="green" data-category="green" href="#">Box14</a>
+          <a class="red" data-category="red" href="#">Box15</a>
+          <a class="blue" data-category="blue" href="#">Box16</a>
+      </div>
 
         <div class="bookmarks">
 

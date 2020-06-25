@@ -781,7 +781,8 @@ strong {
 
 			.language {
 				font-size: 40px;
-				vertical-align: middle;
+				top: 4%;
+				left: 46%;
 			}
 
 			.intro {
@@ -870,7 +871,7 @@ strong {
 
 	.language {
 		font-size: 40px;
-		top: 7%;
+		top: 4%;
 		left: 46%;
 	}
 
@@ -985,7 +986,7 @@ and (orientation : portrait) {
 
 	.language {
 		font-size: 40px;
-		top: 7%;
+		top: 4%;
 		left: 46%;
 	}
 

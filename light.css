@@ -779,6 +779,11 @@ strong {
 
 			}
 
+			.language {
+				font-size: 40px;
+				vertical-align: middle;
+			}
+
 			.intro {
 				box-sizing: border-box;
 				left: 11%;
@@ -861,6 +866,12 @@ strong {
 		/*background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
 		-webkit-background-clip: text;*/
 
+	}
+
+	.language {
+		font-size: 40px;
+		top: 7%;
+		left: 46%;
 	}
 
 	.home a, a:visited {
@@ -970,6 +981,12 @@ and (orientation : portrait) {
 		/*background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
 		-webkit-background-clip: text;*/
 
+	}
+
+	.language {
+		font-size: 40px;
+		top: 7%;
+		left: 46%;
 	}
 
 	.home a, a:visited {

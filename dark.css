@@ -706,6 +706,12 @@ strong {
 
 			}
 
+			.language {
+				font-size: 40px;
+				top: 4%;
+				left: 46%;
+			}
+
 			.home a, a:visited {
 
 				color: transparent;
@@ -833,6 +839,12 @@ strong {
 
 	}
 
+	.language {
+		font-size: 40px;
+		top: 7%;
+		right: 50%;
+	}
+
 	.home a, a:visited {
 
 		color: transparent;
@@ -915,6 +927,12 @@ strong {
 and (min-width : 737px)
 and (max-width : 1000px)
 and (orientation : portrait) {
+
+	.language {
+		font-size: 40px;
+		top: 7%;
+		right: 50%;
+	}
 
 	.toggle a, a:visited {
 

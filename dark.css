@@ -125,11 +125,12 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 
 }
 
-.language {
-	font-size: 40px;
+.language img {
 	position: fixed;
-	top: 9%;
-	left: 50%;
+	max-width: 3%;
+	size: auto;
+	top: 10%;
+	left: 49%;
 	vertical-align: middle;
 }
 
@@ -706,10 +707,13 @@ strong {
 
 			}
 
-			.language {
-				font-size: 40px;
-				top: 4%;
+			.language img {
+				position: fixed;
+				max-width: 10%;
+				size: auto;
+				top: 6%;
 				left: 46%;
+				vertical-align: middle;
 			}
 
 			.home a, a:visited {
@@ -839,10 +843,13 @@ strong {
 
 	}
 
-	.language {
-		font-size: 40px;
-		top: 7%;
-		right: 50%;
+	.language img {
+		position: fixed;
+		max-width: 10%;
+		size: auto;
+		top: 6%;
+		left: 46%;
+		vertical-align: middle;
 	}
 
 	.home a, a:visited {
@@ -928,10 +935,13 @@ and (min-width : 737px)
 and (max-width : 1000px)
 and (orientation : portrait) {
 
-	.language {
-		font-size: 40px;
-		top: 7%;
-		right: 50%;
+	.language img {
+		position: fixed;
+		max-width: 10%;
+		size: auto;
+		top: 6%;
+		left: 46%;
+		vertical-align: middle;
 	}
 
 	.toggle a, a:visited {

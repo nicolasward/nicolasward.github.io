@@ -141,13 +141,12 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 	overflow: auto;
 	position: absolute;
 	text-align: left;
-	top: 21%;
+	top: 19%;
 	width: 80%;
 	height: 75%;
 	font-size: 25px;
 	font-weight: 400;
 	color: #fff;
-
 }
 
 .intro p {
@@ -158,8 +157,8 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 
 	display: block;
 	font-size: 50px;
-	font-weight: 600;
-	margin-bottom: 1%;
+	font-weight: 400;
+	margin-bottom: 0;
 	color: #fff;
 
 }
@@ -356,6 +355,7 @@ strong {
 .site-tagline p {
     color: #fff;
     font-size: 50px;
+		font-weight: 300;
     width: 90%;
 }
 

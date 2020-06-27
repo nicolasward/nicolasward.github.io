@@ -585,7 +585,7 @@ strong {
 	width: 100%;
 	text-align: center;
 }
-.site-footer p { font-size: 18px; font-weight: 400; position: fixed; top: 87%; text-align: center; left: 25%; right: 25%;}
+.site-footer p { font-size: 17px; font-weight: 400; position: fixed; top: 87%; text-align: center; left: 25%; right: 25%;}
 .site-footer a,
 .site-footer a:visited {
 	color: transparent;

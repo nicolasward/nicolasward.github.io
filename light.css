@@ -189,7 +189,7 @@ html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote
 
 .intro a, a:visited {
 	color: #404040;
-	display: inline;
+	display: inline-block;
 }
 
 .intro a:hover {
@@ -828,7 +828,7 @@ strong {
 
 			.intro a, .intro a:visited {
 				color: #000;
-				display: inline;
+				display: inline-block;
 			}
 
 			.intro a:hover {
@@ -950,7 +950,7 @@ strong {
 		color: transparent;
 		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 		-webkit-background-clip: text;
-		display: inline;
+		display: inline-block;
 	}
 
 	.intro a:hover {
@@ -1068,7 +1068,7 @@ and (orientation : portrait) {
 		color: transparent;
 		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
 		-webkit-background-clip: text;
-		display: inline;
+		display: inline-block;
 	}
 
 	.intro a:hover {

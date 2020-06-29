@@ -760,16 +760,16 @@ strong {
 
 			.intro {
 				box-sizing: border-box;
-				left: 11%;
+				left: 9%;
 				padding-right: 11%;
-				line-height: 130%;
+				line-height: 140%;
 				overflow: auto;
 				position: fixed;
 				text-align: left;
 				top: 15%;
-				width: 90%;
+				width: 92%;
 				height: 77%;
-				font-size: 21px;
+				font-size: 22px;
 				font-weight: 400;
 
 			}
@@ -779,7 +779,7 @@ strong {
 				display: block;
 				font-weight: 600;
 				font-size: 40px;
-				margin-bottom: 2%;
+				margin-bottom: 1%;
 
 			}
 
@@ -788,7 +788,7 @@ strong {
 			.intro br {
 				display: block;
 				content: ""; /* clears default height */
-			  margin-top: 4%; /* change this to whatever height you want it */
+			  margin-top: 3%; /* change this to whatever height you want it */
 			}
 
 			.intro a {

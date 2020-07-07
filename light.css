@@ -699,7 +699,6 @@ strong {
 				position: fixed;
 				top: 6%;
 				left: 8%;
-				vertical-align: middle;
 
 			}
 
@@ -800,7 +799,6 @@ strong {
 		size: auto;
 		top: 6%;
 		left: 46%;
-		vertical-align: middle;
 	}
 
 	.home a, a:visited {
@@ -810,8 +808,6 @@ strong {
 		position: fixed;
 		top: 7%;
 		left: 8%;
-		vertical-align: middle;
-
 	}
 
 	.flag a, a:visited {

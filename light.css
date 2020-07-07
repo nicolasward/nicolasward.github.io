@@ -776,12 +776,6 @@ strong {
 				display: inline-block;
 			}
 
-			.site-footer a:hover {
-				color: transparent;
-				background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
-				-webkit-background-clip: text;
-			}
-
 }
 
 /* iPhone X */
@@ -792,21 +786,11 @@ strong {
 
 	.toggle a, a:visited {
 
-		color: transparent;
-		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;
+		color: #0e90db;
 		font-size: 35px;
 		position: fixed;
 		top: 7%;
 		right: 8%;
-
-	}
-
-	.toggle a:hover {
-
-		color: #404040;
-		/*background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;*/
 
 	}
 
@@ -821,9 +805,7 @@ strong {
 
 	.home a, a:visited {
 
-		color: transparent;
-		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;
+		color: #0e90db;
 		font-size: 35px;
 		position: fixed;
 		top: 7%;
@@ -832,32 +814,13 @@ strong {
 
 	}
 
-	.home a:hover {
-
-		color: #404040;
-		/*background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;*/
-
-	}
-
 	.flag a, a:visited {
 
-		color: transparent;
-		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;
 		font-size: 35px;
 		position: fixed;
 		top: 7%;
 		left: 46%;
 		vertical-align: middle;
-
-	}
-
-	.flag a:hover {
-
-		color: #404040;
-		/*background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;*/
 
 	}
 
@@ -883,16 +846,8 @@ strong {
 	}
 
 	.intro a, a:visited {
-		color: transparent;
-		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;
+		color: #0e90db;
 		display: inline-block;
-	}
-
-	.intro a:hover {
-		color: transparent;
-		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;
 	}
 
 	.intro br {
@@ -910,21 +865,11 @@ and (orientation : portrait) {
 
 	.toggle a, a:visited {
 
-		color: transparent;
-		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;
+		color: #0e90db;
 		font-size: 35px;
 		position: fixed;
 		top: 7%;
 		right: 8%;
-
-	}
-
-	.toggle a:hover {
-
-		color: #404040;
-		/*background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;*/
 
 	}
 
@@ -939,9 +884,7 @@ and (orientation : portrait) {
 
 	.home a, a:visited {
 
-		color: transparent;
-		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;
+		color: #0e90db;
 		font-size: 35px;
 		position: fixed;
 		top: 7%;
@@ -950,32 +893,13 @@ and (orientation : portrait) {
 
 	}
 
-	.home a:hover {
-
-		color: #404040;
-		/*background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;*/
-
-	}
-
 	.flag a, a:visited {
 
-		color: transparent;
-		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;
 		font-size: 35px;
 		position: fixed;
 		top: 7%;
 		left: 49%;
 		vertical-align: middle;
-
-	}
-
-	.flag a:hover {
-
-		color: #404040;
-		/*background-image: linear-gradient(to left, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;*/
 
 	}
 
@@ -1001,16 +925,9 @@ and (orientation : portrait) {
 	}
 
 	.intro a, a:visited {
-		color: transparent;
-		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;
+		color: #0e90db;
 		display: inline-block;
 	}
 
-	.intro a:hover {
-		color: transparent;
-		background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-		-webkit-background-clip: text;
-	}
 
 }

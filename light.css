@@ -1,3 +1,4 @@
+
 html, body, div, span, applet, object, iframe, h1, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td { margin: 0; padding: 0; border: 0; outline: 0; vertical-align: baseline; background: transparent; } body { line-height: 1; } ol, ul { list-style: none; } blockquote, q { quotes: none; } blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; } :focus { outline: 0; } ins { text-decoration: none; } del { text-decoration: line-through; } table { border-collapse: collapse; border-spacing: 0; }
 .cf:before, .cf:after { content: " "; display: table; } .cf:after { clear: both; }
 
@@ -683,9 +684,7 @@ strong {
 
 			.toggle a, a:visited {
 
-				color: transparent;
-				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-				-webkit-background-clip: text;
+				color: #0e90db;
 				font-size: 35px;
 				position: fixed;
 				top: 6%;
@@ -693,17 +692,9 @@ strong {
 
 			}
 
-			.toggle a:hover {
-				color: transparent;
-				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-				-webkit-background-clip: text;
-			}
-
 			.home a, a:visited {
 
-				color: transparent;
-				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-				-webkit-background-clip: text;
+				color: #0e90db;
 				font-size: 35px;
 				position: fixed;
 				top: 6%;
@@ -712,19 +703,8 @@ strong {
 
 			}
 
-			.home a:hover {
-
-				color: transparent;
-				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-				-webkit-background-clip: text;
-
-			}
-
 			.flag a, a:visited {
 
-				color: transparent;
-				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-				-webkit-background-clip: text;
 				font-size: 35px;
 				position: fixed;
 				top: 6%;
@@ -733,25 +713,11 @@ strong {
 
 			}
 
-			.flag a:hover {
-
-				color: transparent;
-				background-image: linear-gradient(to right, #d754ad, #f96785, #fe7333);
-				-webkit-background-clip: text;
-
-			}
-
 			.tweak a, .tweak a:visited {
 
 				color: #404040;
 				font-size: 35px;
 				vertical-align: middle;
-
-			}
-
-			.tweak a:hover {
-
-				color: #404040;
 
 			}
 
@@ -782,7 +748,7 @@ strong {
 
 			.intro p {
 
-				color: #404040;
+				color: #0e90db;
 				display: block;
 				font-weight: 600;
 				font-size: 40px;
@@ -801,12 +767,8 @@ strong {
 			}
 
 			.intro a, .intro a:visited {
-				color: #000;
+				color: #0e90db;
 				display: inline-block;
-			}
-
-			.intro a:hover {
-				color: #404040;
 			}
 
 			.site-footer p { font-size: 15px; font-weight: 400; position: fixed; top: 90%; text-align: center; left: 15%; right: 15%;}

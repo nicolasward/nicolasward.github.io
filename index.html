@@ -76,6 +76,7 @@
 
         .metadata {
             color: #FF7355;
+            padding-left: .4%;
         }
 
         .light-mode .metadata {
@@ -94,7 +95,7 @@
 
         .content {
             overflow: hidden;
-            transition: max-height 0.1s ease-out;
+            transition: max-height 0.15s ease-out;
             max-height: 0;
             line-height: 1.5;
             padding-left: 1.7%;
@@ -106,7 +107,7 @@
 
         .arrow {
             display: inline-block;
-            transition: transform 0.1s;
+            transition: transform 0.15s;
         }
 
         .rotate {
@@ -116,11 +117,33 @@
         #expand-collapse-btn {
             background: none;
             border: none;
-            color: inherit; /* Use the same text color as the body */
-            font: inherit; /* Inherit font settings from the parent */
+            color: inherit;
+            font: inherit;
             cursor: pointer;
-            padding: 0;
-            margin: 0;
+            padding-bottom: 1%;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                margin: 5% 3%; /* Reduce margins on smaller screens */
+                font-size: 14px; /* Optionally adjust the base font size */
+            }
+
+            .content, .metadata {
+                padding-left: 5%; /* Increase padding for better text alignment */
+            }
+
+            #toggle-mode, #expand-collapse-btn {
+                margin: 0 0 1% 85%; /* Adjust the position of toggle buttons */
+            }
+
+            .titles, .collapsible {
+                font-size: 16px; /* Increase title font size for better readability */
+            }
+
+            .arrow {
+                /* Adjust the size or position of the arrows if needed */
+            }
         }
     </style>
 </head>
@@ -128,8 +151,8 @@
     <div id="toggle-mode">‹ Light mode ›</div>
     <section id="bio">
         <p class="metadata">Nico Ward </br>
-        Last upated February 7, 2024 </br></br>
-        <button id="expand-collapse-btn">Expand all +</button></p>
+        Last upated February 7, 2024 </p>
+        <button id="expand-collapse-btn">Expand all +</button>
         <div class="titles collapsible"><span class="arrow rotate">+</span> About me</div>
         <div class="content show">
         I'm an engineer, designer, and entrepreneur based in London, UK. </br>
@@ -140,7 +163,7 @@
     <section id="work">
         <div class="titles collapsible"><span class="arrow">+</span> Work</div>
         <div class="content">
-        You can find my full CV <a href="https://educai.io/" class="social-link" class="social-link" target="blank">here</a>. In summary: </br>
+        You can find my full CV <a href="cv.pdf" class="social-link" class="social-link" target="blank">here</a>. In summary: </br>
             &bull; I'm a Senior Data Scientist at <a href="https://www.publicissapient.com/" class="social-link" class="social-link" target="blank">Publicis Sapient</a> AI Labs. </br>
             &bull; Previously, I was co-founder and CTO of <a href="https://www.imsurf.in/" class="social-link" class="social-link" target="blank">Surf</a>, a social matching engine. </br>
             &bull; I also spent time as a Behavioural Data Scientist at <a href="https://educai.io/" class="social-link" class="social-link" target="blank">Educai</a>, an edtech startup.

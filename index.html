@@ -1,108 +1,244 @@
 <!DOCTYPE html>
-<!--
-	 Current color: #ff0033
-	 Font: Open Sans
--->
-
-<html lang="en" class="no-js">
-<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nico Ward</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: "JetBrains Mono", monospace;
+            font-weight: 400;
+            transition: background-color 0.15s, color 0.15s;
+            margin: 9% 0 0 6%;
+        }
 
+        .light-mode {
+            background-color: #ffffff;
+            color: #818181;
+        }
 
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" >
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width" />
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-	<meta name="author" content="Nico Ward">
-	<meta name="keywords" content="Machine Learning, EdTech, Nico Ward, Web3, Artificial Intelligence, Data Science">
-	<meta name="description" content="Hello, I'm Nico Ward. I come alive at the intersection of data science, machine learning, and product design. Welcome to my virtual home!">
-	<title>welcome | nw.</title>
+        #toggle-mode {
+            position: fixed;
+            margin: 0% 0% 0% 77%;
+            cursor: pointer;
+        }
 
-	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
-  <link href = "fa/css/all.css" rel = "stylesheet">
-  <link rel = "stylesheet" href="dark.css" media = "screen" id = "darkstyle" type = text/css />
+        section {
+            margin: 20px 0;
+            line-height: 1.5;
+        }
 
-  <script type="text/javascript">
-      function toggle() {
-        var a = document.getElementById("darkstyle");
-        a.x = 'light' == a.x ? 'dark' : 'light'; // short if
-        a.href = a.x + '.css';
-      }
-  </script>
+        .titles {
+            color: #4BB2DB;
 
-	<script src="jquery-3.3.1.min.js"></script>
-	<script src="typed.js" type="text/javascript"></script>
-	<script>
-    $(function(){
+        }
 
-        $("#typed").typed({
-			strings: ['Hi<div class = "coloris">,</div> I\'m Nico<div class = "coloris">.^1000</div>\n^1000 Glad you\'re here <div class = "coloris">:-)</div>'],
-            smartBackspace: true,
-            typeSpeed: 50,
-            backDelay: 0,
-            loop: false,
-            contentType: 'html', // or text
-            // defaults to false for infinite loop
-            loopCount: 1,
-            callback: function(){ foo(); },
-            resetCallback: function() { newTyped(); }
+        .light-mode .titles {
+            color: #000000;
+
+        }
+
+        ul {
+            list-style-type: none;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        .social-link {
+            color: #ffffff;
+            text-decoration: underline;
+            transition: text-decoration-color 0.1s, color 0.1s;
+        }
+
+        .social-link:hover, .social-link:focus {
+            text-decoration-color: transparent;
+        }
+
+        .light-mode .social-link {
+            color: #818181;
+        }
+
+        .light-mode .social-link:hover {
+            text-decoration: underline;
+            color: #000000;
+        }
+
+        .email-alias:hover {
+            cursor: alias;
+        }
+
+        .metadata {
+            color: #FF7355;
+        }
+
+        .light-mode .metadata {
+            color: #0082FF;
+        }
+
+        .collapsible {
+            cursor: pointer;
+            padding: 5px;
+            width: auto;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .content {
+            overflow: hidden;
+            transition: max-height 0.1s ease-out;
+            max-height: 0;
+            line-height: 1.5;
+            padding-left: 1.7%;
+        }
+
+        .show {
+            max-height: 1000px; /* You may need to adjust this value depending on your content */
+        }
+
+        .arrow {
+            display: inline-block;
+            transition: transform 0.1s;
+        }
+
+        .rotate {
+            transform: rotate(45deg);
+        }
+
+        #expand-collapse-btn {
+            background: none;
+            border: none;
+            color: inherit; /* Use the same text color as the body */
+            font: inherit; /* Inherit font settings from the parent */
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="toggle-mode">‹ Light mode ›</div>
+    <section id="bio">
+        <p class="metadata">Nico Ward </br>
+        Last upated February 7, 2024 </br></br>
+        <button id="expand-collapse-btn">Expand all +</button></p>
+        <div class="titles collapsible"><span class="arrow rotate">+</span> About me</div>
+        <div class="content show">
+        I'm an engineer, designer, and entrepreneur based in London, UK. </br>
+        My focus is on building the next generation of human-AI interfaces. </br>
+        I'm especially interested in AI's potential to improve decision-making.
+        </div>
+    </section>
+    <section id="work">
+        <div class="titles collapsible"><span class="arrow">+</span> Work</div>
+        <div class="content">
+        You can find my full CV <a href="https://educai.io/" class="social-link" class="social-link" target="blank">here</a>. In summary: </br>
+            &bull; I'm a Senior Data Scientist at <a href="https://www.publicissapient.com/" class="social-link" class="social-link" target="blank">Publicis Sapient</a> AI Labs. </br>
+            &bull; Previously, I was co-founder and CTO of <a href="https://www.imsurf.in/" class="social-link" class="social-link" target="blank">Surf</a>, a social matching engine. </br>
+            &bull; I also spent time as a Behavioural Data Scientist at <a href="https://educai.io/" class="social-link" class="social-link" target="blank">Educai</a>, an edtech startup.
+        </div>
+        </section>
+    <section id="writing">
+        <div class="titles collapsible"><span class="arrow">+</span> Writing</div>
+        <div class="content">
+        &bull; <a href="https://nicoward.substack.com/p/on-creative-judgment" class="social-link" target="blank">On Creative Judgement</a><br>
+        &bull; <a href="https://open.substack.com/pub/nicoward/p/10-principles-of-good-ai" class="social-link" target="blank">10 Principles of Good Design</a><br>
+        &bull; <a href="https://open.substack.com/pub/nicoward/p/some-predictions-for-2024" class="social-link" target="blank">Some Predictions for 2024</a>
+        </div>
+    </section>
+    <section id="links">
+        <div class="titles collapsible"><span class="arrow">+</span> Readings</div>
+        <div class="content">
+        &bull; <a href="https://patrickcollison.com/fast" class="social-link" target="blank">Fast</a>, by Patrick Collison<br>
+        &bull; <a href="https://longnow.org/essays/richard-feynman-connection-machine/" class="social-link" target="blank">Richard Feynman and the Connection Machine</a>, by Daniel Hillis<br>
+        &bull; <a href="https://web.getmatter.com/entry/55159" class="social-link" target="blank">Who Can Name the Biggest Number?</a>, by Scott Aaronson
+        </div>
+    </section>
+    <section id="socials">
+        <div class="titles collapsible"><span class="arrow">+</span> Contact</div>
+        <div class="content">
+        You can reach me on <a href="https://www.linkedin.com/in/nicolaswrd/" class="social-link" target="blank">LinkedIn</a>, <a href="https://twitter.com/neuralnico" class="social-link" target="blank">Twitter / X</a>, or via <a href="mailto:ward.nicolas@outlook.com" class="social-link email-alias">email</a>.
+        </div>
+    </section>
+
+    <script>
+        const toggleButton = document.getElementById('toggle-mode');
+        let isLightMode = false;
+
+        toggleButton.addEventListener('click', function() {
+            document.body.classList.toggle('light-mode');
+            isLightMode = !isLightMode;
+            toggleButton.textContent = isLightMode ? '‹ Dark mode ›' : '‹ Light mode ›';
         });
-
-        $(".reset").click(function(){
-            $("#typed").typed('reset');
-        });
-
-    });
-
-    function newTyped(){ /* A new typed object */ }
-
-    function foo(){ console.log("Callback"); }
-
     </script>
 
-</head>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var collapsibles = document.getElementsByClassName("collapsible");
+            var expandCollapseBtn = document.getElementById("expand-collapse-btn");
+            var isAllExpanded = false; // Flag to track the state
 
-<body>
+            function checkIfAllExpanded() {
+                var allExpanded = true;
+                Array.from(collapsibles).forEach(function(collapsible) {
+                    var content = collapsible.nextElementSibling;
+                    if (!content.classList.contains("show")) {
+                        allExpanded = false;
+                    }
+                });
+                return allExpanded;
+            }
 
-  <div class="toggle"><a onClick = "toggle()" class = "fas fa-adjust" title = "Light/dark mode"></a></div>
+            function toggleSections(expand) {
+                Array.from(collapsibles).forEach(function(collapsible) {
+                    var content = collapsible.nextElementSibling;
+                    var arrow = collapsible.querySelector(".arrow");
+                    if (expand) {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        content.classList.add("show");
+                        arrow.classList.add("rotate");
+                    } else {
+                        content.style.maxHeight = null;
+                        content.classList.remove("show");
+                        arrow.classList.remove("rotate");
+                    }
+                });
+            }
 
-    <header class="site-header cf">
+            expandCollapseBtn.addEventListener("click", function() {
+                isAllExpanded = !isAllExpanded; // Toggle the state
+                toggleSections(isAllExpanded);
+                this.textContent = isAllExpanded ? "Collapse all —" : "Expand all +";
+            });
 
-     <div class="site-tagline">
-
-              <!-- <p>Hello<span class="coloris">,</span>  <a href = "" class="coloris"></a></br> -->
-				<p><span id="typed" style="white-space:pre;"></span></br></p>
-
-      </div>
-
-
-		</header><!-- / .site-header -->
-
-		<span class = "contenu">
-
-		<ul>
-
-		<li><a href="https://twitter.com/neuralnico" title="@neuralnico" target="_blank"><i class="fab fa-twitter" aria-hidden="true"></i></a></li>
-		<li><a href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a></li>
-		<li><a href="https://github.com/nicolasward" target="_blank" title = "Some projects I worked on"><i class="fab fa-github" aria-hidden="true"></i></a></li>
-    <li><a href="mailto:nico.ward@hey.com" title="nico.ward@hey.com"><i class="fas fa-paper-plane" aria-hidden="true"></i></a></li>
-		<li><a href="NW - CV.pdf" target="_blank" title="My CV" target="_blank"><i class="fas fa-file-alt"></i></a></li>
-  <!--  <li><a href="bookmarks.html" title="Favorite readings"><i class="fas fa-bookmark" aria-hidden="true"></i></a></li> -->
-    <li><a href="about.html" title="About me"><i class="fas fa-user-astronaut fa-spin" aria-hidden="true"></i></a></li>
-
-
-		</ul>
-
-		</span>
-
-		</br></br>
-
-         <footer class="site-footer cf">
-
-		  <p class="footer-text">Designed with <a href="#" class="far fa-heart"></a> in London, UK
-
-		 </footer>
-
+            for (var i = 0; i < collapsibles.length; i++) {
+                collapsibles[i].addEventListener("click", function() {
+                    this.classList.toggle("active");
+                    var content = this.nextElementSibling;
+                    var arrow = this.querySelector(".arrow");
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        content.classList.remove("show");
+                        arrow.classList.remove("rotate");
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        content.classList.add("show");
+                        arrow.classList.add("rotate");
+                    }
+                    // Check the state of all sections after each click and update the button text accordingly
+                    isAllExpanded = checkIfAllExpanded();
+                    expandCollapseBtn.textContent = isAllExpanded ? "Collapse all —" : "Expand all +";
+                });
+            }
+        });
+    </script>
 </body>
 </html>

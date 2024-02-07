@@ -14,7 +14,7 @@
             font-family: "JetBrains Mono", monospace;
             font-weight: 400;
             transition: background-color 0.15s, color 0.15s;
-            margin: 9% 0 0 6%;
+            margin: 6% 0 0 6%;
         }
 
         .light-mode {
@@ -23,9 +23,8 @@
         }
 
         #toggle-mode {
-            position: fixed;
-            margin: 0% 0% 0% 77%;
             cursor: pointer;
+            position: static;
         }
 
         section {
@@ -102,7 +101,7 @@
         }
 
         .show {
-            max-height: 1000px; /* You may need to adjust this value depending on your content */
+            max-height: 1000px;
         }
 
         .arrow {
@@ -123,36 +122,44 @@
             padding-bottom: 1%;
         }
 
-        @media (max-width: 768px) {
-            body {
-                margin: 5% 3%; /* Reduce margins on smaller screens */
-                font-size: 14px; /* Optionally adjust the base font size */
-            }
+        .button-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 90%;
+            margin-top: 10px;
+        }
 
-            .content, .metadata {
-                padding-left: 5%; /* Increase padding for better text alignment */
+        @media (max-width: 768px) {
+            .button-container {
+                flex-direction: row;
+                align-items: flex-start; 
             }
 
             #toggle-mode, #expand-collapse-btn {
-                margin: 0 0 1% 85%; /* Adjust the position of toggle buttons */
+                margin-bottom: 5px;
+                margin-left: 0;
             }
 
-            .titles, .collapsible {
-                font-size: 16px; /* Increase title font size for better readability */
+            .content {
+                padding-left: 7%;
+                padding-right: 9%;
             }
 
-            .arrow {
-                /* Adjust the size or position of the arrows if needed */
+            .metadata {
+                padding-left: 1.7%;
             }
         }
     </style>
 </head>
 <body>
-    <div id="toggle-mode">‹ Light mode ›</div>
     <section id="bio">
         <p class="metadata">Nico Ward </br>
         Last upated February 7, 2024 </p>
-        <button id="expand-collapse-btn">Expand all +</button>
+        <div class="button-container">
+            <button id="expand-collapse-btn">Expand all +</button>
+            <div id="toggle-mode">‹ Light mode ›</div>
+        </div>        
         <div class="titles collapsible"><span class="arrow rotate">+</span> About me</div>
         <div class="content show">
         I'm an engineer, designer, and entrepreneur based in London, UK. </br>

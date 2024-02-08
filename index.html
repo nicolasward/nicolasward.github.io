@@ -146,6 +146,10 @@
             padding-left: 1.7%; /* Adjusted padding for content */
         }
 
+        .circle-symbol {
+            vertical-align: 3%;
+        }
+
         @media (max-width: 768px) {
             body, .metadata, .titles, .social-link, .email-alias, #expand-collapse-btn, #toggle-mode {
                 font-size: 17px; /* or any size that you find suitable for mobile devices */
@@ -201,7 +205,7 @@
         Updated February 7, 2024 </p>
         <div class="button-container">
             <button id="expand-collapse-btn">Expand all +</button>
-            <div id="toggle-mode">‹ Light mode ›</div>
+            <div id="toggle-mode">Light mode <span class="circle-symbol">○</span></div>
         </div>        
         <div class="titles collapsible"><span class="arrow rotate">+</span> About me</div>
         <div class="content show">
@@ -255,7 +259,7 @@
         toggleButton.addEventListener('click', function() {
             document.body.classList.toggle('light-mode');
             isLightMode = !isLightMode;
-            toggleButton.textContent = isLightMode ? '‹ Dark mode ›' : '‹ Light mode ›';
+            toggleButton.innerHTML = isLightMode ? 'Dark mode <span class="circle-symbol">●</span>' : 'Light mode <span class="circle-symbol">○</span>';
         });
     </script>
 

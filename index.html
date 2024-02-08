@@ -334,7 +334,7 @@
                         arrow.classList.add("rotate");
                     }
                     isAllExpanded = checkIfAllExpanded();
-                    expandCollapseBtn.textContent = isAllExpanded ? "Collapse all —" : "Expand all +";
+                    expandCollapseBtn.innerHTML = isAllExpanded ? 'Collapse all <span class="circle-symbol">—</span>' : 'Expand all  <span class="circle-symbol">+</span>';
                 });
             }
         });

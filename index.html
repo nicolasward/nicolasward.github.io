@@ -119,7 +119,8 @@
             flex-direction: row;
             justify-content: space-between;
             width: 90%;
-            margin-top: 10px;
+            margin-top: 2%;
+            margin-bottom: 1%;
         }
 
         /* Common styles for ul */
@@ -174,6 +175,7 @@
             .button-container {
                 flex-direction: row;
                 align-items: flex-start; 
+                margin-bottom: 4%;
             }
 
             #toggle-mode, #expand-collapse-btn {
@@ -196,7 +198,7 @@
 <body>
     <section id="bio">
         <p class="metadata">Nico Ward </br>
-        Last upated February 7, 2024 </p>
+        Updated February 7, 2024 </p>
         <div class="button-container">
             <button id="expand-collapse-btn">Expand all +</button>
             <div id="toggle-mode">‹ Light mode ›</div>
@@ -291,7 +293,7 @@
             }
 
             expandCollapseBtn.addEventListener("click", function() {
-                isAllExpanded = !isAllExpanded; // Toggle the state
+                isAllExpanded = !isAllExpanded;
                 toggleSections(isAllExpanded);
                 this.textContent = isAllExpanded ? "Collapse all —" : "Expand all +";
             });
@@ -310,7 +312,6 @@
                         content.classList.add("show");
                         arrow.classList.add("rotate");
                     }
-                    // Check the state of all sections after each click and update the button text accordingly
                     isAllExpanded = checkIfAllExpanded();
                     expandCollapseBtn.textContent = isAllExpanded ? "Collapse all —" : "Expand all +";
                 });

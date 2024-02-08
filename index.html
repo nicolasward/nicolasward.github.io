@@ -210,7 +210,7 @@
         <p class="metadata">Nico Ward </br>
         Updated February 7, 2024 </p>
         <div class="button-container">
-            <button id="expand-collapse-btn">Expand all +</button>
+            <button id="expand-collapse-btn">Expand all <span class="circle-symbol">+</span></button>
             <div id="toggle-mode">Light mode <span class="circle-symbol">○</span></div>
         </div>        
         <div class="titles collapsible"><span class="arrow rotate">+</span> About me</div>
@@ -316,7 +316,7 @@
             expandCollapseBtn.addEventListener("click", function() {
                 isAllExpanded = !isAllExpanded;
                 toggleSections(isAllExpanded);
-                this.textContent = isAllExpanded ? "Collapse all —" : "Expand all +";
+                this.innerHTML = isAllExpanded ? 'Collapse all <span class="circle-symbol">—</span>' : 'Expand all <span class="circle-symbol">+</span>';
             });
 
             for (var i = 0; i < collapsibles.length; i++) {

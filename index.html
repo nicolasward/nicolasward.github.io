@@ -33,8 +33,12 @@
         }
 
         .titles {
-            color: #4BB2DB;
+            color: #00D689;
+        }
 
+        .metadata {
+            color: #00D689;
+            padding-left: .4%;
         }
 
         .light-mode .titles {
@@ -65,13 +69,8 @@
             cursor: alias;
         }
 
-        .metadata {
-            color: #FF7355;
-            padding-left: .4%;
-        }
-
         .light-mode .metadata {
-            color: #0082FF;
+            color: #000000;
         }
 
         .collapsible {
@@ -128,6 +127,7 @@
             list-style-type: disc; /* Enable default bullet points */
             padding-left: 40px; /* Adjust padding to align bullet points with the rest of the content */
             margin-left: 0; /* Remove default margin */
+            margin-top: .1%;
         }
 
         /* Styles for light mode */
@@ -162,6 +162,7 @@
             .content ul {
                 padding-left: 0; /* Remove default padding */
                 list-style: none; /* Remove default bullets */
+                margin-top: 2%;
             }
 
             .content ul li {
@@ -217,7 +218,7 @@
     <section id="work">
         <div class="titles collapsible"><span class="arrow">+</span> Work</div>
         <div class="content">
-        You can find my full CV <a href="cv.pdf" class="social-link" class="social-link" target="blank">here</a>. In summary:
+        My CV lives <a href="cv.pdf" class="social-link" class="social-link" target="blank">here</a>. In summary:
         <ul>
             <li>I'm a Senior Data Scientist at <a href="https://www.publicissapient.com/" class="social-link" class="social-link" target="blank">Publicis Sapient</a> AI Labs.</li>
             <li>Previously, I was co-founder and CTO of <a href="https://www.imsurf.in/" class="social-link" class="social-link" target="blank">Surf</a>, a social matching engine.</li>
@@ -249,6 +250,17 @@
         <div class="titles collapsible"><span class="arrow">+</span> Contact</div>
         <div class="content show">
         You can reach me on <a href="https://www.linkedin.com/in/nicolaswrd/" class="social-link" target="blank">LinkedIn</a>, <a href="https://twitter.com/neuralnico" class="social-link" target="blank">Twitter / X</a>, or via <a href="mailto:ward.nicolas@outlook.com" class="social-link email-alias">email</a>.
+        </div>
+    </section>
+    <section id="manifesto">
+        <div class="titles collapsible"><span class="arrow">+</span> About this website</div>
+        <div class="content">
+            This website is a personal design experiment. It was made with the following principles in mind:
+            <ul>
+                <li>Lightness: this website is contained in a single html file.</li>
+                <li>Simplicity: the page should avoid any unnecessary complexities. It should be as simple as possible, but not simpler.</li>
+                <li>Accessibility: across colour sensitivities, bandwidth capabilities, and device types.</li>
+            </ul>
         </div>
     </section>
 

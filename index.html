@@ -42,14 +42,6 @@
 
         }
 
-        ul {
-            list-style-type: none;
-        }
-
-        li {
-            margin-bottom: 5px;
-        }
-
         .social-link {
             color: #ffffff;
             text-decoration: underline;
@@ -130,15 +122,64 @@
             margin-top: 10px;
         }
 
+        /* Common styles for ul */
+        .content ul {
+            list-style-type: disc; /* Enable default bullet points */
+            padding-left: 40px; /* Adjust padding to align bullet points with the rest of the content */
+            margin-left: 0; /* Remove default margin */
+        }
+
+        /* Styles for light mode */
+        .light-mode .content ul {
+            color: #000000; /* Change text and bullet point color to black */
+        }
+
+        /* Ensure the text color for list items and links matches the mode */
+        .light-mode .content ul li,
+        .light-mode .content ul li a {
+            color: #818181; /* Light mode text color */
+        }
+
+        /* Adjust the content padding */
+        .content {
+            padding-left: 1.7%; /* Adjusted padding for content */
+        }
+
         @media (max-width: 768px) {
+            body, .metadata, .titles, .social-link, .email-alias, #expand-collapse-btn, #toggle-mode {
+                font-size: 17px; /* or any size that you find suitable for mobile devices */
+            }
+
+            .collapsible {
+                font-size: 18px; /* You might want collapsible titles to be slightly larger */
+            }
+
+            .content ul {
+                padding-left: 0; /* Remove default padding */
+                list-style: none; /* Remove default bullets */
+            }
+
+            .content ul li {
+                position: relative; /* Allows absolute positioning relative to this item */
+                padding-left: 1.7%; /* Add padding to the left */
+                margin-left: 20px; /* Add space for the custom bullet */
+            }
+
+            .content ul li:before {
+                content: '• '; /* Unicode character for bullet */
+                position: absolute;
+                left: -20px; /* Position the bullet to the left of the list item */
+            }
+
             .button-container {
                 flex-direction: row;
                 align-items: flex-start; 
             }
 
             #toggle-mode, #expand-collapse-btn {
-                margin-bottom: 5px;
-                margin-left: 0;
+                margin: 0;
+                padding-left: 1.7%;
+                width: auto;
             }
 
             .content {
@@ -170,26 +211,32 @@
     <section id="work">
         <div class="titles collapsible"><span class="arrow">+</span> Work</div>
         <div class="content">
-        You can find my full CV <a href="cv.pdf" class="social-link" class="social-link" target="blank">here</a>. In summary: </br>
+        You can find my full CV <a href="cv.pdf" class="social-link" class="social-link" target="blank">here</a>. In summary:
+        <ul>
             <li>I'm a Senior Data Scientist at <a href="https://www.publicissapient.com/" class="social-link" class="social-link" target="blank">Publicis Sapient</a> AI Labs.</li>
             <li>Previously, I was co-founder and CTO of <a href="https://www.imsurf.in/" class="social-link" class="social-link" target="blank">Surf</a>, a social matching engine.</li>
             <li>I also spent time as a Behavioural Data Scientist at <a href="https://educai.io/" class="social-link" class="social-link" target="blank">Educai</a>, an edtech startup.</li>
+        </ul>
         </div>
         </section>
     <section id="writing">
         <div class="titles collapsible"><span class="arrow">+</span> Writing</div>
         <div class="content">
-        <li><a href="https://nicoward.substack.com/p/on-creative-judgment" class="social-link" target="blank">On Creative Judgement</a></li>
-        <li><a href="https://open.substack.com/pub/nicoward/p/10-principles-of-good-ai" class="social-link" target="blank">10 Principles of Good Design</a></li>
-        <li><a href="https://open.substack.com/pub/nicoward/p/some-predictions-for-2024" class="social-link" target="blank">Some Predictions for 2024</a></li>
+            <ul>
+                <li><a href="https://nicoward.substack.com/p/on-creative-judgment" class="social-link" target="blank">On Creative Judgement</a></li>
+                <li><a href="https://open.substack.com/pub/nicoward/p/10-principles-of-good-ai" class="social-link" target="blank">10 Principles of Good Design</a></li>
+                <li><a href="https://open.substack.com/pub/nicoward/p/some-predictions-for-2024" class="social-link" target="blank">Some Predictions for 2024</a></li>
+            </ul>
         </div>
     </section>
     <section id="links">
         <div class="titles collapsible"><span class="arrow">+</span> Readings</div>
         <div class="content">
-            <li><a href="https://patrickcollison.com/fast" class="social-link" target="blank">Fast</a>, by Patrick Collison</li>
-            <li><a href="https://longnow.org/essays/richard-feynman-connection-machine/" class="social-link" target="blank">Richard Feynman and the Connection Machine</a>, by Daniel Hillis</li>
-            <li><a href="https://web.getmatter.com/entry/55159" class="social-link" target="blank">Who Can Name the Biggest Number?</a>, by Scott Aaronson</li>
+            <ul>
+                <li><a href="https://patrickcollison.com/fast" class="social-link" target="blank">Fast</a>, by Patrick Collison</li>
+                <li><a href="https://longnow.org/essays/richard-feynman-connection-machine/" class="social-link" target="blank">Richard Feynman and the Connection Machine</a>, by Daniel Hillis</li>
+                <li><a href="https://web.getmatter.com/entry/55159" class="social-link" target="blank">Who Can Name the Biggest Number?</a>, by Scott Aaronson</li>
+            </ul>
         </div>
     </section>
     <section id="socials">

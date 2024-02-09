@@ -13,7 +13,7 @@
             color: #ffffff;
             font-family: "JetBrains Mono", monospace;
             font-weight: 400;
-            transition: background-color 0.15s, color 0.15s;
+            transition: background-color 0.2s, color 0.2s;
             margin: 6% 0 5% 6%;
         }
 
@@ -103,7 +103,7 @@
 
         .content {
             overflow: hidden;
-            transition: max-height 0.15s ease-out;
+            transition: max-height 0.2s ease-in-out;
             max-height: 0;
             line-height: 1.5;
             padding-left: 1.7%;
@@ -115,7 +115,7 @@
 
         .arrow {
             display: inline-block;
-            transition: transform 0.15s;
+            transition: transform .3s;
         }
 
         .rotate {
@@ -129,8 +129,8 @@
             font: inherit;
             cursor: pointer;
             padding-bottom: 1%;
-            display: flex; /* Flex display to align items in a row */
-            align-items: center; /* Vertically center align the flex items */
+            display: flex;
+            align-items: center;
         }
 
         .button-container {
@@ -187,8 +187,8 @@
         }
 
         .horizontal-bar, .vertical-bar {
-            background-color: #00D689; /* Adjust the color as needed */
-            position: absolute; /* Keep them positioned absolutely within the #plus-minus-toggle */
+            background-color: #00D689;
+            position: absolute;
         }
 
         .light-mode .horizontal-bar {
@@ -200,10 +200,10 @@
         }
 
         .horizontal-bar {
-            width: 8px; /* Adjust width as needed */
-            height: 2px; /* Adjust height as needed */
-            top: 50%; /* Center the bar vertically */
-            transform: translate(0%, 50%); Offset the bar to truly center it
+            width: 8px;
+            height: 2px;
+            top: 50%;
+            transform: translate(0%, 50%);
         }
 
         .vertical-bar {
@@ -211,7 +211,7 @@
             height: 8px; 
             top: 40%; 
             left: 3px;
-            transition: transform 0.15s ease; 
+            transition: transform 0.3s ease; 
         }
 
         #plus-minus-toggle .vertical-bar.rotate {
@@ -233,25 +233,25 @@
             }
 
             .collapsible {
-                font-size: 19px; /* You might want collapsible titles to be slightly larger */
+                font-size: 19px;
             }
 
             .content ul {
-                padding-left: 0; /* Remove default padding */
-                list-style: none; /* Remove default bullets */
+                padding-left: 0;
+                list-style: none;
                 margin-top: 2%;
             }
 
             .content ul li {
-                position: relative; /* Allows absolute positioning relative to this item */
-                padding-left: 1.7%; /* Add padding to the left */
-                margin-left: 20px; /* Add space for the custom bullet */
+                position: relative;
+                padding-left: 1.7%;
+                margin-left: 20px;
             }
 
             .content ul li:before {
-                content: '• '; /* Unicode character for bullet */
+                content: '• ';
                 position: absolute;
-                left: -20px; /* Position the bullet to the left of the list item */
+                left: -20px;
             }
 
             .button-container {
@@ -381,8 +381,8 @@
             var expandCollapseBtn = document.getElementById("expand-collapse-btn");
             var plusMinusToggle = document.getElementById('plus-minus-toggle');
             var verticalBar = plusMinusToggle.querySelector('.vertical-bar');
-            var buttonText = document.getElementById("expand-collapse-text"); // Assuming you add an element with this ID for the button text
-            var isAllExpanded = false; // Flag to track the state
+            var buttonText = document.getElementById("expand-collapse-text");
+            var isAllExpanded = false;
 
             function checkIfAllExpanded() {
                 var allExpanded = true;

@@ -115,6 +115,8 @@
             font: inherit;
             cursor: pointer;
             padding-bottom: 1%;
+            display: flex; /* Flex display to align items in a row */
+            align-items: center; /* Vertically center align the flex items */
         }
 
         .button-container {
@@ -159,6 +161,49 @@
         .light-mode .circle-symbol {
             color: #000;
         }
+
+        #plus-minus-toggle {
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            position: relative;
+            display: inline-block;
+            left: 10%;
+            top: -10%;
+        }
+
+        .horizontal-bar, .vertical-bar {
+            background-color: #00D689; /* Adjust the color as needed */
+            position: absolute; /* Keep them positioned absolutely within the #plus-minus-toggle */
+        }
+
+        .light-mode .horizontal-bar {
+            background-color: #000000;
+        }
+
+        .light-mode .vertical-bar {
+            background-color: #000000;
+        }
+
+        .horizontal-bar {
+            width: 10px; /* Adjust width as needed */
+            height: 2px; /* Adjust height as needed */
+            top: 50%; /* Center the bar vertically */
+            transform: translate(0%, 50%); Offset the bar to truly center it
+        }
+
+        .vertical-bar {
+            width: 2px; 
+            height: 10px; 
+            top: 35%; 
+            left: 4px;
+            transition: transform 0.15s ease; 
+        }
+
+        #plus-minus-toggle .vertical-bar.rotate {
+            transform: rotate(90deg);
+        }
+
 
         @media (max-width: 768px) {
             body, .update-text, .titles, .social-link, .email-alias, #expand-collapse-btn, #toggle-mode {
@@ -217,6 +262,11 @@
                 padding-left: 1.7%;
                 margin-top: 13%;
             }
+
+            #plus-minus-toggle {
+                left: 10%;
+                margin-top: -3%;
+            }
         }
     </style>
 </head>
@@ -225,7 +275,13 @@
         <p class="metadata">NICO WARD </br>
             <span class="update-text">Updated February 7, 2024</span></p>
         <div class="button-container">
-            <button id="expand-collapse-btn">Expand all <span class="circle-symbol">+</span></button>
+            <button id="expand-collapse-btn">
+                <span id="expand-collapse-text">Expand all</span>
+                <div id="plus-minus-toggle" class="plus">
+                    <div class="horizontal-bar"></div>
+                    <div class="vertical-bar"></div>
+                </div>
+            </button>                
             <div id="toggle-mode">Light mode <span class="circle-symbol">○</span></div>
         </div>        
         <div class="titles collapsible"><span class="arrow rotate">+</span> About me</div>
@@ -299,6 +355,9 @@
         document.addEventListener("DOMContentLoaded", function() {
             var collapsibles = document.getElementsByClassName("collapsible");
             var expandCollapseBtn = document.getElementById("expand-collapse-btn");
+            var plusMinusToggle = document.getElementById('plus-minus-toggle');
+            var verticalBar = plusMinusToggle.querySelector('.vertical-bar');
+            var buttonText = document.getElementById("expand-collapse-text"); // Assuming you add an element with this ID for the button text
             var isAllExpanded = false; // Flag to track the state
 
             function checkIfAllExpanded() {
@@ -328,10 +387,11 @@
                 });
             }
 
-            expandCollapseBtn.addEventListener("click", function() {
+            expandCollapseBtn.addEventListener('click', function() {
                 isAllExpanded = !isAllExpanded;
                 toggleSections(isAllExpanded);
-                this.innerHTML = isAllExpanded ? 'Collapse all <span class="circle-symbol">—</span>' : 'Expand all <span class="circle-symbol">+</span>';
+                buttonText.textContent = isAllExpanded ? 'Collapse all' : 'Expand all';
+                verticalBar.classList.toggle('rotate');
             });
 
             for (var i = 0; i < collapsibles.length; i++) {
@@ -349,7 +409,8 @@
                         arrow.classList.add("rotate");
                     }
                     isAllExpanded = checkIfAllExpanded();
-                    expandCollapseBtn.innerHTML = isAllExpanded ? 'Collapse all <span class="circle-symbol">—</span>' : 'Expand all  <span class="circle-symbol">+</span>';
+                    buttonText.textContent = isAllExpanded ? 'Collapse all' : 'Expand all';
+                    verticalBar.classList.toggle('rotate', isAllExpanded);
                 });
             }
         });

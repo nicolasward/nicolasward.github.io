@@ -115,8 +115,8 @@
             font: inherit;
             cursor: pointer;
             padding-bottom: 1%;
-            display: flex; 
-            align-items: center;
+            display: flex; /* Flex display to align items in a row */
+            align-items: center; /* Vertically center align the flex items */
         }
 
         .button-container {
@@ -158,10 +158,6 @@
             color: #00D689;
         }
 
-        a[title="good coffee"] {
-            text-decoration: none;
-        }
-
         .light-mode .circle-symbol {
             color: #000;
         }
@@ -177,8 +173,8 @@
         }
 
         .horizontal-bar, .vertical-bar {
-            background-color: #00D689;
-            position: absolute;
+            background-color: #00D689; /* Adjust the color as needed */
+            position: absolute; /* Keep them positioned absolutely within the #plus-minus-toggle */
         }
 
         .light-mode .horizontal-bar {
@@ -190,10 +186,10 @@
         }
 
         .horizontal-bar {
-            width: 8px;
-            height: 2px;
-            top: 50%;
-            transform: translate(0%, 50%);
+            width: 8px; /* Adjust width as needed */
+            height: 2px; /* Adjust height as needed */
+            top: 50%; /* Center the bar vertically */
+            transform: translate(0%, 50%); Offset the bar to truly center it
         }
 
         .vertical-bar {
@@ -215,6 +211,7 @@
             }
 
             .metadata {
+                /* font-size: 20px; */
                 font-weight: 500;
             }
 
@@ -223,28 +220,31 @@
             }
 
             .collapsible {
-                font-size: 19px;
+                font-size: 19px; /* You might want collapsible titles to be slightly larger */
+            }
 
             .content ul {
-                padding-left: 0;
-                list-style: none;
+                padding-left: 0; /* Remove default padding */
+                list-style: none; /* Remove default bullets */
                 margin-top: 2%;
             }
 
             .content ul li {
-                position: relative;
-                padding-left: 1.7%;
-                margin-left: 20px;
+                position: relative; /* Allows absolute positioning relative to this item */
+                padding-left: 1.7%; /* Add padding to the left */
+                margin-left: 20px; /* Add space for the custom bullet */
             }
 
             .content ul li:before {
-                content: '• ';
+                content: '• '; /* Unicode character for bullet */
                 position: absolute;
-                left: -20px;
-            
+                left: -20px; /* Position the bullet to the left of the list item */
+            }
+
             .button-container {
                 flex-direction: row;
                 align-items: flex-start; 
+                margin-bottom: 4%;
             }
 
             #toggle-mode, #expand-collapse-btn {
@@ -271,12 +271,9 @@
     </style>
 </head>
 <body>
-    <section>
+    <section id="bio">
         <p class="metadata">NICO WARD </br>
-            <span class="update-text">Updated February 9, 2024</span>
-        </p>
-    </section>
-    <section>
+            <span class="update-text">Updated February 7, 2024</span></p>
         <div class="button-container">
             <button id="expand-collapse-btn">
                 <span id="expand-collapse-text">Expand all</span>
@@ -286,20 +283,18 @@
                 </div>
             </button>                
             <div id="toggle-mode">Light mode <span class="circle-symbol">○</span></div>
-        </div>
-    </section>
-    <section id="bio">      
+        </div>        
         <div class="titles collapsible"><span class="arrow rotate">+</span> About me</div>
         <div class="content show">
-            I'm an AI engineer, designer, and entrepreneur based in London, UK. </br>
-            My focus is on building the next generation of human-AI interfaces. </br>
-            I'm especially interested in AI's potential to improve decision-making.
+        I'm an AI engineer, designer, and entrepreneur based in London, UK. </br>
+        My focus is on building the next generation of human-AI interfaces. </br>
+        I'm especially interested in AI's potential to improve decision-making.
         </div>
     </section>
     <section id="work">
         <div class="titles collapsible"><span class="arrow">+</span> Work</div>
         <div class="content">
-            My CV lives <a href="cv.pdf" class="social-link" class="social-link" target="blank">here</a>. In summary:
+        My CV lives <a href="cv.pdf" class="social-link" class="social-link" target="blank">here</a>. In summary:
         <ul>
             <li>I'm a Senior Data Scientist at <a href="https://www.publicissapient.com/" class="social-link" class="social-link" target="blank">Publicis Sapient</a> AI Labs.</li>
             <li>Previously, I was co-founder and CTO of <a href="https://www.imsurf.in/" class="social-link" class="social-link" target="blank">Surf</a>, a social matching engine.</li>
@@ -336,16 +331,13 @@
     <section id="manifesto">
         <div class="titles collapsible"><span class="arrow">+</span> About this website</div>
         <div class="content">
-            This page is a personal design experiment. It was built with the following principles in mind:
+            This website is a personal design experiment. It was built with the following principles in mind:
             <ul>
-                <li>Efficiency — everything is contained in a single html file.</li>
-                <li>Simplicity — the page tries to avoid unnecessary complexities. As simple as possible, but not simpler.</li>
-                <li>Accessibility — across colour sensitivities, bandwidth capabilities, and device types.</li>
+                <li>Lightness: everything is contained in a single html file.</li>
+                <li>Simplicity: the page tries to avoid any unnecessary complexities. As simple as possible, but not simpler.</li>
+                <li>Accessibility: across colour sensitivities, bandwidth capabilities, and device types.</li>
             </ul>
         </div>
-    </section>
-    <section>
-        <span class="update-text">Designed with <a href="https://www.monmouthcoffee.co.uk/product/colombia-finca-las-palmeras/" class="circle-symbol" title="good coffee">&#9749;</a> in London, UK.</span>
     </section>
 
     <script>
@@ -365,8 +357,8 @@
             var expandCollapseBtn = document.getElementById("expand-collapse-btn");
             var plusMinusToggle = document.getElementById('plus-minus-toggle');
             var verticalBar = plusMinusToggle.querySelector('.vertical-bar');
-            var buttonText = document.getElementById("expand-collapse-text");
-            var isAllExpanded = false;
+            var buttonText = document.getElementById("expand-collapse-text"); // Assuming you add an element with this ID for the button text
+            var isAllExpanded = false; // Flag to track the state
 
             function checkIfAllExpanded() {
                 var allExpanded = true;

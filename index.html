@@ -14,7 +14,7 @@
             font-family: "JetBrains Mono", monospace;
             font-weight: 400;
             transition: background-color 0.15s, color 0.15s;
-            margin: 6% 0 0 6%;
+            margin: 6% 0 5% 6%;
         }
 
         .light-mode {
@@ -42,7 +42,21 @@
         }
 
         .update-text {
+            color: #a5a5a5;   
+        }
+
+        .footer {
             color: #a5a5a5;
+            padding-left: .4%;
+        }
+
+        .footer a {
+            text-decoration: none;
+            color: #00D689;
+        }
+
+        .light-mode .footer a {
+            color: #000000;
         }
 
         .light-mode .titles {
@@ -211,8 +225,8 @@
             }
 
             .metadata {
-                /* font-size: 20px; */
                 font-weight: 500;
+                margin-top: 13%;
             }
 
             .update-text {
@@ -253,14 +267,13 @@
                 width: auto;
             }
 
-            .content {
+            .content, .metadata, .footer {
                 padding-left: 7%;
                 padding-right: 9%;
             }
 
-            .metadata {
+            .metadata, .footer {
                 padding-left: 1.7%;
-                margin-top: 13%;
             }
 
             #plus-minus-toggle {
@@ -271,9 +284,12 @@
     </style>
 </head>
 <body>
-    <section id="bio">
+    <section id="metadata">
         <p class="metadata">NICO WARD </br>
-            <span class="update-text">Updated February 7, 2024</span></p>
+            <span class="update-text">Updated February 9, 2024</span>
+        </p>
+    </section>
+    <section id="buttons">
         <div class="button-container">
             <button id="expand-collapse-btn">
                 <span id="expand-collapse-text">Expand all</span>
@@ -283,7 +299,9 @@
                 </div>
             </button>                
             <div id="toggle-mode">Light mode <span class="circle-symbol">○</span></div>
-        </div>        
+        </div>   
+    </section>
+    <section id="bio">     
         <div class="titles collapsible"><span class="arrow rotate">+</span> About me</div>
         <div class="content show">
         I'm an AI engineer, designer, and entrepreneur based in London, UK. </br>
@@ -338,6 +356,9 @@
                 <li>Accessibility: across colour sensitivities, bandwidth capabilities, and device types.</li>
             </ul>
         </div>
+    </section>
+    <section id="footer">
+        <div class="footer">Designed with <a href="https://www.monmouthcoffee.co.uk/product/colombia-finca-las-palmeras/" title="good coffee" target="blank">&#9749;</a> in London, UK.</span>
     </section>
 
     <script>

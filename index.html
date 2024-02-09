@@ -19,7 +19,7 @@
 
         .light-mode {
             background-color: #ffffff;
-            color: #818181;
+            color: #686868;
         }
 
         #toggle-mode {
@@ -41,6 +41,10 @@
             padding-left: .4%;
         }
 
+        .update-text {
+            color: #a5a5a5;
+        }
+
         .light-mode .titles {
             color: #000000;
 
@@ -57,7 +61,7 @@
         }
 
         .light-mode .social-link {
-            color: #818181;
+            color: #686868;
         }
 
         .light-mode .social-link:hover {
@@ -115,6 +119,7 @@
 
         .button-container {
             display: flex;
+            color: #00D689;
             flex-direction: row;
             justify-content: space-between;
             width: 90%;
@@ -122,28 +127,28 @@
             margin-bottom: 1%;
         }
 
-        /* Common styles for ul */
+        .light-mode .button-container {
+            color: #000000;
+        }
+
         .content ul {
-            list-style-type: disc; /* Enable default bullet points */
-            padding-left: 40px; /* Adjust padding to align bullet points with the rest of the content */
-            margin-left: 0; /* Remove default margin */
+            list-style-type: disc;
+            padding-left: 40px;
+            margin-left: 0;
             margin-top: .1%;
         }
 
-        /* Styles for light mode */
         .light-mode .content ul {
-            color: #000000; /* Change text and bullet point color to black */
+            color: #000000;
         }
 
-        /* Ensure the text color for list items and links matches the mode */
         .light-mode .content ul li,
         .light-mode .content ul li a {
-            color: #818181; /* Light mode text color */
+            color: #686868; 
         }
 
-        /* Adjust the content padding */
         .content {
-            padding-left: 1.7%; /* Adjusted padding for content */
+            padding-left: 1.7%;
         }
 
         .circle-symbol {
@@ -156,8 +161,17 @@
         }
 
         @media (max-width: 768px) {
-            body, .metadata, .titles, .social-link, .email-alias, #expand-collapse-btn, #toggle-mode {
-                font-size: 18px; /* or any size that you find suitable for mobile devices */
+            body, .update-text, .titles, .social-link, .email-alias, #expand-collapse-btn, #toggle-mode {
+                font-size: 18px;
+            }
+
+            .metadata {
+                /* font-size: 20px; */
+                font-weight: 500;
+            }
+
+            .update-text {
+                font-weight: 400;
             }
 
             .collapsible {
@@ -201,14 +215,15 @@
 
             .metadata {
                 padding-left: 1.7%;
+                margin-top: 13%;
             }
         }
     </style>
 </head>
 <body>
     <section id="bio">
-        <p class="metadata">Nico Ward </br>
-        Updated February 7, 2024 </p>
+        <p class="metadata">NICO WARD </br>
+            <span class="update-text">Updated February 7, 2024</span></p>
         <div class="button-container">
             <button id="expand-collapse-btn">Expand all <span class="circle-symbol">+</span></button>
             <div id="toggle-mode">Light mode <span class="circle-symbol">○</span></div>

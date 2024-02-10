@@ -41,6 +41,31 @@
             padding-left: .4%;
         }
 
+        .footer a {
+            text-decoration: none;
+            color: #00D689;
+        }
+
+        .button-container {
+            display: flex;
+            color: #00D689;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 90%;
+            margin-top: 2%;
+            margin-bottom: 1%;
+        }
+
+        .horizontal-bar, .vertical-bar {
+            background-color: #00D689;
+            position: absolute;
+        }
+
+        .circle-symbol {
+            vertical-align: 3.5%;
+            color: #00D689;
+        }
+
         .update-text {
             color: #a5a5a5;   
         }
@@ -48,11 +73,6 @@
         .footer {
             color: #a5a5a5;
             padding-left: .4%;
-        }
-
-        .footer a {
-            text-decoration: none;
-            color: #00D689;
         }
 
         .light-mode .footer a {
@@ -70,10 +90,6 @@
             transition: text-decoration-color 0.1s, color 0.1s;
         }
 
-        .social-link:hover, .social-link:focus {
-            text-decoration-color: transparent;
-        }
-
         .light-mode .social-link {
             color: #686868;
         }
@@ -83,12 +99,41 @@
             color: #000000;
         }
 
-        .email-alias:hover {
-            cursor: alias;
-        }
-
         .light-mode .metadata {
             color: #000000;
+        }
+
+        .light-mode .button-container {
+            color: #000000;
+        }
+
+        .light-mode .content ul {
+            color: #000000;
+        }
+
+        .light-mode .content ul li,
+        .light-mode .content ul li a {
+            color: #686868; 
+        }
+
+        .light-mode .circle-symbol {
+            color: #000000;
+        }
+
+        .light-mode .horizontal-bar {
+            background-color: #000000;
+        }
+
+        .light-mode .vertical-bar {
+            background-color: #000000;
+        }
+
+        .social-link:hover, .social-link:focus {
+            text-decoration-color: transparent;
+        }
+
+        .email-alias:hover {
+            cursor: alias;
         }
 
         .collapsible {
@@ -133,20 +178,6 @@
             align-items: center;
         }
 
-        .button-container {
-            display: flex;
-            color: #00D689;
-            flex-direction: row;
-            justify-content: space-between;
-            width: 90%;
-            margin-top: 2%;
-            margin-bottom: 1%;
-        }
-
-        .light-mode .button-container {
-            color: #000000;
-        }
-
         .content ul {
             list-style-type: disc;
             padding-left: 40px;
@@ -154,26 +185,8 @@
             margin-top: .1%;
         }
 
-        .light-mode .content ul {
-            color: #000000;
-        }
-
-        .light-mode .content ul li,
-        .light-mode .content ul li a {
-            color: #686868; 
-        }
-
         .content {
             padding-left: 1.7%;
-        }
-
-        .circle-symbol {
-            vertical-align: 3%;
-            color: #00D689;
-        }
-
-        .light-mode .circle-symbol {
-            color: #000;
         }
 
         #plus-minus-toggle {
@@ -184,19 +197,6 @@
             display: inline-block;
             left: 10%;
             top: -10%;
-        }
-
-        .horizontal-bar, .vertical-bar {
-            background-color: #00D689;
-            position: absolute;
-        }
-
-        .light-mode .horizontal-bar {
-            background-color: #000000;
-        }
-
-        .light-mode .vertical-bar {
-            background-color: #000000;
         }
 
         .horizontal-bar {
@@ -309,7 +309,7 @@
         <div class="content show">
         I'm an AI engineer, designer, and entrepreneur based in London, UK. </br>
         My focus is on building the next generation of human-AI interfaces. </br>
-        I'm especially interested in AI's potential to improve decision-making.
+        I'm especially interested in systems that improve decision-making.
         </div>
     </section>
     <section id="work">

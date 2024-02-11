@@ -266,7 +266,7 @@
             top: 80%; /* Adjust this as needed to place the dropdown right below the trigger text */
             background: #121212; /* Match the body background */
             color: #E3735E; /* Match the titles color */
-            min-width: 150px;
+            min-width: 170px;
             margin: 0%;
             padding: 0%;
             list-style: none;
@@ -331,6 +331,10 @@
                 overflow-x: hidden;
             }
 
+            .titles {
+                max-width: 100%;
+            }
+
             .metadata {
                 font-weight: 500;
                 margin-top: 13%;
@@ -372,6 +376,7 @@
                 margin: 0;
                 padding-left: 1.7%;
                 width: auto;
+                max-width: 90%;
             }
 
             .content, .metadata, .footer {
@@ -397,22 +402,47 @@
             }
 
             .theme-options {
-                left: -3%;
-                top: 130%; /* Adjust this as needed to place the dropdown right below the trigger text */
-                border: 2px solid #E3735E;
+                left: 50%; /* Center align the dropdown */
+                transform: translateX(-96px); /* Shift it back by half of its width to truly center it */
+                width: auto; /* Let it expand as needed, up to the width of its contents */
+                max-width: 70%; /* Limit the maximum width to prevent it from going off-screen */
+                box-sizing: border-box; /* Include padding and border in the element's total width */
+                border: 2px solid #E3735E; /* Existing style, adjust as needed */
+                top: 120%;
+            }
+
+            .theme-options li {
+                text-align: right;
+            }
+
+            .theme-options li:not(:last-child) {
+                border-bottom: 2px solid #E3735E;
             }
 
             .light-mode .theme-options {
                 border: 2px solid #000000;
             }
 
+            .light-mode .theme-options li:not(:last-child) {
+                border-bottom: 2px solid #000000;
+            }
+
             .sepia .theme-options {
                 border: 2px solid #3B3D37;
+            }
+
+            .sepia .theme-options li:not(:last-child) {
+                border-bottom: 2px solid #3B3D37;
             }
 
             .high-contrast .theme-options {
                 border: 2px solid #00D689;
             }
+
+            .high-contrast .theme-options li:not(:last-child) {
+                border-bottom: 2px solid #00D689;
+            }
+            
         }
     </style>
 </head>
@@ -434,10 +464,10 @@
             <div id="toggle-mode" class="titles">
                 <span id="theme-select-trigger">Dark mode <span class="circle-symbol">●</span></span>
                 <ul id="theme-options" class="theme-options" style="display: none;">
-                    <li data-theme="light-mode">Dynamic <span class="circle-symbol">○</span></li>
+                    <li data-theme="light-mode">Dynamic mode <span class="circle-symbol">○</span></li>
                     <li data-theme="dark">Dark mode <span class="circle-symbol">●</span></li>
-                    <li data-theme="sepia">Sepia <span class="circle-symbol">◐</span></li>
-                    <li data-theme="high-contrast">Contrast <span class="circle-symbol">☉</span></li>
+                    <li data-theme="sepia">Reading mode <span class="circle-symbol">◐</span></li>
+                    <li data-theme="high-contrast">High contrast <span class="circle-symbol">☉</span></li>
                 </ul>
             </div>            
         </div>   
@@ -509,10 +539,10 @@
             let selectedTheme = 'dark'; // Default selected theme
 
             const themes = [
-                { label: "Dynamic", dataTheme: "light-mode", icon: "○" },
-                { label: "Dark mode", dataTheme: "dark", icon: "●" },
-                { label: "Sepia", dataTheme: "sepia", icon: "◐" },
-                { label: "Contrast", dataTheme: "high-contrast", icon: "☉" }
+                { label: "High light", dataTheme: "light-mode", icon: "○" },
+                { label: "Low light", dataTheme: "dark", icon: "●" },
+                { label: "Sepia tone", dataTheme: "sepia", icon: "◐" },
+                { label: "Electric", dataTheme: "high-contrast", icon: "☉" }
             ];
 
             function populateDropdown(selected) {

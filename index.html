@@ -285,6 +285,10 @@
                 left: 10%;
                 margin-top: -3%;
             }
+
+            .circle-symbol {
+                vertical-align: 3%;
+            }
         }
     </style>
 </head>
@@ -367,36 +371,35 @@
     </section>
 
     <script>
-        const toggleButton = document.getElementById('toggle-mode');
-        let isLightMode = false;
-
-        toggleButton.addEventListener('click', function() {
-            document.body.classList.toggle('light-mode');
-            isLightMode = !isLightMode;
-            toggleButton.innerHTML = isLightMode ? 'Dark mode <span class="circle-symbol">●</span>' : 'Light mode <span class="circle-symbol">○</span>';
-        });
-    </script>
-
-    <script>
         document.addEventListener("DOMContentLoaded", function() {
+            const toggleButton = document.getElementById('toggle-mode');
+            let isLightMode = false;
+    
+            toggleButton.addEventListener('click', function() {
+                document.body.classList.toggle('light-mode');
+                isLightMode = !isLightMode;
+                toggleButton.innerHTML = isLightMode ? 'Dark mode <span class="circle-symbol">●</span>' : 'Light mode <span class="circle-symbol">○</span>';
+            });
+    
             var collapsibles = document.getElementsByClassName("collapsible");
             var expandCollapseBtn = document.getElementById("expand-collapse-btn");
             var plusMinusToggle = document.getElementById('plus-minus-toggle');
             var verticalBar = plusMinusToggle.querySelector('.vertical-bar');
             var buttonText = document.getElementById("expand-collapse-text");
-            var isAllExpanded = false;
-
+    
             function checkIfAllExpanded() {
                 var allExpanded = true;
                 Array.from(collapsibles).forEach(function(collapsible) {
                     var content = collapsible.nextElementSibling;
                     if (!content.classList.contains("show")) {
                         allExpanded = false;
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
                     }
                 });
                 return allExpanded;
             }
-
+    
             function toggleSections(expand) {
                 Array.from(collapsibles).forEach(function(collapsible) {
                     var content = collapsible.nextElementSibling;
@@ -412,20 +415,20 @@
                     }
                 });
             }
-
+    
             expandCollapseBtn.addEventListener('click', function() {
-                isAllExpanded = !isAllExpanded;
-                toggleSections(isAllExpanded);
-                buttonText.textContent = isAllExpanded ? 'Collapse all' : 'Expand all';
-                verticalBar.classList.toggle('rotate');
+                var isAllExpanded = checkIfAllExpanded();
+                toggleSections(!isAllExpanded);
+                buttonText.textContent = isAllExpanded ? 'Expand all' : 'Collapse all';
+                verticalBar.classList.toggle('rotate', !isAllExpanded);
             });
-
-            for (var i = 0; i < collapsibles.length; i++) {
-                collapsibles[i].addEventListener("click", function() {
+    
+            Array.from(collapsibles).forEach(function(collapsible) {
+                collapsible.addEventListener("click", function() {
                     this.classList.toggle("active");
                     var content = this.nextElementSibling;
                     var arrow = this.querySelector(".arrow");
-                    if (content.style.maxHeight) {
+                    if (content.classList.contains("show")) {
                         content.style.maxHeight = null;
                         content.classList.remove("show");
                         arrow.classList.remove("rotate");
@@ -434,12 +437,13 @@
                         content.classList.add("show");
                         arrow.classList.add("rotate");
                     }
-                    isAllExpanded = checkIfAllExpanded();
-                    buttonText.textContent = isAllExpanded ? 'Collapse all' : 'Expand all';
-                    verticalBar.classList.toggle('rotate', isAllExpanded);
                 });
-            }
+            });
+    
+            var isAllExpanded = checkIfAllExpanded();
+            buttonText.textContent = isAllExpanded ? 'Collapse all' : 'Expand all';
+            verticalBar.classList.toggle('rotate', isAllExpanded);
         });
-    </script>
+    </script>    
 </body>
 </html>

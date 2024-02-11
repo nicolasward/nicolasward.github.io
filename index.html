@@ -36,6 +36,7 @@
 
         .titles {
             color: #E3735E;
+            max-width: 50%;
         }
 
         .metadata {
@@ -49,6 +50,7 @@
         }
 
         .button-container {
+            position: relative;
             display: flex;
             color: #E3735E;
             flex-direction: row;
@@ -65,7 +67,6 @@
 
         .circle-symbol {
             vertical-align: 3.5%;
-            color: #E3735E;
         }
 
         .update-text {
@@ -75,6 +76,10 @@
         .footer {
             color: #a5a5a5;
             padding-left: .4%;
+        }
+
+        .sepia .update-text, .sepia .footer {
+            color: #989898;   
         }
 
         .light-mode .footer a {
@@ -116,10 +121,6 @@
         .light-mode .content ul li,
         .light-mode .content ul li a {
             color: #686868; 
-        }
-
-        .light-mode .circle-symbol {
-            color: #000000;
         }
 
         .light-mode .horizontal-bar {
@@ -220,9 +221,114 @@
             transform: rotate(90deg);
         }
 
+        .sepia {
+            background-color: #DFD9C8;
+            color: #62635e;
+        }
+
+        .sepia a {
+            color: #62635e;
+        }
+
+        .high-contrast {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .high-contrast .titles, .high-contrast .metadata, .high-contrast #expand-collapse-text, .high-contrast .button-container, .high-contrast .footer a {
+            color: #00D689;
+        }
+
+        .high-contrast .horizontal-bar, .high-contrast .vertical-bar {
+            background-color: #00D689; /* Color for sepia mode */
+        }
+
+        .sepia .titles, .sepia .metadata, .sepia #expand-collapse-text, .sepia .button-container, .sepia .footer a {
+            color: #3B3D37;
+        }
+
+        .sepia .horizontal-bar, .sepia .vertical-bar {
+            background-color: #3B3D37; /* Color for sepia mode */
+        }
+
+        #theme-select-trigger {
+            position: relative;
+            display: block;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+        }
+
+        .theme-options {
+            position: absolute;
+            display: block;
+            left: -10%;
+            top: 80%; /* Adjust this as needed to place the dropdown right below the trigger text */
+            background: #121212; /* Match the body background */
+            color: #E3735E; /* Match the titles color */
+            min-width: 150px;
+            margin: 0%;
+            padding: 0%;
+            list-style: none;
+        }
+
+        .light-mode .theme-options {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .light-mode .theme-options li:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .sepia .theme-options {
+            background: #DFD9C8;
+            color: #3B3D37;
+        }
+
+        .sepia .theme-options li:hover {
+            background-color: #3B3D37;
+            color: #DFD9C8;
+        }
+
+        .high-contrast .theme-options {
+            background: #000000;
+            color: #00D689;
+        }
+
+        .high-contrast .theme-options li:hover {
+            background-color: #00D689;
+            color: #000000;
+        }
+
+        .theme-options li {
+            padding: 7% 6%;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .theme-options li.selected {
+            display: none;
+        }
+
+        .theme-options li:hover {
+            background-color: #E3735E;
+            color: #121212;
+        }
+
+        #toggle-mode {
+            position: relative;
+            display: inline-block; /* This makes it the positioning context for the dropdown */
+        }
+
         @media (max-width: 768px) {
             body, .update-text, .titles, .social-link, .email-alias, #expand-collapse-btn, #toggle-mode {
                 font-size: 18px;
+            }
+
+            body {
+                overflow-x: hidden;
             }
 
             .metadata {
@@ -289,6 +395,24 @@
             .circle-symbol {
                 vertical-align: 3%;
             }
+
+            .theme-options {
+                left: -3%;
+                top: 130%; /* Adjust this as needed to place the dropdown right below the trigger text */
+                border: 2px solid #E3735E;
+            }
+
+            .light-mode .theme-options {
+                border: 2px solid #000000;
+            }
+
+            .sepia .theme-options {
+                border: 2px solid #3B3D37;
+            }
+
+            .high-contrast .theme-options {
+                border: 2px solid #00D689;
+            }
         }
     </style>
 </head>
@@ -307,7 +431,15 @@
                     <div class="vertical-bar"></div>
                 </div>
             </button>                
-            <div id="toggle-mode">Light mode <span class="circle-symbol">○</span></div>
+            <div id="toggle-mode" class="titles">
+                <span id="theme-select-trigger">Dark mode <span class="circle-symbol">●</span></span>
+                <ul id="theme-options" class="theme-options" style="display: none;">
+                    <li data-theme="light-mode">Dynamic <span class="circle-symbol">○</span></li>
+                    <li data-theme="dark">Dark mode <span class="circle-symbol">●</span></li>
+                    <li data-theme="sepia">Sepia <span class="circle-symbol">◐</span></li>
+                    <li data-theme="high-contrast">Contrast <span class="circle-symbol">☉</span></li>
+                </ul>
+            </div>            
         </div>   
     </section>
     <section id="bio">     
@@ -372,15 +504,55 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const toggleButton = document.getElementById('toggle-mode');
-            let isLightMode = false;
-    
-            toggleButton.addEventListener('click', function() {
-                document.body.classList.toggle('light-mode');
-                isLightMode = !isLightMode;
-                toggleButton.innerHTML = isLightMode ? 'Dark mode <span class="circle-symbol">●</span>' : 'Light mode <span class="circle-symbol">○</span>';
+            const themeTrigger = document.getElementById('theme-select-trigger'); // Correct reference to the trigger text element
+            const themeOptionsContainer = document.getElementById('theme-options');
+            let selectedTheme = 'dark'; // Default selected theme
+
+            const themes = [
+                { label: "Dynamic", dataTheme: "light-mode", icon: "○" },
+                { label: "Dark mode", dataTheme: "dark", icon: "●" },
+                { label: "Sepia", dataTheme: "sepia", icon: "◐" },
+                { label: "Contrast", dataTheme: "high-contrast", icon: "☉" }
+            ];
+
+            function populateDropdown(selected) {
+                themeOptionsContainer.innerHTML = '';
+                themes.forEach(theme => {
+                    if (theme.dataTheme !== selected) {
+                        const li = document.createElement('li');
+                        li.setAttribute('data-theme', theme.dataTheme);
+                        li.innerHTML = `${theme.label} <span class="circle-symbol">${theme.icon}</span>`;
+                        themeOptionsContainer.appendChild(li);
+                    }
+                });
+            }
+
+            populateDropdown(selectedTheme); // Initial population
+
+            themeTrigger.parentNode.addEventListener('click', function(event) { // Attach listener to the parent div of themeTrigger
+                themeOptionsContainer.style.display = themeOptionsContainer.style.display === 'block' ? 'none' : 'block';
+                event.stopPropagation(); // Prevent the click from propagating further
             });
-    
+
+            themeOptionsContainer.addEventListener('click', function(e) {
+                if (e.target.tagName === 'LI' || e.target.parentNode.tagName === 'LI') {
+                    const targetLi = e.target.tagName === 'LI' ? e.target : e.target.parentNode; // Ensure we get LI even if icon/span is clicked
+                    selectedTheme = targetLi.getAttribute('data-theme');
+                    document.body.classList.remove('light-mode', 'dark', 'sepia', 'high-contrast');
+                    document.body.classList.add(selectedTheme);
+                    themeTrigger.innerHTML = `${targetLi.childNodes[0].textContent.trim()} <span class="circle-symbol">${targetLi.childNodes[1].textContent}</span>`; // Update the trigger text and icon
+                    populateDropdown(selectedTheme); // Repopulate dropdown without the selected theme
+                    themeOptionsContainer.style.display = 'none';
+                }
+                e.stopPropagation();
+            });
+
+            // Hide dropdown when clicking outside of it
+            document.addEventListener('click', function() {
+                themeOptionsContainer.style.display = 'none';
+            });
+
+            
             var collapsibles = document.getElementsByClassName("collapsible");
             var expandCollapseBtn = document.getElementById("expand-collapse-btn");
             var plusMinusToggle = document.getElementById('plus-minus-toggle');

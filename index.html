@@ -1,12 +1,28 @@
+<!-- 
+    Author: Nico Ward
+    Website: https://nicolasward.github.io/
+    Theme: Feynman
+    Date: 12 February 2024
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Meta tags for responsiveness and character encoding -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Page Title -->
     <title>Nico Ward</title>
+
+    <!-- Google Fonts Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+     <!-- Google Fonts CSS Link -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
     <style>
         body {
             background-color: #121212;
@@ -31,8 +47,6 @@
             margin: 20px 0;
             line-height: 1.5;
         }
-
-        /* Old green: #E3735E */
 
         .titles {
             color: #E3735E;
@@ -151,7 +165,7 @@
 
         .content {
             overflow: hidden;
-            transition: max-height 0.2s ease-in-out;
+            transition: max-height 0.15s ease-in-out;
             max-height: 0;
             line-height: 1.5;
             padding-left: 1.7%;
@@ -163,7 +177,7 @@
 
         .arrow {
             display: inline-block;
-            transition: transform .3s;
+            transition: transform .2s;
         }
 
         .rotate {
@@ -240,7 +254,7 @@
         }
 
         .high-contrast .horizontal-bar, .high-contrast .vertical-bar {
-            background-color: #00D689; /* Color for sepia mode */
+            background-color: #00D689;
         }
 
         .sepia .titles, .sepia .metadata, .sepia #expand-collapse-text, .sepia .button-container, .sepia .footer a {
@@ -248,7 +262,7 @@
         }
 
         .sepia .horizontal-bar, .sepia .vertical-bar {
-            background-color: #3B3D37; /* Color for sepia mode */
+            background-color: #3B3D37;
         }
 
         #theme-select-trigger {
@@ -263,9 +277,9 @@
             position: absolute;
             display: block;
             left: -10%;
-            top: 80%; /* Adjust this as needed to place the dropdown right below the trigger text */
-            background: #121212; /* Match the body background */
-            color: #E3735E; /* Match the titles color */
+            top: 80%;
+            background: #121212;
+            color: #E3735E;
             min-width: 170px;
             margin: 0%;
             padding: 0%;
@@ -319,9 +333,10 @@
 
         #toggle-mode {
             position: relative;
-            display: inline-block; /* This makes it the positioning context for the dropdown */
+            display: inline-block;
         }
 
+        /* Media queries for responsive design */
         @media (max-width: 768px) {
             body, .update-text, .titles, .social-link, .email-alias, #expand-collapse-btn, #toggle-mode {
                 font-size: 18px;
@@ -402,12 +417,12 @@
             }
 
             .theme-options {
-                left: 60%; /* Center align the dropdown */
-                transform: translateX(-96px); /* Shift it back by half of its width to truly center it */
-                width: auto; /* Let it expand as needed, up to the width of its contents */
-                min-width: 150px; /* Limit the maximum width to prevent it from going off-screen */
-                box-sizing: border-box; /* Include padding and border in the element's total width */
-                border: 2px solid #E3735E; /* Existing style, adjust as needed */
+                left: 60%;
+                transform: translateX(-96px);
+                width: auto;
+                min-width: 150px;
+                box-sizing: border-box;
+                border: 2px solid #E3735E;
                 top: 120%;
             }
 
@@ -446,9 +461,11 @@
         }
     </style>
 </head>
+
+<!-- Main Contents-->
 <body>
     <section id="metadata">
-        <p class="metadata">NICO WARD </br>
+        <p class="metadata"><a href="#" onclick="location.reload();" style="text-decoration: none; color: inherit;">NICO WARD</a></br>
             <span class="update-text">Updated February 9, 2024</span>
         </p>
     </section>
@@ -496,8 +513,8 @@
         <div class="content">
             <ul>
                 <li><a href="https://nicoward.substack.com/p/on-creative-judgment" class="social-link" target="blank">On Creative Judgement</a></li>
-                <li><a href="https://open.substack.com/pub/nicoward/p/10-principles-of-good-ai" class="social-link" target="blank">10 Principles of Good AI</a></li>
-                <li><a href="https://open.substack.com/pub/nicoward/p/some-predictions-for-2024" class="social-link" target="blank">Some Predictions for 2024</a></li>
+                <li><a href="https://nicoward.substack.com/p/10-principles-of-good-ai" class="social-link" target="blank">10 Principles of Good AI</a></li>
+                <li><a href="https://nicoward.substack.com/p/some-predictions-for-2024" class="social-link" target="blank">Some Predictions for 2024</a></li>
             </ul>
         </div>
     </section>
@@ -507,7 +524,7 @@
             <ul>
                 <li><a href="https://patrickcollison.com/fast" class="social-link" target="blank">Fast</a>, by Patrick Collison</li>
                 <li><a href="https://longnow.org/essays/richard-feynman-connection-machine/" class="social-link" target="blank">Richard Feynman and the Connection Machine</a>, by Daniel Hillis</li>
-                <li><a href="https://web.getmatter.com/entry/55159" class="social-link" target="blank">Who Can Name the Biggest Number?</a>, by Scott Aaronson</li>
+                <li><a href="https://www.scottaaronson.com/writings/bignumbers.html" class="social-link" target="blank">Who Can Name the Biggest Number?</a>, by Scott Aaronson</li>
             </ul>
         </div>
     </section>
@@ -532,11 +549,12 @@
         <div class="footer">Made with <a href="https://www.monmouthcoffee.co.uk/product/colombia-finca-las-palmeras/" title="good coffee" target="blank">&#9749;</a> in London, UK.</span>
     </section>
 
+    <!-- Animations and transitions -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const themeTrigger = document.getElementById('theme-select-trigger'); // Correct reference to the trigger text element
+            const themeTrigger = document.getElementById('theme-select-trigger');
             const themeOptionsContainer = document.getElementById('theme-options');
-            let selectedTheme = 'dark'; // Default selected theme
+            let selectedTheme = 'dark';
 
             const themes = [
                 { label: "Daylight", dataTheme: "light-mode", icon: "○" },
@@ -557,55 +575,55 @@
                 });
             }
 
-            populateDropdown(selectedTheme); // Initial population
+            populateDropdown(selectedTheme);
 
-            themeTrigger.parentNode.addEventListener('click', function(event) { // Attach listener to the parent div of themeTrigger
+            themeTrigger.parentNode.addEventListener('click', function(event) {
                 themeOptionsContainer.style.display = themeOptionsContainer.style.display === 'block' ? 'none' : 'block';
-                event.stopPropagation(); // Prevent the click from propagating further
+                event.stopPropagation();
             });
 
             themeOptionsContainer.addEventListener('click', function(e) {
                 if (e.target.tagName === 'LI' || e.target.parentNode.tagName === 'LI') {
-                    const targetLi = e.target.tagName === 'LI' ? e.target : e.target.parentNode; // Ensure we get LI even if icon/span is clicked
+                    const targetLi = e.target.tagName === 'LI' ? e.target : e.target.parentNode;
                     selectedTheme = targetLi.getAttribute('data-theme');
                     document.body.classList.remove('light-mode', 'dark', 'sepia', 'high-contrast');
                     document.body.classList.add(selectedTheme);
-                    themeTrigger.innerHTML = `${targetLi.childNodes[0].textContent.trim()} <span class="circle-symbol">${targetLi.childNodes[1].textContent}</span>`; // Update the trigger text and icon
-                    populateDropdown(selectedTheme); // Repopulate dropdown without the selected theme
+                    themeTrigger.innerHTML = `${targetLi.childNodes[0].textContent.trim()} <span class="circle-symbol">${targetLi.childNodes[1].textContent}</span>`;
+                    populateDropdown(selectedTheme);
                     themeOptionsContainer.style.display = 'none';
                 }
                 e.stopPropagation();
             });
 
-            // Hide dropdown when clicking outside of it
             document.addEventListener('click', function() {
                 themeOptionsContainer.style.display = 'none';
             });
 
-            
             var collapsibles = document.getElementsByClassName("collapsible");
             var expandCollapseBtn = document.getElementById("expand-collapse-btn");
             var plusMinusToggle = document.getElementById('plus-minus-toggle');
             var verticalBar = plusMinusToggle.querySelector('.vertical-bar');
             var buttonText = document.getElementById("expand-collapse-text");
-    
+
             function checkIfAllExpanded() {
-                var allExpanded = true;
-                Array.from(collapsibles).forEach(function(collapsible) {
-                    var content = collapsible.nextElementSibling;
-                    if (!content.classList.contains("show")) {
-                        allExpanded = false;
-                    } else {
-                        content.style.maxHeight = content.scrollHeight + "px";
+                for (var i = 0; i < collapsibles.length; i++) {
+                    if (!collapsibles[i].nextElementSibling.classList.contains("show")) {
+                        return false;
                     }
-                });
-                return allExpanded;
+                }
+                return true;
             }
-    
+
+            function updateExpandCollapseButtonState() {
+                var allExpanded = checkIfAllExpanded();
+                buttonText.textContent = allExpanded ? 'Collapse all' : 'Expand all';
+                verticalBar.classList.toggle('rotate', allExpanded);
+            }
+
             function toggleSections(expand) {
-                Array.from(collapsibles).forEach(function(collapsible) {
-                    var content = collapsible.nextElementSibling;
-                    var arrow = collapsible.querySelector(".arrow");
+                for (var i = 0; i < collapsibles.length; i++) {
+                    var content = collapsibles[i].nextElementSibling;
+                    var arrow = collapsibles[i].querySelector(".arrow");
                     if (expand) {
                         content.style.maxHeight = content.scrollHeight + "px";
                         content.classList.add("show");
@@ -615,22 +633,21 @@
                         content.classList.remove("show");
                         arrow.classList.remove("rotate");
                     }
-                });
+                }
             }
-    
+
             expandCollapseBtn.addEventListener('click', function() {
                 var isAllExpanded = checkIfAllExpanded();
                 toggleSections(!isAllExpanded);
-                buttonText.textContent = isAllExpanded ? 'Expand all' : 'Collapse all';
-                verticalBar.classList.toggle('rotate', !isAllExpanded);
+                updateExpandCollapseButtonState();
             });
-    
-            Array.from(collapsibles).forEach(function(collapsible) {
-                collapsible.addEventListener("click", function() {
+
+            for (var i = 0; i < collapsibles.length; i++) {
+                collapsibles[i].addEventListener("click", function() {
                     this.classList.toggle("active");
                     var content = this.nextElementSibling;
                     var arrow = this.querySelector(".arrow");
-                    if (content.classList.contains("show")) {
+                    if (content.style.maxHeight) {
                         content.style.maxHeight = null;
                         content.classList.remove("show");
                         arrow.classList.remove("rotate");
@@ -639,13 +656,15 @@
                         content.classList.add("show");
                         arrow.classList.add("rotate");
                     }
+                    updateExpandCollapseButtonState();
                 });
-            });
-    
-            var isAllExpanded = checkIfAllExpanded();
-            buttonText.textContent = isAllExpanded ? 'Collapse all' : 'Expand all';
-            verticalBar.classList.toggle('rotate', isAllExpanded);
+            }
+
+            var aboutMeSection = document.getElementById("bio").querySelector(".content");
+            aboutMeSection.style.maxHeight = aboutMeSection.scrollHeight + "px";
+
+            updateExpandCollapseButtonState();
         });
-    </script>    
+    </script>  
 </body>
 </html>

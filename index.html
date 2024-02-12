@@ -462,12 +462,12 @@
                 </div>
             </button>                
             <div id="toggle-mode" class="titles">
-                <span id="theme-select-trigger">Dark mode <span class="circle-symbol">●</span></span>
+                <span id="theme-select-trigger">Moonlight <span class="circle-symbol">●</span></span>
                 <ul id="theme-options" class="theme-options" style="display: none;">
-                    <li data-theme="light-mode">Dynamic mode <span class="circle-symbol">○</span></li>
-                    <li data-theme="dark">Dark mode <span class="circle-symbol">●</span></li>
-                    <li data-theme="sepia">Reading mode <span class="circle-symbol">◐</span></li>
-                    <li data-theme="high-contrast">High contrast <span class="circle-symbol">☉</span></li>
+                    <li data-theme="light-mode">Daylight <span class="circle-symbol">○</span></li>
+                    <li data-theme="dark">Moonlight <span class="circle-symbol">●</span></li>
+                    <li data-theme="sepia">Reader <span class="circle-symbol">◐</span></li>
+                    <li data-theme="high-contrast">Contrast <span class="circle-symbol">☉</span></li>
                 </ul>
             </div>            
         </div>   
@@ -539,10 +539,10 @@
             let selectedTheme = 'dark'; // Default selected theme
 
             const themes = [
-                { label: "High light", dataTheme: "light-mode", icon: "○" },
-                { label: "Low light", dataTheme: "dark", icon: "●" },
-                { label: "Sepia tone", dataTheme: "sepia", icon: "◐" },
-                { label: "Electric", dataTheme: "high-contrast", icon: "☉" }
+                { label: "Daylight", dataTheme: "light-mode", icon: "○" },
+                { label: "Moonlight", dataTheme: "dark", icon: "●" },
+                { label: "Reader", dataTheme: "sepia", icon: "◐" },
+                { label: "Contrast", dataTheme: "high-contrast", icon: "☉" }
             ];
 
             function populateDropdown(selected) {

@@ -2,7 +2,7 @@
     Author: Nico Ward
     Website: https://nicolasward.github.io/
     Theme: Feynman
-    Date: 12 February 2024
+    Date: 21 February 2024
 -->
 
 <!DOCTYPE html>
@@ -24,9 +24,31 @@
 
     <!-- Styles -->
     <style>
+
+        /* Setting some global variables for modularity */
+        :root {
+        /* ----- text colour ----- */
+        --moonlight-text: #ffffff;
+        --contrast-text: #ffffff;
+        --daylight-text: #686868;
+        --reader-text: #62635E;
+        
+        /* ----- titles colour ----- */
+        --moonlight-titles: #E3735E;
+        --contrast-titles: #00D689;
+        --daylight-titles: #000000;
+        --reader-titles: #3B3D37;
+
+        /* ----- background colour ----- */
+        --moonlight-background: #111113;
+        --contrast-background: #000000;
+        --daylight-background: #ffffff;
+        --reader-background: #DFD9C8;
+        }
+
         body {
-            background-color: #121212;
-            color: #ffffff;
+            background-color: var(--moonlight-background);
+            color: var(--moonlight-text);;
             font-family: "JetBrains Mono", monospace;
             font-weight: 400;
             transition: background-color 0.2s, color 0.2s;
@@ -34,8 +56,8 @@
         }
 
         .light-mode {
-            background-color: #ffffff;
-            color: #686868;
+            background-color: var(--daylight-background);
+            color: var(--daylight-text);
         }
 
         #toggle-mode {
@@ -49,24 +71,24 @@
         }
 
         .titles {
-            color: #E3735E;
+            color: var(--moonlight-titles);
             max-width: 50%;
         }
 
         .metadata {
-            color: #E3735E;
+            color: var(--moonlight-titles);
             padding-left: .4%;
         }
 
         .footer a {
             text-decoration: none;
-            color: #E3735E;
+            color: var(--moonlight-titles);
         }
 
         .button-container {
             position: relative;
             display: flex;
-            color: #E3735E;
+            color: var(--moonlight-titles);
             flex-direction: row;
             justify-content: space-between;
             width: 90%;
@@ -75,7 +97,7 @@
         }
 
         .horizontal-bar, .vertical-bar {
-            background-color: #E3735E;
+            background-color: var(--moonlight-titles);
             position: absolute;
         }
 
@@ -97,52 +119,48 @@
         }
 
         .light-mode .footer a {
-            color: #000000;
+            color: var(--daylight-titles);
         }
 
         .light-mode .titles {
-            color: #000000;
+            color: var(--daylight-titles);
 
         }
 
         .social-link {
-            color: #ffffff;
+            color: var(--moonlight-text);
             text-decoration: underline;
             transition: text-decoration-color 0.1s, color 0.1s;
         }
 
         .light-mode .social-link {
-            color: #686868;
+            color: var(--daylight-text);
         }
 
         .light-mode .social-link:hover {
             text-decoration: underline;
-            color: #000000;
+            color: var(--daylight-titles);
         }
 
         .light-mode .metadata {
-            color: #000000;
+            color: var(--daylight-titles);
         }
 
         .light-mode .button-container {
-            color: #000000;
-        }
-
-        .light-mode .content ul {
-            color: #000000;
+            color: var(--daylight-titles);
         }
 
         .light-mode .content ul li,
         .light-mode .content ul li a {
-            color: #686868; 
+            color: var(--daylight-text);
         }
 
         .light-mode .horizontal-bar {
-            background-color: #000000;
+            background-color: var(--daylight-titles);
         }
 
         .light-mode .vertical-bar {
-            background-color: #000000;
+            background-color: var(--daylight-titles);
         }
 
         .social-link:hover, .social-link:focus {
@@ -236,33 +254,33 @@
         }
 
         .sepia {
-            background-color: #DFD9C8;
-            color: #62635e;
+            background-color: var(--reader-background);
+            color: var(--reader-text);
         }
 
         .sepia a {
-            color: #62635e;
+            color: var(--reader-text);
         }
 
         .high-contrast {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: var(--contrast-background);
+            color: var(--contrast-text);
         }
 
         .high-contrast .titles, .high-contrast .metadata, .high-contrast #expand-collapse-text, .high-contrast .button-container, .high-contrast .footer a {
-            color: #00D689;
+            color: var(--contrast-titles);
         }
 
         .high-contrast .horizontal-bar, .high-contrast .vertical-bar {
-            background-color: #00D689;
+            background-color: var(--contrast-titles);
         }
 
         .sepia .titles, .sepia .metadata, .sepia #expand-collapse-text, .sepia .button-container, .sepia .footer a {
-            color: #3B3D37;
+            color: var(--reader-titles);
         }
 
         .sepia .horizontal-bar, .sepia .vertical-bar {
-            background-color: #3B3D37;
+            background-color: var(--reader-titles);
         }
 
         #theme-select-trigger {
@@ -278,8 +296,8 @@
             display: block;
             left: -10%;
             top: 80%;
-            background: #121212;
-            color: #E3735E;
+            background: var(--moonlight-background);
+            color: var(--moonlight-titles);
             min-width: 170px;
             margin: 0%;
             padding: 0%;
@@ -287,33 +305,33 @@
         }
 
         .light-mode .theme-options {
-            background: #ffffff;
-            color: #000000;
+            background: var(--daylight-background);
+            color: var(--daylight-titles);
         }
 
         .light-mode .theme-options li:hover {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: var(--daylight-titles);
+            color: var(--daylight-background);
         }
 
         .sepia .theme-options {
-            background: #DFD9C8;
-            color: #3B3D37;
+            background: var(--reader-background);
+            color: var(--reader-titles);
         }
 
         .sepia .theme-options li:hover {
-            background-color: #3B3D37;
-            color: #DFD9C8;
+            background-color: var(--reader-titles);
+            color: var(--reader-background);
         }
 
         .high-contrast .theme-options {
-            background: #000000;
-            color: #00D689;
+            background: var(--contrast-background);
+            color: var(--contrast-titles);
         }
 
         .high-contrast .theme-options li:hover {
-            background-color: #00D689;
-            color: #000000;
+            background-color: var(--contrast-titles);
+            color: var(--contrast-background);
         }
 
         .theme-options li {
@@ -327,8 +345,8 @@
         }
 
         .theme-options li:hover {
-            background-color: #E3735E;
-            color: #121212;
+            background-color: var(--moonlight-titles);
+            color: var(--moonlight-background);
         }
 
         #toggle-mode {
@@ -435,27 +453,27 @@
             }
 
             .light-mode .theme-options {
-                border: 2px solid #000000;
+                border: 2px solid var(--daylight-titles);
             }
 
             .light-mode .theme-options li:not(:last-child) {
-                border-bottom: 2px solid #000000;
+                border-bottom: 2px solid var(--daylight-titles);
             }
 
             .sepia .theme-options {
-                border: 2px solid #3B3D37;
+                border: 2px solid var(--reader-titles);
             }
 
             .sepia .theme-options li:not(:last-child) {
-                border-bottom: 2px solid #3B3D37;
+                border-bottom: 2px solid var(--reader-titles);
             }
 
             .high-contrast .theme-options {
-                border: 2px solid #00D689;
+                border: 2px solid var(--contrast-titles);
             }
 
             .high-contrast .theme-options li:not(:last-child) {
-                border-bottom: 2px solid #00D689;
+                border-bottom: 2px solid var(--contrast-titles);
             }
             
         }

@@ -2,7 +2,7 @@
     Author: Nico Ward
     Website: https://nicolasward.github.io/
     Theme: Feynman
-    Date: 22 February 2024
+    Date: 10 April 2024
 -->
 
 <!DOCTYPE html>
@@ -47,19 +47,217 @@
         --reader-background: #DFD9C8;
         }
 
+        /* ------------------ Beginning of Color Settings ------------------ */
+
+        /* --- Default settings --- */
+        
         body {
-            background-color: var(--moonlight-background);
-            color: var(--moonlight-text);;
+            background-color: var(--daylight-background);
+            color: var(--daylight-text);;
             font-family: "JetBrains Mono", monospace;
             font-weight: 400;
             transition: background-color 0.2s, color 0.2s;
             margin: 6% 0 5% 6%;
         }
 
+        .titles {
+            color: var(--daylight-titles);
+            max-width: 50%;
+        }
+
+        .metadata {
+            color: var(--daylight-titles);
+            padding-left: .4%;
+        }
+
+        .footer a {
+            text-decoration: none;
+            color: var(--daylight-titles);
+        }
+
+        .button-container {
+            position: relative;
+            display: flex;
+            color: var(--daylight-titles);
+            flex-direction: row;
+            justify-content: space-between;
+            width: 90%;
+            margin-top: 2%;
+            margin-bottom: 1%;
+        }
+
+        .horizontal-bar, .vertical-bar {
+            background-color: var(--daylight-titles);
+            position: absolute;
+        }
+
+        .social-link {
+            color: var(--daylight-text);
+            text-decoration: underline;
+            transition: text-decoration-color 0.1s, color 0.1s;
+        }
+
+        .social-link:hover {
+            text-decoration: underline;
+            color: var(--daylight-titles);
+            transition: text-decoration-color 0.1s, color 0.1s;
+        }
+
+        .theme-options {
+            position: absolute;
+            display: block;
+            left: -10%;
+            top: 80%;
+            background: var(--daylight-background);
+            color: var(--daylight-titles);
+            min-width: 170px;
+            margin: 0%;
+            padding: 0%;
+            list-style: none;
+        }
+
+        .theme-options li:hover {
+            background-color: var(--daylight-titles);
+            color: var(--daylight-background);
+        }
+
+        /* --- Light mode settings --- */
+
         .light-mode {
             background-color: var(--daylight-background);
             color: var(--daylight-text);
         }
+
+        .light-mode .footer a, .light-mode .titles, .light-mode .metadata, .light-mode .button-container, 
+        .light-mode .horizontal-bar, .light-mode .vertical-bar {
+            color: var(--daylight-titles);
+        }
+
+        .light-mode .content ul li {
+            color: var(--daylight-text)
+        }
+
+        .light-mode .social-link {
+            color: var(--daylight-text);
+            text-decoration: underline;
+        }
+
+        .light-mode .social-link:hover {
+            text-decoration: underline;
+            color: var(--daylight-titles);
+        }
+
+        .light-mode .theme-options {
+            background: var(--daylight-background);
+            color: var(--daylight-titles);
+        }
+
+        .light-mode .theme-options li:hover {
+            background-color: var(--daylight-titles);
+            color: var(--daylight-background);
+        }
+
+        /* --- Dark mode settings --- */        
+
+        .dark {
+            background-color: var(--moonlight-background);
+            color: var(--moonlight-text);
+        }
+
+        .dark .footer a, .dark .titles, .dark .social-link, .dark .metadata, .dark .button-container, 
+        .dark .horizontal-bar, .dark .vertical-bar {
+            color: var(--moonlight-titles);
+        }
+
+        .dark .content ul li, .dark .content ul li a, .dark .content a {
+            color: var(--moonlight-text)
+        }
+
+        .dark .theme-options {
+            background: var(--moonlight-background);
+            color: var(--moonlight-titles);
+        }
+
+        .dark .theme-options li:hover {
+            background-color: var(--moonlight-titles);
+            color: var(--moonlight-background);
+        }
+
+        .dark .horizontal-bar, .dark .vertical-bar {
+            background-color: var(--moonlight-titles);
+        }
+
+        .dark .social-link:hover, .social-link:focus {
+            text-decoration-color: transparent;
+        }
+
+        /* --- Contrast settings --- */
+
+        .high-contrast {
+            background-color: var(--contrast-background);
+            color: var(--contrast-text);
+        }
+
+        .high-contrast .titles, .high-contrast .metadata, .high-contrast #expand-collapse-text, .high-contrast .button-container, .high-contrast .footer a {
+            color: var(--contrast-titles);
+        }
+
+        .high-contrast .horizontal-bar, .high-contrast .vertical-bar {
+            background-color: var(--contrast-titles);
+        }
+
+        .high-contrast .theme-options {
+            background: var(--contrast-background);
+            color: var(--contrast-titles);
+        }
+
+        .high-contrast .theme-options li:hover {
+            background-color: var(--contrast-titles);
+            color: var(--contrast-background);
+        }
+
+        .high-contrast .content a {
+            color: var(--contrast-text)
+        }
+
+        .high-contrast .social-link:hover, .social-link:focus {
+            text-decoration-color: transparent;
+        }
+
+        /* --- Reader settings --- */
+
+        .sepia {
+            background-color: var(--reader-background);
+            color: var(--reader-text);
+        }
+
+        .sepia a {
+            color: var(--reader-text);
+        }
+
+        .sepia .titles, .sepia .metadata, .sepia #expand-collapse-text, .sepia .button-container, .sepia .footer a {
+            color: var(--reader-titles);
+        }
+
+        .sepia .horizontal-bar, .sepia .vertical-bar {
+            background-color: var(--reader-titles);
+        }
+
+        .sepia .theme-options {
+            background: var(--reader-background);
+            color: var(--reader-titles);
+        }
+
+        .sepia .theme-options li:hover {
+            background-color: var(--reader-titles);
+            color: var(--reader-background);
+        }
+
+        .sepia .update-text, .sepia .footer {
+            color: #989898;   
+        }
+
+        /* ------------------ End of Color Settings ------------------ */
 
         #toggle-mode {
             cursor: pointer;
@@ -69,37 +267,6 @@
         section {
             margin: 20px 0;
             line-height: 1.5;
-        }
-
-        .titles {
-            color: var(--moonlight-titles);
-            max-width: 50%;
-        }
-
-        .metadata {
-            color: var(--moonlight-titles);
-            padding-left: .4%;
-        }
-
-        .footer a {
-            text-decoration: none;
-            color: var(--moonlight-titles);
-        }
-
-        .button-container {
-            position: relative;
-            display: flex;
-            color: var(--moonlight-titles);
-            flex-direction: row;
-            justify-content: space-between;
-            width: 90%;
-            margin-top: 2%;
-            margin-bottom: 1%;
-        }
-
-        .horizontal-bar, .vertical-bar {
-            background-color: var(--moonlight-titles);
-            position: absolute;
         }
 
         .circle-symbol {
@@ -113,59 +280,6 @@
         .footer {
             color: #a5a5a5;
             padding-left: .4%;
-        }
-
-        .sepia .update-text, .sepia .footer {
-            color: #989898;   
-        }
-
-        .light-mode .footer a {
-            color: var(--daylight-titles);
-        }
-
-        .light-mode .titles {
-            color: var(--daylight-titles);
-
-        }
-
-        .social-link {
-            color: var(--moonlight-text);
-            text-decoration: underline;
-            transition: text-decoration-color 0.1s, color 0.1s;
-        }
-
-        .light-mode .social-link {
-            color: var(--daylight-text);
-        }
-
-        .light-mode .social-link:hover {
-            text-decoration: underline;
-            color: var(--daylight-titles);
-        }
-
-        .light-mode .metadata {
-            color: var(--daylight-titles);
-        }
-
-        .light-mode .button-container {
-            color: var(--daylight-titles);
-        }
-
-        .light-mode .content ul li,
-        .light-mode .content ul li a {
-            color: var(--daylight-text);
-        }
-
-        .light-mode .horizontal-bar {
-            background-color: var(--daylight-titles);
-        }
-
-        .light-mode .vertical-bar {
-            background-color: var(--daylight-titles);
-        }
-
-        .social-link:hover, .social-link:focus {
-            text-decoration-color: transparent;
         }
 
         .email-alias:hover {
@@ -219,6 +333,7 @@
             padding-left: 40px;
             margin-left: 0;
             margin-top: .1%;
+            margin-bottom: 0;
         }
 
         .content {
@@ -254,85 +369,12 @@
             transform: rotate(90deg);
         }
 
-        .sepia {
-            background-color: var(--reader-background);
-            color: var(--reader-text);
-        }
-
-        .sepia a {
-            color: var(--reader-text);
-        }
-
-        .high-contrast {
-            background-color: var(--contrast-background);
-            color: var(--contrast-text);
-        }
-
-        .high-contrast .titles, .high-contrast .metadata, .high-contrast #expand-collapse-text, .high-contrast .button-container, .high-contrast .footer a {
-            color: var(--contrast-titles);
-        }
-
-        .high-contrast .horizontal-bar, .high-contrast .vertical-bar {
-            background-color: var(--contrast-titles);
-        }
-
-        .sepia .titles, .sepia .metadata, .sepia #expand-collapse-text, .sepia .button-container, .sepia .footer a {
-            color: var(--reader-titles);
-        }
-
-        .sepia .horizontal-bar, .sepia .vertical-bar {
-            background-color: var(--reader-titles);
-        }
-
         #theme-select-trigger {
             position: relative;
             display: block;
             cursor: pointer;
             padding: 0;
             margin: 0;
-        }
-
-        .theme-options {
-            position: absolute;
-            display: block;
-            left: -10%;
-            top: 80%;
-            background: var(--moonlight-background);
-            color: var(--moonlight-titles);
-            min-width: 170px;
-            margin: 0%;
-            padding: 0%;
-            list-style: none;
-        }
-
-        .light-mode .theme-options {
-            background: var(--daylight-background);
-            color: var(--daylight-titles);
-        }
-
-        .light-mode .theme-options li:hover {
-            background-color: var(--daylight-titles);
-            color: var(--daylight-background);
-        }
-
-        .sepia .theme-options {
-            background: var(--reader-background);
-            color: var(--reader-titles);
-        }
-
-        .sepia .theme-options li:hover {
-            background-color: var(--reader-titles);
-            color: var(--reader-background);
-        }
-
-        .high-contrast .theme-options {
-            background: var(--contrast-background);
-            color: var(--contrast-titles);
-        }
-
-        .high-contrast .theme-options li:hover {
-            background-color: var(--contrast-titles);
-            color: var(--contrast-background);
         }
 
         .theme-options li {
@@ -343,11 +385,6 @@
 
         .theme-options li.selected {
             display: none;
-        }
-
-        .theme-options li:hover {
-            background-color: var(--moonlight-titles);
-            color: var(--moonlight-background);
         }
 
         #toggle-mode {
@@ -441,7 +478,7 @@
                 width: auto;
                 min-width: 150px;
                 box-sizing: border-box;
-                border: 2px solid var(--moonlight-titles);
+                border: 2px solid var(--daylight-titles);
                 top: 120%;
             }
 
@@ -450,7 +487,7 @@
             }
 
             .theme-options li:not(:last-child) {
-                border-bottom: 2px solid var(--moonlight-titles);
+                border-bottom: 2px solid var(--daylight-titles);
             }
 
             .light-mode .theme-options {
@@ -459,6 +496,14 @@
 
             .light-mode .theme-options li:not(:last-child) {
                 border-bottom: 2px solid var(--daylight-titles);
+            }
+
+            .dark .theme-options {
+                border: 2px solid var(--moonlight-titles);
+            }
+
+            .dark .theme-options li:not(:last-child) {
+                border-bottom: 2px solid var(--moonlight-titles);
             }
 
             .sepia .theme-options {
@@ -486,7 +531,7 @@
 <body>
     <section id="metadata">
         <p class="metadata"><a href="#" onclick="location.reload();" style="text-decoration: none; color: inherit;">NICO WARD</a></br>
-            <span class="update-text">Updated February 22, 2024</span>
+            <span class="update-text">Updated April 10, 2024</span>
         </p>
     </section>
     <section id="buttons">
@@ -499,7 +544,7 @@
                 </div>
             </button>                
             <div id="toggle-mode" class="titles">
-                <span id="theme-select-trigger">Moonlight <span class="circle-symbol">●</span></span>
+                <span id="theme-select-trigger">Daylight <span class="circle-symbol">●</span></span>
                 <ul id="theme-options" class="theme-options" style="display: none;">
                     <li data-theme="light-mode">Daylight <span class="circle-symbol">○</span></li>
                     <li data-theme="dark">Moonlight <span class="circle-symbol">●</span></li>
@@ -513,8 +558,13 @@
         <div class="titles collapsible"><span class="arrow rotate">+</span> About me</div>
         <div class="content show">
         I'm an AI engineer, designer, and entrepreneur based in London, UK. </br>
-        My focus is on building the next generation of human-AI interfaces. </br>
-        I'm particularly interested in finding new ways to represent information.
+        My aim is to build a personal AI for every human. </br>
+        To this end, my interests fall into 3 broad categories:
+        <ul>
+            <li>Knowledge abstraction and representation</li>
+            <li>Bio-inspired models of intelligence</li>
+            <li>Human-AI interfaces</li>
+        </ul>
         </div>
     </section>
     <section id="work">
@@ -522,7 +572,7 @@
         <div class="content">
         My CV lives <a href="cv.pdf" class="social-link" class="social-link" target="blank">here</a>. In summary:
         <ul>
-            <li>I'm a Senior Data Scientist at <a href="https://www.publicissapient.com/" class="social-link" class="social-link" target="blank">Publicis Sapient</a> AI Labs.</li>
+            <li>I'm currently a Senior Data Scientist at <a href="https://www.publicissapient.com/" class="social-link" class="social-link" target="blank">Publicis Sapient</a> AI Labs.</li>
             <li>Previously, I was co-founder and CTO of <a href="https://www.imsurf.in/" class="social-link" class="social-link" target="blank">Surf</a>, a social matching engine.</li>
             <li>I also spent time as a Behavioural Data Scientist at <a href="https://educai.io/" class="social-link" class="social-link" target="blank">Educai</a>, an edtech startup.</li>
         </ul>
@@ -576,7 +626,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             const themeTrigger = document.getElementById('theme-select-trigger');
             const themeOptionsContainer = document.getElementById('theme-options');
-            let selectedTheme = 'dark';
+            let selectedTheme = 'light-mode';
 
             const themes = [
                 { label: "Daylight", dataTheme: "light-mode", icon: "○" },

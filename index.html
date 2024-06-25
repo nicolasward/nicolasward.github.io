@@ -2,7 +2,7 @@
     Author: Nico Ward
     Website: https://nicolasward.github.io/
     Theme: Feynman
-    Date: 10 April 2024
+    Date: 25 June 2024
 -->
 
 <!DOCTYPE html>
@@ -36,7 +36,7 @@
         
         /* ----- titles colour ----- */
         --moonlight-titles: #58CAF8;
-        --contrast-titles: #00D689;
+        --contrast-titles:  #FD673A;
         --daylight-titles: #000000;
         --reader-titles: #3B3D37;
 
@@ -56,7 +56,7 @@
             color: var(--daylight-text);;
             font-family: "JetBrains Mono", monospace;
             font-weight: 400;
-            transition: background-color 0.2s, color 0.2s;
+            transition: background-color 0.1s, color 0.1s;
             margin: 6% 0 5% 6%;
         }
 
@@ -258,6 +258,16 @@
         }
 
         /* ------------------ End of Color Settings ------------------ */
+
+        body.blurring {
+            filter: blur(3px);
+            transition: filter .1s;
+        }
+
+        body.blurred {
+            filter: blur(0);
+            transition: filter .1s;
+        }
 
         #toggle-mode {
             cursor: pointer;
@@ -558,12 +568,12 @@
         <div class="titles collapsible"><span class="arrow rotate">+</span> About me</div>
         <div class="content show">
         I'm an AI engineer, designer, and entrepreneur based in London, UK. </br>
-        My aim is to build a personal AI for every human. </br>
+        My focus is on building better human-AI interfaces. </br>
         To this end, my interests fall into 3 broad categories:
         <ul>
-            <li>Knowledge abstraction and representation</li>
-            <li>Bio-inspired models of intelligence</li>
-            <li>Human-AI interfaces</li>
+            <li>Search, curation, discovery</li>
+            <li>Bio-inspired intelligence</li>
+            <li>Generative interfaces</li>
         </ul>
         </div>
     </section>
@@ -659,11 +669,27 @@
                 if (e.target.tagName === 'LI' || e.target.parentNode.tagName === 'LI') {
                     const targetLi = e.target.tagName === 'LI' ? e.target : e.target.parentNode;
                     selectedTheme = targetLi.getAttribute('data-theme');
-                    document.body.classList.remove('light-mode', 'dark', 'sepia', 'high-contrast');
-                    document.body.classList.add(selectedTheme);
-                    themeTrigger.innerHTML = `${targetLi.childNodes[0].textContent.trim()} <span class="circle-symbol">${targetLi.childNodes[1].textContent}</span>`;
-                    populateDropdown(selectedTheme);
-                    themeOptionsContainer.style.display = 'none';
+                    
+                    // Start blur transition
+                    document.body.classList.add('blurring');
+
+                    setTimeout(() => {
+                        // Change theme after blur
+                        document.body.classList.remove('light-mode', 'dark', 'sepia', 'high-contrast');
+                        document.body.classList.add(selectedTheme);
+                        themeTrigger.innerHTML = `${targetLi.childNodes[0].textContent.trim()} <span class="circle-symbol">${targetLi.childNodes[1].textContent}</span>`;
+                        populateDropdown(selectedTheme);
+                        themeOptionsContainer.style.display = 'none';
+
+                        // Remove blur transition
+                        document.body.classList.add('blurred');
+                        document.body.classList.remove('blurring');
+
+                        // Remove blurred class after transition
+                        setTimeout(() => {
+                            document.body.classList.remove('blurred');
+                        }, 300);
+                    }, 300);
                 }
                 e.stopPropagation();
             });

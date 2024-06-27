@@ -2,7 +2,7 @@
     Author: Nico Ward
     Website: https://nicolasward.github.io/
     Theme: Feynman
-    Date: 25 June 2024
+    Date: 26 June 2024
 -->
 
 <!DOCTYPE html>
@@ -32,19 +32,19 @@
         --moonlight-text: #ffffff;
         --contrast-text: #ffffff;
         --daylight-text: #686868;
-        --reader-text: #62635E;
+        --retro-text: #000;
         
         /* ----- titles colour ----- */
         --moonlight-titles: #58CAF8;
         --contrast-titles:  #FD673A;
         --daylight-titles: #000000;
-        --reader-titles: #3B3D37;
+        --retro-titles: #C72828;
 
         /* ----- background colour ----- */
         --moonlight-background: #111113;
         --contrast-background: #000000;
         --daylight-background: #ffffff;
-        --reader-background: #DFD9C8;
+        --retro-background: #F2DE71;
         }
 
         /* ------------------ Beginning of Color Settings ------------------ */
@@ -224,37 +224,41 @@
             text-decoration-color: transparent;
         }
 
-        /* --- Reader settings --- */
+        /* --- Retro settings --- */
 
         .sepia {
-            background-color: var(--reader-background);
-            color: var(--reader-text);
+            background-color: var(--retro-background);
+            color: var(--retro-text);
         }
 
         .sepia a {
-            color: var(--reader-text);
+            color: var(--retro-text);
         }
 
         .sepia .titles, .sepia .metadata, .sepia #expand-collapse-text, .sepia .button-container, .sepia .footer a {
-            color: var(--reader-titles);
+            color: var(--retro-titles);
         }
 
         .sepia .horizontal-bar, .sepia .vertical-bar {
-            background-color: var(--reader-titles);
+            background-color: var(--retro-titles);
         }
 
         .sepia .theme-options {
-            background: var(--reader-background);
-            color: var(--reader-titles);
+            background: var(--retro-background);
+            color: var(--retro-titles);
         }
 
         .sepia .theme-options li:hover {
-            background-color: var(--reader-titles);
-            color: var(--reader-background);
+            background-color: var(--retro-titles);
+            color: var(--retro-background);
         }
 
         .sepia .update-text, .sepia .footer {
-            color: #989898;   
+            color: #888;   
+        }
+
+        .sepia .social-link:hover, .social-link:focus {
+            text-decoration-color: transparent;
         }
 
         /* ------------------ End of Color Settings ------------------ */
@@ -517,11 +521,11 @@
             }
 
             .sepia .theme-options {
-                border: 2px solid var(--reader-titles);
+                border: 2px solid var(--retro-titles);
             }
 
             .sepia .theme-options li:not(:last-child) {
-                border-bottom: 2px solid var(--reader-titles);
+                border-bottom: 2px solid var(--retro-titles);
             }
 
             .high-contrast .theme-options {
@@ -541,7 +545,7 @@
 <body>
     <section id="metadata">
         <p class="metadata"><a href="#" onclick="location.reload();" style="text-decoration: none; color: inherit;">NICO WARD</a></br>
-            <span class="update-text">Updated June 25, 2024</span>
+            <span class="update-text">Updated June 26, 2024</span>
         </p>
     </section>
     <section id="buttons">
@@ -558,7 +562,7 @@
                 <ul id="theme-options" class="theme-options" style="display: none;">
                     <li data-theme="light-mode">Daylight <span class="circle-symbol">○</span></li>
                     <li data-theme="dark">Moonlight <span class="circle-symbol">●</span></li>
-                    <li data-theme="sepia">Reader <span class="circle-symbol">◐</span></li>
+                    <li data-theme="sepia">Retro <span class="circle-symbol">◐</span></li>
                     <li data-theme="high-contrast">Contrast <span class="circle-symbol">☉</span></li>
                 </ul>
             </div>            
@@ -642,7 +646,7 @@
             const themes = [
                 { label: "Daylight", dataTheme: "light-mode", icon: "○" },
                 { label: "Moonlight", dataTheme: "dark", icon: "●" },
-                { label: "Reader", dataTheme: "sepia", icon: "◐" },
+                { label: "Retro", dataTheme: "sepia", icon: "◐" },
                 { label: "Contrast", dataTheme: "high-contrast", icon: "☉" }
             ];
 

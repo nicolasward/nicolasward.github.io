@@ -33,18 +33,21 @@
         --contrast-text: #ffffff;
         --daylight-text: #686868;
         --retro-text: #000;
+        --reader-text: #6f6e69;
         
         /* ----- titles colour ----- */
         --moonlight-titles: #58CAF8;
         --contrast-titles:  #FD673A;
         --daylight-titles: #000000;
         --retro-titles: #C72828;
+        --reader-titles: #3AA99F;
 
         /* ----- background colour ----- */
         --moonlight-background: #111113;
         --contrast-background: #000000;
         --daylight-background: #ffffff;
         --retro-background: #F2DE71;
+        --reader-background: #FFFCF0;
         }
 
         /* ------------------ Beginning of Color Settings ------------------ */
@@ -226,39 +229,76 @@
 
         /* --- Retro settings --- */
 
-        .sepia {
+        .retro {
             background-color: var(--retro-background);
             color: var(--retro-text);
         }
 
-        .sepia a {
+        .retro a {
             color: var(--retro-text);
         }
 
-        .sepia .titles, .sepia .metadata, .sepia #expand-collapse-text, .sepia .button-container, .sepia .footer a {
+        .retro .titles, .retro .metadata, .retro #expand-collapse-text, .retro .button-container, .retro .footer a {
             color: var(--retro-titles);
         }
 
-        .sepia .horizontal-bar, .sepia .vertical-bar {
+        .retro .horizontal-bar, .retro .vertical-bar {
             background-color: var(--retro-titles);
         }
 
-        .sepia .theme-options {
+        .retro .theme-options {
             background: var(--retro-background);
             color: var(--retro-titles);
         }
 
-        .sepia .theme-options li:hover {
+        .retro .theme-options li:hover {
             background-color: var(--retro-titles);
             color: var(--retro-background);
         }
 
-        .sepia .update-text, .sepia .footer {
+        .retro .update-text, .retro .footer {
             color: #888;   
         }
 
-        .sepia .social-link:hover, .social-link:focus {
+        .retro .social-link:hover, .social-link:focus {
             text-decoration-color: transparent;
+        }
+
+        /* --- Reader settings --- */
+
+        .reader {
+            background-color: var(--reader-background);
+            color: var(--reader-text);
+        }
+
+        .reader a {
+            color: var(--reader-text);
+        }
+
+        .reader .titles, .reader .metadata, .reader #expand-collapse-text, .reader .button-container, .reader .footer a {
+            color: var(--reader-titles);
+        }
+
+        .reader .horizontal-bar, .reader .vertical-bar {
+            background-color: var(--reader-titles);
+        }
+
+        .reader .theme-options {
+            background: var(--reader-background);
+            color: var(--reader-titles);
+        }
+
+        .reader .theme-options li:hover {
+            background-color: var(--reader-titles);
+            color: var(--reader-background);
+        }
+
+        .reader .update-text, .reader .footer {
+            color: #888;   
+        }
+
+        .reader .social-link:hover, .social-link:focus {
+            color: var(--reader-titles);
         }
 
         /* ------------------ End of Color Settings ------------------ */
@@ -520,11 +560,11 @@
                 border-bottom: 2px solid var(--moonlight-titles);
             }
 
-            .sepia .theme-options {
+            .retro .theme-options {
                 border: 2px solid var(--retro-titles);
             }
 
-            .sepia .theme-options li:not(:last-child) {
+            .retro .theme-options li:not(:last-child) {
                 border-bottom: 2px solid var(--retro-titles);
             }
 
@@ -558,12 +598,13 @@
                 </div>
             </button>                
             <div id="toggle-mode" class="titles">
-                <span id="theme-select-trigger">Daylight <span class="circle-symbol">○</span></span>
+                <span id="theme-select-trigger">Daylight <span class="circle-symbol">☀︎</span></span>
                 <ul id="theme-options" class="theme-options" style="display: none;">
-                    <li data-theme="light-mode">Daylight <span class="circle-symbol">○</span></li>
+                    <li data-theme="light-mode">Daylight <span class="circle-symbol">☀︎</span></li>
                     <li data-theme="dark">Moonlight <span class="circle-symbol">●</span></li>
-                    <li data-theme="sepia">Retro <span class="circle-symbol">◐</span></li>
-                    <li data-theme="high-contrast">Contrast <span class="circle-symbol">☉</span></li>
+                    <li data-theme="retro">Retro <span class="circle-symbol">◐</span></li>
+                    <li data-theme="high-contrast">Contrast <span class="circle-symbol">☯︎</span></li>
+                    <li data-theme="reader">Reader <span class="circle-symbol">☉</span></li>
                 </ul>
             </div>            
         </div>   
@@ -644,10 +685,11 @@
             let selectedTheme = 'light-mode';
 
             const themes = [
-                { label: "Daylight", dataTheme: "light-mode", icon: "○" },
+                { label: "Daylight", dataTheme: "light-mode", icon: "☀︎" },
                 { label: "Moonlight", dataTheme: "dark", icon: "●" },
-                { label: "Retro", dataTheme: "sepia", icon: "◐" },
-                { label: "Contrast", dataTheme: "high-contrast", icon: "☉" }
+                { label: "Retro", dataTheme: "retro", icon: "◒︎" },
+                { label: "Contrast", dataTheme: "high-contrast", icon: "◍︎" },
+                { label: "Reader", dataTheme: "reader", icon: "⊙︎" }
             ];
 
             function populateDropdown(selected) {
@@ -679,7 +721,7 @@
 
                     setTimeout(() => {
                         // Change theme after blur
-                        document.body.classList.remove('light-mode', 'dark', 'sepia', 'high-contrast');
+                        document.body.classList.remove('light-mode', 'dark', 'retro', 'high-contrast', 'reader');
                         document.body.classList.add(selectedTheme);
                         themeTrigger.innerHTML = `${targetLi.childNodes[0].textContent.trim()} <span class="circle-symbol">${targetLi.childNodes[1].textContent}</span>`;
                         populateDropdown(selectedTheme);

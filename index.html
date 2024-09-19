@@ -19,7 +19,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-     <!-- Google Fonts CSS Link -->
+    <!-- Google Fonts CSS Link -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
 
     <!---------------------------------------------------------------------------------------------->
@@ -31,16 +31,16 @@
         /* ----- text colour ----- */
         --moonlight-text: #ffffff;
         --contrast-text: #ffffff;
-        --daylight-text: #686868;
+        --daylight-text: #6f7988;
         --retro-text: #000;
         --reader-text: #6f6e69;
         
         /* ----- titles colour ----- */
-        --moonlight-titles: #58CAF8;
+        --moonlight-titles: #00ccef;
         --contrast-titles:  #FD673A;
-        --daylight-titles: #000000;
+        --daylight-titles: #1c1d1f;
         --retro-titles: #C72828;
-        --reader-titles: #4C96CE;
+        --reader-titles: #16191b;
 
         /* ----- background colour ----- */
         --moonlight-background: #111113;
@@ -56,7 +56,7 @@
         
         body {
             background-color: var(--daylight-background);
-            color: var(--daylight-text);;
+            color: var(--daylight-text);
             font-family: "JetBrains Mono", monospace;
             font-weight: 400;
             transition: background-color 0.1s, color 0.1s;
@@ -87,6 +87,7 @@
             width: 90%;
             margin-top: 2%;
             margin-bottom: 1%;
+            z-index: 3;
         }
 
         .horizontal-bar, .vertical-bar {
@@ -110,7 +111,7 @@
             position: absolute;
             display: block;
             left: -10%;
-            top: 80%;
+            top: 140%;
             background: var(--daylight-background);
             color: var(--daylight-titles);
             min-width: 170px;
@@ -138,7 +139,7 @@
         }
 
         .light-mode .content ul li {
-            color: var(--daylight-text)
+            color: var(--daylight-text);
         }
 
         .light-mode .social-link {
@@ -174,7 +175,7 @@
         }
 
         .dark .content ul li, .dark .content ul li a, .dark .content a {
-            color: var(--moonlight-text)
+            color: var(--moonlight-text);
         }
 
         .dark .theme-options {
@@ -221,7 +222,7 @@
         }
 
         .high-contrast .content a {
-            color: var(--contrast-text)
+            color: var(--contrast-text);
         }
 
         .high-contrast .social-link:hover, .social-link:focus {
@@ -304,19 +305,16 @@
 
         /* ------------------ End of Color Settings ------------------ */
 
-        body.blurring {
-            filter: blur(3px);
-            transition: filter .1s;
-        }
-
-        body.blurred {
-            filter: blur(0);
-            transition: filter .1s;
+        .main-content.blurring {
+            filter: blur(7px);
+            transition: filter .2s;
+            position: relative;
+            z-index: 1;
         }
 
         #toggle-mode {
-            cursor: pointer;
-            position: static;
+            position: relative;
+            display: inline-block;
         }
 
         section {
@@ -447,10 +445,48 @@
             display: inline-block;
         }
 
+        #theme-line {
+            height: 1px;
+            background-color: currentColor;
+            position: absolute;
+            top: 120%;
+            display: none; /* Hidden by default */
+            width: 0; /* Initial width */
+            transition: width 0.2s ease-in-out;
+            left: 0%;
+        }
+
+        /* Define the keyframe animation */
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Initial state of the dropdown options */
+        .theme-options li {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        /* When the dropdown is open, animate the options */
+        #toggle-mode.dropdown-open .theme-options li {
+            animation: dropdownFadeIn 0.1s forwards;
+        }
+
         /* Media queries for responsive design */
         @media (max-width: 768px) {
             body, .update-text, .titles, .social-link, .email-alias, #expand-collapse-btn, #toggle-mode {
                 font-size: 18px;
+            }
+
+            #theme-line {
+                display: none !important;
             }
 
             body {
@@ -534,7 +570,7 @@
                 min-width: 150px;
                 box-sizing: border-box;
                 border: 2px solid var(--daylight-titles);
-                top: 120%;
+                top: calc(100% + 10px); /* Adjust this value */
             }
 
             .theme-options li {
@@ -584,108 +620,109 @@
             .high-contrast .theme-options li:not(:last-child) {
                 border-bottom: 2px solid var(--contrast-titles);
             }
-            
         }
     </style>
 </head>
 
 <!---------------------------------------------------------------------------------------------->
-<!-- Main Contents-->
+<!-- Main Contents -->
 <body>
-    <section id="metadata">
-        <p class="metadata"><a href="#" onclick="location.reload();" style="text-decoration: none; color: inherit;">NICO WARD</a></br>
-            <span class="update-text">Last updated Sept. 18, 2024.</span>
-        </p>
-    </section>
+    
+        <section id="metadata">
+            <div class="main-content">
+                <p class="metadata"><a href="#" onclick="location.reload();" style="text-decoration: none; color: inherit;">NICO WARD</a></br>
+                    <span class="update-text">Last updated Sept. 18, 2024.</span>
+                </p>
+            </div>
+        </section>
     <section id="buttons">
         <div class="button-container">
-            <button id="expand-collapse-btn">
+            <button id="expand-collapse-btn" class="main-content">
                 <span id="expand-collapse-text">Expand all</span>
                 <div id="plus-minus-toggle" class="plus">
                     <div class="horizontal-bar"></div>
                     <div class="vertical-bar"></div>
                 </div>
-            </button>                
+            </button>              
             <div id="toggle-mode" class="titles">
                 <span id="theme-select-trigger">Daylight <span class="circle-symbol">☀︎</span></span>
+                <div id="theme-line" style="display: none;"></div>
                 <ul id="theme-options" class="theme-options" style="display: none;">
-                    <li data-theme="light-mode">Daylight <span class="circle-symbol">☀︎</span></li>
-                    <li data-theme="dark">Moonlight <span class="circle-symbol">●</span></li>
-                    <li data-theme="reader">Reader <span class="circle-symbol">☉</span></li>
-                    <li data-theme="high-contrast">Contrast <span class="circle-symbol">☯︎</span></li>
-                    <li data-theme="retro">Tarantino <span class="circle-symbol">◐</span></li>
+                    <!-- The options will be populated by JavaScript -->
                 </ul>
-            </div>            
-        </div>   
-    </section>
-    <section id="bio">     
-        <div class="titles collapsible"><span class="arrow rotate">+</span> About me</div>
-        <div class="content show">
-        I'm an AI engineer, designer, and entrepreneur based in London, UK. </br>
-        I'm on a mission to build the best learning systems in the world. </br>
-        To this end, my interests fall into three broad categories:
-        <ul>
-            <li>Search, curation, discovery</li>
-            <li>Interfaces and <a href="https://www.youtube.com/watch?v=oUaOucZRlmE" class="social-link" target="blank">tools for thought</a></li>
-            <li>Education and personalisation</li>
-        </ul>
+            </div>
         </div>
     </section>
-    <section id="work">
-        <div class="titles collapsible"><span class="arrow">+</span> Work</div>
-        <div class="content">
-        My CV lives <a href="cv.pdf" class="social-link" target="blank">here</a>. In summary:
-        <ul>
-            <li>I'm currently a Senior AI Engineer at <a href="https://www.publicissapient.com/" class="social-link" target="blank">Publicis Sapient</a> AI Labs.</li>
-            <li>Previously, I was co-founder and CTO of <a href="https://www.imsurf.in/" class="social-link" target="blank">Surf</a>, a social matching engine.</li>
-            <li>I also spent time as a Behavioural Data Scientist at <a href="https://educai.io/" class="social-link" target="blank">Educai</a>, an edtech startup.</li>
-        </ul>
-        </div>
+    <div class="main-content">
+        <section id="bio">
+            <div class="titles collapsible"><span class="arrow rotate">+</span> About me</div>
+            <div class="content show">
+            I'm an AI engineer, designer, and entrepreneur based in London, UK. </br>
+            I'm on a mission to build the best learning systems in the world. </br>
+            To this end, my interests fall into three broad categories:
+            <ul>
+                <li>Search, curation, discovery</li>
+                <li>Interfaces and <a href="https://www.youtube.com/watch?v=oUaOucZRlmE" class="social-link" target="_blank">tools for thought</a></li>
+                <li>Education and personalisation</li>
+            </ul>
+            </div>
         </section>
-    <section id="writing">
-        <div class="titles collapsible"><span class="arrow">+</span> Writing</div>
-        <div class="content">
-            I curate a weekly <a href="https://nicoward.substack.com/" class="social-link" target="blank">newsletter</a> of my favourite essays and articles. </br>
-            Other writings include:
+        <section id="work">
+            <div class="titles collapsible"><span class="arrow">+</span> Work</div>
+            <div class="content">
+            My CV lives <a href="cv.pdf" class="social-link" target="_blank">here</a>. In summary:
             <ul>
-                <li><a href="https://nicoward.substack.com/p/on-creative-judgment" class="social-link" target="blank">On Creative Judgement</a></li>
-                <li><a href="https://nicoward.substack.com/p/10-principles-of-good-ai" class="social-link" target="blank">10 Principles of Good AI</a></li>
-                <li><a href="https://nicoward.substack.com/p/some-predictions-for-2024" class="social-link" target="blank">Some Predictions for 2024</a></li>
+                <li>I'm currently a Senior AI Engineer at <a href="https://www.publicissapient.com/" class="social-link" target="_blank">Publicis Sapient</a> AI Labs.</li>
+                <li>Previously, I was co-founder and CTO of <a href="https://www.imsurf.in/" class="social-link" target="_blank">Surf</a>, a social matching engine.</li>
+                <li>I also spent time as a Behavioural Data Scientist at <a href="https://educai.io/" class="social-link" target="_blank">Educai</a>, an edtech startup.</li>
             </ul>
-        </div>
-    </section>
-    <section id="links">
-        <div class="titles collapsible"><span class="arrow">+</span> Readings</div>
-        <div class="content">
-            <ul>
-                <li><a href="https://patrickcollison.com/fast" class="social-link" target="blank">Fast</a>, by Patrick Collison</li>
-                <li><a href="https://www.scottaaronson.com/writings/bignumbers.html" class="social-link" target="blank">Who Can Name the Biggest Number?</a>, by Scott Aaronson</li>
-                <li><a href="https://worrydream.com/#!2/LadderOfAbstraction" class="social-link" target="blank">Up and Down the Ladder of Abstraction</a>, by Bret Victor</li>
-                <li><a href="http://johnsalvatier.org/blog/2017/reality-has-a-surprising-amount-of-detail" class="social-link" target="blank">Reality has a surprising amount of detail</a>, by John Salvatier</li>
-                <li><a href="https://longnow.org/essays/richard-feynman-connection-machine/" class="social-link" target="blank">Richard Feynman and the Connection Machine</a>, by Daniel Hillis</li>
-            </ul>
-        </div>
-    </section>
-    <section id="socials">
-        <div class="titles collapsible"><span class="arrow">+</span> Contact</div>
-        <div class="content">
-        You can reach me on <a href="https://www.linkedin.com/in/nicolaswrd/" class="social-link" target="blank">LinkedIn</a>, <a href="https://twitter.com/neuralnico" class="social-link" target="blank">Twitter / X</a>, or via <a href="mailto:ward.nicolas@outlook.com" class="social-link email-alias">email</a>.
-        </div>
-    </section>
-    <section id="manifesto">
-        <div class="titles collapsible"><span class="arrow">+</span> About this page</div>
-        <div class="content">
-            This website is a personal design experiment. It was built with the following principles in mind:
-            <ul>
-                <li>Efficiency — everything is contained in a single html file.</li>
-                <li>Simplicity — the page tries to avoid unnecessary complexities. As simple as possible, but not simpler.</li>
-                <li>Accessibility — across colour sensitivities, bandwidth capabilities, and device types.</li>
-            </ul>
-        </div>
-    </section>
-    <section id="footer">
-        <div class="footer">Made with <a href="https://www.monmouthcoffee.co.uk/product/colombia-finca-las-palmeras/" title="good coffee" target="blank">&#9749;</a> in London, UK.</span>
-    </section>
+            </div>
+        </section>
+        <section id="writing">
+            <div class="titles collapsible"><span class="arrow">+</span> Writing</div>
+            <div class="content">
+                I curate a weekly <a href="https://nicoward.substack.com/" class="social-link" target="_blank">newsletter</a> of my favourite essays and articles. </br>
+                Other writings include:
+                <ul>
+                    <li><a href="https://nicoward.substack.com/p/on-creative-judgment" class="social-link" target="_blank">On Creative Judgement</a></li>
+                    <li><a href="https://nicoward.substack.com/p/10-principles-of-good-ai" class="social-link" target="_blank">10 Principles of Good AI</a></li>
+                    <li><a href="https://nicoward.substack.com/p/some-predictions-for-2024" class="social-link" target="_blank">Some Predictions for 2024</a></li>
+                </ul>
+            </div>
+        </section>
+        <section id="links">
+            <div class="titles collapsible"><span class="arrow">+</span> Readings</div>
+            <div class="content">
+                <ul>
+                    <li><a href="https://patrickcollison.com/fast" class="social-link" target="_blank">Fast</a>, by Patrick Collison</li>
+                    <li><a href="https://www.scottaaronson.com/writings/bignumbers.html" class="social-link" target="_blank">Who Can Name the Biggest Number?</a>, by Scott Aaronson</li>
+                    <li><a href="https://worrydream.com/#!2/LadderOfAbstraction" class="social-link" target="_blank">Up and Down the Ladder of Abstraction</a>, by Bret Victor</li>
+                    <li><a href="http://johnsalvatier.org/blog/2017/reality-has-a-surprising-amount-of-detail" class="social-link" target="_blank">Reality has a surprising amount of detail</a>, by John Salvatier</li>
+                    <li><a href="https://longnow.org/essays/richard-feynman-connection-machine/" class="social-link" target="_blank">Richard Feynman and the Connection Machine</a>, by Daniel Hillis</li>
+                </ul>
+            </div>
+        </section>
+        <section id="socials">
+            <div class="titles collapsible"><span class="arrow">+</span> Contact</div>
+            <div class="content">
+            You can reach me on <a href="https://www.linkedin.com/in/nicolaswrd/" class="social-link" target="_blank">LinkedIn</a>, <a href="https://twitter.com/neuralnico" class="social-link" target="_blank">Twitter / X</a>, or via <a href="mailto:ward.nicolas@outlook.com" class="social-link email-alias">email</a>.
+            </div>
+        </section>
+        <section id="manifesto">
+            <div class="titles collapsible"><span class="arrow">+</span> About this page</div>
+            <div class="content">
+                This website is a personal design experiment. It was built with the following principles in mind:
+                <ul>
+                    <li>Efficiency — everything is contained in a single html file.</li>
+                    <li>Simplicity — the page tries to avoid unnecessary complexities. As simple as possible, but not simpler.</li>
+                    <li>Accessibility — across colour sensitivities, bandwidth capabilities, and device types.</li>
+                </ul>
+            </div>
+        </section>
+        <section id="footer">
+            <div class="footer">Made with <a href="https://www.monmouthcoffee.co.uk/product/colombia-finca-las-palmeras/" title="good coffee" target="_blank">&#9749;</a> in London, UK.</div>
+        </section>
+    </div>
 
     <!---------------------------------------------------------------------------------------------->
     <!-- Animations and transitions -->
@@ -693,7 +730,10 @@
         document.addEventListener("DOMContentLoaded", function() {
             const themeTrigger = document.getElementById('theme-select-trigger');
             const themeOptionsContainer = document.getElementById('theme-options');
+            const themeLine = document.getElementById('theme-line');
             let selectedTheme = 'light-mode';
+
+            const mainContentElements = document.querySelectorAll('.main-content'); // Select all elements with class 'main-content'
 
             const themes = [
                 { label: "Daylight", dataTheme: "light-mode", icon: "☀︎" },
@@ -705,11 +745,16 @@
 
             function populateDropdown(selected) {
                 themeOptionsContainer.innerHTML = '';
-                themes.forEach(theme => {
+                themes.forEach((theme, index) => {
                     if (theme.dataTheme !== selected) {
                         const li = document.createElement('li');
                         li.setAttribute('data-theme', theme.dataTheme);
                         li.innerHTML = `${theme.label} <span class="circle-symbol">${theme.icon}</span>`;
+
+                        // Calculate delay based on index
+                        const delay = index * 0.05; // 0.05s delay between items
+                        li.style.animationDelay = `${delay}s`;
+
                         themeOptionsContainer.appendChild(li);
                     }
                 });
@@ -717,8 +762,64 @@
 
             populateDropdown(selectedTheme);
 
+            function setLineWidth() {
+                // Get all the dropdown options
+                const options = themeOptionsContainer.getElementsByTagName('li');
+                let maxWidth = 0;
+
+                // Create a temporary element to measure text width
+                const tempElement = document.createElement('span');
+                tempElement.style.visibility = 'hidden';
+                tempElement.style.whiteSpace = 'nowrap';
+                tempElement.style.fontFamily = window.getComputedStyle(themeTrigger).fontFamily;
+                tempElement.style.fontSize = window.getComputedStyle(themeTrigger).fontSize;
+                tempElement.style.fontWeight = window.getComputedStyle(themeTrigger).fontWeight;
+                document.body.appendChild(tempElement);
+
+                // Measure the width of each option
+                for (let i = 0; i < options.length; i++) {
+                    tempElement.textContent = options[i].textContent.trim();
+                    const width = tempElement.getBoundingClientRect().width;
+                    if (width > maxWidth) {
+                        maxWidth = width;
+                    }
+                }
+
+                // Remove the temporary element
+                document.body.removeChild(tempElement);
+
+                // Set the line width to the calculated maxWidth to trigger the animation
+                themeLine.style.width = maxWidth + 'px';
+            }
+
             themeTrigger.parentNode.addEventListener('click', function(event) {
-                themeOptionsContainer.style.display = themeOptionsContainer.style.display === 'block' ? 'none' : 'block';
+                const isDisplayed = themeOptionsContainer.style.display === 'block';
+                themeOptionsContainer.style.display = isDisplayed ? 'none' : 'block';
+
+                if (isDisplayed) {
+                    // Dropdown is being closed
+                    themeTrigger.parentNode.classList.remove('dropdown-open');
+                    themeLine.style.display = 'none';
+                    themeLine.style.width = '0'; // Reset the width
+
+                    // Remove blurring class when dropdown is closed
+                    mainContentElements.forEach(element => {
+                        element.classList.remove('blurring');
+                    });
+                } else {
+                    // Dropdown is being opened
+                    themeTrigger.parentNode.classList.add('dropdown-open');
+                    themeLine.style.display = 'block';
+                    themeLine.style.width = '0'; // Reset width before animation
+                    // Trigger a reflow to restart the animation
+                    void themeLine.offsetWidth;
+                    setLineWidth(); // This will set the line's width and trigger the animation
+
+                    // Add blurring class when dropdown is opened
+                    mainContentElements.forEach(element => {
+                        element.classList.add('blurring');
+                    });
+                }
                 event.stopPropagation();
             });
 
@@ -726,33 +827,70 @@
                 if (e.target.tagName === 'LI' || e.target.parentNode.tagName === 'LI') {
                     const targetLi = e.target.tagName === 'LI' ? e.target : e.target.parentNode;
                     selectedTheme = targetLi.getAttribute('data-theme');
-                    
-                    // Start blur transition
-                    document.body.classList.add('blurring');
 
-                    setTimeout(() => {
-                        // Change theme after blur
-                        document.body.classList.remove('light-mode', 'dark', 'retro', 'high-contrast', 'reader');
-                        document.body.classList.add(selectedTheme);
-                        themeTrigger.innerHTML = `${targetLi.childNodes[0].textContent.trim()} <span class="circle-symbol">${targetLi.childNodes[1].textContent}</span>`;
-                        populateDropdown(selectedTheme);
-                        themeOptionsContainer.style.display = 'none';
+                    // Change theme immediately
+                    document.body.classList.remove('light-mode', 'dark', 'retro', 'high-contrast', 'reader');
+                    document.body.classList.add(selectedTheme);
+                    themeTrigger.innerHTML = `${targetLi.childNodes[0].textContent.trim()} <span class="circle-symbol">${targetLi.childNodes[1].textContent}</span>`;
+                    populateDropdown(selectedTheme);
+                    themeOptionsContainer.style.display = 'none';
 
-                        // Remove blur transition
-                        document.body.classList.add('blurred');
-                        document.body.classList.remove('blurring');
+                    // Remove the 'dropdown-open' class
+                    themeTrigger.parentNode.classList.remove('dropdown-open');
+                    themeLine.style.display = 'none';
+                    themeLine.style.width = '0'; // Reset the width
 
-                        // Remove blurred class after transition
-                        setTimeout(() => {
-                            document.body.classList.remove('blurred');
-                        }, 300);
-                    }, 300);
+                    // Remove blurring class when theme is selected
+                    mainContentElements.forEach(element => {
+                        element.classList.remove('blurring');
+                    });
                 }
                 e.stopPropagation();
             });
 
             document.addEventListener('click', function() {
                 themeOptionsContainer.style.display = 'none';
+                themeTrigger.parentNode.classList.remove('dropdown-open');
+                themeLine.style.display = 'none';
+                themeLine.style.width = '0'; // Reset the width
+
+                // Remove blurring class when clicking outside
+                mainContentElements.forEach(element => {
+                    element.classList.remove('blurring');
+                });
+            });
+
+            themeOptionsContainer.addEventListener('click', function(e) {
+                if (e.target.tagName === 'LI' || e.target.parentNode.tagName === 'LI') {
+                    const targetLi = e.target.tagName === 'LI' ? e.target : e.target.parentNode;
+                    selectedTheme = targetLi.getAttribute('data-theme');
+
+                    // Change theme immediately
+                    document.body.classList.remove('light-mode', 'dark', 'retro', 'high-contrast', 'reader');
+                    document.body.classList.add(selectedTheme);
+                    themeTrigger.innerHTML = `${targetLi.childNodes[0].textContent.trim()} <span class="circle-symbol">${targetLi.childNodes[1].textContent}</span>`;
+                    populateDropdown(selectedTheme);
+                    themeOptionsContainer.style.display = 'none';
+
+                    // Remove the 'dropdown-open' class
+                    themeTrigger.parentNode.classList.remove('dropdown-open');
+                    themeLine.style.display = 'none';
+                    themeLine.style.width = '0'; // Reset the width
+
+                    // Remove blurring class when theme is selected
+                    mainContentElements.classList.remove('blurring');
+                }
+                e.stopPropagation();
+            });
+
+            document.addEventListener('click', function() {
+                themeOptionsContainer.style.display = 'none';
+                themeTrigger.parentNode.classList.remove('dropdown-open');
+                themeLine.style.display = 'none';
+                themeLine.style.width = '0'; // Reset the width
+
+                // Remove blurring class when clicking outside
+                mainContentElements.classList.remove('blurring');
             });
 
             var collapsibles = document.getElementsByClassName("collapsible");

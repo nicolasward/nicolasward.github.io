@@ -111,13 +111,14 @@
             position: absolute;
             display: block;
             left: -10%;
-            top: 150%;
+            top: 100%;
             background: var(--daylight-background);
             color: var(--daylight-titles);
-            min-width: 170px;
+            min-width: 130px;
             margin: 0%;
             padding: 0%;
             list-style: none;
+            z-index: 100; /* Ensure it appears on top */
         }
 
         .theme-options li:hover {
@@ -431,7 +432,7 @@
         }
 
         .theme-options li {
-            padding: 7% 6%;
+            padding: 5.5% 6%;
             white-space: nowrap;
             cursor: pointer;
         }
@@ -449,7 +450,7 @@
             height: 1px;
             background-color: currentColor;
             position: absolute;
-            top: 120%;
+            top: 90%;
             display: none; /* Hidden by default */
             width: 0; /* Initial width */
             transition: width 0.2s ease-in-out;
@@ -581,6 +582,11 @@
                 text-align: right;
             }
 
+            #theme-select-trigger:hover ~ .main-content,
+            .theme-options:hover ~ .main-content {
+                    filter: blur(20px);
+                }
+
             .theme-options li:not(:last-child) {
                 border-bottom: 2px solid var(--daylight-titles);
             }
@@ -631,12 +637,11 @@
 <!---------------------------------------------------------------------------------------------->
 <!-- Main Contents -->
 <body>
-    
-        <section id="metadata">
-            <p class="metadata"><a href="#" onclick="location.reload();" style="text-decoration: none; color: inherit;">NICO WARD</a></br>
-                <span class="update-text">Updated Sept. 20, 2024.</span>
-            </p>
-        </section>
+    <section id="metadata">
+        <p class="metadata"><a href="#" onclick="location.reload();" style="text-decoration: none; color: inherit;">NICO WARD</a></br>
+            <span class="update-text">Updated Sept. 20, 2024.</span>
+        </p>
+    </section>
     <section id="buttons">
         <div class="button-container">
             <button id="expand-collapse-btn" class="main-content">
@@ -733,10 +738,12 @@
             const themeTrigger = document.getElementById('theme-select-trigger');
             const themeOptionsContainer = document.getElementById('theme-options');
             const themeLine = document.getElementById('theme-line');
+            const themeWrapper = themeTrigger.parentNode; // The container holding the trigger and dropdown
+    
             let selectedTheme = 'light-mode';
-
+    
             const mainContentElements = document.querySelectorAll('.main-content'); // Select all elements with class 'main-content'
-
+    
             const themes = [
                 { label: "Daylight", dataTheme: "light-mode", icon: "☀︎" },
                 { label: "Moonlight", dataTheme: "dark", icon: "●" },
@@ -744,7 +751,7 @@
                 { label: "Contrast", dataTheme: "high-contrast", icon: "◍︎" },
                 { label: "Tarantino", dataTheme: "retro", icon: "◒︎" },
             ];
-
+    
             function populateDropdown(selected) {
                 themeOptionsContainer.innerHTML = '';
                 themes.forEach((theme, index) => {
@@ -752,24 +759,21 @@
                         const li = document.createElement('li');
                         li.setAttribute('data-theme', theme.dataTheme);
                         li.innerHTML = `${theme.label} <span class="circle-symbol">${theme.icon}</span>`;
-
-                        // Calculate delay based on index
-                        const delay = index * 0.05; // 0.05s delay between items
+    
+                        const delay = index * 0.05;
                         li.style.animationDelay = `${delay}s`;
-
+    
                         themeOptionsContainer.appendChild(li);
                     }
                 });
             }
-
+    
             populateDropdown(selectedTheme);
-
+    
             function setLineWidth() {
-                // Get all the dropdown options
                 const options = themeOptionsContainer.getElementsByTagName('li');
                 let maxWidth = 0;
-
-                // Create a temporary element to measure text width
+    
                 const tempElement = document.createElement('span');
                 tempElement.style.visibility = 'hidden';
                 tempElement.style.whiteSpace = 'nowrap';
@@ -777,8 +781,7 @@
                 tempElement.style.fontSize = window.getComputedStyle(themeTrigger).fontSize;
                 tempElement.style.fontWeight = window.getComputedStyle(themeTrigger).fontWeight;
                 document.body.appendChild(tempElement);
-
-                // Measure the width of each option
+    
                 for (let i = 0; i < options.length; i++) {
                     tempElement.textContent = options[i].textContent.trim();
                     const width = tempElement.getBoundingClientRect().width;
@@ -786,121 +789,127 @@
                         maxWidth = width;
                     }
                 }
-
-                // Remove the temporary element
+    
                 document.body.removeChild(tempElement);
-
-                // Set the line width to the calculated maxWidth to trigger the animation
+    
                 themeLine.style.width = maxWidth + 'px';
             }
-
-            themeTrigger.parentNode.addEventListener('click', function(event) {
-                const isDisplayed = themeOptionsContainer.style.display === 'block';
-                themeOptionsContainer.style.display = isDisplayed ? 'none' : 'block';
-
-                if (isDisplayed) {
-                    // Dropdown is being closed
-                    themeTrigger.parentNode.classList.remove('dropdown-open');
-                    themeLine.style.display = 'none';
-                    themeLine.style.width = '0'; // Reset the width
-
-                    // Remove blurring class when dropdown is closed
-                    mainContentElements.forEach(element => {
-                        element.classList.remove('blurring');
-                    });
-                } else {
-                    // Dropdown is being opened
+    
+            // Event listeners for hover on both the trigger and the dropdown itself
+            function handleDesktopHover() {
+                // When hovering over the "Daylight" button or the dropdown menu
+                themeWrapper.addEventListener('mouseenter', function(event) {
+                    themeOptionsContainer.style.display = 'block';
                     themeTrigger.parentNode.classList.add('dropdown-open');
                     themeLine.style.display = 'block';
-                    themeLine.style.width = '0'; // Reset width before animation
-                    // Trigger a reflow to restart the animation
+                    themeLine.style.width = '0';
                     void themeLine.offsetWidth;
-                    setLineWidth(); // This will set the line's width and trigger the animation
-
-                    // Add blurring class when dropdown is opened
+                    setLineWidth();
+    
                     mainContentElements.forEach(element => {
                         element.classList.add('blurring');
                     });
+                });
+    
+                // When leaving both the button and the dropdown menu
+                themeWrapper.addEventListener('mouseleave', function(event) {
+                    themeOptionsContainer.style.display = 'none';
+                    themeTrigger.parentNode.classList.remove('dropdown-open');
+                    themeLine.style.display = 'none';
+                    themeLine.style.width = '0';
+    
+                    mainContentElements.forEach(element => {
+                        element.classList.remove('blurring');
+                    });
+                });
+            }
+    
+            // Handle both desktop hover and mobile click
+            function handleMobileClick() {
+                themeTrigger.parentNode.addEventListener('click', function(event) {
+                    const isDisplayed = themeOptionsContainer.style.display === 'block';
+                    themeOptionsContainer.style.display = isDisplayed ? 'none' : 'block';
+    
+                    if (isDisplayed) {
+                        themeTrigger.parentNode.classList.remove('dropdown-open');
+                        themeLine.style.display = 'none';
+                        themeLine.style.width = '0';
+    
+                        mainContentElements.forEach(element => {
+                            element.classList.remove('blurring');
+                        });
+                    } else {
+                        themeTrigger.parentNode.classList.add('dropdown-open');
+                        themeLine.style.display = 'block';
+                        themeLine.style.width = '0';
+                        void themeLine.offsetWidth;
+                        setLineWidth();
+    
+                        mainContentElements.forEach(element => {
+                            element.classList.add('blurring');
+                        });
+                    }
+                    event.stopPropagation();
+                });
+    
+                document.addEventListener('click', function() {
+                    themeOptionsContainer.style.display = 'none';
+                    themeTrigger.parentNode.classList.remove('dropdown-open');
+                    themeLine.style.display = 'none';
+                    themeLine.style.width = '0';
+    
+                    mainContentElements.forEach(element => {
+                        element.classList.remove('blurring');
+                    });
+                });
+            }
+    
+            // Media query to detect desktop vs mobile
+            function setEventListenersBasedOnScreen() {
+                const mediaQuery = window.matchMedia('(min-width: 769px)');
+                if (mediaQuery.matches) {
+                    handleDesktopHover();
+                } else {
+                    handleMobileClick();
                 }
-                event.stopPropagation();
-            });
-
+    
+                mediaQuery.addEventListener('change', (e) => {
+                    if (e.matches) {
+                        handleDesktopHover();
+                    } else {
+                        handleMobileClick();
+                    }
+                });
+            }
+    
+            setEventListenersBasedOnScreen();
+    
             themeOptionsContainer.addEventListener('click', function(e) {
                 if (e.target.tagName === 'LI' || e.target.parentNode.tagName === 'LI') {
                     const targetLi = e.target.tagName === 'LI' ? e.target : e.target.parentNode;
                     selectedTheme = targetLi.getAttribute('data-theme');
-
-                    // Change theme immediately
+    
                     document.body.classList.remove('light-mode', 'dark', 'retro', 'high-contrast', 'reader');
                     document.body.classList.add(selectedTheme);
                     themeTrigger.innerHTML = `${targetLi.childNodes[0].textContent.trim()} <span class="circle-symbol">${targetLi.childNodes[1].textContent}</span>`;
                     populateDropdown(selectedTheme);
                     themeOptionsContainer.style.display = 'none';
-
-                    // Remove the 'dropdown-open' class
                     themeTrigger.parentNode.classList.remove('dropdown-open');
                     themeLine.style.display = 'none';
-                    themeLine.style.width = '0'; // Reset the width
-
-                    // Remove blurring class when theme is selected
+                    themeLine.style.width = '0';
+    
                     mainContentElements.forEach(element => {
                         element.classList.remove('blurring');
                     });
                 }
                 e.stopPropagation();
             });
-
-            document.addEventListener('click', function() {
-                themeOptionsContainer.style.display = 'none';
-                themeTrigger.parentNode.classList.remove('dropdown-open');
-                themeLine.style.display = 'none';
-                themeLine.style.width = '0'; // Reset the width
-
-                // Remove blurring class when clicking outside
-                mainContentElements.forEach(element => {
-                    element.classList.remove('blurring');
-                });
-            });
-
-            themeOptionsContainer.addEventListener('click', function(e) {
-                if (e.target.tagName === 'LI' || e.target.parentNode.tagName === 'LI') {
-                    const targetLi = e.target.tagName === 'LI' ? e.target : e.target.parentNode;
-                    selectedTheme = targetLi.getAttribute('data-theme');
-
-                    // Change theme immediately
-                    document.body.classList.remove('light-mode', 'dark', 'retro', 'high-contrast', 'reader');
-                    document.body.classList.add(selectedTheme);
-                    themeTrigger.innerHTML = `${targetLi.childNodes[0].textContent.trim()} <span class="circle-symbol">${targetLi.childNodes[1].textContent}</span>`;
-                    populateDropdown(selectedTheme);
-                    themeOptionsContainer.style.display = 'none';
-
-                    // Remove the 'dropdown-open' class
-                    themeTrigger.parentNode.classList.remove('dropdown-open');
-                    themeLine.style.display = 'none';
-                    themeLine.style.width = '0'; // Reset the width
-
-                    // Remove blurring class when theme is selected
-                    mainContentElements.classList.remove('blurring');
-                }
-                e.stopPropagation();
-            });
-
-            document.addEventListener('click', function() {
-                themeOptionsContainer.style.display = 'none';
-                themeTrigger.parentNode.classList.remove('dropdown-open');
-                themeLine.style.display = 'none';
-                themeLine.style.width = '0'; // Reset the width
-
-                // Remove blurring class when clicking outside
-                mainContentElements.classList.remove('blurring');
-            });
-
+    
             var collapsibles = document.getElementsByClassName("collapsible");
             var expandCollapseBtn = document.getElementById("expand-collapse-btn");
-            var plusMinusToggle = document.getElementById('plus-minus-toggle');
-            var verticalBar = plusMinusToggle.querySelector('.vertical-bar');
+            var verticalBar = document.getElementById('plus-minus-toggle').querySelector('.vertical-bar');
             var buttonText = document.getElementById("expand-collapse-text");
-
+    
             function checkIfAllExpanded() {
                 for (var i = 0; i < collapsibles.length; i++) {
                     if (!collapsibles[i].nextElementSibling.classList.contains("show")) {
@@ -909,13 +918,13 @@
                 }
                 return true;
             }
-
+    
             function updateExpandCollapseButtonState() {
                 var allExpanded = checkIfAllExpanded();
                 buttonText.textContent = allExpanded ? 'Collapse all' : 'Expand all';
                 verticalBar.classList.toggle('rotate', allExpanded);
             }
-
+    
             function toggleSections(expand) {
                 for (var i = 0; i < collapsibles.length; i++) {
                     var content = collapsibles[i].nextElementSibling;
@@ -931,13 +940,13 @@
                     }
                 }
             }
-
+    
             expandCollapseBtn.addEventListener('click', function() {
                 var isAllExpanded = checkIfAllExpanded();
                 toggleSections(!isAllExpanded);
                 updateExpandCollapseButtonState();
             });
-
+    
             for (var i = 0; i < collapsibles.length; i++) {
                 collapsibles[i].addEventListener("click", function() {
                     this.classList.toggle("active");
@@ -955,12 +964,12 @@
                     updateExpandCollapseButtonState();
                 });
             }
-
+    
             var aboutMeSection = document.getElementById("bio").querySelector(".content");
             aboutMeSection.style.maxHeight = aboutMeSection.scrollHeight + "px";
-
+    
             updateExpandCollapseButtonState();
         });
-    </script>  
+    </script>                
 </body>
 </html>

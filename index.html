@@ -55,8 +55,8 @@
         /* --- Default settings --- */
         
         body {
-            background-color: var(--daylight-background);
-            color: var(--daylight-text);
+            background-color: var(--moonlight-background);
+            color: var(--moonlight-text);
             font-family: "JetBrains Mono", monospace;
             font-weight: 400;
             transition: background-color 0.1s, color 0.1s;
@@ -64,24 +64,24 @@
         }
 
         .titles {
-            color: var(--daylight-titles);
+            color: var(--moonlight-titles);
             max-width: 50%;
         }
 
         .metadata {
-            color: var(--daylight-titles);
+            color: var(--moonlight-titles);
             padding-left: .4%;
         }
 
         .footer a {
             text-decoration: none;
-            color: var(--daylight-titles);
+            color: var(--moonlight-titles);
         }
 
         .button-container {
             position: relative;
             display: flex;
-            color: var(--daylight-titles);
+            color: var(--moonlight-titles);
             flex-direction: row;
             justify-content: space-between;
             width: 90%;
@@ -91,19 +91,19 @@
         }
 
         .horizontal-bar, .vertical-bar {
-            background-color: var(--daylight-titles);
+            background-color: var(--moonlight-titles);
             position: absolute;
         }
 
         .social-link {
-            color: var(--daylight-text);
+            color: var(--moonlight-text);
             text-decoration: underline;
             transition: text-decoration-color 0.1s, color 0.1s;
         }
 
         .social-link:hover {
             text-decoration: underline;
-            color: var(--daylight-titles);
+            color: var(--moonlight-titles);
             transition: text-decoration-color 0.1s, color 0.1s;
         }
 
@@ -112,8 +112,8 @@
             display: block;
             left: -7.2%;
             top: 100%;
-            background: var(--daylight-background);
-            color: var(--daylight-titles);
+            background: var(--moonlight-background);
+            color: var(--moonlight-titles);
             min-width: 130px;
             margin: 0%;
             padding: 0%;
@@ -122,8 +122,8 @@
         }
 
         .theme-options li:hover {
-            background-color: var(--daylight-titles);
-            color: var(--daylight-background);
+            background-color: var(--moonlight-titles);
+            color: var(--moonlight-background);
             border-radius: 2px;
         }
 
@@ -639,7 +639,7 @@
 <body>
     <section id="metadata">
         <p class="metadata"><a href="#" onclick="location.reload();" style="text-decoration: none; color: inherit;">NICO WARD</a></br>
-            <span class="update-text">Last updated: Dec. 12, 2024.</span>
+            <span class="update-text">Last updated: Jan. 30, 2025.</span>
         </p>
     </section>
     <section id="buttons">
@@ -652,7 +652,7 @@
                 </div>
             </button>              
             <div id="toggle-mode" class="titles">
-                <span id="theme-select-trigger">Daylight <span class="circle-symbol">☀︎</span></span>
+                <span id="theme-select-trigger">Moonlight <span class="circle-symbol">●</span></span>
                 <div id="theme-line" style="display: none;"></div>
                 <ul id="theme-options" class="theme-options" style="display: none;">
                     <!-- The options will be populated by JavaScript -->
@@ -665,8 +665,7 @@
             <div class="titles collapsible"><span class="arrow rotate">+</span> About me</div>
             <div class="content show">
             I'm an AI engineer, designer, and entrepreneur based in London, UK. </br>
-            My focus is on augmented learning, teaching, and human performance. </br>
-            As such, my interests fall into three broad categories:
+            My interests fall broadly into 3 categories:
             <ul>
                 <li>Search, curation, discovery</li>
                 <li>Interfaces and <a href="https://www.youtube.com/watch?v=oUaOucZRlmE" class="social-link" target="_blank">tools for thought</a></li>
@@ -753,7 +752,7 @@
             const themeLine = document.getElementById('theme-line');
             const themeWrapper = themeTrigger.parentNode; // The container holding the trigger and dropdown
     
-            let selectedTheme = 'light-mode';
+            let selectedTheme = 'dark';
     
             const mainContentElements = document.querySelectorAll('.main-content'); // Select all elements with class 'main-content'
     

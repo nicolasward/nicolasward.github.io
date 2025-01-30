@@ -64,24 +64,20 @@
         }
 
         .titles {
-            color: var(--moonlight-titles);
             max-width: 50%;
         }
 
         .metadata {
-            color: var(--moonlight-titles);
             padding-left: .4%;
         }
 
         .footer a {
             text-decoration: none;
-            color: var(--moonlight-titles);
         }
 
         .button-container {
             position: relative;
             display: flex;
-            color: var(--moonlight-titles);
             flex-direction: row;
             justify-content: space-between;
             width: 90%;
@@ -96,14 +92,12 @@
         }
 
         .social-link {
-            color: var(--moonlight-text);
             text-decoration: underline;
-            transition: text-decoration-color 0.1s, color 0.1s;
+            color: var(--moonlight-text);
         }
 
         .social-link:hover {
-            text-decoration: underline;
-            color: var(--moonlight-titles);
+            text-decoration-color: transparent;
             transition: text-decoration-color 0.1s, color 0.1s;
         }
 
@@ -123,8 +117,16 @@
 
         .theme-options li:hover {
             background-color: var(--moonlight-titles);
-            color: var(--moonlight-background);
             border-radius: 2px;
+            color: var(--moonlight-background);
+        }
+
+        .theme-options .social-link:hover, .social-link:focus {
+            text-decoration-color: transparent;
+        }
+
+        footer a, .social-link:hover, .metadata, .button-container, .horizontal-bar, .vertical-bar, .titles {
+            color: var(--moonlight-titles);
         }
 
         /* --- Light mode settings --- */
@@ -134,10 +136,13 @@
             color: var(--daylight-text);
         }
 
-        .light-mode .footer a, .light-mode .titles, .light-mode .metadata, .light-mode .button-container, 
-        .light-mode .horizontal-bar, .light-mode .vertical-bar {
+        .light-mode .footer a, .light-mode .titles, .light-mode .metadata, .light-mode .button-container {
             color: var(--daylight-titles);
         }
+
+        .light-mode .horizontal-bar, .light-mode .vertical-bar {
+            background-color: var(--daylight-titles);
+        }        
 
         .light-mode .content ul li {
             color: var(--daylight-text);
@@ -149,7 +154,8 @@
         }
 
         .light-mode .social-link:hover {
-            text-decoration: underline;
+            text-decoration-color: transparent;
+            transition: text-decoration-color 0.1s, color 0.1s;
             color: var(--daylight-titles);
         }
 
@@ -195,6 +201,8 @@
 
         .dark .social-link:hover, .social-link:focus {
             text-decoration-color: transparent;
+            transition: text-decoration-color 0.1s, color 0.1s;
+            color: var(--moonlight-titles);
         }
 
         /* --- Contrast settings --- */
@@ -228,6 +236,8 @@
 
         .high-contrast .social-link:hover, .social-link:focus {
             text-decoration-color: transparent;
+            color: var(--contrast-titles);
+            transition: text-decoration-color 0.1s, color 0.1s;
         }
 
         /* --- Retro settings --- */
@@ -263,8 +273,10 @@
             color: #888;   
         }
 
-        .retro .social-link:hover, .social-link:focus {
+        .retro .social-link:hover, .retro .social-link:focus {
             text-decoration-color: transparent;
+            transition: text-decoration-color 0.1s, color 0.1s;
+            color: var(--retro-titles);
         }
 
         /* --- Reader settings --- */

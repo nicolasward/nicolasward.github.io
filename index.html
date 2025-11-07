@@ -1,999 +1,285 @@
-<!-- 
-    Author: Nico Ward
-    Theme: Feynman
-    Website: https://nicolasward.github.io/
-    Created: 7 February 2024
--->
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <!-- Meta tags for responsiveness and character encoding -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Page Title -->
-    <title>Nico Ward</title>
-
-    <!-- Google Fonts Preconnect -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <!-- Google Fonts CSS Link -->
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
-
-    <!---------------------------------------------------------------------------------------------->
-    <!-- Styles -->
-    <style>
-
-        /* Setting some global variables for modularity */
-        :root {
-        /* ----- text colour ----- */
-        --moonlight-text: #ffffff;
-        --contrast-text: #ffffff;
-        --daylight-text: #6f7988;
-        --retro-text: #000;
-        --reader-text: #6f6e69;
-        
-        /* ----- titles colour ----- */
-        --moonlight-titles: #00ccef;
-        --contrast-titles:  #48ff7c;
-        --daylight-titles: #1c1d1f;
-        --retro-titles: #C72828;
-        --reader-titles: #16191b;
-
-        /* ----- background colour ----- */
-        --moonlight-background: #111;
-        --contrast-background: #000000;
-        --daylight-background: #ffffff;
-        --retro-background: #F2DE71;
-        --reader-background: #FFFCF0;
-        }
-
-        /* ------------------ Beginning of Color Settings ------------------ */
-
-        /* --- Default settings --- */
-        
-        body {
-            background-color: var(--moonlight-background);
-            color: var(--moonlight-text);
-            font-family: "JetBrains Mono", monospace;
-            font-weight: 400;
-            transition: background-color 0.1s, color 0.1s;
-            margin: 6% 0 5% 6%;
-        }
-
-        .titles {
-            max-width: 50%;
-        }
-
-        .metadata {
-            padding-left: .4%;
-        }
-
-        .footer a {
-            text-decoration: none;
-        }
-
-        .button-container {
-            position: relative;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            width: 90%;
-            margin-top: 2%;
-            margin-bottom: 1%;
-            z-index: 3;
-        }
-
-        .horizontal-bar, .vertical-bar {
-            background-color: var(--moonlight-titles);
-            position: absolute;
-        }
-
-        .social-link {
-            text-decoration: underline;
-            color: var(--moonlight-text);
-        }
-
-        .social-link:hover {
-            text-decoration-color: transparent;
-            transition: text-decoration-color 0.1s, color 0.1s;
-        }
-
-        .theme-options {
-            position: absolute;
-            display: block;
-            left: -7.2%;
-            top: 100%;
-            background: var(--moonlight-background);
-            color: var(--moonlight-titles);
-            min-width: 130px;
-            margin: 0%;
-            padding: 0%;
-            list-style: none;
-            z-index: 100; /* Ensure it appears on top */
-        }
-
-        .theme-options li:hover {
-            background-color: var(--moonlight-titles);
-            border-radius: 2px;
-            color: var(--moonlight-background);
-        }
-
-        .theme-options .social-link:hover, .social-link:focus {
-            text-decoration-color: transparent;
-        }
-
-        footer a, .social-link:hover, .metadata, .button-container, .horizontal-bar, .vertical-bar, .titles {
-            color: var(--moonlight-titles);
-        }
-
-        /* --- Light mode settings --- */
-
-        .light-mode {
-            background-color: var(--daylight-background);
-            color: var(--daylight-text);
-        }
-
-        .light-mode .footer a, .light-mode .titles, .light-mode .metadata, .light-mode .button-container {
-            color: var(--daylight-titles);
-        }
-
-        .light-mode .horizontal-bar, .light-mode .vertical-bar {
-            background-color: var(--daylight-titles);
-        }        
-
-        .light-mode .content ul li {
-            color: var(--daylight-text);
-        }
-
-        .light-mode .social-link {
-            color: var(--daylight-text);
-            text-decoration: underline;
-        }
-
-        .light-mode .social-link:hover {
-            text-decoration-color: transparent;
-            transition: text-decoration-color 0.1s, color 0.1s;
-            color: var(--daylight-titles);
-        }
-
-        .light-mode .theme-options {
-            background: var(--daylight-background);
-            color: var(--daylight-titles);
-        }
-
-        .light-mode .theme-options li:hover {
-            background-color: var(--daylight-titles);
-            color: var(--daylight-background);
-        }
-
-        /* --- Dark mode settings --- */        
-
-        .dark {
-            background-color: var(--moonlight-background);
-            color: var(--moonlight-text);
-        }
-
-        .dark .footer a, .dark .titles, .dark .social-link, .dark .metadata, .dark .button-container, 
-        .dark .horizontal-bar, .dark .vertical-bar {
-            color: var(--moonlight-titles);
-        }
-
-        .dark .content ul li, .dark .content ul li a, .dark .content a {
-            color: var(--moonlight-text);
-        }
-
-        .dark .theme-options {
-            background: var(--moonlight-background);
-            color: var(--moonlight-titles);
-        }
-
-        .dark .theme-options li:hover {
-            background-color: var(--moonlight-titles);
-            color: var(--moonlight-background);
-        }
-
-        .dark .horizontal-bar, .dark .vertical-bar {
-            background-color: var(--moonlight-titles);
-        }
-
-        .dark .social-link:hover, .social-link:focus {
-            text-decoration-color: transparent;
-            transition: text-decoration-color 0.1s, color 0.1s;
-            color: var(--moonlight-titles);
-        }
-
-        /* --- Contrast settings --- */
-
-        .high-contrast {
-            background-color: var(--contrast-background);
-            color: var(--contrast-text);
-        }
-
-        .high-contrast .titles, .high-contrast .metadata, .high-contrast #expand-collapse-text, .high-contrast .button-container, .high-contrast .footer a {
-            color: var(--contrast-titles);
-        }
-
-        .high-contrast .horizontal-bar, .high-contrast .vertical-bar {
-            background-color: var(--contrast-titles);
-        }
-
-        .high-contrast .theme-options {
-            background: var(--contrast-background);
-            color: var(--contrast-titles);
-        }
-
-        .high-contrast .theme-options li:hover {
-            background-color: var(--contrast-titles);
-            color: var(--contrast-background);
-        }
-
-        .high-contrast .content a {
-            color: var(--contrast-text);
-        }
-
-        .high-contrast .social-link:hover, .social-link:focus {
-            text-decoration-color: transparent;
-            color: var(--contrast-titles);
-            transition: text-decoration-color 0.1s, color 0.1s;
-        }
-
-        /* --- Retro settings --- */
-
-        .retro {
-            background-color: var(--retro-background);
-            color: var(--retro-text);
-        }
-
-        .retro a {
-            color: var(--retro-text);
-        }
-
-        .retro .titles, .retro .metadata, .retro #expand-collapse-text, .retro .button-container, .retro .footer a {
-            color: var(--retro-titles);
-        }
-
-        .retro .horizontal-bar, .retro .vertical-bar {
-            background-color: var(--retro-titles);
-        }
-
-        .retro .theme-options {
-            background: var(--retro-background);
-            color: var(--retro-titles);
-        }
-
-        .retro .theme-options li:hover {
-            background-color: var(--retro-titles);
-            color: var(--retro-background);
-        }
-
-        .retro .update-text, .retro .footer {
-            color: #888;   
-        }
-
-        .retro .social-link:hover, .retro .social-link:focus {
-            text-decoration-color: transparent;
-            transition: text-decoration-color 0.1s, color 0.1s;
-            color: var(--retro-titles);
-        }
-
-        /* --- Reader settings --- */
-
-        .reader {
-            background-color: var(--reader-background);
-            color: var(--reader-text);
-        }
-
-        .reader a {
-            color: var(--reader-text);
-        }
-
-        .reader .titles, .reader .metadata, .reader #expand-collapse-text, .reader .button-container, .reader .footer a {
-            color: var(--reader-titles);
-        }
-
-        .reader .horizontal-bar, .reader .vertical-bar {
-            background-color: var(--reader-titles);
-        }
-
-        .reader .theme-options {
-            background: var(--reader-background);
-            color: var(--reader-titles);
-        }
-
-        .reader .theme-options li:hover {
-            background-color: var(--reader-titles);
-            color: var(--reader-background);
-        }
-
-        .reader .update-text, .reader .footer {
-            color: #888;   
-        }
-
-        .reader .social-link:hover, .social-link:focus {
-            color: var(--reader-titles);
-        }
-
-        /* ------------------ End of Color Settings ------------------ */
-
-        .main-content.blurring {
-            filter: blur(20px);
-            transition: filter .2s;
-            position: relative;
-            z-index: 1;
-        }
-
-        #toggle-mode {
-            position: relative;
-            display: inline-block;
-        }
-
-        section {
-            margin: 20px 0;
-            line-height: 1.5;
-        }
-
-        .circle-symbol {
-            vertical-align: 3.5%;
-        }
-
-        .update-text {
-            color: #a5a5a5;   
-        }
-
-        .footer {
-            color: #a5a5a5;
-            padding-left: .4%;
-        }
-
-        .email-alias:hover {
-            cursor: alias;
-        }
-
-        .collapsible {
-            cursor: pointer;
-            padding: 5px;
-            width: auto;
-            border: none;
-            text-align: left;
-            outline: none;
-            font-size: 15px;
-        }
-
-        .content {
-            overflow: hidden;
-            transition: max-height 0.15s ease-in-out;
-            max-height: 0;
-            line-height: 1.5;
-            padding-left: 1.7%;
-        }
-
-        .show {
-            max-height: 1000px;
-        }
-
-        .arrow {
-            display: inline-block;
-            transition: transform .2s;
-        }
-
-        .rotate {
-            transform: rotate(135deg);
-        }
-
-        #expand-collapse-btn {
-            background: none;
-            border: none;
-            color: inherit;
-            font: inherit;
-            cursor: pointer;
-            padding-bottom: 1%;
-            display: flex;
-            align-items: center;
-        }
-
-        .content ul {
-            list-style-type: disc;
-            padding-left: 40px;
-            margin-left: 0;
-            margin-top: .1%;
-            margin-bottom: 0;
-        }
-
-        .content {
-            padding-left: 1.7%;
-        }
-
-        #plus-minus-toggle {
-            cursor: pointer;
-            width: 20px;
-            height: 20px;
-            position: relative;
-            display: inline-block;
-            left: 10%;
-            top: -10%;
-        }
-
-        .horizontal-bar {
-            width: 8px;
-            height: 2px;
-            top: 50%;
-            transform: translate(0%, 50%);
-        }
-
-        .vertical-bar {
-            width: 2px; 
-            height: 8px; 
-            top: 40%; 
-            left: 3px;
-            transition: transform 0.3s ease; 
-        }
-
-        #plus-minus-toggle .vertical-bar.rotate {
-            transform: rotate(90deg);
-        }
-
-        #theme-select-trigger {
-            position: relative;
-            display: block;
-            cursor: pointer;
-            padding: 0;
-            margin: 0;
-        }
-
-        .theme-options li {
-            padding: 5.5% 6%;
-            white-space: nowrap;
-            cursor: pointer;
-        }
-
-        .theme-options li.selected {
-            display: none;
-        }
-
-        #toggle-mode {
-            position: relative;
-            display: inline-block;
-        }
-
-        #theme-line {
-            height: 1px;
-            background-color: currentColor;
-            position: absolute;
-            top: 90%;
-            display: none; /* Hidden by default */
-            width: 0; /* Initial width */
-            transition: width 0.2s ease-in-out;
-            left: 0%;
-        }
-
-        /* Define the keyframe animation */
-        @keyframes dropdownFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Initial state of the dropdown options */
-        .theme-options li {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-
-        /* When the dropdown is open, animate the options */
-        #toggle-mode.dropdown-open .theme-options li {
-            animation: dropdownFadeIn 0.1s forwards;
-        }
-
-        /* Media queries for responsive design */
-        @media (max-width: 768px) {
-            body, .update-text, .titles, .social-link, .email-alias, #expand-collapse-btn, #toggle-mode {
-                font-size: 17px;
-            }
-
-            #theme-line {
-                display: none !important;
-            }
-
-            .main-content.blurring {
-                backdrop-filter: blur(10px);
-            }
-
-            body {
-                overflow-x: hidden;
-            }
-
-            .titles {
-                max-width: 100%;
-            }
-
-            .metadata {
-                font-weight: 500;
-                margin-top: 13%;
-            }
-
-            .update-text {
-                font-weight: 400;
-            }
-
-            .collapsible {
-                font-size: 17px;
-            }
-
-            .content ul {
-                padding-left: 0;
-                list-style: none;
-                margin-top: 2%;
-            }
-
-            .content ul li {
-                position: relative;
-                padding-left: 1.7%;
-                margin-left: 20px;
-            }
-
-            .content ul li:before {
-                content: '• ';
-                position: absolute;
-                left: -20px;
-            }
-
-            .button-container {
-                flex-direction: row;
-                align-items: flex-start; 
-                margin-bottom: 4%;
-            }
-
-            #toggle-mode, #expand-collapse-btn {
-                margin: 0;
-                padding-left: 1.7%;
-                width: auto;
-                max-width: 90%;
-            }
-
-            .content, .metadata, .footer {
-                padding-left: 7%;
-                padding-right: 9%;
-            }
-
-            .metadata, .footer {
-                padding-left: 1.7%;
-            }
-
-            .footer {
-                padding-bottom: 7%;
-            }
-
-            #plus-minus-toggle {
-                left: 10%;
-                margin-top: -3%;
-            }
-
-            .circle-symbol {
-                vertical-align: 3%;
-            }
-
-            .theme-options {
-                left: 60%;
-                transform: translateX(-96px);
-                width: auto;
-                min-width: 150px;
-                box-sizing: border-box;
-                border: 2px solid var(--daylight-titles);
-                top: calc(100% + 10px); /* Adjust this value */
-            }
-
-            .theme-options li {
-                text-align: right;
-            }
-
-            #theme-select-trigger:hover ~ .main-content,
-            .theme-options:hover ~ .main-content {
-                backdrop-filter: blur(20px);
-            }
-
-            .theme-options li:not(:last-child) {
-                border-bottom: 2px solid var(--daylight-titles);
-            }
-
-            .light-mode .theme-options {
-                border: 2px solid var(--daylight-titles);
-            }
-
-            .light-mode .theme-options li:not(:last-child) {
-                border-bottom: 2px solid var(--daylight-titles);
-            }
-
-            .dark .theme-options {
-                border: 2px solid var(--moonlight-titles);
-            }
-
-            .dark .theme-options li:not(:last-child) {
-                border-bottom: 2px solid var(--moonlight-titles);
-            }
-
-            .retro .theme-options {
-                border: 2px solid var(--retro-titles);
-            }
-
-            .retro .theme-options li:not(:last-child) {
-                border-bottom: 2px solid var(--retro-titles);
-            }
-
-            .reader .theme-options {
-                border: 2px solid var(--reader-titles);
-            }
-
-            .reader .theme-options li:not(:last-child) {
-                border-bottom: 2px solid var(--reader-titles);
-            }
-
-            .high-contrast .theme-options {
-                border: 2px solid var(--contrast-titles);
-            }
-
-            .high-contrast .theme-options li:not(:last-child) {
-                border-bottom: 2px solid var(--contrast-titles);
-            }
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>nw</title>
+
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root { --noise-size: 220px; --noise-opacity: .4; }
+
+/* ---------------- Base ---------------- */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: "Noto Serif KR", serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: radial-gradient(120% 120% at 50% 100%, #ffffff 0%, #f8fafc 60%, #ffffff 100%);
+  color: #132E39;
+  overflow-x: hidden;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: var(--noise-size) var(--noise-size);
+  background-repeat: repeat;
+  opacity: var(--noise-opacity);
+  mix-blend-mode: multiply;
+}
+
+.stage { position: fixed; inset: 0; z-index: 0; }
+
+/* ---------------- Blobs ---------------- */
+.blob {
+  position: absolute;
+  width: 36vmax; height: 36vmax;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: .35;
+  will-change: transform;
+}
+.blob--teal   { background: radial-gradient(circle at 35% 35%, #7FE3D9 0%, #008080 38%, #86B3FF 72%, rgba(0,0,0,0) 74%); }
+.blob--sunset { background: radial-gradient(circle at 65% 40%, #FFC6A0 0%, #FF9EB3 40%, #FFF5A5 74%, rgba(0,0,0,0) 76%); }
+.blob--plum   { background: radial-gradient(circle at 30% 60%, #CBB7FF 0%, #7C6BEA 40%, #B9F7E8 74%, rgba(0,0,0,0) 76%); }
+
+/* ---------------- Content ---------------- */
+.container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100vh;
+  width: 100%;
+  padding: 0 clamp(2rem, 6vw, 10rem);
+  box-sizing: border-box;
+  padding-top: 35vh;
+  opacity: 0;
+  animation: fadein 1.4s ease-in-out .5s forwards;
+}
+@keyframes fadein { to { opacity: 1; } }
+
+/* Profile */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.profile img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 38%; /* adjust vertical framing */
+  transition: filter 0.6s ease, transform 0.4s ease;
+  filter: grayscale(0%);
+}
+
+.profile img:hover {
+  filter: grayscale(100%);
+}
+
+.profile h1 {
+  font-family: 'Inter', sans-serif; /* modern, geometric, great for names */
+  font-weight: 600;
+  font-size: 22px;
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.profile p {
+  font-family: 'Inter', sans-serif; /* modern, geometric, great for names */
+  font-weight: 400;
+  font-size: 18px;
+  margin: 2px 0 0 0;
+  opacity: 0.75;
+  color: #132E39;
+}
+
+/* Headline */
+.intro {
+  font-size: clamp(3rem, 5vw, 64px);
+  font-weight: 400;
+  line-height: 1.22;
+  letter-spacing: -0.25px;
+  color: #132E39;
+  text-rendering: optimizeLegibility;
+  animation: fadein-text 1.6s ease-in-out 0.8s forwards;
+  opacity: 0;
+  transform: translateY(6px);
+}
+@keyframes fadein-text { to { opacity: 1; transform: translateY(0); } }
+
+/* ---------------- Bottom Links ---------------- */
+.links {
+  position: fixed;
+  bottom: 5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.75rem;
+
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 15px;
+  text-transform: lowercase;
+  letter-spacing: 0.4px;
+
+  opacity: 0;
+  animation: fadein-links 1s ease-in-out 1.3s forwards;
+
+  text-align: center;
+  color: #132E39;
+  z-index: 5;
+}
+@keyframes fadein-links {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.links a {
+  color: #132E39;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.2s ease, text-shadow 0.2s ease;
+}
+.links a:hover {
+  opacity: 1;
+  text-shadow: 0 0 6px rgba(19,46,57,0.15);
+}
+
+@media (max-width: 700px) {
+  .container {
+    padding: 0 1.5rem;
+    padding-top: 10vh;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: flex-start;
+  }
+
+  /* Stack neatly: image → name → tagline */
+  .profile {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .profile img {
+    width: 88px;
+    height: 88px;
+  }
+
+  .profile h1 {
+    font-size: 20px;
+    margin-top: 0.3rem;
+  }
+
+  .profile p {
+    font-size: 15px;
+    opacity: 0.7;
+    margin-top: 0.2rem;
+  }
+
+  /* Big copy stays readable */
+  .intro {
+    font-size: clamp(2rem, 6.8vw, 2.8rem);
+    line-height: 1.25;
+    max-width: 90%;
+    text-align: center;
+    margin-top: 1.5rem;
+  }
+
+  /* Hold links at the bottom center */
+  .links {
+    position: fixed;
+    bottom: 5vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    font-size: 14px;
+    gap: 1.4rem;
+
+    /* 👇 Prevent flicker on mobile */
+    opacity: 1 !important;
+    animation: none !important;
+    transition: opacity 0.3s ease;
+
+    z-index: 5;
+  }
+
+  /* Subtle fade for background */
+  .blob {
+    opacity: 0.25;
+    filter: blur(120px);
+  }
+}
+</style>
 </head>
 
-<!---------------------------------------------------------------------------------------------->
-<!-- Main Contents -->
 <body>
-    <section id="metadata">
-        <p class="metadata"><a href="#" onclick="location.reload();" style="text-decoration: none; color: inherit;">NICO WARD</a></br>
-            <span class="update-text">Last updated: Jan. 30, 2025.</span>
-        </p>
-    </section>
-    <section id="buttons">
-        <div class="button-container">
-            <button id="expand-collapse-btn" class="main-content">
-                <span id="expand-collapse-text">Expand all</span>
-                <div id="plus-minus-toggle" class="plus">
-                    <div class="horizontal-bar"></div>
-                    <div class="vertical-bar"></div>
-                </div>
-            </button>              
-            <div id="toggle-mode" class="titles">
-                <span id="theme-select-trigger">Moonlight <span class="circle-symbol">●</span></span>
-                <div id="theme-line" style="display: none;"></div>
-                <ul id="theme-options" class="theme-options" style="display: none;">
-                    <!-- The options will be populated by JavaScript -->
-                </ul>
-            </div>
-        </div>
-    </section>
-    <div class="main-content">
-        <section id="bio">
-            <div class="titles collapsible"><span class="arrow rotate">+</span> About me</div>
-            <div class="content show">
-            I'm an AI engineer, designer, and entrepreneur based in London, UK. </br>
-            My interests fall broadly into 3 categories:
-            <ul>
-                <li>Search, curation, discovery</li>
-                <li>Interfaces and <a href="https://www.youtube.com/watch?v=oUaOucZRlmE" class="social-link" target="_blank">tools for thought</a></li>
-                <li>Education and personalisation</li>
-            </ul>
-            </div>
-        </section>
-        <section id="beliefs">
-            <div class="titles collapsible"><span class="arrow">+</span> A few things I believe</div>
-            <div class="content">
-            In no specific order:
-            <ul>
-                <li>AI is the right idea, a chatbot is the wrong interface.</li>
-                <li>Festina lente; think slow, act fast.</li>
-                <li>Distribution accounts for 80% of a product's success.</li>
-                <li>All long-range predictions are acts of faith rather than logic.</li>
-                <li>The only way to get anything done is to reduce forward motion to achievable increments.</li>
-            </ul>
-            </div>
-        </section>
-        <section id="work">
-            <div class="titles collapsible"><span class="arrow">+</span> Work</div>
-            <div class="content">
-            My CV lives <a href="cv.pdf" class="social-link" target="_blank">here</a>. In summary:
-            <ul>
-                <li>I am currently Head of Personalisation at <a href="https://www.healf.com/" class="social-link" target="_blank">Healf</a>, building in personalised health.</li>
-                <li>Previously, I was a Senior AI Engineer at <a href="https://www.publicissapient.com/" class="social-link" target="_blank">Publicis Sapient</a> AI Labs.</li>
-                <li>I also spent time as a Behavioural Data Scientist at <a href="https://educai.io/" class="social-link" target="_blank">Educai</a>, an edtech startup.</li>
-            </ul>
-            </div>
-        </section>
-        <section id="writing">
-            <div class="titles collapsible"><span class="arrow">+</span> Writing</div>
-            <div class="content">
-                I curate a weekly <a href="https://nicoward.substack.com/" class="social-link" target="_blank">newsletter</a> of my favourite essays and articles. </br>
-                Other writings include:
-                <ul>
-                    <li><a href="https://nicoward.substack.com/p/some-hopes-for-2025" class="social-link" target="_blank">Some Hopes for 2025</a></li>
-                    <li><a href="https://nicoward.substack.com/p/on-creative-judgment" class="social-link" target="_blank">On Creative Judgement</a></li>
-                    <li><a href="https://nicoward.substack.com/p/10-principles-of-good-ai" class="social-link" target="_blank">10 Principles of Good AI</a></li>
-                </ul>
-            </div>
-        </section>
-        <section id="links">
-            <div class="titles collapsible"><span class="arrow">+</span> Readings</div>
-            <div class="content">
-                <ul>
-                    <li><a href="https://patrickcollison.com/fast" class="social-link" target="_blank">Fast</a>, by Patrick Collison</li>
-                    <li><a href="https://www.scottaaronson.com/writings/bignumbers.html" class="social-link" target="_blank">Who Can Name the Biggest Number?</a>, by Scott Aaronson</li>
-                    <li><a href="https://worrydream.com/#!2/LadderOfAbstraction" class="social-link" target="_blank">Up and Down the Ladder of Abstraction</a>, by Bret Victor</li>
-                    <li><a href="http://johnsalvatier.org/blog/2017/reality-has-a-surprising-amount-of-detail" class="social-link" target="_blank">Reality has a surprising amount of detail</a>, by John Salvatier</li>
-                    <li><a href="https://longnow.org/essays/richard-feynman-connection-machine/" class="social-link" target="_blank">Richard Feynman and the Connection Machine</a>, by Daniel Hillis</li>
-                </ul>
-            </div>
-        </section>
-        <section id="socials">
-            <div class="titles collapsible"><span class="arrow">+</span> Contact</div>
-            <div class="content">
-            You can reach me on <a href="https://www.linkedin.com/in/nicolaswrd/" class="social-link" target="_blank">LinkedIn</a> or via <a href="mailto:ward.nicolas@outlook.com" class="social-link email-alias">email</a>.
-            </div>
-        </section>
-        <section id="manifesto">
-            <div class="titles collapsible"><span class="arrow">+</span> About this page</div>
-            <div class="content">
-                This website is a personal design experiment. It was built with the following principles in mind:
-                <ul>
-                    <li>Efficiency — everything is contained in a single html file.</li>
-                    <li>Simplicity — the page tries to avoid unnecessary complexities. As simple as possible, but not simpler.</li>
-                    <li>Accessibility — across colour sensitivities, bandwidth capabilities, and device types.</li>
-                </ul>
-            </div>
-        </section>
-        <section id="footer">
-            <div class="footer">Made with <a href="https://www.monmouthcoffee.co.uk/product/colombia-finca-las-palmeras/" title="good coffee" target="_blank">&#9749;</a> in London, UK.</div>
-        </section>
+  <div class="stage" aria-hidden="true">
+    <div class="blob blob--teal"></div>
+    <div class="blob blob--sunset"></div>
+    <div class="blob blob--plum"></div>
+  </div>
+
+  <div class="container">
+    <div class="profile">
+      <img src="hx2.jpg" alt="Profile photo">
+      <div>
+        <h1>Nico Ward</h1>
+        <p>ai &middot; design &middot; health</p>
+      </div>
     </div>
 
-    <!---------------------------------------------------------------------------------------------->
-    <!-- Animations and transitions -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const themeTrigger = document.getElementById('theme-select-trigger');
-            const themeOptionsContainer = document.getElementById('theme-options');
-            const themeLine = document.getElementById('theme-line');
-            const themeWrapper = themeTrigger.parentNode; // The container holding the trigger and dropdown
-    
-            let selectedTheme = 'dark';
-    
-            const mainContentElements = document.querySelectorAll('.main-content'); // Select all elements with class 'main-content'
-    
-            const themes = [
-                { label: "Daylight", dataTheme: "light-mode", icon: "☀︎" },
-                { label: "Moonlight", dataTheme: "dark", icon: "●" },
-                { label: "Reader", dataTheme: "reader", icon: "⊙︎" },
-                { label: "Contrast", dataTheme: "high-contrast", icon: "◍︎" },
-                { label: "Tarantino", dataTheme: "retro", icon: "◒︎" },
-            ];
-    
-            function populateDropdown(selected) {
-                themeOptionsContainer.innerHTML = '';
-                themes.forEach((theme, index) => {
-                    if (theme.dataTheme !== selected) {
-                        const li = document.createElement('li');
-                        li.setAttribute('data-theme', theme.dataTheme);
-                        li.innerHTML = `${theme.label} <span class="circle-symbol">${theme.icon}</span>`;
-    
-                        const delay = index * 0.05;
-                        li.style.animationDelay = `${delay}s`;
-    
-                        themeOptionsContainer.appendChild(li);
-                    }
-                });
-            }
-    
-            populateDropdown(selectedTheme);
-    
-            function setLineWidth() {
-                const options = themeOptionsContainer.getElementsByTagName('li');
-                let maxWidth = 0;
-    
-                const tempElement = document.createElement('span');
-                tempElement.style.visibility = 'hidden';
-                tempElement.style.whiteSpace = 'nowrap';
-                tempElement.style.fontFamily = window.getComputedStyle(themeTrigger).fontFamily;
-                tempElement.style.fontSize = window.getComputedStyle(themeTrigger).fontSize;
-                tempElement.style.fontWeight = window.getComputedStyle(themeTrigger).fontWeight;
-                document.body.appendChild(tempElement);
-    
-                for (let i = 0; i < options.length; i++) {
-                    tempElement.textContent = options[i].textContent.trim();
-                    const width = tempElement.getBoundingClientRect().width;
-                    if (width > maxWidth) {
-                        maxWidth = width;
-                    }
-                }
-    
-                document.body.removeChild(tempElement);
-    
-                themeLine.style.width = maxWidth + 'px';
-            }
-    
-            // Event listeners for hover on both the trigger and the dropdown itself
-            function handleDesktopHover() {
-                // When hovering over the "Daylight" button or the dropdown menu
-                themeWrapper.addEventListener('mouseenter', function(event) {
-                    themeOptionsContainer.style.display = 'block';
-                    themeTrigger.parentNode.classList.add('dropdown-open');
-                    themeLine.style.display = 'block';
-                    themeLine.style.width = '0';
-                    void themeLine.offsetWidth;
-                    setLineWidth();
-    
-                    mainContentElements.forEach(element => {
-                        element.classList.add('blurring');
-                    });
-                });
-    
-                // When leaving both the button and the dropdown menu
-                themeWrapper.addEventListener('mouseleave', function(event) {
-                    themeOptionsContainer.style.display = 'none';
-                    themeTrigger.parentNode.classList.remove('dropdown-open');
-                    themeLine.style.display = 'none';
-                    themeLine.style.width = '0';
-    
-                    mainContentElements.forEach(element => {
-                        element.classList.remove('blurring');
-                    });
-                });
-            }
-    
-            // Handle both desktop hover and mobile click
-            function handleMobileClick() {
-                themeTrigger.parentNode.addEventListener('click', function(event) {
-                    const isDisplayed = themeOptionsContainer.style.display === 'block';
-                    themeOptionsContainer.style.display = isDisplayed ? 'none' : 'block';
-    
-                    if (isDisplayed) {
-                        themeTrigger.parentNode.classList.remove('dropdown-open');
-                        themeLine.style.display = 'none';
-                        themeLine.style.width = '0';
-    
-                        mainContentElements.forEach(element => {
-                            element.classList.remove('blurring');
-                        });
-                    } else {
-                        themeTrigger.parentNode.classList.add('dropdown-open');
-                        themeLine.style.display = 'block';
-                        themeLine.style.width = '0';
-                        void themeLine.offsetWidth;
-                        setLineWidth();
-    
-                        mainContentElements.forEach(element => {
-                            element.classList.add('blurring');
-                        });
-                    }
-                    event.stopPropagation();
-                });
-    
-                document.addEventListener('click', function() {
-                    themeOptionsContainer.style.display = 'none';
-                    themeTrigger.parentNode.classList.remove('dropdown-open');
-                    themeLine.style.display = 'none';
-                    themeLine.style.width = '0';
-    
-                    mainContentElements.forEach(element => {
-                        element.classList.remove('blurring');
-                    });
-                });
-            }
-    
-            // Media query to detect desktop vs mobile
-            function setEventListenersBasedOnScreen() {
-                const mediaQuery = window.matchMedia('(min-width: 769px)');
-                if (mediaQuery.matches) {
-                    handleDesktopHover();
-                } else {
-                    handleMobileClick();
-                }
-    
-                mediaQuery.addEventListener('change', (e) => {
-                    if (e.matches) {
-                        handleDesktopHover();
-                    } else {
-                        handleMobileClick();
-                    }
-                });
-            }
-    
-            setEventListenersBasedOnScreen();
-    
-            themeOptionsContainer.addEventListener('click', function(e) {
-                if (e.target.tagName === 'LI' || e.target.parentNode.tagName === 'LI') {
-                    const targetLi = e.target.tagName === 'LI' ? e.target : e.target.parentNode;
-                    selectedTheme = targetLi.getAttribute('data-theme');
-    
-                    document.body.classList.remove('light-mode', 'dark', 'retro', 'high-contrast', 'reader');
-                    document.body.classList.add(selectedTheme);
-                    themeTrigger.innerHTML = `${targetLi.childNodes[0].textContent.trim()} <span class="circle-symbol">${targetLi.childNodes[1].textContent}</span>`;
-                    populateDropdown(selectedTheme);
-                    themeOptionsContainer.style.display = 'none';
-                    themeTrigger.parentNode.classList.remove('dropdown-open');
-                    themeLine.style.display = 'none';
-                    themeLine.style.width = '0';
-    
-                    mainContentElements.forEach(element => {
-                        element.classList.remove('blurring');
-                    });
-                }
-                e.stopPropagation();
-            });
-    
-            var collapsibles = document.getElementsByClassName("collapsible");
-            var expandCollapseBtn = document.getElementById("expand-collapse-btn");
-            var verticalBar = document.getElementById('plus-minus-toggle').querySelector('.vertical-bar');
-            var buttonText = document.getElementById("expand-collapse-text");
-    
-            function checkIfAllExpanded() {
-                for (var i = 0; i < collapsibles.length; i++) {
-                    if (!collapsibles[i].nextElementSibling.classList.contains("show")) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-    
-            function updateExpandCollapseButtonState() {
-                var allExpanded = checkIfAllExpanded();
-                buttonText.textContent = allExpanded ? 'Collapse all' : 'Expand all';
-                verticalBar.classList.toggle('rotate', allExpanded);
-            }
-    
-            function toggleSections(expand) {
-                for (var i = 0; i < collapsibles.length; i++) {
-                    var content = collapsibles[i].nextElementSibling;
-                    var arrow = collapsibles[i].querySelector(".arrow");
-                    if (expand) {
-                        content.style.maxHeight = content.scrollHeight + "px";
-                        content.classList.add("show");
-                        arrow.classList.add("rotate");
-                    } else {
-                        content.style.maxHeight = null;
-                        content.classList.remove("show");
-                        arrow.classList.remove("rotate");
-                    }
-                }
-            }
-    
-            expandCollapseBtn.addEventListener('click', function() {
-                var isAllExpanded = checkIfAllExpanded();
-                toggleSections(!isAllExpanded);
-                updateExpandCollapseButtonState();
-            });
-    
-            for (var i = 0; i < collapsibles.length; i++) {
-                collapsibles[i].addEventListener("click", function() {
-                    this.classList.toggle("active");
-                    var content = this.nextElementSibling;
-                    var arrow = this.querySelector(".arrow");
-                    if (content.style.maxHeight) {
-                        content.style.maxHeight = null;
-                        content.classList.remove("show");
-                        arrow.classList.remove("rotate");
-                    } else {
-                        content.style.maxHeight = content.scrollHeight + "px";
-                        content.classList.add("show");
-                        arrow.classList.add("rotate");
-                    }
-                    updateExpandCollapseButtonState();
-                });
-            }
-    
-            var aboutMeSection = document.getElementById("bio").querySelector(".content");
-            aboutMeSection.style.maxHeight = aboutMeSection.scrollHeight + "px";
-    
-            updateExpandCollapseButtonState();
-        });
-    </script>                
+    <div class="intro">I build (machine + human) learning systems.</div>
+  </div>
+
+  <!-- Centered bottom links -->
+  <div class="links">
+    <a href="https://nicoward.substack.com/" target="_blank">writing</a>
+    <a href="https://www.linkedin.com/in/nicolaswrd/" target="_blank">linkedin</a>
+    <a href="mailto:ward.nicolas@outlook.com">email</a>
+  </div>
+
+<script>
+const rand = (min, max) => Math.random() * (max - min) + min;
+function randomPos(pad = 6) { return { x: rand(pad, 100 - pad), y: rand(pad, 100 - pad) }; }
+function drift(blob, prev) {
+  const next = randomPos();
+  const duration = rand(4000, 4000);
+  const scale = rand(0.95, 1.05);
+  const anim = blob.animate(
+    [
+      { transform: `translate(${prev.x}vw, ${prev.y}vh) scale(1)` },
+      { transform: `translate(${next.x}vw, ${next.y}vh) scale(${scale})` }
+    ],
+    { duration, easing: 'ease-in-out', fill: 'forwards' }
+  );
+  anim.onfinish = () => drift(blob, next);
+}
+document.querySelectorAll('.blob').forEach(blob => {
+  const start = randomPos();
+  blob.style.transform = `translate(${start.x}vw, ${start.y}vh)`;
+  drift(blob, start);
+});
+</script>
 </body>
 </html>

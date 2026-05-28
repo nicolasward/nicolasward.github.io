@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+  <title>Nico Ward</title>
+  <description>Thoughts on design, technology, and building things.</description>
+  <item>
+    <title>Software is liquid</title>
+    <link>/blog/software-is-liquid</link>
+    <pubDate>2026-03-22</pubDate>
+    <description><![CDATA[<p>This is a test post about stochastic software and micro-reasoning units.</p>]]></description>
+  </item>
+  <item>
+    <title>Use the saw, fear the saw</title>
+    <link>/blog/use-the-saw-fear-the-saw</link>
+    <pubDate>2025-10-27</pubDate>
+    <description><![CDATA[<ol>
+<li>What did you do this year that you’d never done before?</li>
+<li>Did you keep your new year’s resolutions?</li>
+<li>Did anyone close to you give birth?</li>
+<li>Did anyone close to you die?</li>
+<li>What cities/states/countries did you visit?</li>
+<li>What would you like to have next year that you lacked this year?</li>
+<li>What date(s) from this year will remain etched upon your memory, and why?</li>
+<li>What was your biggest achievement of the year?</li>
+<li>What was your biggest fail]]></description>
+  </item>
+  <item>
+    <title>If you're remote, ramble</title>
+    <link>/blog/if-youre-remote-ramble</link>
+    <pubDate>2025-07-14</pubDate>
+    <description><![CDATA[<p>When you work remotely, the casual hallway conversations disappear. The serendipitous exchanges that happen when you bump into someone at the coffee machine — gone. You have to create those moments deliberately.</p>
+<p>One of the best ways to do this is to ramble. Write longer messages than you think you need to. Share context that seems obvious. Explain your reasoning even when nobody asked.</p>
+<h2 id="why-over-communication-works">Why over-communication works</h2>
+<p>In an office, body lan]]></description>
+  </item>
+  <item>
+    <title>Self-guaranteeing promises</title>
+    <link>/blog/self-guaranteeing-promises</link>
+    <pubDate>2024-12-15</pubDate>
+    <description><![CDATA[<p>Some promises are self-guaranteeing. The act of making the promise creates the conditions for keeping it.</p>
+<p>When a company says "we will never sell your data," the promise itself creates internal alignment. Engineers design systems that don't collect unnecessary data. Product managers stop asking for features that would require selling data. The promise constrains the design space in healthy ways.</p>
+<h2 id="constraint-as-liberation">Constraint as liberation</h2>
+<p>This might sound lim]]></description>
+  </item>
+  <item>
+    <title>What can we remove?</title>
+    <link>/blog/what-can-we-remove</link>
+    <pubDate>2024-06-03</pubDate>
+    <description><![CDATA[<p>The most underrated question in design is not "what should we add?" but "what can we remove?"</p>
+<p>Addition feels productive. You're building, growing, expanding. But the best products are often defined by what they leave out. Every feature you don't add is a feature you don't have to maintain, document, or explain.</p>
+<h2 id="the-weight-of-features">The weight of features</h2>
+<p>Every feature carries hidden costs:</p>
+<ul>
+<li>It increases the surface area for bugs</li>
+<li>It adds cogni]]></description>
+  </item>
+  <item>
+    <title>Love is freedom</title>
+    <link>/blog/love-is-freedom</link>
+    <pubDate>2024-05-10</pubDate>
+    <description><![CDATA[<p>The truest form of love is giving someone the freedom to be themselves. Not the version of them you wish they were. Not the version they think you want. The version they actually are.</p>
+<p>This sounds simple, but it's one of the hardest things humans do. We're wired to shape others to fit our expectations. We call it helping, advising, improving. But often it's just control wearing a friendly mask.</p>
+<h2 id="freedom-in-relationships">Freedom in relationships</h2>
+<p>Healthy relationships ]]></description>
+  </item>
+  <item>
+    <title>Earth is becoming sentient</title>
+    <link>/blog/earth-is-becoming-sentient</link>
+    <pubDate>2024-02-26</pubDate>
+    <description><![CDATA[<p>The edge of a sheet of paper slices through the tip of your finger and blood begins to flow from the wound. This injury, as small as it may be, must be repaired. Blood cells rush to the site, clotting, scabbing, healing. You never asked for it, but a few days later your finger is as good as new.</p>
+<p>It has been said that humans are passengers on Spaceship Earth. This view is too simple. Earth is not a vehicle but a body — the body of a planet-sized being that is developing senses, an intel]]></description>
+  </item>
+  <item>
+    <title>100% user-supported</title>
+    <link>/blog/100-percent-user-supported</link>
+    <pubDate>2024-02-05</pubDate>
+    <description><![CDATA[<p>There's a business model that doesn't get enough credit: charging users money for a product they love.</p>
+<p>No ads. No data harvesting. No venture capital treadmill. Just people paying for something valuable. It's the oldest business model in the world, and it still works. As I wrote in <a href="/quality-software-deserves-your-money">Quality software deserves your hard-earned cash</a>, independent makers create tools that respect your privacy and don't lock you in.</p>
+<h2 id="the-alignment]]></description>
+  </item>
+  <item>
+    <title>Choose optimism</title>
+    <link>/blog/choose-optimism</link>
+    <pubDate>2023-12-18</pubDate>
+    <description><![CDATA[<p>Pessimism sounds smart. Optimism sounds naive. But optimism is the only worldview that leads to action.</p>
+<p>If you believe the future is bleak no matter what, there's no reason to try. If you believe the future can be better, you have every reason to work toward it. Optimism isn't about ignoring problems — it's about believing they can be solved.</p>
+<h2 id="optimism-as-a-strategy">Optimism as a strategy</h2>
+<p>The most effective people are almost always optimists. Not because they're bli]]></description>
+  </item>
+  <item>
+    <title>Pain is information</title>
+    <link>/blog/pain-is-information</link>
+    <pubDate>2023-11-05</pubDate>
+    <description><![CDATA[<p>Pain — physical or emotional — is the body's most honest signal. It doesn't lie, it doesn't exaggerate for effect, and it doesn't have an agenda. It simply tells you that something needs attention.</p>
+<p>The instinct is to avoid pain, to numb it, to push through it. But the wiser response is to listen to it.</p>
+<h2 id="pain-as-a-teacher">Pain as a teacher</h2>
+<p>Think about the last time you touched a hot stove. The pain wasn't the problem — it was the message. Without it, you'd keep your ]]></description>
+  </item>
+</channel>
+</rss>

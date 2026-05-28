@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>nw</title>
+
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root { --noise-size: 220px; --noise-opacity: .4; }
+
+/* ---------------- Base ---------------- */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: "Noto Serif KR", serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: radial-gradient(120% 120% at 50% 100%, #ffffff 0%, #f8fafc 60%, #ffffff 100%);
+  color: #100F0F;
+  overflow-x: hidden;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: var(--noise-size) var(--noise-size);
+  background-repeat: repeat;
+  opacity: var(--noise-opacity);
+  mix-blend-mode: multiply;
+}
+
+.stage { position: fixed; inset: 0; z-index: 0; }
+
+/* ---------------- Blobs ---------------- */
+.blob {
+  position: absolute;
+  width: 36vmax; height: 36vmax;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: .35;
+  will-change: transform;
+}
+.blob--teal   { background: radial-gradient(circle at 35% 35%, #7FE3D9 0%, #008080 38%, #86B3FF 72%, rgba(0,0,0,0) 74%); }
+.blob--sunset { background: radial-gradient(circle at 65% 40%, #FFC6A0 0%, #FF9EB3 40%, #FFF5A5 74%, rgba(0,0,0,0) 76%); }
+.blob--plum   { background: radial-gradient(circle at 30% 60%, #CBB7FF 0%, #7C6BEA 40%, #B9F7E8 74%, rgba(0,0,0,0) 76%); }
+
+/* ---------------- Content ---------------- */
+.container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100vh;
+  width: 100%;
+  padding: 0 clamp(2rem, 6vw, 10rem);
+  box-sizing: border-box;
+  padding-top: 35vh;
+  opacity: 0;
+  animation: fadein 1.4s ease-in-out .5s forwards;
+}
+@keyframes fadein { to { opacity: 1; } }
+
+/* Profile */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.profile img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 38%; /* adjust vertical framing */
+  transition: filter 0.6s ease, transform 0.4s ease;
+  filter: grayscale(0%);
+}
+
+.profile img:hover {
+  filter: grayscale(100%);
+}
+
+.profile h1 {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; /* match the blog */
+  font-weight: 600;
+  font-size: 22px;
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.profile p {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; /* match the blog */
+  font-weight: 400;
+  font-size: 18px;
+  margin: 2px 0 0 0;
+  opacity: 0.75;
+  color: #100F0F;
+}
+
+/* Headline */
+.intro {
+  font-size: clamp(3rem, 5vw, 64px);
+  font-weight: 400;
+  line-height: 1.22;
+  letter-spacing: -0.25px;
+  color: #100F0F;
+  text-rendering: optimizeLegibility;
+  animation: fadein-text 1.6s ease-in-out 0.8s forwards;
+  opacity: 0;
+  transform: translateY(6px);
+}
+@keyframes fadein-text { to { opacity: 1; transform: translateY(0); } }
+
+/* ---------------- Bottom Links ---------------- */
+.links {
+  position: fixed;
+  bottom: 5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.75rem;
+
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 15px;
+  text-transform: lowercase;
+  letter-spacing: 0.4px;
+
+  opacity: 0;
+  animation: fadein-links 1s ease-in-out 1.3s forwards;
+
+  text-align: center;
+  color: #100F0F;
+  z-index: 5;
+}
+@keyframes fadein-links {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.links a {
+  color: #100F0F;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.2s ease, text-shadow 0.2s ease;
+}
+.links a:hover {
+  opacity: 1;
+  text-shadow: 0 0 6px rgba(16,15,15,0.15);
+}
+
+@media (max-width: 700px) {
+  .container {
+    /* Centre the whole cluster vertically; extra bottom padding lifts it
+       to optical centre so it clears the fixed links below. */
+    padding: 4vh 1.5rem 16vh;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* Stack neatly: image → name → tagline */
+  .profile {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .profile img {
+    width: 88px;
+    height: 88px;
+  }
+
+  .profile h1 {
+    font-size: 20px;
+    margin-top: 0.3rem;
+  }
+
+  .profile p {
+    font-size: 15px;
+    opacity: 0.7;
+    margin-top: 0.2rem;
+  }
+
+  /* Grand, centred statement */
+  .intro {
+    font-size: clamp(2.3rem, 9vw, 3rem);
+    line-height: 1.22;
+    max-width: 100%;
+    text-align: center;
+    margin-top: 2.25rem;
+  }
+
+  /* Hold links at the bottom center */
+  .links {
+    position: fixed;
+    bottom: 5vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    font-size: 15px;
+    gap: 1.6rem;
+
+    /* 👇 Prevent flicker on mobile */
+    opacity: 1 !important;
+    animation: none !important;
+    transition: opacity 0.3s ease;
+
+    z-index: 5;
+  }
+
+  /* Subtle fade for background */
+  .blob {
+    opacity: 0.25;
+    filter: blur(120px);
+  }
+}
+</style>
+</head>
+
+<body>
+  <div class="stage" aria-hidden="true">
+    <div class="blob blob--teal"></div>
+    <div class="blob blob--sunset"></div>
+    <div class="blob blob--plum"></div>
+  </div>
+
+  <div class="container">
+    <div class="profile">
+      <img src="nico.jpg" alt="Profile photo">
+      <div>
+        <h1>Nico Ward</h1>
+        <p>ai &middot; design &middot; education</p>
+      </div>
+    </div>
+
+    <div class="intro">I build (machine + human) learning systems.</div>
+  </div>
+
+  <!-- Centered bottom links -->
+  <div class="links">
+    <a href="/blog">writing</a>
+    <a href="https://www.linkedin.com/in/nicolaswrd/" target="_blank">linkedin</a>
+    <a href="mailto:ward.nicolas@outlook.com">email</a>
+  </div>
+
+<script>
+const rand = (min, max) => Math.random() * (max - min) + min;
+function randomPos(pad = 6) { return { x: rand(pad, 100 - pad), y: rand(pad, 100 - pad) }; }
+function drift(blob, prev) {
+  const next = randomPos();
+  const duration = rand(4000, 4000);
+  const scale = rand(0.95, 1.05);
+  const anim = blob.animate(
+    [
+      { transform: `translate(${prev.x}vw, ${prev.y}vh) scale(1)` },
+      { transform: `translate(${next.x}vw, ${next.y}vh) scale(${scale})` }
+    ],
+    { duration, easing: 'ease-in-out', fill: 'forwards' }
+  );
+  anim.onfinish = () => drift(blob, next);
+}
+document.querySelectorAll('.blob').forEach(blob => {
+  const start = randomPos();
+  blob.style.transform = `translate(${start.x}vw, ${start.y}vh)`;
+  drift(blob, start);
+});
+</script>
+</body>
+</html>

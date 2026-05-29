@@ -19,7 +19,8 @@ html {
 }
 
 body {
-  height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh; /* dynamic viewport: accounts for mobile browser chrome */
   margin: 0;
   font-family: "Noto Serif KR", serif;
   -webkit-font-smoothing: antialiased;
@@ -28,9 +29,21 @@ body {
   color: #100F0F;
 }
 
-body::after {
-  content: "";
+/* The entire background stack (gradient + blobs + noise) lives inside this
+   fixed, self-isolating layer so it always fills the viewport and the noise's
+   mix-blend-mode reliably blends against the gradient + blobs (not the page). */
+.stage {
   position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;        /* clip the drifting blobs to the viewport */
+  isolation: isolate;      /* give mix-blend a self-contained context */
+  background: radial-gradient(120% 120% at 50% 100%, #ffffff 0%, #f8fafc 60%, #ffffff 100%);
+}
+
+.stage::after {
+  content: "";
+  position: absolute;
   inset: 0;
   pointer-events: none;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
@@ -38,14 +51,6 @@ body::after {
   background-repeat: repeat;
   opacity: var(--noise-opacity);
   mix-blend-mode: multiply;
-}
-
-/* Gradient lives here so it is guaranteed to fill the full viewport at all times */
-.stage {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  background: radial-gradient(120% 120% at 50% 100%, #ffffff 0%, #f8fafc 60%, #ffffff 100%);
 }
 
 /* ---------------- Blobs ---------------- */
@@ -69,6 +74,7 @@ body::after {
   flex-direction: column;
   justify-content: flex-start;
   height: 100vh;
+  height: 100dvh; /* dynamic viewport so content never hides behind mobile chrome */
   width: 100%;
   padding: 0 clamp(2rem, 6vw, 10rem);
   box-sizing: border-box;
@@ -177,6 +183,7 @@ body::after {
        to optical centre so it clears the fixed links below. */
     padding: 4vh 1.5rem 16vh;
     height: 100vh;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;

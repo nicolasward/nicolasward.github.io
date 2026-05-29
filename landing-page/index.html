@@ -238,11 +238,13 @@ body::after {
     z-index: 5;
   }
 
-  /* Reduce noise so multiply-blend over light areas doesn't produce gray strips */
-  :root { --noise-opacity: 0.12; }
-
+  /* Scale blobs to the same screen-coverage ratio as desktop (~80% of viewport height
+     per blob), so they reliably reach the edges and the noise overlay always has
+     coloured content to blend against rather than bare white. */
   .blob {
-    opacity: 0.45;
+    width: 60vmax;
+    height: 60vmax;
+    opacity: 0.4;
     filter: blur(80px);
   }
 }

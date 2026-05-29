@@ -12,7 +12,15 @@
 :root { --noise-size: 220px; --noise-opacity: .4; }
 
 /* ---------------- Base ---------------- */
-html, body {
+html {
+  height: 100%;
+  margin: 0;
+  /* Solid white so Safari's overscroll rubber-band reveals white, not system gray */
+  background-color: #ffffff;
+  overflow-x: hidden;
+}
+
+body {
   height: 100%;
   margin: 0;
   font-family: "Noto Serif KR", serif;

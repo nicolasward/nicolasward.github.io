@@ -38,37 +38,25 @@ html {
   font-size: 18px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Overscroll fill on mobile Safari — must match the body background edges */
-  background-color: #ffffff;
+  /* Background lives on the ROOT element: CSS propagates the root background to
+     the whole canvas (overscroll, behind the status bar, everywhere), so it
+     always fills the screen — no white strips. The gradient must be here, not
+     on <body>, because body's background is NOT propagated to the canvas. */
+  background: radial-gradient(120% 120% at 50% 100%, #ffffff 0%, #f8fafc 60%, #ffffff 100%);
 }
 
 [data-theme="dark"] html {
-  background-color: #100F0F;
+  background: #100F0F;
 }
 
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   min-height: 100vh;
   min-height: 100dvh;
-  background: transparent; /* gradient lives on the fixed ::before layer below */
+  background: transparent; /* gradient is propagated from the root <html> */
   color: var(--fg);
   line-height: 1.5;
   transition: color 0.2s ease;
-}
-
-/* Fixed gradient layer — always fills the visual viewport regardless of scroll
-   position or content height, so the mobile browser never reveals white strips. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(120% 120% at 50% 100%, #ffffff 0%, #f8fafc 60%, #ffffff 100%);
-}
-
-[data-theme="dark"] body::before {
-  background: #100F0F;
 }
 
 /* Grain texture — matches landing page */

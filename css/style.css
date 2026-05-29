@@ -812,13 +812,13 @@ h3:hover .heading-anchor {
   transform: translate(-50%, -50%);
 }
 
-/* Phase 1: input + divider fade in smoothly */
-.search-input,
+/* Phase 1: input row + divider fade in smoothly */
+.search-input-wrap,
 .search-divider {
   opacity: 0;
 }
 
-.search-overlay.open .search-input {
+.search-overlay.open .search-input-wrap {
   animation: search-fade-in 0.3s ease forwards;
 }
 
@@ -856,8 +856,8 @@ h3:hover .heading-anchor {
   animation-delay: calc((var(--n, 1) - 1) * 0.03s);
 }
 
-/* The search bar (input) leaves last — `both` holds it visible during the delay */
-.search-overlay.closing .search-input {
+/* The search bar (input row) leaves last — `both` holds it visible during the delay */
+.search-overlay.closing .search-input-wrap {
   animation: search-fade-out 0.24s ease both;
   animation-delay: calc((var(--n, 1) - 1) * 0.03s + 0.06s);
 }
@@ -943,12 +943,20 @@ h3:hover .heading-anchor {
   background: rgba(40, 39, 38, 0.6);
 }
 
+.search-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .search-input {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   background: transparent;
   border: none;
   outline: none;
   padding: 0;
+  padding-right: 2.5rem;
   font-family: inherit;
   font-size: 32.4px;
   font-weight: 500;
@@ -956,6 +964,37 @@ h3:hover .heading-anchor {
   line-height: 1.25;
   color: var(--fg);
   caret-color: #FF791B;
+}
+
+.search-clear {
+  position: absolute;
+  right: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--fg-muted);
+  opacity: 0.45;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
+.search-clear:hover {
+  opacity: 0.85;
+}
+
+.search-input-wrap.has-value .search-clear {
+  display: inline-flex;
+}
+
+.search-clear svg {
+  width: 20px;
+  height: 20px;
 }
 
 .search-divider {
@@ -1312,6 +1351,16 @@ h3:hover .heading-anchor {
   /* ----- Search overlay on mobile ----- */
   .search-input {
     font-size: 22px;
+  }
+
+  .search-clear {
+    width: 24px;
+    height: 24px;
+  }
+
+  .search-clear svg {
+    width: 17px;
+    height: 17px;
   }
 
   .search-results a {

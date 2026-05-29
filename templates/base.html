@@ -44,7 +44,16 @@
       </svg>
     </button>
     <div class="search-modal" role="dialog" aria-label="Search">
-      <input type="text" id="search-input" class="search-input" placeholder="Search posts, tags, keywords" spellcheck="false" autocomplete="off" autocapitalize="off" />
+      <div class="search-input-wrap" id="search-input-wrap">
+        <input type="text" id="search-input" class="search-input" placeholder="Search posts, tags, keywords" spellcheck="false" autocomplete="off" autocapitalize="off" />
+        <button class="search-clear" id="search-clear" type="button" aria-label="Clear search">
+          <svg viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/>
+            <line x1="7" y1="7" x2="13" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="13" y1="7" x2="7" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
       <hr class="search-divider" />
       <ul id="search-results" class="search-results"></ul>
     </div>
@@ -57,9 +66,11 @@
 
   <script>
     (function () {
-      const overlay = document.getElementById('search-overlay');
-      const input   = document.getElementById('search-input');
-      const results = document.getElementById('search-results');
+      const overlay    = document.getElementById('search-overlay');
+      const input      = document.getElementById('search-input');
+      const inputWrap  = document.getElementById('search-input-wrap');
+      const results    = document.getElementById('search-results');
+      const clearBtn   = document.getElementById('search-clear');
       let INDEX = null;
       let isOpen = false;
       let selectedIndex = -1;
@@ -150,7 +161,18 @@
         }, EXIT_DURATION);
       }
 
-      input.addEventListener('input', e => render(e.target.value));
+      function syncClear() {
+        inputWrap.classList.toggle('has-value', input.value.length > 0);
+      }
+
+      input.addEventListener('input', e => { render(e.target.value); syncClear(); });
+
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        syncClear();
+        render('');
+        input.focus();
+      });
 
       // Up / Down / Enter navigation in the results
       input.addEventListener('keydown', function (e) {

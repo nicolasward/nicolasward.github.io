@@ -15,8 +15,7 @@
 html {
   height: 100%;
   margin: 0;
-  /* Solid white so Safari's overscroll rubber-band reveals white, not system gray */
-  background-color: #ffffff;
+  background-color: #ffffff; /* overscroll fill */
   overflow-x: hidden;
 }
 
@@ -26,7 +25,7 @@ body {
   font-family: "Noto Serif KR", serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: radial-gradient(120% 120% at 50% 100%, #ffffff 0%, #f8fafc 60%, #ffffff 100%);
+  background: #ffffff; /* plain white — gradient lives on .stage */
   color: #100F0F;
   overflow-x: hidden;
 }
@@ -43,7 +42,13 @@ body::after {
   mix-blend-mode: multiply;
 }
 
-.stage { position: fixed; inset: 0; z-index: 0; }
+/* Gradient lives here so it is guaranteed to fill the full viewport at all times */
+.stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(120% 120% at 50% 100%, #ffffff 0%, #f8fafc 60%, #ffffff 100%);
+}
 
 /* ---------------- Blobs ---------------- */
 .blob {
@@ -232,6 +237,9 @@ body::after {
 
     z-index: 5;
   }
+
+  /* Reduce noise so multiply-blend over light areas doesn't produce gray strips */
+  :root { --noise-opacity: 0.12; }
 
   .blob {
     opacity: 0.45;

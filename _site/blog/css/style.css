@@ -38,10 +38,17 @@ html {
   font-size: 18px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Overscroll fill on mobile Safari — must match the body background edges */
+  background-color: #ffffff;
+}
+
+[data-theme="dark"] html {
+  background-color: #100F0F;
 }
 
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
   background: radial-gradient(120% 120% at 50% 100%, #ffffff 0%, #f8fafc 60%, #ffffff 100%);
   color: var(--fg);
   line-height: 1.5;

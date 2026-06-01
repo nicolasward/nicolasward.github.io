@@ -38,15 +38,25 @@ html {
   font-size: 18px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Background lives on the ROOT element: CSS propagates the root background to
-     the whole canvas (overscroll, behind the status bar, everywhere), so it
-     always fills the screen — no white strips. The gradient must be here, not
-     on <body>, because body's background is NOT propagated to the canvas. */
-  background: radial-gradient(120% 120% at 50% 100%, #ffffff 0%, #f8fafc 60%, #ffffff 100%);
+  /* Grain AND gradient both live on the ROOT element so CSS propagates them to
+     the entire canvas (overscroll, status-bar area, behind the URL bar),
+     guaranteeing full-screen coverage. We composite the grain as a background
+     LAYER (blended via background-blend-mode) rather than a separate
+     position:fixed overlay — a fixed overlay does not reliably cover the iOS
+     safe areas / dynamic toolbar region, which is what left strips of bare
+     gradient (no grain) at the top and bottom on mobile. */
+  background-color: #ffffff;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='4' stitchTiles='stitch'/><feComponentTransfer><feFuncA type='linear' slope='0' intercept='0.4'/></feComponentTransfer></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"),
+    radial-gradient(120% 120% at 50% 100%, #ffffff 0%, #f8fafc 60%, #ffffff 100%);
+  background-size: var(--noise-size) var(--noise-size), auto;
+  background-repeat: repeat, no-repeat;
+  background-blend-mode: multiply, normal;
 }
 
 html[data-theme="dark"] {
-  background: #100F0F;
+  background-color: #100F0F;
+  background-image: none;
 }
 
 body {
@@ -59,23 +69,8 @@ body {
   transition: color 0.2s ease;
 }
 
-/* Grain texture — matches landing page */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 999;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  background-size: var(--noise-size) var(--noise-size);
-  background-repeat: repeat;
-  opacity: var(--noise-opacity);
-  mix-blend-mode: multiply;
-}
-
-[data-theme="dark"] body::after {
-  display: none;
-}
+/* Grain now lives on the root <html> background (see above) so it reliably
+   covers the full mobile viewport. Dark mode omits it via background-image:none. */
 
 
 /* ===== Layout ===== */

@@ -45,7 +45,7 @@ html {
   background: radial-gradient(120% 120% at 50% 100%, #ffffff 0%, #f8fafc 60%, #ffffff 100%);
 }
 
-[data-theme="dark"] html {
+html[data-theme="dark"] {
   background: #100F0F;
 }
 

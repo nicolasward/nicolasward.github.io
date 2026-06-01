@@ -69,7 +69,14 @@ body {
 body::before {
   content: "";
   position: fixed;
-  inset: 0;
+  /* Bleed the element's edges OUT past the safe-area insets to the physical
+     screen edges, so its grain image paints under the status bar / home
+     indicator. With inset:0 the element anchors to the safe-area edges and its
+     texture stops there, exposing the flat root color in those strips. */
+  top: calc(0px - env(safe-area-inset-top));
+  right: calc(0px - env(safe-area-inset-right));
+  bottom: calc(0px - env(safe-area-inset-bottom));
+  left: calc(0px - env(safe-area-inset-left));
   z-index: -1;
   pointer-events: none;
   background-color: #ffffff;

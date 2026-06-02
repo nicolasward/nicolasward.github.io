@@ -1319,6 +1319,14 @@ h3:hover .heading-anchor {
   margin-bottom: .25em;
 }
 
+/* Keyboard pro-tips (T/S/H) are irrelevant without a physical keyboard —
+   hide on any touch device (phones, tablets), regardless of viewport width. */
+@media (pointer: coarse) {
+  .pro-tips {
+    display: none;
+  }
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 600px) {
   html {
@@ -1436,11 +1444,6 @@ h3:hover .heading-anchor {
   /* Show the tap-to-close button instead */
   .search-close {
     display: inline-flex;
-  }
-
-  /* Keyboard pro-tips are irrelevant on touch */
-  .pro-tips {
-    display: none;
   }
 
   /* Linked-mention cards: calmer title size/weight on mobile */

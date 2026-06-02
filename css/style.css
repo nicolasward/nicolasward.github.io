@@ -478,11 +478,18 @@ body.home::before {
 }
 
 .post-content h2 {
-  font-size: 21.6px;
-  font-weight: 500;
+  font-size: 20px;
+  font-weight: 600;
   line-height: 1.3;
-  margin-top: 45px;
-  margin-bottom: 14.39px;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+/* Bind a heading to the paragraph it introduces: tight gap below, the
+   section break lives in the larger space above. */
+.post-content h2 + p,
+.post-content h3 + p {
+  margin-top: 0;
 }
 
 .post-content h3 {
@@ -1357,7 +1364,7 @@ h3:hover .heading-anchor {
   }
 
   .post-content h2 {
-    font-size: 1.1rem;
+    font-size: 18px;
   }
 
   /* Latest block — mirrors the article scale (body 17px, meta 14px) */

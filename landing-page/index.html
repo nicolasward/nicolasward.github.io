@@ -150,27 +150,29 @@ body {
 }
 @keyframes fadein-text { to { opacity: 1; transform: translateY(0); } }
 
-/* Machine / human — the two halves stay tinted toward the blob palette
-   (cool teal / warm amber) and gently trade emphasis in a slow, anti-phase
-   opacity pulse: both always present, focus breathing between them. */
-.intro .machine { color: #1C6C66; }
-.intro .human   { color: #BC5215; }
-.intro .machine,
-.intro .human {
-  animation: emphasis-pulse 8s ease-in-out infinite;
+/* Machine / human rotator — one slot that rolls between the two words.
+   Each word is tinted toward the blob palette (teal / amber). The slot width
+   animates so the trailing text slides smoothly as the word changes. */
+.swap {
+  display: inline-block;
+  position: relative;
+  white-space: nowrap;
+  vertical-align: baseline;
+  transition: width 0.45s cubic-bezier(0.65, 0, 0.35, 1);
 }
-.intro .human { animation-delay: -4s; }
-@keyframes emphasis-pulse {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.55; }
+.swap__word {
+  display: inline-block;
+  color: #1C6C66;   /* "machine" — cool teal (initial) */
+  transition: opacity 0.34s ease, transform 0.34s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-/* "Read my writing" — primary call to action under the hero */
+/* "Read my writing" — primary call to action, sat midway between the hero
+   and the footer links. */
 .read-cta {
   display: inline-flex;
   align-items: center;
   gap: 0.45em;
-  margin-top: 1.9rem;
+  margin-top: clamp(6rem, 22vh, 18rem);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-weight: 500;
   font-size: clamp(1.05rem, 2.2vw, 1.3rem);
@@ -204,8 +206,7 @@ body {
 .read-cta:hover .read-cta__arrow { transform: translateX(5px); }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro .machine,
-  .intro .human { animation: none; }
+  .swap__word { transition: none; }
 }
 
 /* ---------------- Bottom Links ---------------- */
@@ -345,7 +346,7 @@ body {
       </div>
     </div>
 
-    <div class="intro">I build (<span class="machine">machine</span> + <span class="human">human</span>) learning systems.</div>
+    <div class="intro">I build <span class="swap"><span class="swap__word">machine</span></span> learning systems.</div>
 
     <a class="read-cta" href="/blog">
       <span class="read-cta__text">Read my writing</span>
@@ -355,7 +356,6 @@ body {
 
   <!-- Centered bottom links -->
   <div class="links">
-    <a href="/blog">writing</a>
     <a href="https://www.linkedin.com/in/nicolaswrd/" target="_blank">linkedin</a>
     <a href="mailto:ward.nicolas@outlook.com">email</a>
   </div>
@@ -381,6 +381,49 @@ document.querySelectorAll('.blob').forEach(blob => {
   blob.style.transform = `translate(${start.x}vw, ${start.y}vh)`;
   drift(blob, start);
 });
+
+// Machine / human word rotator — rolls the slot between the two words.
+(function () {
+  const slot = document.querySelector('.swap');
+  if (!slot) return;
+  const word = slot.querySelector('.swap__word');
+  const items = [
+    { text: 'machine', color: '#1C6C66' },  // cool teal
+    { text: 'human',   color: '#BC5215' }   // warm amber
+  ];
+
+  function fit() { slot.style.width = word.offsetWidth + 'px'; }
+  fit();
+  window.addEventListener('resize', fit);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+
+  // Reduced motion: skip the rotation, show both words statically.
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    slot.innerHTML = '<span style="color:#1C6C66">machine</span> and ' +
+                     '<span style="color:#BC5215">human</span>';
+    slot.style.width = 'auto';
+    return;
+  }
+
+  let i = 0;
+  function rotate() {
+    word.style.opacity = '0';                  // roll current word up & out
+    word.style.transform = 'translateY(-0.42em)';
+    setTimeout(function () {
+      i = (i + 1) % items.length;
+      word.textContent = items[i].text;
+      word.style.color = items[i].color;
+      fit();                                   // slot width eases to new word
+      word.style.transition = 'none';          // drop below without animating
+      word.style.transform = 'translateY(0.42em)';
+      void word.offsetWidth;                   // force reflow
+      word.style.transition = '';              // roll up into place
+      word.style.opacity = '1';
+      word.style.transform = 'translateY(0)';
+    }, 340);
+  }
+  setInterval(rotate, 3000);
+})();
 </script>
 </body>
 </html>

@@ -640,7 +640,7 @@ h3:hover .heading-anchor {
   flex-direction: column;
   gap: 0.4rem;
   padding: 1rem;
-  border: 1px solid var(--border);
+  border: 1px solid #B7B5AC;
   border-radius: 8px;
   background-color: transparent;
   text-decoration: none;
@@ -649,6 +649,7 @@ h3:hover .heading-anchor {
 
 [data-theme="dark"] .mention-card {
   background-color: var(--bg);
+  border-color: #282726;
 }
 
 .mention-card:hover {

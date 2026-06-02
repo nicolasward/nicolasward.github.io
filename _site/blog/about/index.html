@@ -113,7 +113,7 @@
 
       function formatDate(date) {
         const [year, month] = date.split('-');
-        return `${year} <span class="separator">&middot;</span> ${month}`;
+        return `${year}<span class="separator">&middot;</span>${month}`;
       }
       function escapeHtml(s) {
         return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');

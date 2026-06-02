@@ -343,7 +343,7 @@ body.home::before {
 
 .post-date .separator {
   color: var(--fg-faint);
-  margin: 0 0.05rem;
+  margin: 0 0.15em;
 }
 
 .post-date {

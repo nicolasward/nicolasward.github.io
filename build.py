@@ -110,7 +110,7 @@ def format_date_long(date_str):
 
 def format_date_list(date_str):
     dt = datetime.strptime(date_str, "%Y-%m-%d")
-    return f'{dt.year} <span class="separator">&middot;</span> {dt.strftime("%m")}'
+    return f'{dt.year}<span class="separator">&middot;</span>{dt.strftime("%m")}'
 
 
 # ---------------------------------------------------------------------------

@@ -70,10 +70,10 @@
 
 <div id="reading-progress" class="reading-progress" aria-hidden="true" title="Back to top">
   <svg class="progress-ring" viewBox="0 0 40 40">
-    <circle class="progress-disc" cx="20" cy="20" r="18"/>
-    <circle class="progress-track" cx="20" cy="20" r="18" fill="none" stroke-width="2"/>
-    <circle class="progress-fill" cx="20" cy="20" r="18" fill="none" stroke-width="2"
-            transform="rotate(-90 20 20)" stroke-dasharray="113.1" stroke-dashoffset="113.1"/>
+    <circle class="progress-disc" cx="20" cy="20" r="20"/>
+    <circle class="progress-track" cx="20" cy="20" r="19" fill="none" stroke-width="2"/>
+    <circle class="progress-fill" cx="20" cy="20" r="19" fill="none" stroke-width="2"
+            transform="rotate(-90 20 20)" stroke-dasharray="119.38" stroke-dashoffset="119.38"/>
   </svg>
   <span class="progress-percent">0%</span>
   <svg class="progress-check" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -300,7 +300,7 @@
 
       const fill = widget.querySelector('.progress-fill');
       const percentEl = widget.querySelector('.progress-percent');
-      const CIRCUMFERENCE = 2 * Math.PI * 18; // matches r=18 in SVG
+      const CIRCUMFERENCE = 2 * Math.PI * 19; // matches r=19 in SVG
 
       function update() {
         const rect = article.getBoundingClientRect();

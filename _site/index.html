@@ -9,7 +9,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-:root { --noise-size: 220px; --noise-opacity: .4; }
+/* Shared design tokens — same names/values as the blog (css/style.css) so the
+   landing page and blog read as one system. This page is standalone (it does
+   not import Flexoki), so the few colours it needs are defined locally. */
+:root {
+  --noise-size: 220px;
+  --noise-opacity: .4;
+
+  --fg:         #100F0F;   /* ink — matches the blog's light-mode --fg */
+  --field:      #ffffff;   /* gradient field (white stops) */
+  --field-mid:  #f8fafc;   /* gradient midpoint (cool near-white) */
+}
 
 /* ---------------- Base ---------------- */
 html {
@@ -18,7 +28,7 @@ html {
   /* Gradient on the ROOT element so CSS propagates it to the whole canvas
      (overscroll + behind the status bar), guaranteeing full-screen coverage.
      The fixed .stage repaints the same gradient (plus blobs + noise) on top. */
-  background: radial-gradient(120% 120% at 50% 100%, #ffffff 0%, #f8fafc 60%, #ffffff 100%);
+  background: radial-gradient(120% 120% at 50% 100%, var(--field) 0%, var(--field-mid) 60%, var(--field) 100%);
 }
 
 body {
@@ -28,8 +38,8 @@ body {
   font-family: "Noto Serif KR", serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #ffffff; /* plain white — gradient lives on .stage */
-  color: #100F0F;
+  background: var(--field); /* plain white — gradient lives on .stage */
+  color: var(--fg);
 }
 
 /* The entire background stack (gradient + blobs + noise) lives inside this
@@ -41,7 +51,7 @@ body {
   z-index: 0;
   overflow: hidden;        /* clip the drifting blobs to the viewport */
   isolation: isolate;      /* give mix-blend a self-contained context */
-  background: radial-gradient(120% 120% at 50% 100%, #ffffff 0%, #f8fafc 60%, #ffffff 100%);
+  background: radial-gradient(120% 120% at 50% 100%, var(--field) 0%, var(--field-mid) 60%, var(--field) 100%);
 }
 
 .stage::after {
@@ -123,7 +133,7 @@ body {
   font-size: 18px;
   margin: 2px 0 0 0;
   opacity: 0.75;
-  color: #100F0F;
+  color: var(--fg);
 }
 
 /* Headline */
@@ -132,7 +142,7 @@ body {
   font-weight: 400;
   line-height: 1.22;
   letter-spacing: -0.25px;
-  color: #100F0F;
+  color: var(--fg);
   text-rendering: optimizeLegibility;
   animation: fadein-text 1.6s ease-in-out 0.8s forwards;
   opacity: 0;
@@ -161,7 +171,7 @@ body {
   animation: fadein-links 1s ease-in-out 1.3s forwards;
 
   text-align: center;
-  color: #100F0F;
+  color: var(--fg);
   z-index: 5;
 }
 @keyframes fadein-links {
@@ -170,7 +180,7 @@ body {
 }
 
 .links a {
-  color: #100F0F;
+  color: var(--fg);
   text-decoration: none;
   opacity: 0.8;
   transition: opacity 0.2s ease, text-shadow 0.2s ease;

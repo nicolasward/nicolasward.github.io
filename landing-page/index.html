@@ -150,30 +150,39 @@ body {
 }
 @keyframes fadein-text { to { opacity: 1; transform: translateY(0); } }
 
-/* machine ⇄ human — both words stay present (tinted teal / amber) and
-   infinitely trade places: they lift-and-fade out, swap sides via flex order
-   (total width is constant, so the sentence never reflows), then settle back
-   in from below while the connector pulses. Colour travels with each word. */
+/* machine ⇄ human — the phrase is dark grey, with a soft orange highlight
+   (the blog accent) flowing back and forth across the two words. The arrows
+   stay solid grey; the orange passes behind them. The gradient is clipped to
+   the text, so the words must be direct children of .duo. */
 .duo {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.5em;
-  vertical-align: baseline;
-  white-space: nowrap;
-}
-.duo__word {
   display: inline-block;
-  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.65, 0, 0.35, 1);
+  white-space: nowrap;
+  vertical-align: baseline;
+  background-image: linear-gradient(
+    90deg,
+    var(--fg) 0%, var(--fg) 40%,
+    #FF791B 50%,
+    var(--fg) 60%, var(--fg) 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: duo-flow 4.5s ease-in-out infinite alternate;
 }
-.duo__word--m { order: 1; color: #1C6C66; }   /* machine — cool teal */
-.duo__word--h { order: 3; color: #BC5215; }   /* human — warm amber */
+@keyframes duo-flow {
+  from { background-position: 100% 50%; }
+  to   { background-position: 0% 50%; }
+}
 .duo__link {
-  order: 2;
-  align-self: center;
+  /* solid dark grey, a touch smaller — the orange flow passes behind it */
+  -webkit-text-fill-color: var(--fg);
   color: var(--fg);
-  opacity: 0.4;
   font-size: 0.72em;
-  transition: transform 0.3s ease;
+  vertical-align: middle;
+  margin: 0 0.32em;
 }
 
 /* "Read my writing" — primary call to action, sat midway between the hero
@@ -216,7 +225,12 @@ body {
 .read-cta:hover .read-cta__arrow { transform: translateX(5px); }
 
 @media (prefers-reduced-motion: reduce) {
-  .duo__word { transition: none; }
+  .duo {
+    animation: none;
+    background: none;
+    -webkit-text-fill-color: var(--fg);
+    color: var(--fg);
+  }
 }
 
 /* ---------------- Bottom Links ---------------- */
@@ -356,7 +370,7 @@ body {
       </div>
     </div>
 
-    <div class="intro">I build <span class="duo"><span class="duo__word duo__word--m">machine</span><span class="duo__link" aria-hidden="true">&#8644;</span><span class="duo__word duo__word--h">human</span></span> learning systems.</div>
+    <div class="intro">I build <span class="duo">machine<span class="duo__link" aria-hidden="true">&#8644;</span>human</span> learning systems.</div>
 
     <a class="read-cta" href="/blog">
       <span class="read-cta__text">Read my writing</span>
@@ -392,38 +406,6 @@ document.querySelectorAll('.blob').forEach(blob => {
   drift(blob, start);
 });
 
-// machine ⇄ human — the two words infinitely trade places.
-(function () {
-  const duo = document.querySelector('.duo');
-  if (!duo) return;
-  const m = duo.querySelector('.duo__word--m');
-  const h = duo.querySelector('.duo__word--h');
-  const link = duo.querySelector('.duo__link');
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  let swapped = false;
-  function swap() {
-    // lift + fade both words out; nudge the connector in
-    m.style.opacity = h.style.opacity = '0';
-    m.style.transform = h.style.transform = 'translateY(-0.4em)';
-    link.style.transform = 'scale(0.8)';
-    setTimeout(function () {
-      // exchange sides while invisible — flex keeps the positions exact
-      swapped = !swapped;
-      m.style.order = swapped ? '3' : '1';
-      h.style.order = swapped ? '1' : '3';
-      // drop just below, then settle in (no anim on the reposition)
-      m.style.transition = h.style.transition = 'none';
-      m.style.transform = h.style.transform = 'translateY(0.4em)';
-      void duo.offsetWidth;
-      m.style.transition = h.style.transition = '';
-      m.style.opacity = h.style.opacity = '1';
-      m.style.transform = h.style.transform = 'translateY(0)';
-      link.style.transform = 'scale(1)';
-    }, 300);
-  }
-  setInterval(swap, 3200);
-})();
 </script>
 </body>
 </html>

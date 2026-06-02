@@ -24,7 +24,7 @@
   --fg-muted:  var(--flexoki-600);     /* secondary text: meta, labels, captions */
   --fg-faint:  var(--flexoki-300);     /* tertiary text / faint accents      */
   --surface:   var(--flexoki-50);      /* raised fills: code, blockquote     */
-  --border:    var(--flexoki-100);     /* hairline dividers & rules          */
+  --border:    #E1E4E8;                /* cool hairline dividers — matches the cool field (Flexoki's grey ramp is warm) */
 
   /* Ghost text — placeholders & progress track (neutral, outside Flexoki) */
   --ghost: #D4D4D4;

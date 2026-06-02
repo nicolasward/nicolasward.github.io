@@ -247,7 +247,7 @@ body.home::before {
   height: 22px;
   border-radius: 11px;
   background: transparent;
-  border: 1px solid #6F6E69;
+  border: 1px solid #B7B5AC;
   cursor: pointer;
   position: relative;
   transition: border-color 0.2s ease;
@@ -642,7 +642,7 @@ h3:hover .heading-anchor {
   padding: 1rem;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: transparent;
   text-decoration: none;
   transition: border-color 0.15s ease;
 }

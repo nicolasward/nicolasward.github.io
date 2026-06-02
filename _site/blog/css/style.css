@@ -357,14 +357,19 @@ body.home::before {
   margin-bottom: 1.5rem;
 }
 
-.section-label {
-  display: block;
+/* Eyebrow — small uppercase section-marker label, shared by the homepage
+   section labels and the article footer headings. */
+.eyebrow {
   font-size: 13px;
   font-family: -apple-system, system-ui, sans-serif;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.07em;
   color: var(--fg-muted);
+}
+
+.section-label {
+  display: block;
   margin-bottom: 1rem;
 }
 
@@ -621,12 +626,6 @@ h3:hover .heading-anchor {
 }
 
 .linked-mentions h2 {
-  font-size: 13px;
-  font-family: -apple-system, system-ui, sans-serif;
-  font-weight: 600;
-  color: var(--fg-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
   margin-bottom: 1rem;
 }
 
@@ -715,12 +714,6 @@ h3:hover .heading-anchor {
 }
 
 .related-posts h2 {
-  font-size: 13px;
-  font-family: -apple-system, system-ui, sans-serif;
-  font-weight: 600;
-  color: var(--fg-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
   margin-bottom: 0.6rem;
 }
 
@@ -1338,11 +1331,14 @@ h3:hover .heading-anchor {
     margin-left: -0.4rem;
   }
 
-  /* Section labels & footer headings — small uppercase eyebrows */
+  /* Section markers — shared eyebrow size + tightened spacing on mobile */
+  .eyebrow {
+    font-size: 12px;
+  }
+
   .section-label,
   .linked-mentions h2,
   .related-posts h2 {
-    font-size: 12px;
     margin-bottom: 0.8rem;
   }
 

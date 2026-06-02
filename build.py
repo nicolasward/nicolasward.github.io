@@ -238,7 +238,7 @@ def build():
   <span class="mention-excerpt">{excerpt}</span>
 </a>\n'''
             linked_mentions_html = f'''<div class="linked-mentions">
-  <h2>Linked mentions</h2>
+  <h2 class="eyebrow">Linked mentions</h2>
   <div class="mention-grid">
     {cards_html}
   </div>
@@ -288,7 +288,7 @@ def build():
         first_sentence = re.split(r'(?<=[.!?])\s', plain)[0] if plain else ""
 
         latest_section = f'''<div class="home-section">
-  <span class="section-label">Latest</span>
+  <span class="section-label eyebrow">Latest</span>
   <a href="{BASE_PATH}/{latest["slug"]}" class="latest-card">
     <h1 class="latest-title">{latest["title"]}</h1>
     <div class="latest-meta">{format_date_long(latest["date"])} <span class="separator">&middot;</span> {latest["read_time"]} minute read</div>

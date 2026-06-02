@@ -201,6 +201,7 @@
         document.documentElement.style.overflow = 'hidden';
         isOpen = true;
         if (initialQuery !== undefined) input.value = initialQuery;
+        syncClear(); // setting .value programmatically doesn't fire 'input', so sync manually
         requestAnimationFrame(() => {
           input.focus();
           const len = input.value.length;

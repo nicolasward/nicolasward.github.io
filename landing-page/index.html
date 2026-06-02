@@ -150,6 +150,64 @@ body {
 }
 @keyframes fadein-text { to { opacity: 1; transform: translateY(0); } }
 
+/* Machine / human — the two halves stay tinted toward the blob palette
+   (cool teal / warm amber) and gently trade emphasis in a slow, anti-phase
+   opacity pulse: both always present, focus breathing between them. */
+.intro .machine { color: #1C6C66; }
+.intro .human   { color: #BC5215; }
+.intro .machine,
+.intro .human {
+  animation: emphasis-pulse 8s ease-in-out infinite;
+}
+.intro .human { animation-delay: -4s; }
+@keyframes emphasis-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+/* "Read my writing" — primary call to action under the hero */
+.read-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  margin-top: 1.9rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 500;
+  font-size: clamp(1.05rem, 2.2vw, 1.3rem);
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  text-decoration: none;
+  opacity: 0;
+  transform: translateY(6px);
+  animation: fadein-text 1.4s ease-in-out 1.05s forwards;
+}
+.read-cta__text {
+  position: relative;
+}
+.read-cta__text::after {   /* underline wipes in from the left on hover */
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.32s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.read-cta:hover .read-cta__text::after { transform: scaleX(1); }
+.read-cta__arrow {
+  display: inline-block;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.read-cta:hover .read-cta__arrow { transform: translateX(5px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .intro .machine,
+  .intro .human { animation: none; }
+}
+
 /* ---------------- Bottom Links ---------------- */
 .links {
   position: fixed;
@@ -287,7 +345,12 @@ body {
       </div>
     </div>
 
-    <div class="intro">I build (machine + human) learning systems.</div>
+    <div class="intro">I build (<span class="machine">machine</span> + <span class="human">human</span>) learning systems.</div>
+
+    <a class="read-cta" href="/blog">
+      <span class="read-cta__text">Read my writing</span>
+      <span class="read-cta__arrow" aria-hidden="true">&rarr;</span>
+    </a>
   </div>
 
   <!-- Centered bottom links -->

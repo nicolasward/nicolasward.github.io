@@ -354,8 +354,9 @@
         percentEl.textContent = percent + '%';
         fill.style.strokeDashoffset = CIRCUMFERENCE * (1 - progress);
 
-        if (percent >= 100) widget.classList.add('complete');
-        else widget.classList.remove('complete');
+        const done = percent >= 100;
+        widget.classList.toggle('complete', done);
+        widget.title = done ? 'Back to top' : 'Skip to end';
       }
 
       let ticking = false;
@@ -369,11 +370,14 @@
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', onScroll, { passive: true });
 
-      // When completed, the circle scrolls back to the top
+      // Click scrolls to the top once complete, or jumps to the bottom
+      // while still reading (the inverse of the back-to-top action).
       widget.addEventListener('click', function () {
-        if (widget.classList.contains('complete')) {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        const toBottom = !widget.classList.contains('complete');
+        window.scrollTo({
+          top: toBottom ? document.documentElement.scrollHeight : 0,
+          behavior: 'smooth'
+        });
       });
     })();
   </script>

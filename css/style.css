@@ -1188,7 +1188,8 @@ h3:hover .heading-anchor {
   width: 52px;
   height: 52px;
   z-index: 100;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
   border-radius: 50%;
   background: var(--progress-bg);
   -webkit-backdrop-filter: blur(8px);
@@ -1197,12 +1198,6 @@ h3:hover .heading-anchor {
 
 [data-theme="dark"] .reading-progress {
   background: var(--progress-bg);
-}
-
-/* Once complete, the circle becomes a back-to-top button */
-.reading-progress.complete {
-  pointer-events: auto;
-  cursor: pointer;
 }
 
 .progress-ring {

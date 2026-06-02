@@ -317,7 +317,7 @@ body.home::before {
 .post-list li {
   display: flex;
   align-items: baseline;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.55rem;
 }
 
 .post-list .post-date {
@@ -381,7 +381,7 @@ body.home::before {
 }
 
 .latest-title {
-  font-size: 21px;
+  font-size: 24px;
   font-weight: 500;
   line-height: 1.25;
   margin-bottom: 0.5rem;
@@ -394,7 +394,7 @@ body.home::before {
 
 .latest-meta {
   color: var(--fg-muted);
-  font-size: 16px;
+  font-size: 16.96px;
   margin-bottom: 0.5rem;
 }
 
@@ -404,7 +404,7 @@ body.home::before {
 }
 
 .latest-excerpt {
-  font-size: 16px;
+  font-size: 19.275px;
   line-height: 1.5;
   margin-bottom: 0;
   color: var(--fg-muted);
@@ -1360,20 +1360,23 @@ h3:hover .heading-anchor {
     font-size: 1.1rem;
   }
 
-  /* Latest block — proportional to the 16px anchor */
+  /* Latest block — mirrors the article scale (body 17px, meta 14px) */
   .latest-title {
-    font-size: 17.5px;
+    font-size: 20px;
   }
 
-  .latest-meta,
   .latest-excerpt {
-    font-size: 13.5px;
+    font-size: 17px;
   }
 
-  /* Homepage lists */
+  .latest-meta {
+    font-size: 14px;
+  }
+
+  /* Homepage lists — match the article body size */
   .post-list a,
   .topics-inline a {
-    font-size: 16px;
+    font-size: 17px;
   }
 
   .post-date {

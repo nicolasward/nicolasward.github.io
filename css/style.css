@@ -1000,14 +1000,14 @@ h3:hover .heading-anchor {
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--fg); /* match body text: dark in light mode, bright in dark mode */
-  opacity: 0.7;
+  color: var(--fg); /* exact same color as the search input text in both modes */
+  opacity: 1;
   transition: opacity 0.15s ease;
   flex-shrink: 0;
 }
 
 .search-clear:hover {
-  opacity: 1;
+  opacity: 0.6;
 }
 
 .search-input-wrap.has-value .search-clear {

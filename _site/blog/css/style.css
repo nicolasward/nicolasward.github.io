@@ -621,12 +621,12 @@ h3:hover .heading-anchor {
 }
 
 .linked-mentions h2 {
-  font-size: 19.275px;
+  font-size: 13px;
   font-family: -apple-system, system-ui, sans-serif;
-  font-weight: 400;
+  font-weight: 600;
   color: var(--fg-muted);
-  text-transform: none;
-  letter-spacing: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
   margin-bottom: 1rem;
 }
 
@@ -715,12 +715,12 @@ h3:hover .heading-anchor {
 }
 
 .related-posts h2 {
-  font-size: 19.275px;
+  font-size: 13px;
   font-family: -apple-system, system-ui, sans-serif;
-  font-weight: 400;
+  font-weight: 600;
   color: var(--fg-muted);
-  text-transform: none;
-  letter-spacing: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
   margin-bottom: 0.6rem;
 }
 
@@ -1338,8 +1338,10 @@ h3:hover .heading-anchor {
     margin-left: -0.4rem;
   }
 
-  /* Section labels (Latest / Writing / Topics) — small uppercase eyebrows */
-  .section-label {
+  /* Section labels & footer headings — small uppercase eyebrows */
+  .section-label,
+  .linked-mentions h2,
+  .related-posts h2 {
     font-size: 12px;
     margin-bottom: 0.8rem;
   }

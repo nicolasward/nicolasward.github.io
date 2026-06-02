@@ -327,6 +327,33 @@
       const percentEl = widget.querySelector('.progress-percent');
       const CIRCUMFERENCE = 2 * Math.PI * 19; // matches r=19 in SVG
 
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let wasComplete = false, firstRun = true;
+
+      // Pop a burst of accent-orange confetti out of the circle on completion.
+      function burst() {
+        if (reduceMotion) return;
+        const rect = widget.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        for (let i = 0; i < 22; i++) {
+          const piece = document.createElement('div');
+          piece.className = 'confetti-piece';
+          const angle = Math.random() * Math.PI * 2;
+          const dist = 55 + Math.random() * 85;
+          piece.style.left = cx + 'px';
+          piece.style.top = cy + 'px';
+          piece.style.setProperty('--tx', (Math.cos(angle) * dist).toFixed(1) + 'px');
+          piece.style.setProperty('--ty', (Math.sin(angle) * dist).toFixed(1) + 'px');
+          piece.style.setProperty('--rot', Math.round(Math.random() * 720 - 360) + 'deg');
+          piece.style.setProperty('--size', (6 + Math.random() * 5).toFixed(1) + 'px');
+          piece.style.setProperty('--b', (0.85 + Math.random() * 0.4).toFixed(2));
+          piece.style.setProperty('--dur', Math.round(650 + Math.random() * 450) + 'ms');
+          piece.addEventListener('animationend', function () { piece.remove(); });
+          document.body.appendChild(piece);
+        }
+      }
+
       function update() {
         const rect = article.getBoundingClientRect();
         const articleHeight = article.offsetHeight;
@@ -342,6 +369,11 @@
         const done = percent >= 100;
         widget.classList.toggle('complete', done);
         widget.title = done ? 'Back to top' : 'Skip to end';
+
+        // Fire confetti on the rising edge only (not on initial load).
+        if (done && !wasComplete && !firstRun) burst();
+        wasComplete = done;
+        firstRun = false;
       }
 
       let ticking = false;

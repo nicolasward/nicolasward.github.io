@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <!-- Color of Safari's status-bar / toolbar chrome. iOS only renders a solid
+       color there (never the page's background image), so we set it explicitly
+       to match the page field. Updated live by the theme toggle below. -->
+  <meta name="theme-color" id="theme-color-meta" content="#f6f8fa">
   <title>{{title}}</title>
   <link rel="stylesheet" href="{{base}}/css/flexoki.css">
   <link rel="stylesheet" href="{{base}}/css/style.css">
@@ -288,9 +292,13 @@
       const toggle = document.getElementById('theme-toggle');
       const html = document.documentElement;
 
+      const themeColorMeta = document.getElementById('theme-color-meta');
+      const THEME_COLORS = { light: '#f6f8fa', dark: '#100F0F' };
+
       function setTheme(theme) {
         html.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
+        if (themeColorMeta) themeColorMeta.setAttribute('content', THEME_COLORS[theme] || THEME_COLORS.light);
       }
 
       // Init from saved preference or system

@@ -150,20 +150,30 @@ body {
 }
 @keyframes fadein-text { to { opacity: 1; transform: translateY(0); } }
 
-/* Machine / human rotator — one slot that rolls between the two words.
-   Each word is tinted toward the blob palette (teal / amber). The slot width
-   animates so the trailing text slides smoothly as the word changes. */
-.swap {
-  display: inline-block;
-  position: relative;
-  white-space: nowrap;
+/* machine ⇄ human — both words stay present (tinted teal / amber) and
+   infinitely trade places: they lift-and-fade out, swap sides via flex order
+   (total width is constant, so the sentence never reflows), then settle back
+   in from below while the connector pulses. Colour travels with each word. */
+.duo {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5em;
   vertical-align: baseline;
-  transition: width 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  white-space: nowrap;
 }
-.swap__word {
+.duo__word {
   display: inline-block;
-  color: #1C6C66;   /* "machine" — cool teal (initial) */
-  transition: opacity 0.34s ease, transform 0.34s cubic-bezier(0.65, 0, 0.35, 1);
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.duo__word--m { order: 1; color: #1C6C66; }   /* machine — cool teal */
+.duo__word--h { order: 3; color: #BC5215; }   /* human — warm amber */
+.duo__link {
+  order: 2;
+  align-self: center;
+  color: var(--fg);
+  opacity: 0.4;
+  font-size: 0.72em;
+  transition: transform 0.3s ease;
 }
 
 /* "Read my writing" — primary call to action, sat midway between the hero
@@ -172,7 +182,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.45em;
-  margin-top: clamp(6rem, 22vh, 18rem);
+  margin-top: clamp(3rem, 13vh, 10rem);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-weight: 500;
   font-size: clamp(1.05rem, 2.2vw, 1.3rem);
@@ -206,7 +216,7 @@ body {
 .read-cta:hover .read-cta__arrow { transform: translateX(5px); }
 
 @media (prefers-reduced-motion: reduce) {
-  .swap__word { transition: none; }
+  .duo__word { transition: none; }
 }
 
 /* ---------------- Bottom Links ---------------- */
@@ -346,7 +356,7 @@ body {
       </div>
     </div>
 
-    <div class="intro">I build <span class="swap"><span class="swap__word">machine</span></span> learning systems.</div>
+    <div class="intro">I build <span class="duo"><span class="duo__word duo__word--m">machine</span><span class="duo__link" aria-hidden="true">&#8644;</span><span class="duo__word duo__word--h">human</span></span> learning systems.</div>
 
     <a class="read-cta" href="/blog">
       <span class="read-cta__text">Read my writing</span>
@@ -382,47 +392,37 @@ document.querySelectorAll('.blob').forEach(blob => {
   drift(blob, start);
 });
 
-// Machine / human word rotator — rolls the slot between the two words.
+// machine ⇄ human — the two words infinitely trade places.
 (function () {
-  const slot = document.querySelector('.swap');
-  if (!slot) return;
-  const word = slot.querySelector('.swap__word');
-  const items = [
-    { text: 'machine', color: '#1C6C66' },  // cool teal
-    { text: 'human',   color: '#BC5215' }   // warm amber
-  ];
+  const duo = document.querySelector('.duo');
+  if (!duo) return;
+  const m = duo.querySelector('.duo__word--m');
+  const h = duo.querySelector('.duo__word--h');
+  const link = duo.querySelector('.duo__link');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  function fit() { slot.style.width = word.offsetWidth + 'px'; }
-  fit();
-  window.addEventListener('resize', fit);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
-
-  // Reduced motion: skip the rotation, show both words statically.
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    slot.innerHTML = '<span style="color:#1C6C66">machine</span> and ' +
-                     '<span style="color:#BC5215">human</span>';
-    slot.style.width = 'auto';
-    return;
-  }
-
-  let i = 0;
-  function rotate() {
-    word.style.opacity = '0';                  // roll current word up & out
-    word.style.transform = 'translateY(-0.42em)';
+  let swapped = false;
+  function swap() {
+    // lift + fade both words out; nudge the connector in
+    m.style.opacity = h.style.opacity = '0';
+    m.style.transform = h.style.transform = 'translateY(-0.4em)';
+    link.style.transform = 'scale(0.8)';
     setTimeout(function () {
-      i = (i + 1) % items.length;
-      word.textContent = items[i].text;
-      word.style.color = items[i].color;
-      fit();                                   // slot width eases to new word
-      word.style.transition = 'none';          // drop below without animating
-      word.style.transform = 'translateY(0.42em)';
-      void word.offsetWidth;                   // force reflow
-      word.style.transition = '';              // roll up into place
-      word.style.opacity = '1';
-      word.style.transform = 'translateY(0)';
-    }, 340);
+      // exchange sides while invisible — flex keeps the positions exact
+      swapped = !swapped;
+      m.style.order = swapped ? '3' : '1';
+      h.style.order = swapped ? '1' : '3';
+      // drop just below, then settle in (no anim on the reposition)
+      m.style.transition = h.style.transition = 'none';
+      m.style.transform = h.style.transform = 'translateY(0.4em)';
+      void duo.offsetWidth;
+      m.style.transition = h.style.transition = '';
+      m.style.opacity = h.style.opacity = '1';
+      m.style.transform = h.style.transform = 'translateY(0)';
+      link.style.transform = 'scale(1)';
+    }, 300);
   }
-  setInterval(rotate, 3000);
+  setInterval(swap, 3200);
 })();
 </script>
 </body>

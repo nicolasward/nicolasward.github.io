@@ -617,8 +617,8 @@ h3:hover .heading-anchor {
 
 /* ===== Linked mentions ===== */
 .linked-mentions {
-  margin-top: 70px;
-  padding-top: 70px;
+  margin-top: 3.5rem;
+  padding-top: 3.5rem;
   position: relative;
 }
 
@@ -695,8 +695,8 @@ h3:hover .heading-anchor {
 
 /* ===== Related posts ===== */
 .related-posts {
-  margin-top: 70px;
-  padding-top: 70px;
+  margin-top: 3.5rem;
+  padding-top: 3.5rem;
   border-top: none;
   position: relative;
 }
@@ -752,8 +752,8 @@ h3:hover .heading-anchor {
 
 /* ===== Footer ===== */
 .site-footer {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
+  margin-top: 3.5rem;
+  padding-top: 3.5rem;
   border-top: 1px solid var(--border);
   color: var(--fg-muted);
   font-size: 0.8rem;

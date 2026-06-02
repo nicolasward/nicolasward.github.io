@@ -177,6 +177,17 @@
 
       input.addEventListener('input', e => { render(e.target.value); syncClear(); });
 
+      // The overlay and input row fade in from opacity 0, and a caret focused
+      // during that fade won't paint until the user types. Once the input row
+      // has finished fading in, re-assert the caret so the orange cursor is
+      // visible from the get-go.
+      inputWrap.addEventListener('animationend', function (e) {
+        if (e.animationName !== 'search-fade-in') return;
+        const len = input.value.length;
+        input.focus();
+        input.setSelectionRange(len, len);
+      });
+
       clearBtn.addEventListener('click', () => {
         input.value = '';
         syncClear();

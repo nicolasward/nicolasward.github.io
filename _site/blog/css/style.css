@@ -1458,4 +1458,28 @@ h3:hover .heading-anchor {
     left: -1.25rem;
     width: calc(100% + 2.5rem);
   }
+
+  /* Even, symmetric rhythm around every footer-area divider (was 70px for the
+     related section vs 24px for the footer — visibly uneven). One consistent
+     section gap, same above and below each line. */
+  .linked-mentions,
+  .related-posts {
+    margin-top: 2.5rem;
+    padding-top: 2.5rem;
+  }
+
+  .linked-mentions + .related-posts {
+    margin-top: 2.5rem;
+    padding-top: 0;
+  }
+
+  .site-footer {
+    margin-top: 2.5rem;
+    padding-top: 2.5rem;
+    /* full-bleed divider to match the section separators above */
+    margin-left: -1.25rem;
+    margin-right: -1.25rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
 }

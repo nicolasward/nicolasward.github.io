@@ -260,6 +260,7 @@ def build():
             title=f'{post["title"]} — {SITE_TITLE}',
             content=post_html,
             nav_section=writing_nav,
+            body_class="",
         )
 
         post_dir = BLOG_DIR / post["slug"]
@@ -309,7 +310,7 @@ def build():
     topic_links = ", ".join(f'<a href="#" data-search="{tag}">{tag}</a>' for tag in all_tags)
 
     home_html = render(home_tpl, post_items=post_items, topic_links=topic_links, latest_section=latest_section)
-    index_html = render(base_tpl, base=BASE_PATH, title=SITE_TITLE, content=home_html, nav_section=writing_nav)
+    index_html = render(base_tpl, base=BASE_PATH, title=SITE_TITLE, content=home_html, nav_section=writing_nav, body_class="home")
     (BLOG_DIR / "index.html").write_text(index_html)
 
     # --- Build static pages ---
@@ -325,7 +326,7 @@ def build():
             title = meta.get("title", filepath.stem.replace("-", " ").title())
 
             pg_html = render(page_tpl, title=title, content=prefix_internal_links(html_content, slug_set, BASE_PATH))
-            full_html = render(base_tpl, base=BASE_PATH, title=f'{title} — {SITE_TITLE}', content=pg_html, nav_section=writing_nav)
+            full_html = render(base_tpl, base=BASE_PATH, title=f'{title} — {SITE_TITLE}', content=pg_html, nav_section=writing_nav, body_class="")
 
             pg_dir = BLOG_DIR / slug
             pg_dir.mkdir(parents=True, exist_ok=True)

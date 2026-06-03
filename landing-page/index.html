@@ -94,10 +94,15 @@ body {
   padding: 0 clamp(2rem, 6vw, 10rem);
   box-sizing: border-box;
   padding-top: 35vh;
-  opacity: 0;
-  animation: fadein 1.4s ease-in-out .5s forwards;
 }
-@keyframes fadein { to { opacity: 1; } }
+
+/* Shared entrance: a gentle fade + rise. Elements stagger in via their own
+   animation-delay (profile → hero → CTA → links) for a smooth Apple-like
+   cascade. fill: both holds each hidden during its delay (no flash). */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 /* Profile */
 .profile {
@@ -105,6 +110,8 @@ body {
   align-items: center;
   gap: 1rem;
   margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
 }
 
 .profile img {
@@ -146,11 +153,9 @@ body {
   letter-spacing: -0.25px;
   color: var(--fg);
   text-rendering: optimizeLegibility;
-  animation: fadein-text 1.6s ease-in-out 0.8s forwards;
   opacity: 0;
-  transform: translateY(6px);
+  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
 }
-@keyframes fadein-text { to { opacity: 1; transform: translateY(0); } }
 
 /* machine ⇄ human — the phrase is dark grey, with a long soft orange band
    (the blog accent) flowing back and forth across the whole thing, arrows
@@ -193,8 +198,7 @@ body {
   color: var(--fg);
   text-decoration: none;
   opacity: 0;
-  transform: translateY(6px);
-  animation: fadein-text 1.4s ease-in-out 1.05s forwards;
+  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.9s both;
 }
 .read-cta__text {
   position: relative;
@@ -219,6 +223,13 @@ body {
 .read-cta:hover .read-cta__arrow { transform: translateX(5px); }
 
 @media (prefers-reduced-motion: reduce) {
+  /* No entrance animation — show everything immediately. */
+  .profile, .intro, .read-cta, .links {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .links { transform: translateX(-50%); }
   .duo {
     animation: none;
     background: none;
@@ -245,7 +256,7 @@ body {
   letter-spacing: 0.4px;
 
   opacity: 0;
-  animation: fadein-links 1s ease-in-out 1.3s forwards;
+  animation: fadein-links 1s cubic-bezier(0.22, 1, 0.36, 1) 1.2s both;
 
   text-align: center;
   color: var(--fg);
@@ -326,11 +337,6 @@ body {
     justify-content: center;
     font-size: 15px;
     gap: 1.6rem;
-
-    /* 👇 Prevent flicker on mobile */
-    opacity: 1 !important;
-    animation: none !important;
-    transition: opacity 0.3s ease;
 
     z-index: 5;
   }

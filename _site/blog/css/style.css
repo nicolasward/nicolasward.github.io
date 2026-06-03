@@ -1,6 +1,6 @@
 /* ===== Noise & blob config ===== */
 :root {
-  --noise-size: 170px;
+  --noise-size: 130px;
   --noise-opacity: 0.3;
 }
 

@@ -174,7 +174,7 @@ body {
   display: inline-block;
   margin: 0 0.3em;
   color: var(--fg);
-  transform: scaleX(-1);             /* "\" — left word lit initially */
+  transform: scaleX(1);              /* "/" — points at the orange (off) word */
   transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
@@ -441,7 +441,7 @@ document.querySelectorAll('.blob').forEach(blob => {
   let leftLit = true;
   setInterval(function () {
     leftLit = !leftLit;
-    bar.style.transform = leftLit ? 'scaleX(-1)' : 'scaleX(1)';   // "\" or "/"
+    bar.style.transform = leftLit ? 'scaleX(1)' : 'scaleX(-1)';   // slash points at the orange word
     if (leftLit) {
       wipe(L, OFF, ON, true);    // machine lights up
       wipe(R, ON, OFF, false);   // human dims

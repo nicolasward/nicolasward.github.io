@@ -157,29 +157,25 @@ body {
   animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
 }
 
-/* machine ⇄ human — two reels that roll vertically in unison and trade
-   words: the left rolls up and becomes "human" as the right becomes
-   "machine", and back, forever. Dark grey like the rest of the hero. Slot
-   widths are fixed in JS (to the wider word) so nothing reflows as they roll.
-   Smoother than a split-flap: the outgoing word rises + fades as the incoming
-   one rises in from below. */
-.flip {
+/* machine / human — an on/off switch. The bar flips between "\" and "/":
+   "\" lights the left word, "/" lights the right. The lit word is hero-ink;
+   the other is light ghost grey. The words never move; the colour change
+   wipes out from the bar (centre) to the far end of each word. */
+.sw {
   white-space: nowrap;
 }
-.flip__slot {
+.sw__word {
   display: inline-block;
-  vertical-align: baseline;
+  background-repeat: no-repeat;
 }
-.flip__slot--l { text-align: right; }   /* word sits snug to the connector */
-.flip__slot--r { text-align: left; }
-.flip__word {
+.sw__word--l { color: var(--fg); }   /* machine: lit initially */
+.sw__word--r { color: #D4D4D4; }     /* human: off (ghost grey) */
+.sw__bar {
   display: inline-block;
-  will-change: transform, opacity;
-  transition: transform 0.34s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.34s ease;
-}
-.flip__link {
-  color: var(--fg);
   margin: 0 0.3em;
+  color: var(--fg);
+  transform: scaleX(-1);             /* "\" — left word lit initially */
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 /* "Read my writing" — primary call to action, sat midway between the hero
@@ -228,11 +224,7 @@ body {
     transform: none;
   }
   .links { transform: translateX(-50%); }
-  .flip__word {
-    transition: none;
-    transform: none;
-    opacity: 1;
-  }
+  .sw__bar { transition: none; }
 }
 
 /* ---------------- Bottom Links ---------------- */
@@ -369,7 +361,7 @@ body {
       </div>
     </div>
 
-    <div class="intro">I build <span class="flip"><span class="flip__slot flip__slot--l"><span class="flip__word js-flip-l">machine</span></span><span class="flip__link" aria-hidden="true">&#8644;</span><span class="flip__slot flip__slot--r"><span class="flip__word js-flip-r">human</span></span></span> learning systems.</div>
+    <div class="intro">I build <span class="sw"><span class="sw__word sw__word--l js-sw-l">machine</span><span class="sw__bar js-sw-bar" aria-hidden="true">/</span><span class="sw__word sw__word--r js-sw-r">human</span></span> learning systems.</div>
 
     <a class="read-cta" href="/blog">
       <span class="read-cta__text">Read my writing</span>
@@ -407,51 +399,52 @@ document.querySelectorAll('.blob').forEach(blob => {
   drift(blob, start);
 });
 
-// machine ⇄ human — two reels rolling in unison, trading words.
+// machine / human — on/off switch. The bar flips "\" <-> "/"; the lit word
+// is hero-ink, the other is ghost grey, and the colour wipes out from the
+// bar (centre) to the far end of each word.
 (function () {
-  const flip = document.querySelector('.flip');
-  if (!flip) return;
-  const L = flip.querySelector('.js-flip-l');
-  const R = flip.querySelector('.js-flip-r');
-  const words = ['machine', 'human'];
-
-  // Lock each slot to the wider word's width so the layout never reflows.
-  function fit() {
-    [L, R].forEach(function (el) {
-      const slot = el.parentElement;
-      const cur = el.textContent;
-      let w = 0;
-      words.forEach(function (word) { el.textContent = word; w = Math.max(w, el.offsetWidth); });
-      el.textContent = cur;
-      slot.style.width = Math.ceil(w) + 'px';
-    });
-  }
-  fit();
-  window.addEventListener('resize', fit);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
-
+  const sw = document.querySelector('.sw');
+  if (!sw) return;
+  const L = sw.querySelector('.js-sw-l');
+  const R = sw.querySelector('.js-sw-r');
+  const bar = sw.querySelector('.js-sw-bar');
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  function rollOne(el, text) {
-    el.style.opacity = '0';                 // rise + fade out
-    el.style.transform = 'translateY(-0.55em)';
-    setTimeout(function () {
-      el.textContent = text;                // swap, drop below, rise + fade in
-      el.style.transition = 'none';
-      el.style.transform = 'translateY(0.55em)';
-      void el.offsetWidth;
-      el.style.transition = '';
-      el.style.opacity = '1';
-      el.style.transform = 'translateY(0)';
-    }, 340);
+  const ON = getComputedStyle(document.documentElement)
+               .getPropertyValue('--fg').trim() || '#100F0F';
+  const OFF = '#D4D4D4';   // ghost grey (blog search placeholder)
+
+  // Wipe a word's colour from `from` to `to`, rolling out from the bar side
+  // (centre) to the word's far end.
+  function wipe(el, from, to, isLeft) {
+    const grad = isLeft
+      ? `linear-gradient(to right, ${from} 0%, ${from} 40%, ${to} 60%, ${to} 100%)`
+      : `linear-gradient(to right, ${to} 0%, ${to} 40%, ${from} 60%, ${from} 100%)`;
+    el.style.transition = 'none';
+    el.style.backgroundImage = grad;
+    el.style.backgroundSize = '240% 100%';
+    el.style.webkitBackgroundClip = 'text';
+    el.style.backgroundClip = 'text';
+    el.style.webkitTextFillColor = 'transparent';
+    el.style.color = 'transparent';
+    el.style.backgroundPosition = isLeft ? '0% 50%' : '100% 50%';
+    void el.offsetWidth;                       // commit the start position
+    el.style.transition = 'background-position 0.65s ease-in-out';
+    el.style.backgroundPosition = isLeft ? '100% 50%' : '0% 50%';
   }
 
-  let i = 0;
+  let leftLit = true;
   setInterval(function () {
-    i ^= 1;
-    rollOne(L, words[i]);       // left: machine ↔ human
-    rollOne(R, words[i ^ 1]);   // right: always the opposite
-  }, 2800);
+    leftLit = !leftLit;
+    bar.style.transform = leftLit ? 'scaleX(-1)' : 'scaleX(1)';   // "\" or "/"
+    if (leftLit) {
+      wipe(L, OFF, ON, true);    // machine lights up
+      wipe(R, ON, OFF, false);   // human dims
+    } else {
+      wipe(L, ON, OFF, true);    // machine dims
+      wipe(R, OFF, ON, false);   // human lights up
+    }
+  }, 3000);
 })();
 </script>
 </body>

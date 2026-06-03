@@ -157,31 +157,29 @@ body {
   animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
 }
 
-/* machine ⇄ human — the phrase is dark grey, with a long soft orange band
-   (the blog accent) flowing back and forth across the whole thing, arrows
-   included. The gradient is clipped to the text, so all of it (words + arrow)
-   must be direct text of .duo. */
-.duo {
-  display: inline-block;
+/* machine ⇄ human — two reels that roll vertically in unison and trade
+   words: the left rolls up and becomes "human" as the right becomes
+   "machine", and back, forever. Dark grey like the rest of the hero. Slot
+   widths are fixed in JS (to the wider word) so nothing reflows as they roll.
+   Smoother than a split-flap: the outgoing word rises + fades as the incoming
+   one rises in from below. */
+.flip {
   white-space: nowrap;
-  vertical-align: baseline;
-  background-image: linear-gradient(
-    90deg,
-    var(--fg) 0%, var(--fg) 22%,
-    #FF791B 40%, #FF791B 60%,
-    var(--fg) 78%, var(--fg) 100%
-  );
-  background-size: 230% 100%;
-  background-repeat: no-repeat;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  animation: duo-flow 5s ease-in-out infinite alternate;
 }
-@keyframes duo-flow {
-  from { background-position: 100% 50%; }
-  to   { background-position: 0% 50%; }
+.flip__slot {
+  display: inline-block;
+  vertical-align: baseline;
+}
+.flip__slot--l { text-align: right; }   /* word sits snug to the connector */
+.flip__slot--r { text-align: left; }
+.flip__word {
+  display: inline-block;
+  will-change: transform, opacity;
+  transition: transform 0.34s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.34s ease;
+}
+.flip__link {
+  color: var(--fg);
+  margin: 0 0.3em;
 }
 
 /* "Read my writing" — primary call to action, sat midway between the hero
@@ -230,11 +228,10 @@ body {
     transform: none;
   }
   .links { transform: translateX(-50%); }
-  .duo {
-    animation: none;
-    background: none;
-    -webkit-text-fill-color: var(--fg);
-    color: var(--fg);
+  .flip__word {
+    transition: none;
+    transform: none;
+    opacity: 1;
   }
 }
 
@@ -372,7 +369,7 @@ body {
       </div>
     </div>
 
-    <div class="intro">I build <span class="duo">machine&#8201;&#8644;&#8201;human</span> learning systems.</div>
+    <div class="intro">I build <span class="flip"><span class="flip__slot flip__slot--l"><span class="flip__word js-flip-l">machine</span></span><span class="flip__link" aria-hidden="true">&#8644;</span><span class="flip__slot flip__slot--r"><span class="flip__word js-flip-r">human</span></span></span> learning systems.</div>
 
     <a class="read-cta" href="/blog">
       <span class="read-cta__text">Read my writing</span>
@@ -410,6 +407,52 @@ document.querySelectorAll('.blob').forEach(blob => {
   drift(blob, start);
 });
 
+// machine ⇄ human — two reels rolling in unison, trading words.
+(function () {
+  const flip = document.querySelector('.flip');
+  if (!flip) return;
+  const L = flip.querySelector('.js-flip-l');
+  const R = flip.querySelector('.js-flip-r');
+  const words = ['machine', 'human'];
+
+  // Lock each slot to the wider word's width so the layout never reflows.
+  function fit() {
+    [L, R].forEach(function (el) {
+      const slot = el.parentElement;
+      const cur = el.textContent;
+      let w = 0;
+      words.forEach(function (word) { el.textContent = word; w = Math.max(w, el.offsetWidth); });
+      el.textContent = cur;
+      slot.style.width = Math.ceil(w) + 'px';
+    });
+  }
+  fit();
+  window.addEventListener('resize', fit);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  function rollOne(el, text) {
+    el.style.opacity = '0';                 // rise + fade out
+    el.style.transform = 'translateY(-0.55em)';
+    setTimeout(function () {
+      el.textContent = text;                // swap, drop below, rise + fade in
+      el.style.transition = 'none';
+      el.style.transform = 'translateY(0.55em)';
+      void el.offsetWidth;
+      el.style.transition = '';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, 340);
+  }
+
+  let i = 0;
+  setInterval(function () {
+    i ^= 1;
+    rollOne(L, words[i]);       // left: machine ↔ human
+    rollOne(R, words[i ^ 1]);   // right: always the opposite
+  }, 2800);
+})();
 </script>
 </body>
 </html>

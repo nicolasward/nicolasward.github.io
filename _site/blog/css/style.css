@@ -418,6 +418,37 @@ html[data-theme="dark"] body::before {
   color: var(--accent);
 }
 
+/* ===== Homepage line-by-line rollout =====
+   On load the homepage rows rise into place in fast succession (like the
+   search results, minus the horizontal slide). Rows are hidden up front —
+   only when JS is present (.js) — then the end-of-body script tags each with
+   its index and the .roll-in animation reveals them, staggered top to bottom. */
+.js body.home .section-label,
+.js body.home .latest-card,
+.js body.home .section-divider,
+.js body.home .post-list li,
+.js body.home .topics-inline {
+  opacity: 0;
+}
+.roll-in {
+  animation: roll-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 0.04s);
+}
+@keyframes roll-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .js body.home .section-label,
+  .js body.home .latest-card,
+  .js body.home .section-divider,
+  .js body.home .post-list li,
+  .js body.home .topics-inline {
+    opacity: 1;
+  }
+  .roll-in { animation: none; }
+}
+
 /* ===== Post page ===== */
 .post-header {
   margin-bottom: 2rem;

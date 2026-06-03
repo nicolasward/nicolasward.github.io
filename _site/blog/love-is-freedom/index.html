@@ -12,6 +12,9 @@
   <link rel="stylesheet" href="/blog/css/style.css">
   <link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feed.xml">
   <script>
+    // Mark that JS is available, so CSS can hide the homepage rows before
+    // they roll in (no-JS users keep them visible).
+    document.documentElement.classList.add('js');
     // Hide the keyboard-shortcut pro-tips on touch devices (no physical
     // keyboard). Done in JS via touch-hardware detection so it works
     // regardless of viewport width, pointer media reporting, or desktop-mode.
@@ -445,6 +448,22 @@
           window.location.href = '/blog';
         }
       }, true);
+    })();
+  </script>
+  <script>
+    // Homepage: roll the content out line by line on load. Runs synchronously
+    // at end of body (before paint) and tags each row with its index so CSS
+    // can stagger the rise. Rows are hidden up front via the .js gate in CSS.
+    (function () {
+      if (!document.body.classList.contains('home')) return;
+      var rows = document.querySelectorAll(
+        'main .section-label, main .latest-card, main .section-divider, ' +
+        'main .post-list li, main .topics-inline'
+      );
+      for (var i = 0; i < rows.length; i++) {
+        rows[i].style.setProperty('--i', i);
+        rows[i].classList.add('roll-in');
+      }
     })();
   </script>
 </body>

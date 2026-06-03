@@ -11,6 +11,17 @@
   <link rel="stylesheet" href="{{base}}/css/flexoki.css">
   <link rel="stylesheet" href="{{base}}/css/style.css">
   <link rel="alternate" type="application/rss+xml" title="RSS" href="{{base}}/feed.xml">
+  <script>
+    // Hide the keyboard-shortcut pro-tips on touch devices (no physical
+    // keyboard). Done in JS via touch-hardware detection so it works
+    // regardless of viewport width, pointer media reporting, or desktop-mode.
+    if (navigator.maxTouchPoints > 0 ||
+        (window.matchMedia && matchMedia('(pointer: coarse)').matches)) {
+      var s = document.createElement('style');
+      s.textContent = '.pro-tips{display:none !important}';
+      document.head.appendChild(s);
+    }
+  </script>
 </head>
 <body class="{{body_class}}">
   <div class="container">

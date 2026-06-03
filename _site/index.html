@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>nw</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400&display=swap" rel="stylesheet">
 
 <style>
 /* Shared design tokens — same names/values as the blog (css/style.css) so the
@@ -355,7 +357,7 @@ body {
 
   <div class="container">
     <div class="profile">
-      <img src="nico.jpg" alt="Profile photo">
+      <img src="nico.jpg" alt="Profile photo" width="90" height="90" decoding="async" fetchpriority="high">
       <div>
         <h1>Nico Ward</h1>
         <p>ai &middot; design &middot; education</p>
@@ -382,11 +384,13 @@ function randomPos(pad = 6) { return { x: rand(pad, 100 - pad), y: rand(pad, 100
 function drift(blob, prev) {
   const next = randomPos();
   const duration = rand(4000, 4000);
-  const scale = rand(0.95, 1.05);
+  // Translate only (no scale): scaling a heavily-blurred element forces the
+  // browser to re-rasterize the blur every frame, which is the main source of
+  // jank. A pure translate stays on the compositor and is cheap.
   const anim = blob.animate(
     [
-      { transform: `translate(${prev.x}vw, ${prev.y}vh) scale(1)` },
-      { transform: `translate(${next.x}vw, ${next.y}vh) scale(${scale})` }
+      { transform: `translate(${prev.x}vw, ${prev.y}vh)` },
+      { transform: `translate(${next.x}vw, ${next.y}vh)` }
     ],
     { duration, easing: 'ease-in-out', fill: 'forwards' }
   );

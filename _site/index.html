@@ -169,7 +169,7 @@ body {
   background-repeat: no-repeat;
 }
 .sw__word--l { color: var(--fg); }   /* machine: lit initially */
-.sw__word--r { color: #D4D4D4; }     /* human: off (ghost grey) */
+.sw__word--r { color: #FF791B; }     /* human: off (accent orange) */
 .sw__bar {
   display: inline-block;
   margin: 0 0.3em;
@@ -412,7 +412,7 @@ document.querySelectorAll('.blob').forEach(blob => {
 
   const ON = getComputedStyle(document.documentElement)
                .getPropertyValue('--fg').trim() || '#100F0F';
-  const OFF = '#D4D4D4';   // ghost grey (blog search placeholder)
+  const OFF = '#FF791B';   // signature accent orange
 
   // Wipe a word's colour from `from` to `to`, rolling out from the bar side
   // (centre) to the word's far end.

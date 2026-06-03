@@ -12,10 +12,6 @@
   /* Brand accent — the one highlight colour (hover, active, focus, caret). */
   --accent: #FF791B;
 
-  /* Display serif — the "voice" face, shared with the landing page. Used only
-     for the wordmark and titles; body text stays sans for readability. */
-  --font-serif: 'Noto Serif KR', Georgia, 'Times New Roman', serif;
-
   /* Background field — intentionally COOL (not Flexoki's warm paper), near-white.
      canvas paints the root + iOS safe-area; field / field-mid are gradient stops. */
   --canvas:    #f6f8fa;
@@ -154,8 +150,6 @@ html[data-theme="dark"] body::before {
 
 .site-title .nav-name {
   color: var(--flexoki-black);
-  font-family: var(--font-serif);
-  font-weight: 500;
 }
 
 [data-theme="dark"] .site-title .nav-name {
@@ -375,7 +369,6 @@ html[data-theme="dark"] body::before {
 }
 
 .latest-title {
-  font-family: var(--font-serif);
   font-size: 24px;
   font-weight: 500;
   line-height: 1.25;
@@ -462,10 +455,9 @@ html[data-theme="dark"] body::before {
 }
 
 .post-title {
-  font-family: var(--font-serif);
   font-weight: 500;
   font-size: 32.4px;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   line-height: 1.25;
   margin-top: 1.5em;
   margin-bottom: .25em;
@@ -1350,10 +1342,9 @@ h3:hover .heading-anchor {
 
 /* ===== About / Static pages ===== */
 .page-title {
-  font-family: var(--font-serif);
   font-weight: 500;
   font-size: 32.4px;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   line-height: 1.25;
   margin-top: 1.5em;
   margin-bottom: .25em;

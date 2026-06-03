@@ -335,12 +335,11 @@ body {
     z-index: 5;
   }
 
-  /* Scale blobs to the same screen-coverage ratio as desktop (~80% of viewport height
-     per blob), so they reliably reach the edges and the noise overlay always has
-     coloured content to blend against rather than bare white. */
+  /* Smaller on mobile so the three blobs don't blanket the whole screen —
+     leaving more of the paper field showing between them. */
   .blob {
-    width: 60vmax;
-    height: 60vmax;
+    width: 40vmax;
+    height: 40vmax;
     opacity: 0.4;
     /* Smaller blur on mobile: the one-time rasterization of a huge blurred
        element is expensive on phones, and at this size 50px looks ~identical. */

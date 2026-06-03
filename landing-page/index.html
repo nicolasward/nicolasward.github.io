@@ -391,8 +391,8 @@ function drift(blob, prev) {
   // jank. A pure translate stays on the compositor and is cheap.
   const anim = blob.animate(
     [
-      { transform: `translate(${prev.x}vw, ${prev.y}vh)` },
-      { transform: `translate(${next.x}vw, ${next.y}vh)` }
+      { transform: `translate(${prev.x}vw, ${prev.y}vh) translate(-50%, -50%)` },
+      { transform: `translate(${next.x}vw, ${next.y}vh) translate(-50%, -50%)` }
     ],
     { duration, easing: 'ease-in-out', fill: 'forwards' }
   );
@@ -400,7 +400,7 @@ function drift(blob, prev) {
 }
 document.querySelectorAll('.blob').forEach(blob => {
   const start = randomPos();
-  blob.style.transform = `translate(${start.x}vw, ${start.y}vh)`;
+  blob.style.transform = `translate(${start.x}vw, ${start.y}vh) translate(-50%, -50%)`;
   drift(blob, start);
 });
 

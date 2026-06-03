@@ -108,11 +108,11 @@ body::before {
   pointer-events: none;
   background-color: var(--field);
   background-image:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='4' stitchTiles='stitch'/><feComponentTransfer><feFuncA type='linear' slope='0.5'/></feComponentTransfer></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"),
+    url("/grain.png"),
     radial-gradient(120% 120% at 50% 100%, var(--field) 0%, var(--field-mid) 60%, var(--field) 100%);
   background-size: var(--noise-size) var(--noise-size), auto;
   background-repeat: repeat, no-repeat;
-  background-blend-mode: multiply, normal;
+  background-blend-mode: normal, normal;
 }
 
 html[data-theme="dark"] body::before {

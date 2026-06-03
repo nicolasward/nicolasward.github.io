@@ -342,7 +342,9 @@ body {
     width: 60vmax;
     height: 60vmax;
     opacity: 0.4;
-    filter: blur(80px);
+    /* Smaller blur on mobile: the one-time rasterization of a huge blurred
+       element is expensive on phones, and at this size 50px looks ~identical. */
+    filter: blur(50px);
   }
 }
 </style>

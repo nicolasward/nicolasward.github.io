@@ -1321,7 +1321,7 @@ h3:hover .heading-anchor {
 
 /* Keyboard pro-tips (T/S/H) are irrelevant without a physical keyboard —
    hide on any touch device (phones, tablets), regardless of viewport width. */
-@media (pointer: coarse) {
+@media (max-width: 768px), (pointer: coarse) {
   .pro-tips {
     display: none;
   }

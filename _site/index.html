@@ -150,39 +150,31 @@ body {
 }
 @keyframes fadein-text { to { opacity: 1; transform: translateY(0); } }
 
-/* machine ⇄ human — the phrase is dark grey, with a soft orange highlight
-   (the blog accent) flowing back and forth across the two words. The arrows
-   stay solid grey; the orange passes behind them. The gradient is clipped to
-   the text, so the words must be direct children of .duo. */
+/* machine ⇄ human — the phrase is dark grey, with a long soft orange band
+   (the blog accent) flowing back and forth across the whole thing, arrows
+   included. The gradient is clipped to the text, so all of it (words + arrow)
+   must be direct text of .duo. */
 .duo {
   display: inline-block;
   white-space: nowrap;
   vertical-align: baseline;
   background-image: linear-gradient(
     90deg,
-    var(--fg) 0%, var(--fg) 40%,
-    #FF791B 50%,
-    var(--fg) 60%, var(--fg) 100%
+    var(--fg) 0%, var(--fg) 22%,
+    #FF791B 40%, #FF791B 60%,
+    var(--fg) 78%, var(--fg) 100%
   );
-  background-size: 200% 100%;
+  background-size: 230% 100%;
   background-repeat: no-repeat;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  animation: duo-flow 4.5s ease-in-out infinite alternate;
+  animation: duo-flow 5s ease-in-out infinite alternate;
 }
 @keyframes duo-flow {
   from { background-position: 100% 50%; }
   to   { background-position: 0% 50%; }
-}
-.duo__link {
-  /* solid dark grey, a touch smaller — the orange flow passes behind it */
-  -webkit-text-fill-color: var(--fg);
-  color: var(--fg);
-  font-size: 0.72em;
-  vertical-align: middle;
-  margin: 0 0.32em;
 }
 
 /* "Read my writing" — primary call to action, sat midway between the hero
@@ -370,7 +362,7 @@ body {
       </div>
     </div>
 
-    <div class="intro">I build <span class="duo">machine<span class="duo__link" aria-hidden="true">&#8644;</span>human</span> learning systems.</div>
+    <div class="intro">I build <span class="duo">machine&#8201;&#8644;&#8201;human</span> learning systems.</div>
 
     <a class="read-cta" href="/blog">
       <span class="read-cta__text">Read my writing</span>

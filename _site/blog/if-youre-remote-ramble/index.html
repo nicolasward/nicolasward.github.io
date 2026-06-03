@@ -202,6 +202,11 @@
         isOpen = true;
         if (initialQuery !== undefined) input.value = initialQuery;
         syncClear(); // setting .value programmatically doesn't fire 'input', so sync manually
+        // Focus synchronously, inside the user gesture, so iOS Safari opens the
+        // keyboard and shows the caret right away (a focus deferred to the next
+        // frame is ignored by iOS because it's outside the originating gesture).
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
         requestAnimationFrame(() => {
           input.focus();
           const len = input.value.length;

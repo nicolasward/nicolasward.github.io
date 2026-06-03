@@ -216,6 +216,11 @@ body {
 }
 .read-cta:hover .read-cta__arrow { transform: translateX(5px); }
 
+/* No hover affordance on touch devices (avoids a sticky underline on tap). */
+@media (hover: none) {
+  .read-cta__text::after { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   /* No entrance animation — show everything immediately. */
   .profile, .intro, .read-cta, .links {

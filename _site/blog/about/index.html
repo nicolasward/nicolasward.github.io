@@ -429,5 +429,29 @@
       }
     })();
   </script>
+  <script>
+    // Copy-link share button: copy the current URL, flash a checkmark.
+    (function () {
+      document.querySelectorAll('.share-copy').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var flash = function () {
+            btn.classList.add('copied');
+            setTimeout(function () { btn.classList.remove('copied'); }, 1500);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(location.href).then(flash, flash);
+          } else {
+            var ta = document.createElement('textarea');
+            ta.value = location.href;
+            ta.style.cssText = 'position:fixed;opacity:0';
+            document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(ta);
+            flash();
+          }
+        });
+      });
+    })();
+  </script>
 </body>
 </html>

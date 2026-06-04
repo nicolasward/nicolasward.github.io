@@ -474,6 +474,57 @@ html[data-theme="dark"] body::before {
   margin: 0 0.3rem;
 }
 
+/* ===== Share buttons ===== */
+.post-share {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+}
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 21px;
+  height: 21px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--fg-muted);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+.share-btn:hover { color: var(--accent); }
+.share-btn:active { transform: scale(0.9); }
+.share-btn svg { width: 100%; height: 100%; display: block; }
+
+/* Copy-link: swap the chain icon for a check (in accent) on success */
+.share-copy .icon-link,
+.share-copy .icon-check { display: inline-flex; width: 100%; height: 100%; }
+.share-copy .icon-check { display: none; }
+.share-copy.copied .icon-link { display: none; }
+.share-copy.copied .icon-check { display: inline-flex; color: var(--accent); }
+
+/* Top placement: a quiet row under the date */
+.post-header .post-share { margin-top: 1.15rem; }
+
+/* Bottom placement: the first footer section after the article body */
+.post-share-section {
+  margin-top: 3.5rem;
+  padding-top: 3.5rem;
+  position: relative;
+}
+.post-share-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: var(--border);
+}
+.post-share-section .eyebrow { margin-bottom: 1rem; }
+
 /* ===== Post content ===== */
 .post-content {
   font-size: 19.275px;
@@ -1498,6 +1549,7 @@ h3:hover .heading-anchor {
   }
 
   /* Full-bleed separator lines above the mention/related sections */
+  .post-share-section::before,
   .linked-mentions::before,
   .related-posts::before {
     left: -1.25rem;
@@ -1507,6 +1559,7 @@ h3:hover .heading-anchor {
   /* Even, symmetric rhythm around every footer-area divider (was 70px for the
      related section vs 24px for the footer — visibly uneven). One consistent
      section gap, same above and below each line. */
+  .post-share-section,
   .linked-mentions,
   .related-posts {
     margin-top: 2.5rem;

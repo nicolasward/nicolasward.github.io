@@ -181,51 +181,36 @@ body {
 /* "Read my writing" — primary call to action, sat midway between the hero
    and the footer links. */
 .read-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45em;
+  display: inline-block;
   margin-top: clamp(3rem, 13vh, 10rem);
   font-family: 'IBM Plex Mono', monospace;
   font-weight: 500;
   font-size: clamp(1.05rem, 2.2vw, 1.25rem);
   letter-spacing: 0.3px;
   text-transform: lowercase;
-  color: var(--fg);
   text-decoration: none;
+  /* A soft light glow sweeps left-to-right through the text + chevron
+     (clipped to the glyphs), like a shimmer running through. */
+  background-image: linear-gradient(90deg,
+    var(--fg) 0%, var(--fg) 44%, #c5c3ba 50%, var(--fg) 56%, var(--fg) 100%);
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
   opacity: 0;
-  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.9s both;
+  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.9s both,
+             cta-shimmer 2.8s ease-in-out 2s infinite;
 }
-.read-cta__text {
-  position: relative;
-}
-.read-cta__text::after {   /* underline wipes in from the left on hover */
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -3px;
-  width: 100%;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.32s cubic-bezier(0.65, 0, 0.35, 1);
-}
-.read-cta:hover .read-cta__text::after { transform: scaleX(1); }
-.read-cta__arrow {
-  display: inline-block;
-  color: #FF791B;   /* accent chevron ties the CTA to the brand orange */
-  animation: chevron-nudge 2s ease-in-out 2s infinite;
-}
-@keyframes chevron-nudge {
-  0%, 100% { transform: translateX(0); }
-  50%      { transform: translateX(3px); }
+@keyframes cta-shimmer {
+  from { background-position: 100% 0; }
+  to   { background-position: 0% 0; }
 }
 
-/* No hover affordance on touch devices (avoids a sticky underline on tap). */
 /* No hover effects on touch devices (avoids sticky hover states on tap). */
 @media (hover: none) {
-  .read-cta__text::after { display: none; }
-  .read-cta:hover .read-cta__arrow { transform: none; }
   .profile img:hover { filter: grayscale(0%); }
   .links a:hover { text-shadow: none; }
 }
@@ -239,7 +224,6 @@ body {
   }
   .links { transform: translateX(-50%); }
   .sw__bar { transition: none; }
-  .read-cta__arrow { animation: none; }
 }
 
 /* ---------------- Bottom Links ---------------- */
@@ -377,10 +361,7 @@ body {
 
     <div class="intro">I build <span class="sw"><span class="sw__word sw__word--l js-sw-l">machine</span><span class="sw__bar js-sw-bar" aria-hidden="true">/</span><span class="sw__word sw__word--r js-sw-r">human</span></span> learning systems.</div>
 
-    <a class="read-cta" href="/blog">
-      <span class="read-cta__text">Read my writing</span>
-      <span class="read-cta__arrow" aria-hidden="true">&#8250;</span>
-    </a>
+    <a class="read-cta" href="/blog">Read my writing &#8250;</a>
   </div>
 
   <!-- Centered bottom links -->

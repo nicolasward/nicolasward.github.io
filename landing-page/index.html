@@ -424,12 +424,15 @@ document.querySelectorAll('.blob').forEach(blob => {
     A.textContent = 'human';   B.textContent = 'human';
     const wH = A.getBoundingClientRect().width;
     A.textContent = WORDS[idx]; B.textContent = WORDS[idx];
-    flap.style.width = Math.ceil(Math.max(wM, wH)) + 'px';
+    flap.style.width = (Math.ceil(Math.max(wM, wH)) + 2) + 'px';  // +2 guards rounding
   }
   sizeSlot();
   reel.style.transition = 'none';
   reel.style.transform = 'translateY(0)';
   window.addEventListener('resize', sizeSlot);
+  // Re-measure once the serif web font loads — the first pass uses the
+  // fallback font's (narrower) metrics, which would clip "machine".
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(sizeSlot);
 
   // Start on "machine"; the off-screen cell is pre-set to the next word and the
   // reset folds into the next flip, so it always rolls up with no flicker.

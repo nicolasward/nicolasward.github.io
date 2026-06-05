@@ -217,8 +217,12 @@ body {
 .read-cta:hover .read-cta__arrow { transform: translateX(5px); }
 
 /* No hover affordance on touch devices (avoids a sticky underline on tap). */
+/* No hover effects on touch devices (avoids sticky hover states on tap). */
 @media (hover: none) {
   .read-cta__text::after { display: none; }
+  .read-cta:hover .read-cta__arrow { transform: none; }
+  .profile img:hover { filter: grayscale(0%); }
+  .links a:hover { text-shadow: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -369,7 +373,7 @@ body {
 
     <a class="read-cta" href="/blog">
       <span class="read-cta__text">Read my writing</span>
-      <span class="read-cta__arrow" aria-hidden="true">&rarr;</span>
+      <span class="read-cta__arrow" aria-hidden="true">&#8250;</span>
     </a>
   </div>
 

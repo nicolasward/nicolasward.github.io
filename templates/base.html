@@ -502,7 +502,11 @@
         var sx = window.scrollX || window.pageXOffset;
         var sy = window.scrollY || window.pageYOffset;
         var tw = toolbar.offsetWidth, th = toolbar.offsetHeight;
-        var below = (rect.top - th - 10) < 0;
+        // Prefer below the selection; flip above only if there's no room below
+        // but there is above.
+        var roomBelow = (window.innerHeight - rect.bottom) >= th + 12;
+        var roomAbove = rect.top >= th + 12;
+        var below = roomBelow || !roomAbove;
         var top  = below ? sy + rect.bottom + 10 : sy + rect.top - th - 10;
         var left = sx + rect.left + rect.width / 2 - tw / 2;
         var minL = sx + 8;
@@ -583,6 +587,10 @@
       quoteBtn.addEventListener('click', function () {
         buildLinks(savedQuote);
         toolbar.classList.add('quoting');
+        if (savedRange) requestAnimationFrame(function () { position(savedRange); });
+      });
+      toolbar.querySelector('.sel-back').addEventListener('click', function () {
+        toolbar.classList.remove('quoting');
         if (savedRange) requestAnimationFrame(function () { position(savedRange); });
       });
       qCopyBtn.addEventListener('click', function () {

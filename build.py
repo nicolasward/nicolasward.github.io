@@ -38,6 +38,7 @@ _ICON_CLIPBOARD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 # Matter (read-later): bookmark glyph standing in for the brand mark — swap in
 # the official SVG path here if desired.
 _ICON_MATTER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"/></svg>'
+_ICON_CHEVRON_LEFT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>'
 
 
 def selection_toolbar():
@@ -52,6 +53,8 @@ def selection_toolbar():
             '<button class="sel-btn sel-act-quote" type="button"><span class="sel-btn-label">Quote</span></button>'
           '</div>'
           '<div class="sel-share">'
+            f'<button class="sel-back" type="button" aria-label="Back">{_ICON_CHEVRON_LEFT}</button>'
+            '<span class="sel-sep"></span>'
             f'<a class="sel-icon" data-net="linkedin" target="_blank" rel="noopener" aria-label="Share quote on LinkedIn">{_ICON_LINKEDIN}</a>'
             f'<a class="sel-icon" data-net="x" target="_blank" rel="noopener" aria-label="Share quote on X">{_ICON_X}</a>'
             f'<a class="sel-icon" data-net="whatsapp" target="_blank" rel="noopener" aria-label="Share quote on WhatsApp">{_ICON_WHATSAPP}</a>'

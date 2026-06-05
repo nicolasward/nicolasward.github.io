@@ -589,7 +589,9 @@ html[data-theme="dark"] body::before {
   display: flex;
   align-items: center;
   padding: 0.15rem 0.25rem;
-  background: transparent;
+  background: var(--progress-bg);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--fg-muted);
   border-radius: 999px;
   opacity: 0;
@@ -647,15 +649,38 @@ html[data-theme="dark"] body::before {
 }
 .sel-icon:active { transform: scale(0.9); }
 
-/* Icons stagger in when the quote state opens. */
+/* Back chevron: returns the pill to the copy / quote menu. */
+.sel-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--fg-muted);
+  cursor: pointer;
+  opacity: 0;
+}
+.sel-back svg { width: 100%; height: 100%; display: block; }
+@media (hover: hover) {
+  .sel-back:hover { color: var(--accent); }
+}
+.sel-back:active { transform: scale(0.9); }
+
+/* Back + icons stagger in left-to-right when the quote state opens.
+   Children: 1 = back, 2 = separator, 3–7 = the five share icons. */
+.sel-toolbar.quoting .sel-back,
 .sel-toolbar.quoting .sel-icon {
   animation: sel-icon-in 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.sel-toolbar.quoting .sel-icon:nth-child(1) { animation-delay: 0.02s; }
-.sel-toolbar.quoting .sel-icon:nth-child(2) { animation-delay: 0.07s; }
-.sel-toolbar.quoting .sel-icon:nth-child(3) { animation-delay: 0.12s; }
-.sel-toolbar.quoting .sel-icon:nth-child(4) { animation-delay: 0.17s; }
-.sel-toolbar.quoting .sel-icon:nth-child(5) { animation-delay: 0.22s; }
+.sel-toolbar.quoting .sel-back            { animation-delay: 0.02s; }
+.sel-toolbar.quoting .sel-icon:nth-child(3) { animation-delay: 0.07s; }
+.sel-toolbar.quoting .sel-icon:nth-child(4) { animation-delay: 0.12s; }
+.sel-toolbar.quoting .sel-icon:nth-child(5) { animation-delay: 0.17s; }
+.sel-toolbar.quoting .sel-icon:nth-child(6) { animation-delay: 0.22s; }
+.sel-toolbar.quoting .sel-icon:nth-child(7) { animation-delay: 0.27s; }
 @keyframes sel-icon-in {
   from { opacity: 0; transform: translateX(-7px); }
   to   { opacity: 1; transform: translateX(0); }
@@ -677,8 +702,13 @@ html[data-theme="dark"] body::before {
 
 @media (prefers-reduced-motion: reduce) {
   .sel-toolbar { transition: opacity 0.12s ease; transform: none !important; }
+  .sel-toolbar.quoting .sel-back,
   .sel-toolbar.quoting .sel-icon { animation: none; opacity: 1; transform: none; }
 }
+
+/* Themed text selection — a soft accent wash, site-wide. */
+::selection      { background: rgba(255, 121, 27, 0.22); }
+::-moz-selection { background: rgba(255, 121, 27, 0.22); }
 
 /* Top placement: a quiet row under the date */
 .post-header .post-share { margin-top: 1.15rem; }

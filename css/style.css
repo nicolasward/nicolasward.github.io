@@ -514,9 +514,8 @@ html[data-theme="dark"] body::before {
   text-decoration: none;
   transition: color 0.15s ease, transform 0.15s ease;
 }
-@media (hover: hover) {@media (hover: hover) {
+@media (hover: hover) {
   .share-btn:hover { color: var(--accent); }
-}
 }
 .share-btn:active { transform: scale(0.9) !important; }
 .share-btn svg { width: 100%; height: 100%; display: block; }
@@ -551,6 +550,36 @@ html[data-theme="dark"] body::before {
   transition: opacity 0.15s ease 0.08s, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) 0.08s;
 }
 .share-copy.copied .icon-check path { stroke-dashoffset: 0; }
+
+/* Quiet confirmation: a small pill rises above the icon, holds, then fades
+   out on its own when the .copied class is removed. */
+.share-copy .copied-label {
+  position: absolute;
+  bottom: calc(100% + 9px);
+  left: 50%;
+  white-space: nowrap;
+  padding: 0.28rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  line-height: 1;
+  color: var(--fg-muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  opacity: 0;
+  transform: translateX(-50%) translateY(4px);
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.share-copy.copied .copied-label {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .share-copy .copied-label { transition: opacity 0.15s ease; transform: translateX(-50%); }
+}
 
 /* Top placement: a quiet row under the date */
 .post-header .post-share { margin-top: 1.15rem; }

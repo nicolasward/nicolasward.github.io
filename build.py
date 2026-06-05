@@ -52,6 +52,7 @@ def share_row(url, title):
         f'<a class="share-btn" href="{email}" aria-label="Share by email" title="Share by email">{_ICON_MAIL}</a>'
         '<button class="share-btn share-copy" type="button" aria-label="Copy link" title="Copy link">'
         f'<span class="icon-link">{_ICON_LINK}</span><span class="icon-check">{_ICON_CHECK}</span>'
+        '<span class="copied-label" aria-hidden="true">Copied to clipboard</span>'
         '</button>'
         '</div>'
     )

@@ -528,6 +528,10 @@
     (function () {
       var toolbar = document.getElementById('selection-toolbar');
       if (!toolbar) return;
+      // Desktop only: on touch devices the OS shows its own native selection
+      // menu (Copy / Look Up / Share…). Adding our pill on top just clutters
+      // and overlaps it, so we bow out and let the native menu handle it.
+      if (window.matchMedia && matchMedia('(pointer: coarse)').matches) return;
 
       var copyBtn   = toolbar.querySelector('.sel-act-copy');
       var quoteBtn  = toolbar.querySelector('.sel-act-quote');
@@ -638,14 +642,8 @@
         if (toolbar.contains(e.target)) return;
         showFromSelection(10);
       });
-      // Touch: let the selection (and its handles) settle before measuring.
-      document.addEventListener('touchend', function (e) {
-        if (toolbar.contains(e.target)) return;
-        showFromSelection(80);
-      });
       function onDocDown(e) { if (!toolbar.contains(e.target)) hide(); }
       document.addEventListener('mousedown', onDocDown);
-      document.addEventListener('touchstart', onDocDown, { passive: true });
       // Keep the text selection highlighted while interacting with the pill:
       // preventing mousedown's default stops the buttons stealing/collapsing
       // the selection (click still fires).

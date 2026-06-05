@@ -630,8 +630,13 @@ html[data-theme="dark"] body::before {
   font-size: 0.84rem;
   font-weight: 500;
   letter-spacing: 0.1px;
+  line-height: 1;
   color: var(--fg-muted);
-  padding: 0.34rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;            /* match the share-icon height so both pages align */
+  padding: 0 1rem;
   border-radius: 999px;
   transition: color 0.15s ease;
 }

@@ -588,11 +588,10 @@ html[data-theme="dark"] body::before {
   z-index: 60;
   display: flex;
   align-items: center;
-  padding: 0.25rem 0.3rem;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.10);
+  padding: 0.15rem 0.25rem;
+  background: transparent;
+  border: 1px solid var(--fg-muted);
+  border-radius: 999px;
   opacity: 0;
   transform: translateY(4px) scale(0.96);
   transform-origin: center bottom;
@@ -614,17 +613,18 @@ html[data-theme="dark"] body::before {
   border: none;
   cursor: pointer;
   font: inherit;
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   font-weight: 500;
-  color: var(--fg);
-  padding: 0.2rem 0.6rem;
-  border-radius: 6px;
+  letter-spacing: 0.1px;
+  color: var(--fg-muted);
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
   transition: color 0.15s ease;
 }
 @media (hover: hover) {
   .sel-btn:hover { color: var(--accent); }
 }
-.sel-sep { width: 1px; align-self: stretch; margin: 0.2rem 0; background: var(--border); }
+.sel-sep { width: 1px; align-self: stretch; margin: 0.25rem 0; background: var(--fg-faint); }
 
 .sel-icon {
   display: inline-flex;

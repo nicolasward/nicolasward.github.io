@@ -35,6 +35,9 @@ _ICON_MAIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 _ICON_LINK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l2-2a5 5 0 0 0-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.07 0l-2 2a5 5 0 0 0 7.07 7.07l1.5-1.5"/></svg>'
 _ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
 _ICON_CLIPBOARD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>'
+# Matter (read-later): bookmark glyph standing in for the brand mark — swap in
+# the official SVG path here if desired.
+_ICON_MATTER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"/></svg>'
 
 
 def selection_toolbar():
@@ -69,12 +72,14 @@ def share_row(url, title):
     x = f"https://twitter.com/intent/tweet?url={u}&text={t}"
     whatsapp = f"https://wa.me/?text={quote(title + ' ' + url, safe='')}"
     email = f"mailto:?subject={t}&body={u}"
+    matter = f"https://hq.getmatter.com/share?url={u}"
     return (
         '<div class="post-share">'
         f'<a class="share-btn" href="{linkedin}" target="_blank" rel="noopener" aria-label="Share on LinkedIn" title="Share on LinkedIn">{_ICON_LINKEDIN}</a>'
         f'<a class="share-btn" href="{x}" target="_blank" rel="noopener" aria-label="Share on X" title="Share on X">{_ICON_X}</a>'
         f'<a class="share-btn" href="{whatsapp}" target="_blank" rel="noopener" aria-label="Share on WhatsApp" title="Share on WhatsApp">{_ICON_WHATSAPP}</a>'
         f'<a class="share-btn" href="{email}" aria-label="Share by email" title="Share by email">{_ICON_MAIL}</a>'
+        f'<a class="share-btn" href="{matter}" target="_blank" rel="noopener" aria-label="Save to Matter" title="Save to Matter">{_ICON_MATTER}</a>'
         '<button class="share-btn share-copy" type="button" aria-label="Copy link" title="Copy link">'
         f'<span class="icon-link">{_ICON_LINK}</span><span class="icon-check">{_ICON_CHECK}</span>'
         '<span class="copied-label" aria-hidden="true">Copied to clipboard</span>'

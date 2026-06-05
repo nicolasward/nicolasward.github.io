@@ -693,6 +693,7 @@ html[data-theme="dark"] body::before {
 .post-header .post-share .share-btn:nth-child(3) { animation-delay: 1.12s; }
 .post-header .post-share .share-btn:nth-child(4) { animation-delay: 1.18s; }
 .post-header .post-share .share-btn:nth-child(5) { animation-delay: 1.24s; }
+.post-header .post-share .share-btn:nth-child(6) { animation-delay: 1.30s; }
 @keyframes share-in {
   from { opacity: 0; transform: translateX(-7px); }
   to   { opacity: 1; transform: translateX(0); }
@@ -717,6 +718,8 @@ html[data-theme="dark"] body::before {
   background-color: var(--border);
 }
 .post-share-section .eyebrow { margin-bottom: 1rem; }
+/* Suppressed on short articles (set by JS) to avoid two share rows at once. */
+.post-share-section.is-redundant { display: none; }
 
 /* ===== Article entrance ===== */
 /* Text cascades in on load: title -> date -> body. The top share row follows
@@ -1489,6 +1492,16 @@ h3:hover .heading-anchor {
   background: var(--progress-bg);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
+  /* Fades in last — after the title → date → body cascade settles (~1.3s). */
+  opacity: 0;
+  animation: progress-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) 1.3s both;
+}
+@keyframes progress-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.92); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reading-progress { animation: none; opacity: 1; }
 }
 
 [data-theme="dark"] .reading-progress {

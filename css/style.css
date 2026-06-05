@@ -500,7 +500,9 @@ html[data-theme="dark"] body::before {
   text-decoration: none;
   transition: color 0.15s ease, transform 0.15s ease;
 }
-.share-btn:hover { color: var(--accent); }
+@media (hover: hover) {
+  .share-btn:hover { color: var(--accent); }
+}
 .share-btn:active { transform: scale(0.9) !important; }
 .share-btn svg { width: 100%; height: 100%; display: block; }
 

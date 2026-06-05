@@ -586,8 +586,8 @@ html[data-theme="dark"] body::before {
   top: 0;
   left: 0;
   z-index: 60;
-  display: flex;
-  align-items: center;
+  display: grid;
+  place-items: center;
   padding: 0.35rem 0.5rem;
   background: var(--progress-bg);
   -webkit-backdrop-filter: blur(8px);
@@ -603,11 +603,19 @@ html[data-theme="dark"] body::before {
 .sel-toolbar.below { transform-origin: center top; transform: translateY(-4px) scale(0.96); }
 .sel-toolbar.visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
 
-/* Two stacked states share one box. */
-.sel-actions { display: flex; align-items: center; }
-.sel-share   { display: none;  align-items: center; gap: 1.25rem; padding: 0 0.5rem; }
-.sel-toolbar.quoting .sel-actions { display: none; }
-.sel-toolbar.quoting .sel-share   { display: flex; }
+/* Both states occupy the SAME grid cell, so the pill is always as wide as
+   the wider state — no width jump between the copy/quote and share pages.
+   We toggle visibility (not display) so the hidden state still sizes the box. */
+.sel-actions,
+.sel-share {
+  grid-area: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sel-share { gap: 1.25rem; padding: 0 0.5rem; visibility: hidden; pointer-events: none; }
+.sel-toolbar.quoting .sel-actions { visibility: hidden; pointer-events: none; }
+.sel-toolbar.quoting .sel-share   { visibility: visible; pointer-events: auto; }
 
 .sel-btn {
   appearance: none;

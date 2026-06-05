@@ -603,6 +603,10 @@
       function onDocDown(e) { if (!toolbar.contains(e.target)) hide(); }
       document.addEventListener('mousedown', onDocDown);
       document.addEventListener('touchstart', onDocDown, { passive: true });
+      // Keep the text selection highlighted while interacting with the pill:
+      // preventing mousedown's default stops the buttons stealing/collapsing
+      // the selection (click still fires).
+      toolbar.addEventListener('mousedown', function (e) { e.preventDefault(); });
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') hide();
       });

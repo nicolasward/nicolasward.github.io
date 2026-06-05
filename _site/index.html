@@ -313,12 +313,16 @@ body {
     margin-top: 0.2rem;
   }
 
-  /* Grand statement — centred as a block, but text left-aligned so the
-     flipping word's slack falls at the line end (no centred gap). */
+  /* Grand statement — a left-aligned block, centred horizontally so it has
+     balanced margins (not crammed against the left edge). Eased down a touch
+     so the lines don't fill edge-to-edge. */
   .intro {
-    font-size: clamp(2.3rem, 9vw, 3rem);
+    font-size: clamp(2.1rem, 8vw, 2.7rem);
     line-height: 1.22;
+    width: fit-content;
     max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
     text-align: left;
     margin-top: 2.25rem;
   }

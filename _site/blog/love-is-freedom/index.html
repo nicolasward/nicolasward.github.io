@@ -646,9 +646,17 @@
         toolbar.classList.add('quoting');
         if (savedRange) requestAnimationFrame(function () { position(savedRange); });
       });
-      toolbar.querySelector('.sel-back').addEventListener('click', function () {
-        toolbar.classList.remove('quoting');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      function backToActions() {
+        toolbar.classList.remove('quoting', 'collapsing');
         if (savedRange) requestAnimationFrame(function () { position(savedRange); });
+      }
+      toolbar.querySelector('.sel-back').addEventListener('click', function () {
+        if (toolbar.classList.contains('collapsing')) return;
+        if (reduceMotion) { backToActions(); return; }
+        // Roll the icons back out (right-to-left), then show copy / quote.
+        toolbar.classList.add('collapsing');
+        setTimeout(backToActions, 440); // 0.22s anim + 0.20s max stagger
       });
       qCopyBtn.addEventListener('click', function () {
         var url = location.href.split('#')[0];

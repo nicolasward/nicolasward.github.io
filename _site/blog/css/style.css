@@ -686,6 +686,23 @@ html[data-theme="dark"] body::before {
   to   { opacity: 1; transform: translateX(0); }
 }
 
+/* Collapse: reverse the roll-in (right-to-left) before returning to the
+   copy / quote menu. More specific than the .quoting in-rules, so it wins. */
+.sel-toolbar.quoting.collapsing .sel-back,
+.sel-toolbar.quoting.collapsing .sel-icon {
+  animation: sel-icon-out 0.22s cubic-bezier(0.4, 0, 1, 1) both;
+}
+.sel-toolbar.quoting.collapsing .sel-icon:nth-child(7) { animation-delay: 0s; }
+.sel-toolbar.quoting.collapsing .sel-icon:nth-child(6) { animation-delay: 0.04s; }
+.sel-toolbar.quoting.collapsing .sel-icon:nth-child(5) { animation-delay: 0.08s; }
+.sel-toolbar.quoting.collapsing .sel-icon:nth-child(4) { animation-delay: 0.12s; }
+.sel-toolbar.quoting.collapsing .sel-icon:nth-child(3) { animation-delay: 0.16s; }
+.sel-toolbar.quoting.collapsing .sel-back              { animation-delay: 0.20s; }
+@keyframes sel-icon-out {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-7px); }
+}
+
 /* Quote-copy: clipboard swaps to a checkmark, same idiom as the link copy. */
 .sel-quote-copy .icon-link,
 .sel-quote-copy .icon-check {
@@ -703,7 +720,9 @@ html[data-theme="dark"] body::before {
 @media (prefers-reduced-motion: reduce) {
   .sel-toolbar { transition: opacity 0.12s ease; transform: none !important; }
   .sel-toolbar.quoting .sel-back,
-  .sel-toolbar.quoting .sel-icon { animation: none; opacity: 1; transform: none; }
+  .sel-toolbar.quoting .sel-icon,
+  .sel-toolbar.quoting.collapsing .sel-back,
+  .sel-toolbar.quoting.collapsing .sel-icon { animation: none; opacity: 1; transform: none; }
 }
 
 /* Themed text selection — a soft accent wash, site-wide. */

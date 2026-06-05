@@ -555,21 +555,21 @@ html[data-theme="dark"] body::before {
    out on its own when the .copied class is removed. */
 .share-copy .copied-label {
   position: absolute;
-  bottom: calc(100% + 9px);
+  top: calc(100% + 9px);
   left: 50%;
   white-space: nowrap;
-  padding: 0.28rem 0.55rem;
+  padding: 0.3rem 0.7rem;
   font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.1px;
   line-height: 1;
   color: var(--fg-muted);
-  background: var(--surface);
+  background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: 999px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
   opacity: 0;
-  transform: translateX(-50%) translateY(4px);
+  transform: translateX(-50%) translateY(-4px);
   pointer-events: none;
   transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
 }

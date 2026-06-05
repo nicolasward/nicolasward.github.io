@@ -202,11 +202,12 @@ body {
   color: transparent;
   opacity: 0;
   animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.9s both,
-             cta-shimmer 2s ease-in-out 2s infinite;
+             cta-shimmer 5s ease-in-out 2s infinite;
 }
 @keyframes cta-shimmer {
-  from { background-position: 100% 0; }
-  to   { background-position: 0% 0; }
+  0%   { background-position: 100% 0; }   /* glow parked off-screen (right) */
+  40%  { background-position: 0% 0; }     /* 2s sweep across, glow exits left */
+  100% { background-position: 0% 0; }     /* 3s rest — plain ink text */
 }
 
 /* No hover effects on touch devices (avoids sticky hover states on tap). */

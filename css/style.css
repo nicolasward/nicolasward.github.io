@@ -616,7 +616,7 @@ html[data-theme="dark"] body::before {
 
 /* One visible state at a time (the hidden one is display:none). Width is
    driven by the measured CSS vars above, not by which child is shown. */
-.sel-actions { display: flex; align-items: center; justify-content: center; }
+.sel-actions { display: flex; flex: 1; align-items: center; justify-content: center; }
 .sel-share   { display: none;  align-items: center; justify-content: flex-start; gap: 1.25rem; padding: 0 0.5rem; }
 .sel-toolbar.quoting .sel-actions { display: none; }
 .sel-toolbar.quoting .sel-share   { display: flex; }

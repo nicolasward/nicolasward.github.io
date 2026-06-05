@@ -313,8 +313,12 @@
         const rect = article.getBoundingClientRect();
         const articleHeight = article.offsetHeight;
         const viewportHeight = window.innerHeight;
-        // % of the article that has been seen (article top → bottom of viewport)
-        const seen = viewportHeight - rect.top;
+        // Progress tracks how much of the article has passed the reader's
+        // eye-line (~middle of the viewport) rather than the bottom edge — so
+        // it reflects what's actually been *read*, and completes when the last
+        // line reaches your eyes, not when it merely scrolls into view.
+        const READING_LINE = 0.5;
+        const seen = viewportHeight * READING_LINE - rect.top;
         const progress = Math.max(0, Math.min(1, seen / articleHeight));
         const percent = Math.round(progress * 100);
 

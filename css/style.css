@@ -1523,16 +1523,17 @@ h3:hover .heading-anchor {
   background: var(--progress-bg);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  /* Fades in last — after the title → date → body cascade settles (~1.3s). */
+  /* Appears last (~1.3s) with a clockwise ring-draw (see .progress-track). */
   opacity: 0;
-  animation: progress-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) 1.3s both;
+  animation: progress-fade 0.4s ease 1.3s both;
 }
-@keyframes progress-in {
-  from { opacity: 0; transform: translateY(6px) scale(0.92); }
-  to   { opacity: 1; transform: none; }
+@keyframes progress-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
   .reading-progress { animation: none; opacity: 1; }
+  .progress-track { animation: none; stroke-dashoffset: 0; }
 }
 
 [data-theme="dark"] .reading-progress {
@@ -1547,9 +1548,19 @@ h3:hover .heading-anchor {
   overflow: visible;
 }
 
-/* Track (light part) — matches the search placeholder/ghost text */
+/* Track (light part) — matches the search placeholder/ghost text.
+   On entrance it draws itself clockwise from the top (12 o'clock). */
 .progress-track {
   stroke: var(--ghost);
+  stroke-dasharray: 119.38;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: ring-draw 0.7s cubic-bezier(0.22, 1, 0.36, 1) 1.3s both;
+}
+@keyframes ring-draw {
+  from { stroke-dashoffset: 119.38; }
+  to   { stroke-dashoffset: 0; }
 }
 
 [data-theme="dark"] .progress-track {

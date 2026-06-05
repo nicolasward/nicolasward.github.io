@@ -508,6 +508,23 @@ html[data-theme="dark"] body::before {
 /* Top placement: a quiet row under the date */
 .post-header .post-share { margin-top: 1.15rem; }
 
+/* …whose icons fade in left-to-right, one by one, on load */
+.post-header .post-share .share-btn {
+  opacity: 0;
+  animation: share-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.post-header .post-share .share-btn:nth-child(1) { animation-delay: 0.15s; }
+.post-header .post-share .share-btn:nth-child(2) { animation-delay: 0.24s; }
+.post-header .post-share .share-btn:nth-child(3) { animation-delay: 0.33s; }
+.post-header .post-share .share-btn:nth-child(4) { animation-delay: 0.42s; }
+@keyframes share-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .post-header .post-share .share-btn { animation: none; opacity: 1; }
+}
+
 /* Bottom placement: the first footer section after the article body */
 .post-share-section {
   margin-top: 3.5rem;

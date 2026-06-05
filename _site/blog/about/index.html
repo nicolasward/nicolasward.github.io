@@ -101,6 +101,8 @@
     </div>
   </div>
 
+  
+
   <script>
     (function () {
       const overlay    = document.getElementById('search-overlay');
@@ -453,6 +455,129 @@
             document.body.removeChild(ta);
             flash();
           }
+        });
+      });
+    })();
+  </script>
+  <script>
+    // Article selection toolbar: highlight body text -> Copy / Quote.
+    // "Quote" reveals the five share targets, each pre-loaded with the quote.
+    (function () {
+      var toolbar = document.getElementById('selection-toolbar');
+      if (!toolbar) return;
+      // Desktop / fine-pointer only — touch devices have a native selection menu.
+      if (!(window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches)) return;
+
+      var copyBtn   = toolbar.querySelector('.sel-act-copy');
+      var quoteBtn  = toolbar.querySelector('.sel-act-quote');
+      var copyLabel = copyBtn.querySelector('.sel-btn-label');
+      var qCopyBtn  = toolbar.querySelector('.sel-quote-copy');
+      var shareView = toolbar.querySelector('.sel-share');
+      var copyLabelText = copyLabel.textContent;
+      var savedQuote = '', savedRange = null, hideTimer = null;
+
+      function inContent(node) {
+        var el = node && (node.nodeType === 1 ? node : node.parentNode);
+        return !!(el && el.closest && el.closest('.post-content'));
+      }
+      function readSelection() {
+        var sel = window.getSelection();
+        if (!sel || sel.isCollapsed || sel.rangeCount === 0) return null;
+        var text = sel.toString().trim();
+        if (!text || !inContent(sel.anchorNode) || !inContent(sel.focusNode)) return null;
+        return { text: text, range: sel.getRangeAt(0) };
+      }
+      function hide() {
+        toolbar.classList.remove('visible', 'quoting');
+        toolbar.setAttribute('aria-hidden', 'true');
+      }
+      function position(range) {
+        toolbar.classList.add('visible');
+        toolbar.setAttribute('aria-hidden', 'false');
+        var rect = range.getBoundingClientRect();
+        var sx = window.scrollX || window.pageXOffset;
+        var sy = window.scrollY || window.pageYOffset;
+        var tw = toolbar.offsetWidth, th = toolbar.offsetHeight;
+        var below = (rect.top - th - 10) < 0;
+        var top  = below ? sy + rect.bottom + 10 : sy + rect.top - th - 10;
+        var left = sx + rect.left + rect.width / 2 - tw / 2;
+        var minL = sx + 8;
+        var maxL = sx + document.documentElement.clientWidth - tw - 8;
+        if (left < minL) left = minL;
+        if (left > maxL) left = maxL;
+        toolbar.style.top  = top + 'px';
+        toolbar.style.left = left + 'px';
+        toolbar.classList.toggle('below', below);
+      }
+      function copyText(text, done) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, done);
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+          document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); } catch (e) {}
+          document.body.removeChild(ta); done();
+        }
+      }
+      function buildLinks(quote) {
+        var url = location.href.split('#')[0];
+        var titleEl = document.querySelector('.post-title');
+        var title = titleEl ? titleEl.textContent.trim() : document.title;
+        var q = '“' + quote + '”';
+        var e = encodeURIComponent;
+        var links = {
+          linkedin: 'https://www.linkedin.com/sharing/share-offsite/?url=' + e(url),
+          x:        'https://twitter.com/intent/tweet?text=' + e(q) + '&url=' + e(url),
+          whatsapp: 'https://wa.me/?text=' + e(q + ' ' + url),
+          email:    'mailto:?subject=' + e(title) + '&body=' + e(q + '\n\n' + url)
+        };
+        shareView.querySelectorAll('a.sel-icon').forEach(function (a) {
+          var net = a.getAttribute('data-net');
+          if (links[net]) a.setAttribute('href', links[net]);
+        });
+      }
+
+      document.addEventListener('mouseup', function (e) {
+        if (toolbar.contains(e.target)) return;
+        setTimeout(function () {
+          var sel = readSelection();
+          if (!sel) { hide(); return; }
+          savedQuote = sel.text;
+          savedRange = sel.range;
+          toolbar.classList.remove('quoting');
+          copyLabel.textContent = copyLabelText;
+          qCopyBtn.classList.remove('copied');
+          position(sel.range);
+        }, 10);
+      });
+      document.addEventListener('mousedown', function (e) {
+        if (!toolbar.contains(e.target)) hide();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') hide();
+      });
+      window.addEventListener('scroll', function () {
+        if (toolbar.classList.contains('visible')) hide();
+      }, { passive: true });
+
+      copyBtn.addEventListener('click', function () {
+        copyText(savedQuote, function () {
+          copyLabel.textContent = 'Copied';
+          clearTimeout(hideTimer);
+          hideTimer = setTimeout(hide, 900);
+        });
+      });
+      quoteBtn.addEventListener('click', function () {
+        buildLinks(savedQuote);
+        toolbar.classList.add('quoting');
+        if (savedRange) requestAnimationFrame(function () { position(savedRange); });
+      });
+      qCopyBtn.addEventListener('click', function () {
+        var url = location.href.split('#')[0];
+        copyText('“' + savedQuote + '” ' + url, function () {
+          qCopyBtn.classList.add('copied');
+          setTimeout(function () { qCopyBtn.classList.remove('copied'); }, 1500);
         });
       });
     })();

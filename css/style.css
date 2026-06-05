@@ -580,6 +580,106 @@ html[data-theme="dark"] body::before {
   .share-copy .copied-label { transition: opacity 0.15s ease; transform: translate(-50%, -50%); }
 }
 
+/* ===== Selection toolbar (highlight body text → copy / quote) ===== */
+.sel-toolbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.3rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.10);
+  opacity: 0;
+  transform: translateY(4px) scale(0.96);
+  transform-origin: center bottom;
+  pointer-events: none;
+  transition: opacity 0.16s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.sel-toolbar.below { transform-origin: center top; transform: translateY(-4px) scale(0.96); }
+.sel-toolbar.visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+/* Two stacked states share one box. */
+.sel-actions { display: flex; align-items: center; }
+.sel-share   { display: none;  align-items: center; gap: 0.95rem; padding: 0 0.4rem; }
+.sel-toolbar.quoting .sel-actions { display: none; }
+.sel-toolbar.quoting .sel-share   { display: flex; }
+
+.sel-btn {
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--fg);
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  transition: color 0.15s ease;
+}
+@media (hover: hover) {
+  .sel-btn:hover { color: var(--accent); }
+}
+.sel-sep { width: 1px; align-self: stretch; margin: 0.2rem 0; background: var(--border); }
+
+.sel-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 19px;
+  height: 19px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--fg-muted);
+  cursor: pointer;
+  text-decoration: none;
+  opacity: 0;
+}
+.sel-icon svg { width: 100%; height: 100%; display: block; }
+@media (hover: hover) {
+  .sel-icon:hover { color: var(--accent); }
+}
+.sel-icon:active { transform: scale(0.9); }
+
+/* Icons stagger in when the quote state opens. */
+.sel-toolbar.quoting .sel-icon {
+  animation: sel-icon-in 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.sel-toolbar.quoting .sel-icon:nth-child(1) { animation-delay: 0.02s; }
+.sel-toolbar.quoting .sel-icon:nth-child(2) { animation-delay: 0.07s; }
+.sel-toolbar.quoting .sel-icon:nth-child(3) { animation-delay: 0.12s; }
+.sel-toolbar.quoting .sel-icon:nth-child(4) { animation-delay: 0.17s; }
+.sel-toolbar.quoting .sel-icon:nth-child(5) { animation-delay: 0.22s; }
+@keyframes sel-icon-in {
+  from { opacity: 0; transform: translateX(-7px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Quote-copy: clipboard swaps to a checkmark, same idiom as the link copy. */
+.sel-quote-copy .icon-link,
+.sel-quote-copy .icon-check {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.18s ease;
+}
+.sel-quote-copy .icon-check { opacity: 0; color: var(--accent); }
+.sel-quote-copy.copied .icon-link { opacity: 0; }
+.sel-quote-copy.copied .icon-check { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sel-toolbar { transition: opacity 0.12s ease; transform: none !important; }
+  .sel-toolbar.quoting .sel-icon { animation: none; opacity: 1; transform: none; }
+}
+
 /* Top placement: a quiet row under the date */
 .post-header .post-share { margin-top: 1.15rem; }
 

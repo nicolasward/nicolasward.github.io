@@ -564,10 +564,9 @@ html[data-theme="dark"] body::before {
   letter-spacing: 0.1px;
   line-height: 1;
   color: var(--fg-muted);
-  background: var(--bg);
+  background: transparent;
   border: 1px solid var(--border);
   border-radius: 999px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
   opacity: 0;
   transform: translateX(-50%) translateY(-4px);
   pointer-events: none;

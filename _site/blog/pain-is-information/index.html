@@ -530,10 +530,6 @@
     (function () {
       var toolbar = document.getElementById('selection-toolbar');
       if (!toolbar) return;
-      // Desktop only: on touch devices the OS shows its own native selection
-      // menu (Copy / Look Up / Share…). Adding our pill on top just clutters
-      // and overlaps it, so we bow out and let the native menu handle it.
-      if (window.matchMedia && matchMedia('(pointer: coarse)').matches) return;
 
       var copyBtn   = toolbar.querySelector('.sel-act-copy');
       var quoteBtn  = toolbar.querySelector('.sel-act-quote');
@@ -545,19 +541,19 @@
 
       // Measure each state's natural width once (content is static), then drive
       // the pill's width via CSS vars so it can morph between them.
-      var measured = false;
+      var measured = false, wActionsPx = 0, wSharePx = 0;
       function ensureMeasured() {
         if (measured) return;
         var origLabel = copyLabel.textContent;
         copyLabel.textContent = 'Copied';            // size for the longest label
         toolbar.classList.remove('quoting', 'collapsing');
-        var wActions = Math.ceil(toolbar.getBoundingClientRect().width);
+        wActionsPx = Math.ceil(toolbar.getBoundingClientRect().width);
         toolbar.classList.add('quoting');
-        var wShare = Math.ceil(toolbar.getBoundingClientRect().width);
+        wSharePx = Math.ceil(toolbar.getBoundingClientRect().width);
         toolbar.classList.remove('quoting');
         copyLabel.textContent = origLabel;
-        toolbar.style.setProperty('--w-actions', wActions + 'px');
-        toolbar.style.setProperty('--w-share', wShare + 'px');
+        toolbar.style.setProperty('--w-actions', wActionsPx + 'px');
+        toolbar.style.setProperty('--w-share', wSharePx + 'px');
         measured = true;
       }
 
@@ -590,8 +586,12 @@
         var below = roomBelow || !roomAbove;
         var top  = below ? sy + rect.bottom + 10 : sy + rect.top - th - 10;
         var left = sx + rect.left + rect.width / 2 - tw / 2;
+        // Clamp so even the EXPANDED (share) width stays on-screen: the pill
+        // grows rightward from this left edge when it morphs to the share state.
+        var maxW = Math.max(tw, wSharePx || tw);
         var minL = sx + 8;
-        var maxL = sx + document.documentElement.clientWidth - tw - 8;
+        var maxL = sx + document.documentElement.clientWidth - maxW - 8;
+        if (maxL < minL) maxL = minL;          // pill wider than viewport → pin left
         if (left < minL) left = minL;
         if (left > maxL) left = maxL;
         toolbar.style.top  = top + 'px';
@@ -644,8 +644,14 @@
         if (toolbar.contains(e.target)) return;
         showFromSelection(10);
       });
+      // Touch: let the selection (and its handles) settle before measuring.
+      document.addEventListener('touchend', function (e) {
+        if (toolbar.contains(e.target)) return;
+        showFromSelection(80);
+      });
       function onDocDown(e) { if (!toolbar.contains(e.target)) hide(); }
       document.addEventListener('mousedown', onDocDown);
+      document.addEventListener('touchstart', onDocDown, { passive: true });
       // Keep the text selection highlighted while interacting with the pill:
       // preventing mousedown's default stops the buttons stealing/collapsing
       // the selection (click still fires).

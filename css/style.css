@@ -542,6 +542,24 @@ html[data-theme="dark"] body::before {
 }
 .post-share-section .eyebrow { margin-bottom: 1rem; }
 
+/* ===== Article entrance ===== */
+/* Text cascades in on load: title -> date -> body. The top share row follows
+   last (animated separately above). Reuses the homepage roll-in keyframe. */
+.post-title,
+.post-meta,
+.post-content {
+  opacity: 0;
+  animation: roll-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.post-title   { animation-delay: 0.05s; }
+.post-meta    { animation-delay: 0.20s; }
+.post-content { animation-delay: 0.35s; }
+@media (prefers-reduced-motion: reduce) {
+  .post-title,
+  .post-meta,
+  .post-content { animation: none; opacity: 1; }
+}
+
 /* ===== Post content ===== */
 .post-content {
   font-size: 19.275px;

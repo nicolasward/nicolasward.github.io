@@ -495,7 +495,7 @@ html[data-theme="dark"] body::before {
   transition: color 0.15s ease, transform 0.15s ease;
 }
 .share-btn:hover { color: var(--accent); }
-.share-btn:active { transform: scale(0.9); }
+.share-btn:active { transform: scale(0.9) !important; }
 .share-btn svg { width: 100%; height: 100%; display: block; }
 
 /* Copy-link: swap the chain icon for a check (in accent) on success */
@@ -511,15 +511,15 @@ html[data-theme="dark"] body::before {
 /* …whose icons fade in left-to-right, one by one, on load */
 .post-header .post-share .share-btn {
   opacity: 0;
-  animation: share-in 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: share-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .post-header .post-share .share-btn:nth-child(1) { animation-delay: 0.05s; }
-.post-header .post-share .share-btn:nth-child(2) { animation-delay: 0.08s; }
-.post-header .post-share .share-btn:nth-child(3) { animation-delay: 0.11s; }
-.post-header .post-share .share-btn:nth-child(4) { animation-delay: 0.14s; }
+.post-header .post-share .share-btn:nth-child(2) { animation-delay: 0.10s; }
+.post-header .post-share .share-btn:nth-child(3) { animation-delay: 0.15s; }
+.post-header .post-share .share-btn:nth-child(4) { animation-delay: 0.20s; }
 @keyframes share-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from { opacity: 0; transform: translateX(-7px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 @media (prefers-reduced-motion: reduce) {
   .post-header .post-share .share-btn { animation: none; opacity: 1; }

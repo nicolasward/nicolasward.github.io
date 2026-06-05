@@ -622,16 +622,19 @@ html[data-theme="dark"] body::before {
 /* Text cascades in on load: title -> date -> body. The top share row follows
    last (animated separately above). Reuses the homepage roll-in keyframe. */
 .post-title,
+.page-title,
 .post-meta,
 .post-content {
   opacity: 0;
   animation: roll-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .post-title   { animation-delay: 0.1s; }
+.page-title   { animation-delay: 0.1s; }
 .post-meta    { animation-delay: 0.4s; }
 .post-content { animation-delay: 0.7s; }
 @media (prefers-reduced-motion: reduce) {
   .post-title,
+  .page-title,
   .post-meta,
   .post-content { animation: none; opacity: 1; }
 }

@@ -540,6 +540,24 @@
       var copyLabelText = copyLabel.textContent;
       var savedQuote = '', savedRange = null, hideTimer = null;
 
+      // Measure each state's natural width once (content is static), then drive
+      // the pill's width via CSS vars so it can morph between them.
+      var measured = false;
+      function ensureMeasured() {
+        if (measured) return;
+        var origLabel = copyLabel.textContent;
+        copyLabel.textContent = 'Copied';            // size for the longest label
+        toolbar.classList.remove('quoting', 'collapsing');
+        var wActions = Math.ceil(toolbar.getBoundingClientRect().width);
+        toolbar.classList.add('quoting');
+        var wShare = Math.ceil(toolbar.getBoundingClientRect().width);
+        toolbar.classList.remove('quoting');
+        copyLabel.textContent = origLabel;
+        toolbar.style.setProperty('--w-actions', wActions + 'px');
+        toolbar.style.setProperty('--w-share', wShare + 'px');
+        measured = true;
+      }
+
       function inContent(node) {
         var el = node && (node.nodeType === 1 ? node : node.parentNode);
         return !!(el && el.closest && el.closest('.post-content'));
@@ -552,7 +570,7 @@
         return { text: text, range: sel.getRangeAt(0) };
       }
       function hide() {
-        toolbar.classList.remove('visible', 'quoting');
+        toolbar.classList.remove('visible', 'quoting', 'collapsing');
         toolbar.setAttribute('aria-hidden', 'true');
       }
       function position(range) {
@@ -610,9 +628,10 @@
         setTimeout(function () {
           var sel = readSelection();
           if (!sel) { hide(); return; }
+          ensureMeasured();
           savedQuote = sel.text;
           savedRange = sel.range;
-          toolbar.classList.remove('quoting');
+          toolbar.classList.remove('quoting', 'collapsing');
           copyLabel.textContent = copyLabelText;
           qCopyBtn.classList.remove('copied');
           position(sel.range);
@@ -646,20 +665,18 @@
       });
       quoteBtn.addEventListener('click', function () {
         buildLinks(savedQuote);
-        toolbar.classList.add('quoting');
-        if (savedRange) requestAnimationFrame(function () { position(savedRange); });
+        toolbar.classList.add('quoting');   // pill extends; icons roll in
       });
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       function backToActions() {
         toolbar.classList.remove('quoting', 'collapsing');
-        if (savedRange) requestAnimationFrame(function () { position(savedRange); });
       }
       toolbar.querySelector('.sel-back').addEventListener('click', function () {
         if (toolbar.classList.contains('collapsing')) return;
         if (reduceMotion) { backToActions(); return; }
-        // Roll the icons back out (right-to-left), then show copy / quote.
+        // Icons roll out as the pill collapses back to the copy / quote width.
         toolbar.classList.add('collapsing');
-        setTimeout(backToActions, 440); // 0.22s anim + 0.20s max stagger
+        setTimeout(backToActions, 340); // ~0.18s anim + 0.15s stagger ≈ width shrink
       });
       qCopyBtn.addEventListener('click', function () {
         var url = location.href.split('#')[0];

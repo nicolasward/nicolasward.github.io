@@ -586,8 +586,11 @@ html[data-theme="dark"] body::before {
   top: 0;
   left: 0;
   z-index: 60;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;            /* clip icons so they reveal as the pill grows */
+  width: var(--w-actions, auto);
   padding: 0.35rem 0.5rem;
   background: var(--progress-bg);
   -webkit-backdrop-filter: blur(8px);
@@ -598,24 +601,25 @@ html[data-theme="dark"] body::before {
   transform: translateY(4px) scale(0.96);
   transform-origin: center bottom;
   pointer-events: none;
-  transition: opacity 0.16s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+  /* The pill morphs WIDTH between the two states (extend on quote, collapse
+     on back) so it reads as one element rather than two separate pills. */
+  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.16s ease,
+              transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .sel-toolbar.below { transform-origin: center top; transform: translateY(-4px) scale(0.96); }
 .sel-toolbar.visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
 
-/* Both states occupy the SAME grid cell, so the pill is always as wide as
-   the wider state — no width jump between the copy/quote and share pages.
-   We toggle visibility (not display) so the hidden state still sizes the box. */
-.sel-actions,
-.sel-share {
-  grid-area: 1 / 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.sel-share { gap: 1.25rem; padding: 0 0.5rem; visibility: hidden; pointer-events: none; }
-.sel-toolbar.quoting .sel-actions { visibility: hidden; pointer-events: none; }
-.sel-toolbar.quoting .sel-share   { visibility: visible; pointer-events: auto; }
+/* Extend to the share width while quoting; collapse back during .collapsing. */
+.sel-toolbar.quoting             { width: var(--w-share, auto); }
+.sel-toolbar.quoting.collapsing  { width: var(--w-actions, auto); }
+
+/* One visible state at a time (the hidden one is display:none). Width is
+   driven by the measured CSS vars above, not by which child is shown. */
+.sel-actions { display: flex; align-items: center; justify-content: center; }
+.sel-share   { display: none;  align-items: center; justify-content: flex-start; gap: 1.25rem; padding: 0 0.5rem; }
+.sel-toolbar.quoting .sel-actions { display: none; }
+.sel-toolbar.quoting .sel-share   { display: flex; }
 
 .sel-btn {
   appearance: none;
@@ -698,14 +702,14 @@ html[data-theme="dark"] body::before {
    copy / quote menu. More specific than the .quoting in-rules, so it wins. */
 .sel-toolbar.quoting.collapsing .sel-back,
 .sel-toolbar.quoting.collapsing .sel-icon {
-  animation: sel-icon-out 0.22s cubic-bezier(0.4, 0, 1, 1) both;
+  animation: sel-icon-out 0.18s cubic-bezier(0.4, 0, 1, 1) both;
 }
 .sel-toolbar.quoting.collapsing .sel-icon:nth-child(7) { animation-delay: 0s; }
-.sel-toolbar.quoting.collapsing .sel-icon:nth-child(6) { animation-delay: 0.04s; }
-.sel-toolbar.quoting.collapsing .sel-icon:nth-child(5) { animation-delay: 0.08s; }
-.sel-toolbar.quoting.collapsing .sel-icon:nth-child(4) { animation-delay: 0.12s; }
-.sel-toolbar.quoting.collapsing .sel-icon:nth-child(3) { animation-delay: 0.16s; }
-.sel-toolbar.quoting.collapsing .sel-back              { animation-delay: 0.20s; }
+.sel-toolbar.quoting.collapsing .sel-icon:nth-child(6) { animation-delay: 0.03s; }
+.sel-toolbar.quoting.collapsing .sel-icon:nth-child(5) { animation-delay: 0.06s; }
+.sel-toolbar.quoting.collapsing .sel-icon:nth-child(4) { animation-delay: 0.09s; }
+.sel-toolbar.quoting.collapsing .sel-icon:nth-child(3) { animation-delay: 0.12s; }
+.sel-toolbar.quoting.collapsing .sel-back              { animation-delay: 0.15s; }
 @keyframes sel-icon-out {
   from { opacity: 1; transform: translateX(0); }
   to   { opacity: 0; transform: translateX(-7px); }

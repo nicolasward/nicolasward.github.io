@@ -157,21 +157,33 @@ body {
   animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
 }
 
-/* machine / human — an on/off switch. The bar flips between "\" and "/":
-   "\" lights the left word, "/" lights the right. The lit word is hero-ink;
-   the other is light ghost grey. The words never move; the colour change
-   wipes out from the bar (centre) to the far end of each word. */
+/* machine / human — a split-flap display. Each word is a fixed-height window
+   holding a 2-cell reel; on each tick the reels roll vertically (machine up,
+   human down) in perfect sync to flip to the opposite colour. The bar flips
+   "/" <-> "\" to keep pointing at the orange word. */
 .sw {
   white-space: nowrap;
 }
 .sw__word {
   display: inline-block;
-  background-repeat: no-repeat;
+  vertical-align: top;
+  overflow: hidden;            /* the window: clips all but one cell */
+  height: 1.22em;              /* one intro line box */
+  line-height: 1.22em;
 }
-.sw__word--l { color: var(--fg); }   /* machine: lit initially */
-.sw__word--r { color: #FF791B; }     /* human: off (accent orange) */
+.sw__word .flap__reel { display: block; }
+.sw__word .flap__cell {
+  display: block;
+  height: 1.22em;
+  line-height: 1.22em;
+  white-space: nowrap;
+}
+.sw__word--l .flap__cell { color: var(--fg); }   /* machine: lit ink initially */
+.sw__word--r .flap__cell { color: #FF791B; }     /* human: accent orange initially */
 .sw__bar {
   display: inline-block;
+  vertical-align: top;
+  line-height: 1.22em;
   margin: 0 0.3em;
   color: var(--fg);
   transform: scaleX(1);              /* "/" — points at the orange (off) word */
@@ -360,7 +372,7 @@ body {
       </div>
     </div>
 
-    <div class="intro">I build <span class="sw"><span class="sw__word sw__word--l js-sw-l">machine</span><span class="sw__bar js-sw-bar" aria-hidden="true">/</span><span class="sw__word sw__word--r js-sw-r">human</span></span> learning systems.</div>
+    <div class="intro">I build <span class="sw"><span class="sw__word sw__word--l js-sw-l"><span class="flap__reel"><span class="flap__cell">machine</span><span class="flap__cell" aria-hidden="true">machine</span></span></span><span class="sw__bar js-sw-bar" aria-hidden="true">/</span><span class="sw__word sw__word--r js-sw-r"><span class="flap__reel"><span class="flap__cell">human</span><span class="flap__cell" aria-hidden="true">human</span></span></span></span> learning systems.</div>
 
     <a class="read-cta" href="/blog">Read my writing &#8250;</a>
   </div>
@@ -395,9 +407,9 @@ document.querySelectorAll('.blob').forEach(blob => {
   drift(blob, start);
 });
 
-// machine / human — on/off switch. The bar flips "\" <-> "/"; the lit word
-// is hero-ink, the other is ghost grey, and the colour wipes out from the
-// bar (centre) to the far end of each word.
+// machine / human — a split-flap display. On each tick the two words roll to
+// the opposite colour in perfect sync: "machine" rolls up, "human" rolls down.
+// The bar flips "/" <-> "\" to keep pointing at the orange word.
 (function () {
   const sw = document.querySelector('.sw');
   if (!sw) return;
@@ -409,37 +421,48 @@ document.querySelectorAll('.blob').forEach(blob => {
   const ON = getComputedStyle(document.documentElement)
                .getPropertyValue('--fg').trim() || '#100F0F';
   const OFF = '#FF791B';   // signature accent orange
+  const EASE = 'transform 0.6s cubic-bezier(0.83, 0, 0.17, 1)';
 
-  // Wipe a word's colour from `from` to `to`, rolling out from the bar side
-  // (centre) to the word's far end.
-  function wipe(el, from, to, isLeft) {
-    const grad = isLeft
-      ? `linear-gradient(to right, ${from} 0%, ${from} 40%, ${to} 60%, ${to} 100%)`
-      : `linear-gradient(to right, ${to} 0%, ${to} 40%, ${from} 60%, ${from} 100%)`;
-    el.style.transition = 'none';
-    el.style.backgroundImage = grad;
-    el.style.backgroundSize = '240% 100%';
-    el.style.webkitBackgroundClip = 'text';
-    el.style.backgroundClip = 'text';
-    el.style.webkitTextFillColor = 'transparent';
-    el.style.color = 'transparent';
-    el.style.backgroundPosition = isLeft ? '0% 50%' : '100% 50%';
-    void el.offsetWidth;                       // commit the start position
-    el.style.transition = 'background-position 0.65s ease-in-out';
-    el.style.backgroundPosition = isLeft ? '100% 50%' : '0% 50%';
+  // A reel with two stacked cells. roll(next) flips the visible colour by
+  // sliding one cell-height in `dir`; the off-screen cell is pre-set to the
+  // new colour and the reset is folded into the start of the next roll (so the
+  // word always rolls the same way, with no flicker).
+  function makeFlap(el, dir, initial) {
+    const reel = el.querySelector('.flap__reel');
+    const A = reel.children[0], B = reel.children[1];
+    reel.style.transition = 'none';
+    A.style.color = B.style.color = initial;
+    reel.style.transform = 'translateY(0)';
+    let current = initial;
+    return function (next) {
+      const h = el.clientHeight;
+      reel.style.transition = 'none';
+      if (dir === 'up') {
+        A.style.color = current; B.style.color = next;
+        reel.style.transform = 'translateY(0)';
+        void reel.offsetWidth;
+        reel.style.transition = EASE;
+        reel.style.transform = 'translateY(' + (-h) + 'px)';
+      } else {
+        B.style.color = current; A.style.color = next;
+        reel.style.transform = 'translateY(' + (-h) + 'px)';
+        void reel.offsetWidth;
+        reel.style.transition = EASE;
+        reel.style.transform = 'translateY(0)';
+      }
+      current = next;
+    };
   }
+
+  const rollL = makeFlap(L, 'up', ON);     // machine: ink, rolls up
+  const rollR = makeFlap(R, 'down', OFF);  // human: orange, rolls down
 
   let leftLit = true;
   setInterval(function () {
     leftLit = !leftLit;
-    bar.style.transform = leftLit ? 'scaleX(1)' : 'scaleX(-1)';   // slash points at the orange word
-    if (leftLit) {
-      wipe(L, OFF, ON, true);    // machine lights up
-      wipe(R, ON, OFF, false);   // human dims
-    } else {
-      wipe(L, ON, OFF, true);    // machine dims
-      wipe(R, OFF, ON, false);   // human lights up
-    }
+    bar.style.transform = leftLit ? 'scaleX(1)' : 'scaleX(-1)';
+    if (leftLit) { rollL(ON);  rollR(OFF); }   // machine → ink,    human → orange
+    else         { rollL(OFF); rollR(ON);  }   // machine → orange, human → ink
   }, 3000);
 })();
 </script>

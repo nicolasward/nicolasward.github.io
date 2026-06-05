@@ -158,9 +158,10 @@ body {
 }
 
 /* machine / human — a single split-flap slot. One word sits in the sentence
-   and flips machine ⇄ human on a timer (rolling upward like a departure board),
-   the slot's width morphing to the new word so the line stays tight. The word
-   is the accent orange — the one moving, highlighted element of the hero. */
+   and flips machine ⇄ human on a timer (rolling upward like a departure board).
+   The slot is locked to the WIDER word's width (set in JS) and the word is
+   centred in it, so flipping never reflows the rest of the line. The word is
+   the accent orange — the one moving, highlighted element of the hero. */
 .sw {
   white-space: nowrap;
 }
@@ -170,8 +171,8 @@ body {
   overflow: hidden;            /* the window: clips all but one cell */
   height: 1.22em;              /* one intro line box */
   line-height: 1.22em;
+  text-align: center;          /* centre the shorter word in the reserved slot */
   color: #FF791B;              /* the dynamic word, in the signature accent */
-  transition: width 0.6s cubic-bezier(0.83, 0, 0.17, 1);
 }
 .sw .flap__reel { display: block; }
 .sw .flap__cell {
@@ -412,22 +413,26 @@ document.querySelectorAll('.blob').forEach(blob => {
 
   const WORDS = ['machine', 'human'];
   const EASE = 'transform 0.6s cubic-bezier(0.83, 0, 0.17, 1)';
+  let idx = 0;
 
-  // Measure each word's pixel width (content is static) for the width morph.
-  function measure(word) {
-    A.textContent = word; B.textContent = word;
-    return Math.ceil(A.getBoundingClientRect().width);
+  // Lock the slot to the WIDER word's width (re-measured on resize, since the
+  // hero font is responsive) so flipping never reflows the surrounding text.
+  function sizeSlot() {
+    flap.style.width = 'auto';
+    A.textContent = 'machine'; B.textContent = 'machine';
+    const wM = A.getBoundingClientRect().width;
+    A.textContent = 'human';   B.textContent = 'human';
+    const wH = A.getBoundingClientRect().width;
+    A.textContent = WORDS[idx]; B.textContent = WORDS[idx];
+    flap.style.width = Math.ceil(Math.max(wM, wH)) + 'px';
   }
-  const W = { machine: measure('machine'), human: measure('human') };
+  sizeSlot();
+  reel.style.transition = 'none';
+  reel.style.transform = 'translateY(0)';
+  window.addEventListener('resize', sizeSlot);
 
   // Start on "machine"; the off-screen cell is pre-set to the next word and the
   // reset folds into the next flip, so it always rolls up with no flicker.
-  let idx = 0;
-  reel.style.transition = 'none';
-  A.textContent = WORDS[0]; B.textContent = WORDS[0];
-  reel.style.transform = 'translateY(0)';
-  flap.style.width = W[WORDS[0]] + 'px';
-
   setInterval(function () {
     const next = (idx + 1) % WORDS.length;
     const h = flap.clientHeight;
@@ -438,7 +443,6 @@ document.querySelectorAll('.blob').forEach(blob => {
     void reel.offsetWidth;        // commit the reset
     reel.style.transition = EASE;
     reel.style.transform = 'translateY(' + (-h) + 'px)';
-    flap.style.width = W[WORDS[next]] + 'px';   // morph the slot to the new word
     idx = next;
   }, 3000);
 })();

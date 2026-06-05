@@ -511,12 +511,12 @@ html[data-theme="dark"] body::before {
 /* …whose icons fade in left-to-right, one by one, on load */
 .post-header .post-share .share-btn {
   opacity: 0;
-  animation: share-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: share-in 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.post-header .post-share .share-btn:nth-child(1) { animation-delay: 0.15s; }
-.post-header .post-share .share-btn:nth-child(2) { animation-delay: 0.24s; }
-.post-header .post-share .share-btn:nth-child(3) { animation-delay: 0.33s; }
-.post-header .post-share .share-btn:nth-child(4) { animation-delay: 0.42s; }
+.post-header .post-share .share-btn:nth-child(1) { animation-delay: 0.05s; }
+.post-header .post-share .share-btn:nth-child(2) { animation-delay: 0.08s; }
+.post-header .post-share .share-btn:nth-child(3) { animation-delay: 0.11s; }
+.post-header .post-share .share-btn:nth-child(4) { animation-delay: 0.14s; }
 @keyframes share-in {
   from { opacity: 0; }
   to   { opacity: 1; }

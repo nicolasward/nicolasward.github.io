@@ -1606,9 +1606,8 @@ h3:hover .heading-anchor {
 /* Fill (dark part) — matches article body text */
 .progress-fill {
   stroke: var(--fg);
-  /* Fill clockwise from the top: start at 12 o'clock (rotate -90) and mirror
-     horizontally to reverse the sweep direction. */
-  transform: scaleX(-1) rotate(-90deg);
+  /* Start at 12 o'clock so the arc fills clockwise from the top. */
+  transform: rotate(-90deg);
   transform-origin: center;
   transform-box: fill-box;
   transition: stroke-dashoffset 0.15s ease, stroke 0.35s ease;

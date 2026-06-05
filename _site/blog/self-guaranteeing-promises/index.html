@@ -342,6 +342,9 @@
 
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       let wasComplete = false, firstRun = true;
+      // The dark arc stays empty until the entrance, then draws clockwise to
+      // its value in sync with the track ring-draw (see entrance timing below).
+      let entered = false;
 
       // Pop a burst of accent-orange confetti out of the circle on completion.
       function burst() {
@@ -381,7 +384,7 @@
         const percent = Math.round(progress * 100);
 
         percentEl.textContent = percent + '%';
-        fill.style.strokeDashoffset = CIRCUMFERENCE * (1 - progress);
+        if (entered) fill.style.strokeDashoffset = CIRCUMFERENCE * (1 - progress);
 
         const done = percent >= 100;
         widget.classList.toggle('complete', done);
@@ -400,7 +403,26 @@
         requestAnimationFrame(() => { update(); ticking = false; });
       }
 
-      update();
+      update();   // sets the percent text; the arc stays empty until entrance
+
+      // Draw the dark arc in clockwise on load, synced with the track ring-draw
+      // (which starts at 1.7s and runs 0.7s). Reduced motion skips straight to
+      // the live value.
+      if (reduceMotion) {
+        entered = true;
+        update();
+      } else {
+        setTimeout(function () {
+          fill.style.transition = 'stroke-dashoffset 0.7s cubic-bezier(0.22, 1, 0.36, 1)';
+          entered = true;
+          update();   // animates the arc from empty to the current value
+          setTimeout(function () {
+            // Restore the snappy transition for live scrolling.
+            fill.style.transition = 'stroke-dashoffset 0.15s ease, stroke 0.35s ease';
+          }, 750);
+        }, 1700);
+      }
+
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', onScroll, { passive: true });
 

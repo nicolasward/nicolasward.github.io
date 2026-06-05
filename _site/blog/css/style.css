@@ -555,7 +555,7 @@ html[data-theme="dark"] body::before {
    out on its own when the .copied class is removed. */
 .share-copy .copied-label {
   position: absolute;
-  top: calc(100% + 9px);
+  top: calc(100% + 1rem);
   left: 50%;
   white-space: nowrap;
   padding: 0.3rem 0.7rem;
@@ -568,16 +568,16 @@ html[data-theme="dark"] body::before {
   border: 1px solid var(--fg-muted);
   border-radius: 999px;
   opacity: 0;
-  transform: translateX(-50%) translateY(-4px);
+  transform: translate(-50%, calc(-50% - 4px));
   pointer-events: none;
   transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .share-copy.copied .copied-label {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translate(-50%, -50%);
 }
 @media (prefers-reduced-motion: reduce) {
-  .share-copy .copied-label { transition: opacity 0.15s ease; transform: translateX(-50%); }
+  .share-copy .copied-label { transition: opacity 0.15s ease; transform: translate(-50%, -50%); }
 }
 
 /* Top placement: a quiet row under the date */

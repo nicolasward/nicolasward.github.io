@@ -802,6 +802,9 @@ html[data-theme="dark"] body::before {
 .page-title   { animation-delay: 0.1s; }
 .post-meta    { animation-delay: 0.4s; }
 .post-content { animation-delay: 0.7s; }
+/* Static pages have no date, so their body follows the title directly —
+   skip the gap the article cascade leaves for the meta row. */
+.page-title + .post-content { animation-delay: 0.35s; }
 @media (prefers-reduced-motion: reduce) {
   .post-title,
   .page-title,

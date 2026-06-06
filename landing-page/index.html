@@ -156,6 +156,10 @@ body {
   opacity: 0;
   animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
 }
+/* Desktop: let the headline flow naturally (no forced break). On mobile the
+   break is enabled so the centred block measures the widest LINE, not the
+   whole unwrapped sentence. */
+.intro-break { display: none; }
 
 /* machine / human — a single split-flap slot. One word sits in the sentence
    and flips machine ⇄ human on a timer (rolling upward like a departure board).
@@ -326,6 +330,7 @@ body {
     text-align: left;
     margin-top: 2.25rem;
   }
+  .intro-break { display: inline; }   /* fixed two-line break → block can centre */
 
   /* Hold links at the bottom center, clear the home indicator safe area */
   .links {
@@ -371,7 +376,7 @@ body {
       </div>
     </div>
 
-    <div class="intro">I build <span class="sw"><span class="flap js-flap"><span class="flap__reel"><span class="flap__cell">machine</span><span class="flap__cell" aria-hidden="true">human</span></span></span></span> learning systems.</div>
+    <div class="intro">I build <span class="sw"><span class="flap js-flap"><span class="flap__reel"><span class="flap__cell">machine</span><span class="flap__cell" aria-hidden="true">human</span></span></span></span> <br class="intro-break">learning systems.</div>
 
     <a class="read-cta" href="/blog">Read my writing &#8250;</a>
   </div>

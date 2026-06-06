@@ -132,6 +132,11 @@ body {
    (no-JS users just see the text). */
 html.js .js-reveal { opacity: 0; }
 .reveal-word { display: inline-block; }
+/* Greeting words just fade (no slide); the narrative words slide in from left. */
+@keyframes word-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
 @keyframes word-in {
   from { opacity: 0; transform: translateX(-8px); }
   to   { opacity: 1; transform: none; }
@@ -171,7 +176,7 @@ html.js .js-reveal { opacity: 0; }
 @media (prefers-reduced-motion: reduce) {
   /* No entrance animation — show everything immediately. */
   html.js .js-reveal,
-  .greeting, .lede, .write-link, .reveal-word {
+  .greeting, .lede, .write-link, .reveal-word, .gw {
     animation: none;
     opacity: 1;
     transform: none;
@@ -223,7 +228,7 @@ html.js .js-reveal { opacity: 0; }
 
   <div class="container">
     <div class="hero">
-      <p class="greeting js-reveal">Hi, I&#8217;m Nico.</p>
+      <p class="greeting js-reveal"><span class="gw">Hi</span><span class="gw">, I&#8217;m</span> <span class="gw">Nico.</span></p>
       <h1 class="lede js-reveal">I build machine-human learning systems &#8212; software that adapts to the way people actually think, work, and learn. I&#8217;m the founder of <span class="atelier">Atelier</span>, an AI studio for high-performance teams, and before that I shaped personalisation at Healf. The rest of the time, I <a class="write-link" href="/blog">write</a> &#8212; about building, design, and the ideas in between. You can find me on <a class="linkedin-link" href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" rel="noopener">LinkedIn</a>.</h1>
     </div>
   </div>
@@ -289,19 +294,20 @@ document.querySelectorAll('.blob').forEach(blob => {
 
   function go() {
     const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
-    let t = 0.2;
     if (greeting) {
-      wrapWords(greeting).forEach((w, i) => {
-        w.style.animation = 'word-in 0.5s ' + EASE + ' ' + t.toFixed(3) + 's both';
-        t += (i === 0 ? 0.3 : 0.12);   // a tiny pause after "Hi,"
+      // Slow, deliberate fades — "Hi" … pause … ", I'm" "Nico."
+      const delays = [0.3, 1.3, 1.6];
+      greeting.querySelectorAll('.gw').forEach((w, i) => {
+        const d = delays[i] != null ? delays[i] : 1.6 + (i - 2) * 0.3;
+        w.style.animation = 'word-fade 0.85s ease ' + d + 's both';
       });
       greeting.style.opacity = 1;
     }
     if (lede) {
-      let lt = Math.max(t + 0.1, 1.0);  // begin once the greeting has landed
+      let lt = 2.0;                       // begin once the greeting has landed
       wrapWords(lede).forEach(w => {
         w.style.animation = 'word-in 0.5s ' + EASE + ' ' + lt.toFixed(3) + 's both';
-        lt += 0.02;                      // fast, smooth left-to-right flow
+        lt += 0.018;                      // fast, smooth left-to-right flow
       });
       lede.style.opacity = 1;
     }

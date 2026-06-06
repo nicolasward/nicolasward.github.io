@@ -304,7 +304,7 @@ document.querySelectorAll('.blob').forEach(blob => {
       greeting.style.opacity = 1;
     }
     if (lede) {
-      let lt = 2.0;                       // begin once the greeting has landed
+      let lt = 3.2;                       // a ~1s beat after the greeting lands
       wrapWords(lede).forEach(w => {
         w.style.animation = 'word-in 0.5s ' + EASE + ' ' + lt.toFixed(3) + 's both';
         lt += 0.018;                      // fast, smooth left-to-right flow

@@ -554,8 +554,13 @@
               }
             }
             node.replaceChild(frag, n);
-          } else if (n.nodeType === 1 && !SKIP[n.tagName]) {
-            wrap(n);
+          } else if (n.nodeType === 1) {
+            if (n.tagName === 'LI') {
+              words.push(n);            // animate the whole item (its hanging indent
+                                        // breaks if we inline-block its words)
+            } else if (!SKIP[n.tagName]) {
+              wrap(n);
+            }
           }
         }
       }

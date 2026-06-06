@@ -229,7 +229,7 @@ html.js .js-reveal { opacity: 0; }
   <div class="container">
     <div class="hero">
       <p class="greeting js-reveal"><span class="gw">Hi</span><span class="gw">, I&#8217;m</span> <span class="gw">Nico.</span></p>
-      <h1 class="lede js-reveal">I build human-machine learning systems &#8212; interfaces that help humans learn better.<br>I&#8217;m the founder of <span class="atelier">Atelier</span>, an AI studio working to unlock the next evolution in human learning and development. I also enjoy <a class="write-link" href="/blog">writing</a> &#8212; about AI, design, and other random things. You can reach me on <a class="text-link" href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" rel="noopener">LinkedIn</a> or via <a class="text-link" href="mailto:ward.nicolas@outlook.com">email</a>.</h1>
+      <h1 class="lede js-reveal">I build human-machine learning systems &#8212; interfaces that help humans learn better.<br>I&#8217;m the founder of <span class="atelier">Atelier</span>, an AI studio working to unlock the next evolution in human learning and development.<br>I also enjoy <a class="write-link" href="/blog">writing</a> &#8212; about AI, design, and other random things. You can reach me on <a class="text-link" href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" rel="noopener">LinkedIn</a> or via <a class="text-link" href="mailto:ward.nicolas@outlook.com">email</a>.</h1>
     </div>
   </div>
 
@@ -306,9 +306,12 @@ document.querySelectorAll('.blob').forEach(blob => {
       greeting.style.opacity = 1;
     }
     if (lede) {
+      wrapWords(lede);                    // wrap words/links; keep <br> paragraph breaks
       let lt = 3.2;                       // a ~1s beat after the greeting lands
-      wrapWords(lede).forEach(w => {
-        w.style.animation = 'word-in 0.95s ' + EASE + ' ' + lt.toFixed(3) + 's both';
+      Array.prototype.forEach.call(lede.childNodes, node => {
+        if (node.nodeType !== 1) return;                 // skip spaces
+        if (node.tagName === 'BR') { lt += 1.0; return; } // 1s pause between paragraphs
+        node.style.animation = 'word-in 0.95s ' + EASE + ' ' + lt.toFixed(3) + 's both';
         lt += 0.026;                      // slower, floatier left-to-right drift
       });
       lede.style.opacity = 1;

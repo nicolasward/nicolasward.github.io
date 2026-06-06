@@ -507,6 +507,19 @@
     })();
   </script>
   <script>
+    // Article body: float each top-level block in, staggered. Runs before paint;
+    // the index is capped so blocks below the fold reveal quickly (no scrolling
+    // into blank space). Blocks are hidden up front via the .js gate in CSS.
+    (function () {
+      if (!document.body.classList.contains('article')) return;
+      var blocks = document.querySelectorAll('.post-content > *');
+      for (var i = 0; i < blocks.length; i++) {
+        blocks[i].style.setProperty('--i', Math.min(i, 12));
+        blocks[i].classList.add('body-roll');
+      }
+    })();
+  </script>
+  <script>
     // Copy-link share button: copy the current URL, flash a checkmark.
     (function () {
       document.querySelectorAll('.share-copy').forEach(function (btn) {

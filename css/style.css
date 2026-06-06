@@ -789,27 +789,39 @@ html[data-theme="dark"] body::before {
 .post-share-section.is-redundant { display: none; }
 
 /* ===== Article entrance ===== */
-/* Text cascades in on load: title -> date -> body. The top share row follows
-   last (animated separately above). Reuses the homepage roll-in keyframe. */
+/* Title → date drift in, then the body's blocks cascade in one by one with the
+   same slow, floaty settle as the landing/home pages. */
 .post-title,
 .page-title,
-.post-meta,
-.post-content {
+.post-meta {
   opacity: 0;
-  animation: roll-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: home-roll 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .post-title   { animation-delay: 0.1s; }
 .page-title   { animation-delay: 0.1s; }
-.post-meta    { animation-delay: 0.4s; }
-.post-content { animation-delay: 0.7s; }
-/* Static pages have no date, so their body follows the title directly —
-   skip the gap the article cascade leaves for the meta row. */
-.page-title + .post-content { animation-delay: 0.35s; }
+.post-meta    { animation-delay: 0.35s; }
+
+/* Article body: each top-level block floats in, staggered (tagged with --i by
+   JS; the index is capped so below-the-fold blocks reveal quickly). */
+.js body.article .post-content > * { opacity: 0; }
+body.article .post-content > *.body-roll {
+  animation: home-roll 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(0.5s + var(--i, 0) * 0.05s);
+}
+
+/* Static pages (about) have no date — the body floats in as one block. */
+.page-title + .post-content {
+  opacity: 0;
+  animation: home-roll 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .post-title,
   .page-title,
   .post-meta,
-  .post-content { animation: none; opacity: 1; }
+  .page-title + .post-content { animation: none; opacity: 1; }
+  .js body.article .post-content > * { opacity: 1; }
+  body.article .post-content > *.body-roll { animation: none; }
 }
 
 /* ===== Post content ===== */

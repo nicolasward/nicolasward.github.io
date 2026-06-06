@@ -97,55 +97,19 @@ body {
 }
 
 /* Shared entrance: a gentle fade + rise. Elements stagger in via their own
-   animation-delay (profile → hero → CTA → links) for a smooth Apple-like
+   animation-delay (greeting → intro → CTA → links) for a smooth Apple-like
    cascade. fill: both holds each hidden during its delay (no flash). */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Profile */
-.profile {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  opacity: 0;
-  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
-}
+/* Hero — a type-only stacked statement (greeting → intro → CTA), all in the
+   hero serif. */
+.hero { /* desktop: flows left-aligned in the container; centred on mobile */ }
 
-.profile img {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: center 38%; /* adjust vertical framing */
-  transition: filter 0.6s ease, transform 0.4s ease;
-  filter: grayscale(0%);
-}
-
-.profile img:hover {
-  filter: grayscale(100%);
-}
-
-.profile h1 {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; /* match the blog */
-  font-weight: 600;
-  font-size: 22px;
-  margin: 0;
-  letter-spacing: -0.2px;
-}
-
-.profile p {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; /* match the blog */
-  font-weight: 400;
-  font-size: 18px;
-  margin: 2px 0 0 0;
-  opacity: 0.75;
-  color: var(--fg);
-}
-
-/* Headline */
+/* Greeting + headline share the same hero serif size/rhythm. */
+.greeting,
 .intro {
   font-size: clamp(3rem, 5vw, 64px);
   font-weight: 400;
@@ -153,6 +117,14 @@ body {
   letter-spacing: -0.25px;
   color: var(--fg);
   text-rendering: optimizeLegibility;
+}
+.greeting {
+  margin: 0;
+  opacity: 0;
+  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}
+.intro {
+  margin-top: 0.4rem;
   opacity: 0;
   animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
 }
@@ -192,12 +164,11 @@ body {
    and the footer links. */
 .read-cta {
   display: inline-block;
-  margin-top: clamp(3rem, 13vh, 10rem);
-  font-family: 'IBM Plex Mono', monospace;
-  font-weight: 500;
-  font-size: clamp(1.05rem, 2.2vw, 1.25rem);
-  letter-spacing: 0.3px;
-  text-transform: lowercase;
+  margin-top: clamp(1.75rem, 5vh, 3.5rem);
+  font-family: inherit;                 /* the hero serif */
+  font-weight: 400;
+  font-size: clamp(1.35rem, 3.2vw, 1.75rem);
+  letter-spacing: -0.2px;
   text-decoration: none;
   /* A soft light glow sweeps left-to-right through the text + chevron
      (clipped to the glyphs), like a shimmer running through. */
@@ -222,13 +193,12 @@ body {
 
 /* No hover effects on touch devices (avoids sticky hover states on tap). */
 @media (hover: none) {
-  .profile img:hover { filter: grayscale(0%); }
   .links a:hover { text-shadow: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   /* No entrance animation — show everything immediately. */
-  .profile, .intro, .read-cta, .links {
+  .greeting, .intro, .read-cta, .links {
     animation: none;
     opacity: 1;
     transform: none;
@@ -293,43 +263,25 @@ body {
     justify-content: center;
   }
 
-  /* Stack neatly: image → name → tagline */
-  .profile {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .profile img {
-    width: 88px;
-    height: 88px;
-  }
-
-  .profile h1 {
-    font-size: 20px;
-    margin-top: 0.3rem;
-  }
-
-  .profile p {
-    font-size: 15px;
-    opacity: 0.7;
-    margin-top: 0.2rem;
-  }
-
-  /* Grand statement — a left-aligned block, centred horizontally so it has
-     balanced margins (not crammed against the left edge). Eased down a touch
-     so the lines don't fill edge-to-edge. */
-  .intro {
-    font-size: clamp(2.1rem, 8vw, 2.7rem);
-    line-height: 1.22;
+  /* The whole hero is one left-aligned block, centred horizontally so it has
+     balanced margins. fit-content works because the intro's forced break (and
+     the short greeting) keep the widest LINE — not an unwrapped sentence — as
+     the measured width. */
+  .hero {
     width: fit-content;
     max-width: 100%;
     margin-left: auto;
     margin-right: auto;
     text-align: left;
-    margin-top: 2.25rem;
   }
+
+  /* Eased down a touch so the lines don't fill edge-to-edge. */
+  .greeting,
+  .intro {
+    font-size: clamp(2.1rem, 8vw, 2.7rem);
+    line-height: 1.22;
+  }
+  .intro { margin-top: 0.4rem; }
   .intro-break { display: inline; }   /* fixed two-line break → block can centre */
 
   /* Hold links at the bottom center, clear the home indicator safe area */
@@ -368,17 +320,13 @@ body {
   </div>
 
   <div class="container">
-    <div class="profile">
-      <img src="nico.jpg" alt="Profile photo" width="90" height="90" decoding="async" fetchpriority="high">
-      <div>
-        <h1>Nico Ward</h1>
-        <p>ai &middot; design &middot; education</p>
-      </div>
+    <div class="hero">
+      <h1 class="greeting">Hi, I&#8217;m Nico.</h1>
+
+      <div class="intro">I build <span class="sw"><span class="flap js-flap"><span class="flap__reel"><span class="flap__cell">machine</span><span class="flap__cell" aria-hidden="true">human</span></span></span></span> <br class="intro-break">learning systems.</div>
+
+      <a class="read-cta" href="/blog">Read my writing &#8250;</a>
     </div>
-
-    <div class="intro">I build <span class="sw"><span class="flap js-flap"><span class="flap__reel"><span class="flap__cell">machine</span><span class="flap__cell" aria-hidden="true">human</span></span></span></span> <br class="intro-break">learning systems.</div>
-
-    <a class="read-cta" href="/blog">Read my writing &#8250;</a>
   </div>
 
   <!-- Centered bottom links -->

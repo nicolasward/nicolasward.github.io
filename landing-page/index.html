@@ -229,7 +229,7 @@ html.js .js-reveal { opacity: 0; }
   <div class="container">
     <div class="hero">
       <p class="greeting js-reveal"><span class="gw">Hi</span><span class="gw">, I&#8217;m</span> <span class="gw">Nico.</span></p>
-      <h1 class="lede js-reveal">I build machine-human learning systems &#8212; software that adapts to the way people actually think, work, and learn. I&#8217;m the founder of <span class="atelier">Atelier</span>, an AI studio for high-performance teams, and before that I shaped personalisation at Healf. The rest of the time, I <a class="write-link" href="/blog">write</a> &#8212; about building, design, and the ideas in between. You can find me on <a class="linkedin-link" href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" rel="noopener">LinkedIn</a>.</h1>
+      <h1 class="lede js-reveal">I build machine-human learning systems &#8212; software that adapts to the way people actually think, work, and learn.<br>I&#8217;m the founder of <span class="atelier">Atelier</span>, an AI studio for high-performance teams, and before that I shaped personalisation at Healf. The rest of the time, I <a class="write-link" href="/blog">write</a> &#8212; about building, design, and the ideas in between. You can find me on <a class="linkedin-link" href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" rel="noopener">LinkedIn</a>.</h1>
     </div>
   </div>
 
@@ -282,6 +282,8 @@ document.querySelectorAll('.blob').forEach(blob => {
           if (/^\s+$/.test(p)) frag.push(document.createTextNode(' '));
           else { const w = document.createElement('span'); w.className = 'reveal-word'; w.textContent = p; frag.push(w); words.push(w); }
         });
+      } else if (node.tagName === 'BR') {
+        frag.push(node);                 // keep line breaks; don't animate them
       } else {
         if (node.classList) node.classList.add('reveal-word');
         frag.push(node); words.push(node);

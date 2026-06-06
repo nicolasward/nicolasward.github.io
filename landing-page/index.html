@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
 /* Shared design tokens — same names/values as the blog (css/style.css) so the
@@ -37,7 +37,7 @@ body {
   min-height: 100vh;
   min-height: 100dvh; /* dynamic viewport: accounts for mobile browser chrome */
   margin: 0;
-  font-family: "Noto Serif KR", serif;
+  font-family: "Schibsted Grotesk", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: var(--field); /* plain white — gradient lives on .stage */
@@ -87,13 +87,12 @@ body {
   z-index: 2;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;   /* centre the tall narrative vertically */
   height: 100vh;
   height: 100dvh; /* dynamic viewport so content never hides behind mobile chrome */
   width: 100%;
   padding: 0 clamp(2rem, 6vw, 10rem);
   box-sizing: border-box;
-  padding-top: 35vh;
 }
 
 /* Shared entrance: a gentle fade + rise. Elements stagger in via their own
@@ -104,39 +103,32 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Hero — a type-only stacked statement (greeting → subtitle → intro → CTA),
-   with a touch of size hierarchy so it reads rich rather than flat. */
-.hero { /* desktop: flows left-aligned in the container; centred on mobile */ }
+/* Hero — a page-filling narrative: a muted greeting leading into a fuller-ink
+   lede, all one size, set left-to-right like the reference. */
+.hero {
+  max-width: 42rem;   /* a comfortable narrative measure on desktop */
+}
 
-/* Greeting + headline share rhythm; greeting is the dominant note. */
 .greeting,
-.intro {
-  font-weight: 400;
-  line-height: 1.2;
-  letter-spacing: -0.25px;
-  color: var(--fg);
+.lede,
+.read-cta {
+  font-size: clamp(2rem, 2.9vw, 3rem);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
   text-rendering: optimizeLegibility;
 }
 .greeting {
-  margin: 0;
-  font-size: clamp(3.4rem, 5.6vw, 72px);
+  margin: 0 0 0.35em 0;
+  color: rgba(16, 15, 15, 0.45);   /* muted opener, like the reference */
   opacity: 0;
-  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
 }
-.subtitle {
-  margin: 0.4em 0 0 0;
-  font-size: clamp(1.15rem, 1.6vw, 1.4rem);
-  font-weight: 400;
-  line-height: 1.3;
-  color: rgba(16, 15, 15, 0.55);
+.lede {
+  margin: 0;
+  color: var(--fg);
   opacity: 0;
   animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both;
-}
-.intro {
-  margin-top: 1.1em;   /* skip a line between the greeting block and the statement */
-  font-size: clamp(3rem, 5vw, 64px);
-  opacity: 0;
-  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
 }
 
 /* Small wordmark, top-left — frames the page and ties to the blog identity. */
@@ -145,25 +137,18 @@ body {
   top: clamp(1.5rem, 4vh, 2.5rem);
   left: clamp(1.5rem, 6vw, 3rem);
   z-index: 3;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   letter-spacing: -0.2px;
   color: var(--fg);
   opacity: 0;
-  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
 }
-/* Desktop: let the headline flow naturally (no forced break). On mobile the
-   break is enabled so the centred block measures the widest LINE, not the
-   whole unwrapped sentence. */
-.intro-break { display: none; }
 
-/* machine / human — a single split-flap slot. One word sits in the sentence
-   and flips machine ⇄ human on a timer (rolling upward like a departure board).
-   The slot's width morphs to fit the current word exactly (no reserved gap);
-   because the headline is left-aligned and "learning systems." (line 2) is the
-   widest line, the word's length variation is absorbed as invisible trailing
-   space, so nothing reflows. The word is the accent orange. */
+/* machine / human — a single split-flap slot inside the narrative. It flips
+   machine ⇄ human on a timer (rolling upward like a departure board). The slot
+   is locked to the WIDER word's width (set in JS) so flipping never reflows the
+   surrounding prose; the word is the accent orange. */
 .sw {
   white-space: nowrap;
 }
@@ -171,32 +156,26 @@ body {
   display: inline-block;
   vertical-align: top;
   overflow: hidden;            /* the window: clips all but one cell */
-  height: 1.22em;              /* one intro line box */
-  line-height: 1.22em;
+  height: 1.3em;               /* one lede line box */
+  line-height: 1.3em;
   text-align: left;
   color: #FF791B;              /* the dynamic word, in the signature accent */
-  transition: width 0.6s cubic-bezier(0.83, 0, 0.17, 1);
 }
 .sw .flap__reel { display: block; }
 .sw .flap__cell {
   display: block;
-  height: 1.22em;
-  line-height: 1.22em;
+  height: 1.3em;
+  line-height: 1.3em;
   white-space: nowrap;
 }
 
-/* "Read my writing" — primary call to action, sat midway between the hero
-   and the footer links. */
+/* "Read my writing" — the closing line of the narrative; same size, kept alive
+   with the sweeping glow so it reads as the clickable one. */
 .read-cta {
   display: inline-block;
-  margin-top: clamp(1.75rem, 4.5vh, 3rem);   /* a clear gap below the statement */
-  font-family: inherit;                       /* the hero serif */
-  font-weight: 400;
-  font-size: clamp(1.5rem, 2.4vw, 1.95rem);   /* below the statements — a CTA, not a third headline */
-  line-height: 1.22;
-  letter-spacing: -0.2px;
+  margin-top: 0.75em;                         /* sits just below the narrative */
   text-decoration: none;
-  /* A soft light glow sweeps left-to-right through the text + chevron
+  /* A soft light glow sweeps left-to-right through the text + arrow
      (clipped to the glyphs), like a shimmer running through. */
   background-image: linear-gradient(90deg,
     var(--fg) 0%, var(--fg) 44%, #c5c3ba 50%, var(--fg) 56%, var(--fg) 100%);
@@ -224,7 +203,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   /* No entrance animation — show everything immediately. */
-  .wordmark, .greeting, .subtitle, .intro, .read-cta, .links {
+  .wordmark, .greeting, .lede, .read-cta, .links {
     animation: none;
     opacity: 1;
     transform: none;
@@ -277,37 +256,25 @@ body {
   :root { --noise-size: 110px; }   /* finer grain on mobile */
 
   .container {
-    /* Centre the whole cluster vertically; extra bottom padding lifts it
-       to optical centre so it clears the fixed links below. */
-    padding: 4vh 1.5rem 16vh;
+    /* The narrative fills most of the height; centre it with a little lift so
+       it clears the fixed links below. */
+    padding: 12vh 1.5rem 16vh;
     height: 100vh;
     height: 100dvh;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
     justify-content: center;
   }
 
-  /* The whole hero is one left-aligned block, centred horizontally so it has
-     balanced margins. fit-content works because the intro's forced break (and
-     the short greeting) keep the widest LINE — not an unwrapped sentence — as
-     the measured width. */
-  .hero {
-    width: fit-content;
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: left;
-  }
+  /* The narrative fills the width, left-to-right (like the reference). */
+  .hero { max-width: 100%; }
 
-  /* Eased down a touch so the lines don't fill edge-to-edge; greeting leads,
-     statement medium, CTA smaller. */
-  .greeting { font-size: clamp(2.5rem, 9.5vw, 3.1rem); line-height: 1.16; }
-  .intro    { font-size: clamp(2.1rem, 8vw, 2.7rem); line-height: 1.22; margin-top: 1.1em; }
-  .subtitle { font-size: clamp(1rem, 3.6vw, 1.2rem); }
-  .read-cta { font-size: clamp(1.4rem, 5.5vw, 1.85rem); }
-  .intro-break { display: inline; }   /* fixed two-line break → block can centre */
+  .greeting,
+  .lede,
+  .read-cta {
+    font-size: clamp(1.85rem, 7vw, 2.4rem);
+    line-height: 1.3;
+  }
 
   /* Hold links at the bottom center, clear the home indicator safe area */
   .links {
@@ -348,12 +315,10 @@ body {
 
   <div class="container">
     <div class="hero">
-      <h1 class="greeting">Hi, I&#8217;m Nico.</h1>
-      <p class="subtitle">Founder of Atelier, an AI studio.</p>
+      <p class="greeting">Hi, I&#8217;m Nico.</p>
+      <h1 class="lede">I build <span class="sw"><span class="flap js-flap"><span class="flap__reel"><span class="flap__cell">machine</span><span class="flap__cell" aria-hidden="true">human</span></span></span></span> learning systems &#8212; software that adapts to the way people actually think, work, and learn. I&#8217;m the founder of Atelier, an AI studio for high-performance teams, and before that I shaped personalisation at Healf. The rest of the time, I write &#8212; about building, design, and the ideas in between.</h1>
 
-      <div class="intro">I build <span class="sw"><span class="flap js-flap"><span class="flap__reel"><span class="flap__cell">machine</span><span class="flap__cell" aria-hidden="true">human</span></span></span></span> <br class="intro-break">learning systems.</div>
-
-      <a class="read-cta" href="/blog">Read my writing &#8250;</a>
+      <a class="read-cta" href="/blog">Read my writing &#8594;</a>
     </div>
   </div>
 
@@ -389,9 +354,9 @@ document.querySelectorAll('.blob').forEach(blob => {
   drift(blob, start);
 });
 
-// machine / human — a single split-flap slot. The word flips machine ⇄ human
-// on a timer, rolling upward like a departure board, with the slot's width
-// morphing to fit the new word so the sentence stays tight.
+// machine / human — a single split-flap slot inside the narrative. The word
+// flips machine ⇄ human on a timer, rolling upward like a departure board. The
+// slot is locked to the WIDER word's width so flipping never reflows the prose.
 (function () {
   const flap = document.querySelector('.js-flap');
   if (!flap) return;
@@ -402,25 +367,23 @@ document.querySelectorAll('.blob').forEach(blob => {
   const WORDS = ['machine', 'human'];
   const EASE = 'transform 0.6s cubic-bezier(0.83, 0, 0.17, 1)';
   let idx = 0;
-  const W = {};
 
-  // Measure each word (re-run on resize and once the serif font loads — the
-  // first pass would otherwise use the fallback font's narrower metrics) so the
-  // slot can morph to fit the current word exactly, with no reserved-width gap.
-  function measureWords() {
+  // Lock the slot to the wider word's width (re-measured on resize and once the
+  // web font loads — the first pass would otherwise use the fallback metrics).
+  function sizeSlot() {
     flap.style.width = 'auto';
     A.textContent = 'machine'; B.textContent = 'machine';
-    W.machine = Math.ceil(A.getBoundingClientRect().width) + 2;  // +2 guards rounding
+    const wM = A.getBoundingClientRect().width;
     A.textContent = 'human';   B.textContent = 'human';
-    W.human = Math.ceil(A.getBoundingClientRect().width) + 2;
+    const wH = A.getBoundingClientRect().width;
     A.textContent = WORDS[idx]; B.textContent = WORDS[idx];
-    flap.style.width = W[WORDS[idx]] + 'px';
+    flap.style.width = (Math.ceil(Math.max(wM, wH)) + 2) + 'px';
   }
-  measureWords();
+  sizeSlot();
   reel.style.transition = 'none';
   reel.style.transform = 'translateY(0)';
-  window.addEventListener('resize', measureWords);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureWords);
+  window.addEventListener('resize', sizeSlot);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(sizeSlot);
 
   // Start on "machine"; the off-screen cell is pre-set to the next word and the
   // reset folds into the next flip, so it always rolls up with no flicker.
@@ -434,7 +397,6 @@ document.querySelectorAll('.blob').forEach(blob => {
     void reel.offsetWidth;        // commit the reset
     reel.style.transition = EASE;
     reel.style.transform = 'translateY(' + (-h) + 'px)';
-    flap.style.width = W[WORDS[next]] + 'px';   // morph the slot to the new word
     idx = next;
   }, 3000);
 })();

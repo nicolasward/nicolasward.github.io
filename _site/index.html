@@ -120,11 +120,11 @@ body {
 }
 .greeting {
   margin: 0 0 0.35em 0;
-  color: rgba(29, 27, 27, 0.45);   /* muted opener, like the reference */
+  color: var(--fg);                /* dark grey — the lead now carries the weight */
 }
 .lede {
   margin: 0;
-  color: var(--fg);
+  color: rgba(29, 27, 27, 0.45);   /* light grey body (coloured words keep their hue) */
 }
 
 /* Word-by-word entrance: JS wraps each word so it can fade in sliding from the

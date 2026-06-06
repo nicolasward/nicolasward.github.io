@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>nw</title>
+<script>document.documentElement.classList.add('js');</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +19,7 @@
   --noise-size: 130px;
   --noise-opacity: .4;
 
-  --fg:         #100F0F;   /* ink — matches the blog's light-mode --fg */
+  --fg:         #1d1b1b;   /* ink — a touch lighter than the blog's text */
   --field:      #ffffff;   /* gradient field (white stops) */
   --field-mid:  #f8fafc;   /* gradient midpoint (cool near-white) */
 }
@@ -119,26 +120,32 @@ body {
 }
 .greeting {
   margin: 0 0 0.35em 0;
-  color: rgba(16, 15, 15, 0.45);   /* muted opener, like the reference */
-  opacity: 0;
-  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
+  color: rgba(29, 27, 27, 0.45);   /* muted opener, like the reference */
 }
 .lede {
   margin: 0;
   color: var(--fg);
-  opacity: 0;
-  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both;
+}
+
+/* Line-by-line entrance: JS splits each block into lines that fade up in a
+   smooth stagger (like the blog home). Hidden up front only when JS is present
+   (no-JS users just see the text). */
+html.js .js-reveal { opacity: 0; }
+.reveal-line { display: block; }
+@keyframes reveal-line {
+  from { opacity: 0; transform: translateY(9px); }
+  to   { opacity: 1; transform: none; }
 }
 
 /* "Atelier" — a coloured accent in the prose (Google-blue, vibrant on light). */
 .atelier { color: #1A73E8; }
 
-/* "write" — a quiet shimmer link to the blog: the soft glow sweeps through the
-   word (clipped to the glyphs), signalling it's the clickable one. */
+/* "write" — the signature accent orange, kept alive with a soft glow that
+   sweeps through the word (clipped to the glyphs) to signal it's clickable. */
 .write-link {
   text-decoration: none;
   background-image: linear-gradient(90deg,
-    var(--fg) 0%, var(--fg) 44%, #c5c3ba 50%, var(--fg) 56%, var(--fg) 100%);
+    #FF791B 0%, #FF791B 44%, #FFC9A3 50%, #FF791B 56%, #FF791B 100%);
   background-size: 300% 100%;
   background-position: 100% 0;
   background-repeat: no-repeat;
@@ -163,7 +170,8 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   /* No entrance animation — show everything immediately. */
-  .greeting, .lede, .write-link {
+  html.js .js-reveal,
+  .greeting, .lede, .write-link, .reveal-line {
     animation: none;
     opacity: 1;
     transform: none;
@@ -215,8 +223,8 @@ body {
 
   <div class="container">
     <div class="hero">
-      <p class="greeting">Hi, I&#8217;m Nico.</p>
-      <h1 class="lede">I build machine-human learning systems &#8212; software that adapts to the way people actually think, work, and learn. I&#8217;m the founder of <span class="atelier">Atelier</span>, an AI studio for high-performance teams, and before that I shaped personalisation at Healf. The rest of the time, I <a class="write-link" href="/blog">write</a> &#8212; about building, design, and the ideas in between. You can find me on <a class="linkedin-link" href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" rel="noopener">LinkedIn</a>.</h1>
+      <p class="greeting js-reveal">Hi, I&#8217;m Nico.</p>
+      <h1 class="lede js-reveal">I build machine-human learning systems &#8212; software that adapts to the way people actually think, work, and learn. I&#8217;m the founder of <span class="atelier">Atelier</span>, an AI studio for high-performance teams, and before that I shaped personalisation at Healf. The rest of the time, I <a class="write-link" href="/blog">write</a> &#8212; about building, design, and the ideas in between. You can find me on <a class="linkedin-link" href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" rel="noopener">LinkedIn</a>.</h1>
     </div>
   </div>
 
@@ -245,6 +253,70 @@ document.querySelectorAll('.blob').forEach(blob => {
   blob.style.transform = `translate(${start.x}vw, ${start.y}vh) translate(-50%, -50%)`;
   drift(blob, start);
 });
+
+// Reveal the hero line by line — a smooth, staggered fade like the blog home.
+(function () {
+  const els = document.querySelectorAll('.js-reveal');
+  if (!els.length) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    els.forEach(el => { el.style.opacity = 1; });
+    return;
+  }
+
+  // Split a block into its rendered lines: wrap words in spans (keeping inline
+  // links/spans intact), group by vertical position, then re-wrap each line.
+  function wrapLines(el) {
+    const tokens = [];
+    Array.prototype.forEach.call(el.childNodes, node => {
+      if (node.nodeType === 3) {
+        node.textContent.split(/(\s+)/).forEach(p => {
+          if (p === '') return;
+          if (/^\s+$/.test(p)) tokens.push(document.createTextNode(' '));
+          else { const w = document.createElement('span'); w.textContent = p; tokens.push(w); }
+        });
+      } else {
+        tokens.push(node);
+      }
+    });
+    el.textContent = '';
+    tokens.forEach(t => el.appendChild(t));   // lay out so we can measure
+
+    const lines = [];
+    let cur = null, lastTop = null;
+    tokens.forEach(t => {
+      if (t.nodeType === 1) {
+        const top = t.offsetTop;
+        if (lastTop === null || Math.abs(top - lastTop) > 3) { cur = []; lines.push(cur); lastTop = top; }
+      }
+      if (!cur) { cur = []; lines.push(cur); }
+      cur.push(t);
+    });
+
+    el.textContent = '';
+    return lines.map(nodes => {
+      const ln = document.createElement('span');
+      ln.className = 'reveal-line';
+      nodes.forEach(n => ln.appendChild(n));
+      el.appendChild(ln);
+      return ln;
+    });
+  }
+
+  function go() {
+    let delay = 0.15;
+    els.forEach(el => {
+      wrapLines(el).forEach(ln => {
+        ln.style.animation = 'reveal-line 0.75s cubic-bezier(0.22, 1, 0.36, 1) ' + delay.toFixed(2) + 's both';
+        delay += 0.09;
+      });
+      el.style.opacity = 1;   // container visible; lines stay hidden via their fill until they animate
+    });
+  }
+
+  // Wait for the web font so line breaks are measured correctly.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(go);
+  else go();
+})();
 </script>
 </body>
 </html>

@@ -801,13 +801,15 @@ html[data-theme="dark"] body::before {
 .page-title   { animation-delay: 0.1s; }
 .post-meta    { animation-delay: 0.35s; }
 
-/* Article body: each top-level block floats in, staggered (tagged with --i by
-   JS; the index is capped so below-the-fold blocks reveal quickly). */
-.js body.article .post-content > * { opacity: 0; }
-body.article .post-content > *.body-roll {
-  animation: home-roll 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: calc(0.5s + var(--i, 0) * 0.13s);
+/* Article body: each word trickles in (wrapped by JS) — exactly like the
+   landing page. The whole body is hidden up front (JS only) and revealed once
+   the words have their animations, so there's no flash. */
+.reveal-word { display: inline-block; }
+@keyframes word-in {
+  from { opacity: 0; transform: translate(-4px, 11px); }
+  to   { opacity: 1; transform: none; }
 }
+.js body.article .post-content { opacity: 0; }
 
 /* Static pages (about) have no date — the body floats in as one block. */
 .page-title + .post-content {
@@ -820,8 +822,7 @@ body.article .post-content > *.body-roll {
   .page-title,
   .post-meta,
   .page-title + .post-content { animation: none; opacity: 1; }
-  .js body.article .post-content > * { opacity: 1; }
-  body.article .post-content > *.body-roll { animation: none; }
+  .js body.article .post-content { opacity: 1; }
 }
 
 /* ===== Post content ===== */

@@ -507,16 +507,59 @@
     })();
   </script>
   <script>
-    // Article body: float each top-level block in, staggered. Runs before paint;
-    // the index is capped so blocks below the fold reveal quickly (no scrolling
-    // into blank space). Blocks are hidden up front via the .js gate in CSS.
+    // Article body: trickle each word in (like the landing). Wrap every word in
+    // .post-content, then animate only the words within the opening viewport so
+    // long articles don't drag and you never scroll into blank space. Runs
+    // before paint; the body is hidden via the .js gate until revealed here.
     (function () {
       if (!document.body.classList.contains('article')) return;
-      var blocks = document.querySelectorAll('.post-content > *');
-      for (var i = 0; i < blocks.length; i++) {
-        blocks[i].style.setProperty('--i', Math.min(i, 12));
-        blocks[i].classList.add('body-roll');
+      var content = document.querySelector('.post-content');
+      if (!content) return;
+      if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        content.style.opacity = 1; return;
       }
+      var EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';
+      var SKIP = { PRE: 1, IMG: 1, FIGURE: 1, TABLE: 1, HR: 1, SVG: 1 };
+      var words = [];
+      function wrap(node) {
+        var kids = Array.prototype.slice.call(node.childNodes);
+        for (var k = 0; k < kids.length; k++) {
+          var n = kids[k];
+          if (n.nodeType === 3) {
+            if (!n.textContent.trim()) continue;
+            var parts = n.textContent.split(/(\s+)/);
+            var frag = document.createDocumentFragment();
+            for (var j = 0; j < parts.length; j++) {
+              var p = parts[j];
+              if (p === '') continue;
+              if (/^\s+$/.test(p)) { frag.appendChild(document.createTextNode(p)); }
+              else {
+                var w = document.createElement('span');
+                w.className = 'reveal-word';
+                w.textContent = p;
+                frag.appendChild(w);
+                words.push(w);
+              }
+            }
+            node.replaceChild(frag, n);
+          } else if (n.nodeType === 1 && !SKIP[n.tagName]) {
+            wrap(n);
+          }
+        }
+      }
+      wrap(content);
+
+      var threshold = window.innerHeight * 1.15;   // only trickle the opening screen
+      var tops = [];
+      for (var i = 0; i < words.length; i++) tops.push(words[i].getBoundingClientRect().top);
+      var vi = 0;
+      for (var m = 0; m < words.length; m++) {
+        if (tops[m] < threshold) {
+          words[m].style.animation = 'word-in 0.95s ' + EASE + ' ' + (0.5 + vi * 0.026).toFixed(3) + 's both';
+          vi++;
+        }
+      }
+      content.style.opacity = 1;   // body visible; in-view words stay hidden via their fill
     })();
   </script>
   <script>

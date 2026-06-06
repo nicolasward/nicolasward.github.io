@@ -580,7 +580,33 @@
           vi++;
         }
       }
+
+      // Everything below the opening fold (body blocks past the threshold) plus
+      // the footer sections is hidden and fades in as you scroll to it.
+      var reveal = [];
+      for (var c = 0; c < content.children.length; c++) {
+        if (content.children[c].getBoundingClientRect().top >= threshold) reveal.push(content.children[c]);
+      }
+      ['.post-share-section', '.linked-mentions', '.related-posts'].forEach(function (sel) {
+        var el = document.querySelector('article ' + sel);
+        if (el) reveal.push(el);
+      });
+      var foot = document.querySelector('.site-footer');
+      if (foot) reveal.push(foot);
+      reveal.forEach(function (el) { el.classList.add('reveal-scroll'); });
+
       content.style.opacity = 1;   // body visible; in-view words stay hidden via their fill
+
+      if (reveal.length && 'IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+          });
+        }, { rootMargin: '0px 0px -8% 0px' });
+        reveal.forEach(function (el) { obs.observe(el); });
+      } else {
+        reveal.forEach(function (el) { el.classList.add('in'); });
+      }
     })();
   </script>
   <script>

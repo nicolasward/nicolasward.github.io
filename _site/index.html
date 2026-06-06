@@ -127,13 +127,13 @@ body {
   color: var(--fg);
 }
 
-/* Line-by-line entrance: JS splits each block into lines that fade up in a
-   smooth stagger (like the blog home). Hidden up front only when JS is present
+/* Word-by-word entrance: JS wraps each word so it can fade in sliding from the
+   left, cascading left-to-right. Hidden up front only when JS is present
    (no-JS users just see the text). */
 html.js .js-reveal { opacity: 0; }
-.reveal-line { display: block; }
-@keyframes reveal-line {
-  from { opacity: 0; transform: translateY(9px); }
+.reveal-word { display: inline-block; }
+@keyframes word-in {
+  from { opacity: 0; transform: translateX(-8px); }
   to   { opacity: 1; transform: none; }
 }
 
@@ -171,7 +171,7 @@ html.js .js-reveal { opacity: 0; }
 @media (prefers-reduced-motion: reduce) {
   /* No entrance animation — show everything immediately. */
   html.js .js-reveal,
-  .greeting, .lede, .write-link, .reveal-line {
+  .greeting, .lede, .write-link, .reveal-word {
     animation: none;
     opacity: 1;
     transform: none;
@@ -254,66 +254,60 @@ document.querySelectorAll('.blob').forEach(blob => {
   drift(blob, start);
 });
 
-// Reveal the hero line by line — a smooth, staggered fade like the blog home.
+// Reveal the hero word by word: the greeting types out with a beat after "Hi,",
+// then the narrative flows fast and smooth, left-to-right.
 (function () {
-  const els = document.querySelectorAll('.js-reveal');
-  if (!els.length) return;
+  const greeting = document.querySelector('.greeting.js-reveal');
+  const lede = document.querySelector('.lede.js-reveal');
+  const all = [greeting, lede].filter(Boolean);
+  if (!all.length) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    els.forEach(el => { el.style.opacity = 1; });
+    all.forEach(el => { el.style.opacity = 1; });
     return;
   }
 
-  // Split a block into its rendered lines: wrap words in spans (keeping inline
-  // links/spans intact), group by vertical position, then re-wrap each line.
-  function wrapLines(el) {
-    const tokens = [];
+  // Wrap each word in a span (keeping inline links/spans, which become words
+  // too) so it can animate; preserve the spaces between them.
+  function wrapWords(el) {
+    const words = [], frag = [];
     Array.prototype.forEach.call(el.childNodes, node => {
       if (node.nodeType === 3) {
         node.textContent.split(/(\s+)/).forEach(p => {
           if (p === '') return;
-          if (/^\s+$/.test(p)) tokens.push(document.createTextNode(' '));
-          else { const w = document.createElement('span'); w.textContent = p; tokens.push(w); }
+          if (/^\s+$/.test(p)) frag.push(document.createTextNode(' '));
+          else { const w = document.createElement('span'); w.className = 'reveal-word'; w.textContent = p; frag.push(w); words.push(w); }
         });
       } else {
-        tokens.push(node);
+        if (node.classList) node.classList.add('reveal-word');
+        frag.push(node); words.push(node);
       }
     });
     el.textContent = '';
-    tokens.forEach(t => el.appendChild(t));   // lay out so we can measure
-
-    const lines = [];
-    let cur = null, lastTop = null;
-    tokens.forEach(t => {
-      if (t.nodeType === 1) {
-        const top = t.offsetTop;
-        if (lastTop === null || Math.abs(top - lastTop) > 3) { cur = []; lines.push(cur); lastTop = top; }
-      }
-      if (!cur) { cur = []; lines.push(cur); }
-      cur.push(t);
-    });
-
-    el.textContent = '';
-    return lines.map(nodes => {
-      const ln = document.createElement('span');
-      ln.className = 'reveal-line';
-      nodes.forEach(n => ln.appendChild(n));
-      el.appendChild(ln);
-      return ln;
-    });
+    frag.forEach(n => el.appendChild(n));
+    return words;
   }
 
   function go() {
-    let delay = 0.15;
-    els.forEach(el => {
-      wrapLines(el).forEach(ln => {
-        ln.style.animation = 'reveal-line 0.75s cubic-bezier(0.22, 1, 0.36, 1) ' + delay.toFixed(2) + 's both';
-        delay += 0.09;
+    const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+    let t = 0.2;
+    if (greeting) {
+      wrapWords(greeting).forEach((w, i) => {
+        w.style.animation = 'word-in 0.5s ' + EASE + ' ' + t.toFixed(3) + 's both';
+        t += (i === 0 ? 0.3 : 0.12);   // a tiny pause after "Hi,"
       });
-      el.style.opacity = 1;   // container visible; lines stay hidden via their fill until they animate
-    });
+      greeting.style.opacity = 1;
+    }
+    if (lede) {
+      let lt = Math.max(t + 0.1, 1.0);  // begin once the greeting has landed
+      wrapWords(lede).forEach(w => {
+        w.style.animation = 'word-in 0.5s ' + EASE + ' ' + lt.toFixed(3) + 's both';
+        lt += 0.02;                      // fast, smooth left-to-right flow
+      });
+      lede.style.opacity = 1;
+    }
   }
 
-  // Wait for the web font so line breaks are measured correctly.
+  // Wait for the web font so the layout is settled before revealing.
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(go);
   else go();
 })();

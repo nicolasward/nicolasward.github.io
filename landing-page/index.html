@@ -104,29 +104,54 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Hero — a type-only stacked statement (greeting → intro → CTA), all in the
-   hero serif. */
+/* Hero — a type-only stacked statement (greeting → subtitle → intro → CTA),
+   with a touch of size hierarchy so it reads rich rather than flat. */
 .hero { /* desktop: flows left-aligned in the container; centred on mobile */ }
 
-/* Greeting + headline share the same hero serif size/rhythm. */
+/* Greeting + headline share rhythm; greeting is the dominant note. */
 .greeting,
 .intro {
-  font-size: clamp(3rem, 5vw, 64px);
   font-weight: 400;
-  line-height: 1.22;
+  line-height: 1.2;
   letter-spacing: -0.25px;
   color: var(--fg);
   text-rendering: optimizeLegibility;
 }
 .greeting {
   margin: 0;
+  font-size: clamp(3.4rem, 5.6vw, 72px);
   opacity: 0;
   animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
 }
+.subtitle {
+  margin: 0.4em 0 0 0;
+  font-size: clamp(1.15rem, 1.6vw, 1.4rem);
+  font-weight: 400;
+  line-height: 1.3;
+  color: rgba(16, 15, 15, 0.55);
+  opacity: 0;
+  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both;
+}
 .intro {
-  margin-top: 1.1em;   /* skip a line between the greeting and the statement */
+  margin-top: 1.1em;   /* skip a line between the greeting block and the statement */
+  font-size: clamp(3rem, 5vw, 64px);
   opacity: 0;
   animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+}
+
+/* Small wordmark, top-left — frames the page and ties to the blog identity. */
+.wordmark {
+  position: fixed;
+  top: clamp(1.5rem, 4vh, 2.5rem);
+  left: clamp(1.5rem, 6vw, 3rem);
+  z-index: 3;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: -0.2px;
+  color: var(--fg);
+  opacity: 0;
+  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
 }
 /* Desktop: let the headline flow naturally (no forced break). On mobile the
    break is enabled so the centred block measures the widest LINE, not the
@@ -164,12 +189,12 @@ body {
    and the footer links. */
 .read-cta {
   display: inline-block;
-  margin-top: 1em;                      /* sits a line below the statement */
-  font-family: inherit;                 /* the hero serif */
+  margin-top: clamp(1.75rem, 4.5vh, 3rem);   /* a clear gap below the statement */
+  font-family: inherit;                       /* the hero serif */
   font-weight: 400;
-  font-size: clamp(3rem, 5vw, 64px);    /* full hero size — reads as a statement */
+  font-size: clamp(1.5rem, 2.4vw, 1.95rem);   /* below the statements — a CTA, not a third headline */
   line-height: 1.22;
-  letter-spacing: -0.25px;
+  letter-spacing: -0.2px;
   text-decoration: none;
   /* A soft light glow sweeps left-to-right through the text + chevron
      (clipped to the glyphs), like a shimmer running through. */
@@ -199,7 +224,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   /* No entrance animation — show everything immediately. */
-  .greeting, .intro, .read-cta, .links {
+  .wordmark, .greeting, .subtitle, .intro, .read-cta, .links {
     animation: none;
     opacity: 1;
     transform: none;
@@ -276,15 +301,12 @@ body {
     text-align: left;
   }
 
-  /* Eased down a touch so the lines don't fill edge-to-edge. The CTA matches
-     the hero size so it reads as a statement, not a footnote. */
-  .greeting,
-  .intro,
-  .read-cta {
-    font-size: clamp(2.1rem, 8vw, 2.7rem);
-    line-height: 1.22;
-  }
-  .intro { margin-top: 1.1em; }       /* skip a line under the greeting */
+  /* Eased down a touch so the lines don't fill edge-to-edge; greeting leads,
+     statement medium, CTA smaller. */
+  .greeting { font-size: clamp(2.5rem, 9.5vw, 3.1rem); line-height: 1.16; }
+  .intro    { font-size: clamp(2.1rem, 8vw, 2.7rem); line-height: 1.22; margin-top: 1.1em; }
+  .subtitle { font-size: clamp(1rem, 3.6vw, 1.2rem); }
+  .read-cta { font-size: clamp(1.4rem, 5.5vw, 1.85rem); }
   .intro-break { display: inline; }   /* fixed two-line break → block can centre */
 
   /* Hold links at the bottom center, clear the home indicator safe area */
@@ -322,9 +344,12 @@ body {
     <div class="blob blob--plum"></div>
   </div>
 
+  <div class="wordmark">Nico Ward</div>
+
   <div class="container">
     <div class="hero">
       <h1 class="greeting">Hi, I&#8217;m Nico.</h1>
+      <p class="subtitle">Founder of Atelier, an AI studio.</p>
 
       <div class="intro">I build <span class="sw"><span class="flap js-flap"><span class="flap__reel"><span class="flap__cell">machine</span><span class="flap__cell" aria-hidden="true">human</span></span></span></span> <br class="intro-break">learning systems.</div>
 

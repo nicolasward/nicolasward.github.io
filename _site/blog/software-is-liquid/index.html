@@ -507,10 +507,10 @@
     })();
   </script>
   <script>
-    // Article entrance: the opening screen trickles in word by word (like the
-    // landing); everything below the fold — the rest of the body plus the footer
-    // sections — is held hidden and trickles in the SAME way when scrolled into
-    // view. Runs before paint; the body is hidden via the .js gate until here.
+    // Article body: trickle each word in (like the landing). Wrap every word in
+    // .post-content, then animate only the words within the opening viewport so
+    // long articles don't drag and you never scroll into blank space. Runs
+    // before paint; the body is hidden via the .js gate until revealed here.
     (function () {
       if (!document.body.classList.contains('article')) return;
       var content = document.querySelector('.post-content');
@@ -520,86 +520,76 @@
       }
       var EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';
       var SKIP = { PRE: 1, IMG: 1, FIGURE: 1, TABLE: 1, HR: 1, SVG: 1 };
-
-      // Wrap each word in `root` into a .reveal-word span; list items and mention
-      // cards animate as whole units (their layout breaks if word-split). Returns
-      // the animatable units in order.
-      function wrapWords(root) {
-        var out = [];
-        (function wrap(node) {
-          var kids = Array.prototype.slice.call(node.childNodes);
-          for (var k = 0; k < kids.length; k++) {
-            var n = kids[k];
-            if (n.nodeType === 3) {
-              if (!n.textContent.trim()) continue;
-              var parts = n.textContent.split(/(\s+)/);
-              var frag = document.createDocumentFragment();
-              for (var j = 0; j < parts.length; j++) {
-                var p = parts[j];
-                if (p === '') continue;
-                if (/^\s+$/.test(p)) { frag.appendChild(document.createTextNode(p)); }
-                else { var w = document.createElement('span'); w.className = 'reveal-word'; w.textContent = p; frag.appendChild(w); out.push(w); }
+      var words = [];
+      function wrap(node) {
+        var kids = Array.prototype.slice.call(node.childNodes);
+        for (var k = 0; k < kids.length; k++) {
+          var n = kids[k];
+          if (n.nodeType === 3) {
+            if (!n.textContent.trim()) continue;
+            var parts = n.textContent.split(/(\s+)/);
+            var frag = document.createDocumentFragment();
+            for (var j = 0; j < parts.length; j++) {
+              var p = parts[j];
+              if (p === '') continue;
+              if (/^\s+$/.test(p)) { frag.appendChild(document.createTextNode(p)); }
+              else {
+                var w = document.createElement('span');
+                w.className = 'reveal-word';
+                w.textContent = p;
+                frag.appendChild(w);
+                words.push(w);
               }
-              node.replaceChild(frag, n);
-            } else if (n.nodeType === 1) {
-              if (n.tagName === 'LI' || (n.classList && n.classList.contains('mention-card'))) {
-                out.push(n);
-              } else if (!SKIP[n.tagName]) {
-                wrap(n);
-              }
+            }
+            node.replaceChild(frag, n);
+          } else if (n.nodeType === 1) {
+            if (n.tagName === 'LI') {
+              words.push(n);            // animate the whole item (its hanging indent
+                                        // breaks if we inline-block its words)
+            } else if (!SKIP[n.tagName]) {
+              wrap(n);
             }
           }
-        })(root);
-        return out;
+        }
       }
-      function trickle(units, base) {
-        for (var i = 0; i < units.length; i++) {
-          units[i].style.animation = 'word-in 0.7s ' + EASE + ' ' + (base + i * 0.014).toFixed(3) + 's both';
+      wrap(content);
+
+      var threshold = window.innerHeight * 1.15;   // only trickle the opening screen
+      var tops = [];
+      for (var i = 0; i < words.length; i++) tops.push(words[i].getBoundingClientRect().top);
+      var vi = 0;
+      for (var m = 0; m < words.length; m++) {
+        if (tops[m] < threshold) {
+          words[m].style.animation = 'word-in 0.7s ' + EASE + ' ' + (0.4 + vi * 0.014).toFixed(3) + 's both';
+          vi++;
         }
       }
 
-      var threshold = window.innerHeight * 1.15;   // the opening screen
-
-      // Wrap every body block first, then split into above-fold (trickle on load)
-      // and below-fold (trickle on scroll).
-      var blocks = Array.prototype.slice.call(content.children);
-      var blockUnits = blocks.map(wrapWords);
-      var loadUnits = [];
-      var groups = [];
-      blocks.forEach(function (b, i) {
-        if (b.getBoundingClientRect().top < threshold) {
-          loadUnits = loadUnits.concat(blockUnits[i]);
-        } else {
-          b.classList.add('reveal-hold');
-          groups.push({ el: b, units: blockUnits[i] });
-        }
-      });
-
-      // Footer sections always reveal on scroll.
+      // Everything below the opening fold (body blocks past the threshold) plus
+      // the footer sections is hidden and fades in as you scroll to it.
+      var reveal = [];
+      for (var c = 0; c < content.children.length; c++) {
+        if (content.children[c].getBoundingClientRect().top >= threshold) reveal.push(content.children[c]);
+      }
       ['.post-share-section', '.linked-mentions', '.related-posts'].forEach(function (sel) {
         var el = document.querySelector('article ' + sel);
-        if (el) { el.classList.add('reveal-hold'); groups.push({ el: el, units: wrapWords(el) }); }
+        if (el) reveal.push(el);
       });
       var foot = document.querySelector('.site-footer');
-      if (foot) { foot.classList.add('reveal-hold'); groups.push({ el: foot, units: wrapWords(foot) }); }
+      if (foot) reveal.push(foot);
+      reveal.forEach(function (el) { el.classList.add('reveal-scroll'); });
 
-      trickle(loadUnits, 0.4);
-      content.style.opacity = 1;   // body visible; words stay hidden via their fill
+      content.style.opacity = 1;   // body visible; in-view words stay hidden via their fill
 
-      if (groups.length && 'IntersectionObserver' in window) {
+      if (reveal.length && 'IntersectionObserver' in window) {
         var obs = new IntersectionObserver(function (entries) {
           entries.forEach(function (e) {
-            if (!e.isIntersecting) return;
-            for (var i = 0; i < groups.length; i++) {
-              if (groups[i].el === e.target) { trickle(groups[i].units, 0.05); break; }
-            }
-            e.target.classList.add('shown');
-            obs.unobserve(e.target);
+            if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
           });
-        }, { rootMargin: '0px 0px -10% 0px' });
-        groups.forEach(function (g) { obs.observe(g.el); });
+        }, { rootMargin: '0px 0px -8% 0px' });
+        reveal.forEach(function (el) { obs.observe(el); });
       } else {
-        groups.forEach(function (g) { g.el.classList.add('shown'); });
+        reveal.forEach(function (el) { el.classList.add('in'); });
       }
     })();
   </script>

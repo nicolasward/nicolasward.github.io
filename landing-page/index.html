@@ -310,7 +310,7 @@ document.querySelectorAll('.blob').forEach(blob => {
       let lt = 3.2;                       // a ~1s beat after the greeting lands
       Array.prototype.forEach.call(lede.childNodes, node => {
         if (node.nodeType !== 1) return;                 // skip spaces
-        if (node.tagName === 'BR') { lt += 0.7 + Math.random() * 0.9; return; } // randomised pause between paragraphs
+        if (node.tagName === 'BR') return;               // line break only — no pause
         node.style.animation = 'word-in 0.95s ' + EASE + ' ' + lt.toFixed(3) + 's both';
         lt += 0.032;                      // slightly slower, floaty left-to-right drift
       });

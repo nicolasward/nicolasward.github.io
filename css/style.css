@@ -812,12 +812,20 @@ html[data-theme="dark"] body::before {
 .js body.article .post-content { opacity: 0; }
 
 /* Below-the-fold body blocks + the footer sections (share, mentions, related,
-   site footer) are held hidden, then trickle in word by word — the same way as
-   the article start — when scrolled into view. */
-.js body.article .reveal-hold { opacity: 0; }
-.js body.article .reveal-hold.shown { opacity: 1; }
+   site footer) stay hidden and fade in as you scroll to them, so the bottom of
+   the article isn't visible while the top is still trickling in. */
+.js body.article .reveal-scroll {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.js body.article .reveal-scroll.in {
+  opacity: 1;
+  transform: none;
+}
 @media (prefers-reduced-motion: reduce) {
-  .js body.article .reveal-hold { opacity: 1; }
+  .js body.article .reveal-scroll { opacity: 1; transform: none; transition: none; }
 }
 
 /* Static pages (about) have no date — the body floats in as one block. */

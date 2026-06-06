@@ -110,8 +110,7 @@ body {
 }
 
 .greeting,
-.lede,
-.read-cta {
+.lede {
   font-size: clamp(2rem, 2.9vw, 3rem);
   font-weight: 500;
   line-height: 1.3;
@@ -131,52 +130,13 @@ body {
   animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both;
 }
 
-/* Small wordmark, top-left — frames the page and ties to the blog identity. */
-.wordmark {
-  position: fixed;
-  top: clamp(1.5rem, 4vh, 2.5rem);
-  left: clamp(1.5rem, 6vw, 3rem);
-  z-index: 3;
-  font-weight: 600;
-  font-size: 1.15rem;
-  letter-spacing: -0.2px;
-  color: var(--fg);
-  opacity: 0;
-  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
-}
+/* "Atelier" — a coloured accent in the prose. */
+.atelier { color: #00E0FF; }
 
-/* machine / human — a single split-flap slot inside the narrative. It flips
-   machine ⇄ human on a timer (rolling upward like a departure board). The slot
-   is locked to the WIDER word's width (set in JS) so flipping never reflows the
-   surrounding prose; the word is the accent orange. */
-.sw {
-  white-space: nowrap;
-}
-.sw .flap {
-  display: inline-block;
-  vertical-align: top;
-  overflow: hidden;            /* the window: clips all but one cell */
-  height: 1.3em;               /* one lede line box */
-  line-height: 1.3em;
-  text-align: left;
-  color: #FF791B;              /* the dynamic word, in the signature accent */
-}
-.sw .flap__reel { display: block; }
-.sw .flap__cell {
-  display: block;
-  height: 1.3em;
-  line-height: 1.3em;
-  white-space: nowrap;
-}
-
-/* "Read my writing" — the closing line of the narrative; same size, kept alive
-   with the sweeping glow so it reads as the clickable one. */
-.read-cta {
-  display: inline-block;
-  margin-top: 0.75em;                         /* sits just below the narrative */
+/* "write" — a quiet shimmer link to the blog: the soft glow sweeps through the
+   word (clipped to the glyphs), signalling it's the clickable one. */
+.write-link {
   text-decoration: none;
-  /* A soft light glow sweeps left-to-right through the text + arrow
-     (clipped to the glyphs), like a shimmer running through. */
   background-image: linear-gradient(90deg,
     var(--fg) 0%, var(--fg) 44%, #c5c3ba 50%, var(--fg) 56%, var(--fg) 100%);
   background-size: 300% 100%;
@@ -186,9 +146,14 @@ body {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  opacity: 0;
-  animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.9s both,
-             cta-shimmer 4.5s ease-in-out 2s infinite;
+  animation: cta-shimmer 4.5s ease-in-out 2s infinite;
+}
+
+/* "LinkedIn" — a plain underlined link. */
+.linkedin-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
 }
 @keyframes cta-shimmer {
   0%     { background-position: 100% 0; }   /* glow parked off-screen (right) */
@@ -196,69 +161,21 @@ body {
   100%   { background-position: 0% 0; }     /* 3s rest — plain ink text */
 }
 
-/* No hover effects on touch devices (avoids sticky hover states on tap). */
-@media (hover: none) {
-  .links a:hover { text-shadow: none; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   /* No entrance animation — show everything immediately. */
-  .wordmark, .greeting, .lede, .read-cta, .links {
+  .greeting, .lede, .write-link {
     animation: none;
     opacity: 1;
     transform: none;
   }
-  .links { transform: translateX(-50%); }
-  .sw .flap { transition: none; }
-}
-
-/* ---------------- Bottom Links ---------------- */
-.links {
-  position: fixed;
-  bottom: 5vh;
-  left: 50%;
-  transform: translateX(-50%);
-  
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1.75rem;
-
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 15px;
-  text-transform: lowercase;
-  letter-spacing: 0.4px;
-
-  opacity: 0;
-  animation: fadein-links 1s cubic-bezier(0.22, 1, 0.36, 1) 1.2s both;
-
-  text-align: center;
-  color: var(--fg);
-  z-index: 5;
-}
-@keyframes fadein-links {
-  from { opacity: 0; transform: translate(-50%, 10px); }
-  to   { opacity: 1; transform: translate(-50%, 0); }
-}
-
-.links a {
-  color: var(--fg);
-  text-decoration: none;
-  opacity: 0.8;
-  transition: opacity 0.2s ease, text-shadow 0.2s ease;
-}
-.links a:hover {
-  opacity: 1;
-  text-shadow: 0 0 6px rgba(16,15,15,0.15);
 }
 
 @media (max-width: 700px) {
   :root { --noise-size: 110px; }   /* finer grain on mobile */
 
   .container {
-    /* The narrative fills most of the height; centre it with a little lift so
-       it clears the fixed links below. */
-    padding: 12vh 1.5rem 16vh;
+    /* The narrative fills the height; centre it vertically. */
+    padding: 6vh 1.5rem;
     height: 100vh;
     height: 100dvh;
     display: flex;
@@ -270,24 +187,9 @@ body {
   .hero { max-width: 100%; }
 
   .greeting,
-  .lede,
-  .read-cta {
+  .lede {
     font-size: clamp(1.85rem, 7vw, 2.4rem);
     line-height: 1.3;
-  }
-
-  /* Hold links at the bottom center, clear the home indicator safe area */
-  .links {
-    position: fixed;
-    bottom: max(5vh, calc(env(safe-area-inset-bottom) + 12px));
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    justify-content: center;
-    font-size: 15px;
-    gap: 1.6rem;
-
-    z-index: 5;
   }
 
   /* Smaller on mobile so the three blobs don't blanket the whole screen —
@@ -311,21 +213,11 @@ body {
     <div class="blob blob--plum"></div>
   </div>
 
-  <div class="wordmark">Nico Ward</div>
-
   <div class="container">
     <div class="hero">
       <p class="greeting">Hi, I&#8217;m Nico.</p>
-      <h1 class="lede">I build <span class="sw"><span class="flap js-flap"><span class="flap__reel"><span class="flap__cell">machine</span><span class="flap__cell" aria-hidden="true">human</span></span></span></span> learning systems &#8212; software that adapts to the way people actually think, work, and learn. I&#8217;m the founder of Atelier, an AI studio for high-performance teams, and before that I shaped personalisation at Healf. The rest of the time, I write &#8212; about building, design, and the ideas in between.</h1>
-
-      <a class="read-cta" href="/blog">Read my writing &#8594;</a>
+      <h1 class="lede">I build machine-human learning systems &#8212; software that adapts to the way people actually think, work, and learn. I&#8217;m the founder of <span class="atelier">Atelier</span>, an AI studio for high-performance teams, and before that I shaped personalisation at Healf. The rest of the time, I <a class="write-link" href="/blog">write</a> &#8212; about building, design, and the ideas in between. You can find me on <a class="linkedin-link" href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" rel="noopener">LinkedIn</a>.</h1>
     </div>
-  </div>
-
-  <!-- Centered bottom links -->
-  <div class="links">
-    <a href="https://www.linkedin.com/in/nicolaswrd/" target="_blank">linkedin</a>
-    <a href="mailto:ward.nicolas@outlook.com">email</a>
   </div>
 
 <script>
@@ -353,53 +245,6 @@ document.querySelectorAll('.blob').forEach(blob => {
   blob.style.transform = `translate(${start.x}vw, ${start.y}vh) translate(-50%, -50%)`;
   drift(blob, start);
 });
-
-// machine / human — a single split-flap slot inside the narrative. The word
-// flips machine ⇄ human on a timer, rolling upward like a departure board. The
-// slot is locked to the WIDER word's width so flipping never reflows the prose.
-(function () {
-  const flap = document.querySelector('.js-flap');
-  if (!flap) return;
-  const reel = flap.querySelector('.flap__reel');
-  const A = reel.children[0], B = reel.children[1];
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  const WORDS = ['machine', 'human'];
-  const EASE = 'transform 0.6s cubic-bezier(0.83, 0, 0.17, 1)';
-  let idx = 0;
-
-  // Lock the slot to the wider word's width (re-measured on resize and once the
-  // web font loads — the first pass would otherwise use the fallback metrics).
-  function sizeSlot() {
-    flap.style.width = 'auto';
-    A.textContent = 'machine'; B.textContent = 'machine';
-    const wM = A.getBoundingClientRect().width;
-    A.textContent = 'human';   B.textContent = 'human';
-    const wH = A.getBoundingClientRect().width;
-    A.textContent = WORDS[idx]; B.textContent = WORDS[idx];
-    flap.style.width = (Math.ceil(Math.max(wM, wH)) + 2) + 'px';
-  }
-  sizeSlot();
-  reel.style.transition = 'none';
-  reel.style.transform = 'translateY(0)';
-  window.addEventListener('resize', sizeSlot);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(sizeSlot);
-
-  // Start on "machine"; the off-screen cell is pre-set to the next word and the
-  // reset folds into the next flip, so it always rolls up with no flicker.
-  setInterval(function () {
-    const next = (idx + 1) % WORDS.length;
-    const h = flap.clientHeight;
-    reel.style.transition = 'none';
-    A.textContent = WORDS[idx];   // visible (current) — no flicker on reset
-    B.textContent = WORDS[next];  // incoming, below
-    reel.style.transform = 'translateY(0)';
-    void reel.offsetWidth;        // commit the reset
-    reel.style.transition = EASE;
-    reel.style.transform = 'translateY(' + (-h) + 'px)';
-    idx = next;
-  }, 3000);
-})();
 </script>
 </body>
 </html>

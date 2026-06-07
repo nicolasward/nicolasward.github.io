@@ -127,21 +127,21 @@ html[data-theme="dark"] body::before {
   animation: none;
   mix-blend-mode: normal;
 }
-/* To dark: the new theme grows on top, with a cool glow at the wavefront. */
+/* To dark: the new theme grows on top, with a bright cool glow at the wavefront. */
 ::view-transition-new(root) {
   z-index: 9999;
-  filter: drop-shadow(0 0 22px rgba(86, 138, 255, 0.45));
+  filter: drop-shadow(0 0 60px rgba(120, 165, 255, 0.95))
+          drop-shadow(0 0 22px rgba(170, 205, 255, 1));
 }
 ::view-transition-old(root) { z-index: 1; }
-/* To light: the old (dark) theme sits on top and shrinks into the toggle, with
-   a warm sunrise glow at its receding edge. */
+/* To light: the old (dark) theme sits on top and shrinks into the toggle, with a
+   warm sunrise glow at its receding edge. */
 html.vt-contract::view-transition-new(root) { z-index: 1; filter: none; }
 html.vt-contract::view-transition-old(root) {
   z-index: 9999;
-  filter: drop-shadow(0 0 22px rgba(255, 168, 78, 0.5));
+  filter: drop-shadow(0 0 60px rgba(255, 160, 60, 1))
+          drop-shadow(0 0 22px rgba(255, 200, 120, 1));
 }
-/* The toggle is its own group — a quick, clean cross-fade, not part of the wipe. */
-::view-transition-group(theme-toggle) { animation-duration: 0.34s; }
 
 /* ===== Layout ===== */
 .container {
@@ -278,13 +278,10 @@ html.vt-contract::view-transition-old(root) {
   border: 1px solid var(--flexoki-300);
   cursor: pointer;
   position: relative;
-  view-transition-name: theme-toggle;   /* stays crisp & on top during the wipe */
   transition: border-color 0.2s ease, transform 0.12s ease;
 }
 /* Press feedback — the control dips, then settles. */
 .theme-toggle:active { transform: scale(0.9); }
-/* During the wipe, freeze the knob's slide so its snapshot is the final state. */
-html.vt-active .theme-toggle::after { transition: none; }
 
 [data-theme="dark"] .theme-toggle {
   border-color: var(--flexoki-900);

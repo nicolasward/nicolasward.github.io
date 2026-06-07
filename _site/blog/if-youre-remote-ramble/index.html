@@ -500,21 +500,19 @@
         const small = 'circle(0px at ' + x + 'px ' + y + 'px)';
         const toDark = next === 'dark';
 
-        // vt-active keeps the toggle crisp (its own snapshot, on top); vt-contract
-        // flips the layering so the old (dark) theme shrinks back into the toggle.
-        html.classList.add('vt-active');
+        // vt-contract flips the layering so the old (dark) theme shrinks back
+        // into the toggle when returning to light.
         if (!toDark) html.classList.add('vt-contract');
 
         const vt = document.startViewTransition(() => setTheme(next));
         vt.ready.then(function () {
           html.animate(
             { clipPath: toDark ? [small, big] : [big, small] },
-            { duration: 520, delay: 90, fill: 'both',   // knob leads, wipe chases
-              easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+            { duration: 520, easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
               pseudoElement: toDark ? '::view-transition-new(root)' : '::view-transition-old(root)' }
           );
         });
-        vt.finished.finally(function () { html.classList.remove('vt-active', 'vt-contract'); });
+        vt.finished.finally(function () { html.classList.remove('vt-contract'); });
       }
 
       toggle.addEventListener('click', toggleTheme);

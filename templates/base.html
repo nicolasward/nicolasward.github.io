@@ -514,17 +514,30 @@
             if (!n.textContent.trim()) continue;
             var parts = n.textContent.split(/(\s+)/);
             var frag = document.createDocumentFragment();
+            var pendingDash = '';   // glue a standalone — / – onto the next word
             for (var j = 0; j < parts.length; j++) {
               var p = parts[j];
               if (p === '') continue;
-              if (/^\s+$/.test(p)) { frag.appendChild(document.createTextNode(p)); }
-              else {
+              if (/^\s+$/.test(p)) {
+                if (pendingDash) continue;   // the space after a dash rides with it
+                frag.appendChild(document.createTextNode(p));
+              } else if (/^[—–]+$/.test(p)) {
+                pendingDash = p;
+              } else {
                 var w = document.createElement('span');
                 w.className = 'reveal-word';
-                w.textContent = p;
+                w.textContent = pendingDash ? pendingDash + ' ' + p : p;
+                pendingDash = '';
                 frag.appendChild(w);
                 words.push(w);
               }
+            }
+            if (pendingDash) {
+              var wd = document.createElement('span');
+              wd.className = 'reveal-word';
+              wd.textContent = pendingDash;
+              frag.appendChild(wd);
+              words.push(wd);
             }
             node.replaceChild(frag, n);
           } else if (n.nodeType === 1) {

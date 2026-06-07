@@ -277,11 +277,14 @@ document.querySelectorAll('.blob').forEach(blob => {
     const words = [], frag = [];
     Array.prototype.forEach.call(el.childNodes, node => {
       if (node.nodeType === 3) {
+        let pendingDash = '';            // glue a standalone — / – onto the next word
         node.textContent.split(/(\s+)/).forEach(p => {
           if (p === '') return;
-          if (/^\s+$/.test(p)) frag.push(document.createTextNode(' '));
-          else { const w = document.createElement('span'); w.className = 'reveal-word'; w.textContent = p; frag.push(w); words.push(w); }
+          if (/^\s+$/.test(p)) { if (!pendingDash) frag.push(document.createTextNode(' ')); }
+          else if (/^[—–]+$/.test(p)) { pendingDash = p; }
+          else { const w = document.createElement('span'); w.className = 'reveal-word'; w.textContent = pendingDash ? pendingDash + ' ' + p : p; pendingDash = ''; frag.push(w); words.push(w); }
         });
+        if (pendingDash) { const w = document.createElement('span'); w.className = 'reveal-word'; w.textContent = pendingDash; frag.push(w); words.push(w); }
       } else if (node.tagName === 'BR') {
         frag.push(node);                 // keep line breaks; don't animate them
       } else {

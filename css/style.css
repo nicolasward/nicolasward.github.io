@@ -119,6 +119,17 @@ html[data-theme="dark"] body::before {
   display: none;
 }
 
+/* Theme toggle: the new theme is revealed with a circular wipe expanding from
+   the toggle (driven by JS via the View Transitions API). Disable the default
+   cross-fade and put the new snapshot on top so the clip-path reveals it. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) { z-index: 9999; }
+::view-transition-old(root) { z-index: 1; }
+
 /* ===== Layout ===== */
 .container {
   position: relative;

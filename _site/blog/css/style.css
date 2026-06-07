@@ -957,6 +957,24 @@ html.vt-contract::view-transition-old(root) {
   color: var(--flexoki-700);
 }
 
+/* Use a real ::before bullet (not the browser ::marker) so it's hidden by the
+   reveal's opacity — iOS Safari leaves ::markers visible through opacity:0,
+   which left stray bullets floating during the word-by-word entrance. */
+.post-content ul {
+  list-style: none;
+  padding-left: 0;
+}
+.post-content ul > li {
+  position: relative;
+  padding-left: 1.4em;
+}
+.post-content ul > li::before {
+  content: "\2022";
+  position: absolute;
+  left: 0.45em;
+  color: var(--fg);
+}
+
 .post-content li {
   font-size: 19.275px;
   line-height: 1.5;

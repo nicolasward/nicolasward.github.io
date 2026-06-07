@@ -39,7 +39,7 @@
             <line x1="12.8" y1="12.8" x2="17.5" y2="17.5"/>
           </svg>
         </button>
-        <div class="theme-toggle" id="theme-toggle" role="button" tabindex="0" aria-label="Toggle theme" title="Press T to toggle"></div>
+        <div class="theme-toggle" id="theme-toggle" role="button" tabindex="0" aria-label="Toggle theme" title="Press T to toggle"><span class="toggle-knob" aria-hidden="true"></span></div>
       </nav>
     </header>
 
@@ -538,7 +538,9 @@
         const toDark = next === 'dark';
 
         // vt-contract flips the layering so the old (dark) theme shrinks back
-        // into the toggle when returning to light.
+        // into the toggle when returning to light. vt-toggling freezes the knob's
+        // live slide so its view-transition snapshots are the true endpoints.
+        html.classList.add('vt-toggling');
         if (!toDark) html.classList.add('vt-contract');
 
         const vt = document.startViewTransition(() => setTheme(next));
@@ -549,7 +551,7 @@
               pseudoElement: toDark ? '::view-transition-new(root)' : '::view-transition-old(root)' }
           );
         });
-        vt.finished.finally(function () { html.classList.remove('vt-contract'); });
+        vt.finished.finally(function () { html.classList.remove('vt-contract', 'vt-toggling'); });
       }
 
       toggle.addEventListener('click', toggleTheme);

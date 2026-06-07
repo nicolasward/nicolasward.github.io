@@ -288,13 +288,13 @@ html.vt-contract::view-transition-old(root) {
 }
 
 @media (hover: hover) {
-  .theme-toggle:hover::after,
-[data-theme="dark"] .theme-toggle:hover::after {
+  .theme-toggle:hover .toggle-knob,
+[data-theme="dark"] .theme-toggle:hover .toggle-knob {
   background-color: var(--accent);
 }
 }
 
-.theme-toggle::after {
+.theme-toggle .toggle-knob {
   content: '';
   position: absolute;
   top: 50%;
@@ -303,6 +303,9 @@ html.vt-contract::view-transition-old(root) {
   width: 15.4px;
   height: 15.4px;
   border-radius: 50%;
+  /* Its own view-transition element, so the knob genuinely SLIDES (in both
+     directions) independent of the page wipe, instead of being clipped by it. */
+  view-transition-name: theme-knob;
   background-color: var(--fg-muted);
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor' %3E%3Cpath fill-rule='evenodd' d='M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z' clip-rule='evenodd' /%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor' %3E%3Cpath fill-rule='evenodd' d='M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z' clip-rule='evenodd' /%3E%3C/svg%3E");
@@ -315,11 +318,20 @@ html.vt-contract::view-transition-old(root) {
   transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
-[data-theme="dark"] .theme-toggle::after {
+[data-theme="dark"] .theme-toggle .toggle-knob {
   transform: translateX(16.6px) translateY(-50%);
   background-color: var(--flexoki-200);
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 24 24' %3E%3Cpath d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' /%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 24 24' %3E%3Cpath d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' /%3E%3C/svg%3E");
+}
+
+/* Knob slide during the wipe: freeze its live CSS transition so the snapshots
+   are the true start/end positions, and give its view-transition group a clean
+   slide duration. */
+html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
+::view-transition-group(theme-knob) {
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* ===== Homepage post list ===== */

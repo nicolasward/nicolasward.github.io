@@ -600,9 +600,10 @@
             }
             node.replaceChild(frag, n);
           } else if (n.nodeType === 1) {
-            if (n.tagName === 'LI') {
-              words.push(n);            // animate the whole item (its hanging indent
-                                        // breaks if we inline-block its words)
+            if (n.tagName === 'LI' || n.tagName === 'A') {
+              words.push(n);            // animate whole (word-splitting a link
+                                        // breaks its underline into stray stubs;
+                                        // a list item's hanging indent breaks too)
             } else if (!SKIP[n.tagName]) {
               wrap(n);
             }

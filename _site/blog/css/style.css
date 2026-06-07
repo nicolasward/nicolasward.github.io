@@ -127,8 +127,12 @@ html[data-theme="dark"] body::before {
   animation: none;
   mix-blend-mode: normal;
 }
+/* To dark: the new theme grows on top. */
 ::view-transition-new(root) { z-index: 9999; }
 ::view-transition-old(root) { z-index: 1; }
+/* To light: the old (dark) theme sits on top and shrinks into the toggle. */
+html.vt-contract::view-transition-new(root) { z-index: 1; }
+html.vt-contract::view-transition-old(root) { z-index: 9999; }
 
 /* ===== Layout ===== */
 .container {

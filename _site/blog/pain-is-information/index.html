@@ -484,11 +484,12 @@
       }
 
       // Toggle the theme. Where supported, the new theme is revealed with a
-      // circular wipe expanding outward from the toggle (View Transitions API);
-      // otherwise it just switches.
+      // circular wipe expanding outward from the toggle (View Transitions API),
+      // led by the knob and lit at its wavefront; otherwise it just switches.
       function toggleTheme() {
         const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (navigator.vibrate) { try { navigator.vibrate(8); } catch (e) {} }  // tiny tactile tap
         if (!document.startViewTransition || reduce) { setTheme(next); return; }
 
         const rect = toggle.getBoundingClientRect();
@@ -499,23 +500,21 @@
         const small = 'circle(0px at ' + x + 'px ' + y + 'px)';
         const toDark = next === 'dark';
 
-        // Going to dark: the new theme grows from the toggle. Going to light: the
-        // old (dark) theme shrinks back into it (handled by .vt-contract in CSS).
+        // vt-active keeps the toggle crisp (its own snapshot, on top); vt-contract
+        // flips the layering so the old (dark) theme shrinks back into the toggle.
+        html.classList.add('vt-active');
         if (!toDark) html.classList.add('vt-contract');
 
         const vt = document.startViewTransition(() => setTheme(next));
         vt.ready.then(function () {
-          if (toDark) {
-            html.animate({ clipPath: [small, big] },
-              { duration: 480, easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-                pseudoElement: '::view-transition-new(root)' });
-          } else {
-            html.animate({ clipPath: [big, small] },
-              { duration: 480, easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-                pseudoElement: '::view-transition-old(root)' });
-          }
+          html.animate(
+            { clipPath: toDark ? [small, big] : [big, small] },
+            { duration: 520, delay: 90, fill: 'both',   // knob leads, wipe chases
+              easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+              pseudoElement: toDark ? '::view-transition-new(root)' : '::view-transition-old(root)' }
+          );
         });
-        vt.finished.finally(function () { html.classList.remove('vt-contract'); });
+        vt.finished.finally(function () { html.classList.remove('vt-active', 'vt-contract'); });
       }
 
       toggle.addEventListener('click', toggleTheme);

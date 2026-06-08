@@ -216,6 +216,17 @@
           closeTimeout = null;
           overlay.classList.remove('closing');
         }
+        // Ripple origin: expand the overlay's clip-path circle from the search
+        // button, out to the farthest corner.
+        var nb = document.getElementById('nav-search');
+        if (nb) {
+          var nr = nb.getBoundingClientRect();
+          var cx = nr.left + nr.width / 2, cy = nr.top + nr.height / 2;
+          var rad = Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy));
+          overlay.style.setProperty('--sx', cx + 'px');
+          overlay.style.setProperty('--sy', cy + 'px');
+          overlay.style.setProperty('--sr', rad + 'px');
+        }
         overlay.classList.add('open');
         overlay.setAttribute('aria-hidden', 'false');
         document.documentElement.style.overflow = 'hidden';

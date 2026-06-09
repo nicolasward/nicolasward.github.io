@@ -142,34 +142,35 @@ html.js .js-reveal { opacity: 0; }
   to   { opacity: 1; transform: none; }
 }
 
-/* Fast-forward: top-left skip button. Only useful with JS (the trickle only
-   runs with JS), so it stays hidden otherwise. Click fades whatever's left of
-   the intro in at once. */
+/* Fast-forward: top-right skip button, sized & coloured to sit on the same
+   line as the greeting (JS aligns its vertical centre to that line). It's the
+   first thing visible — the hero text is still hidden when it fades in. Only
+   useful with JS (the trickle only runs with JS), so it stays hidden otherwise.
+   Click fades whatever's left of the intro in at once. */
 .fast-forward { display: none; }
 html.js .fast-forward {
   position: fixed;
-  top: clamp(1rem, 3.2vh, 2rem);
-  left: clamp(1.25rem, 4vw, 2.5rem);
+  top: 0;                                  /* JS aligns this to the greeting line */
+  right: clamp(2rem, 6vw, 10rem);          /* mirrors the container's left margin */
   z-index: 5;
   display: grid;
   place-items: center;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: clamp(1.8rem, 2.7vw, 2.8rem);     /* ~the greeting's cap height */
+  height: clamp(1.8rem, 2.7vw, 2.8rem);
   padding: 0;
   margin: 0;
   border: none;
-  border-radius: 999px;
   background: transparent;
-  color: var(--fg);
-  opacity: 0.3;
+  color: var(--fg);                        /* same ink as the first line */
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  opacity: 1;
+  animation: word-fade 0.3s ease both;     /* arrives before the hero text */
   transition: opacity 0.35s ease, transform 0.15s ease;
 }
-html.js .fast-forward:hover  { opacity: 0.68; }
-html.js .fast-forward:active { transform: scale(0.88); }
-html.js .fast-forward svg    { width: 1.1rem; height: 1.1rem; display: block; }
-html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
+html.js .fast-forward:active { transform: scale(0.9); }
+html.js .fast-forward svg    { width: 100%; height: 100%; display: block; }
+html.js .fast-forward.is-hidden { opacity: 0; animation: none; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .fast-forward { display: none !important; } }
 
 /* "Atelier" — a coloured accent in the prose (Google-blue, vibrant on light). */
@@ -253,8 +254,8 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   <button class="fast-forward" id="fast-forward" type="button"
           aria-label="Skip the intro animation" title="Skip intro">
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M3 5.5l8 6.5-8 6.5V5.5z"/>
-      <path d="M12 5.5l8 6.5-8 6.5V5.5z"/>
+      <path d="M3 4l9 8-9 8V4z"/>
+      <path d="M13 4l9 8-9 8V4z"/>
     </svg>
   </button>
 
@@ -390,8 +391,18 @@ document.querySelectorAll('.blob').forEach(blob => {
   }
   if (ff) ff.addEventListener('click', fastForward);
 
+  // Pin the button's vertical centre to the greeting line (it's right-aligned
+  // via CSS). Re-run on resize and after the font settles the layout.
+  function placeFF() {
+    if (!ff || !greeting) return;
+    const r = greeting.getBoundingClientRect();
+    ff.style.top = (r.top + r.height / 2 - ff.offsetHeight / 2) + 'px';
+  }
+  placeFF();
+  window.addEventListener('resize', placeFF);
+
   // Wait for the web font so the layout is settled before revealing.
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(go);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { placeFF(); go(); });
   else go();
 })();
 </script>

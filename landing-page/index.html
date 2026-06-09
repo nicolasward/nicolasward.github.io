@@ -173,17 +173,39 @@ html.js .fast-forward svg    { width: 100%; height: 100%; display: block; }
    so the icon assembles chevron by chevron. Held hidden until JS adds .draw —
    otherwise the CSS animation can run during the initial load paint and you
    just see the finished icon. */
-html.js .fast-forward path {
+html.js .fast-forward .ff-skip path {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
 }
-html.js .fast-forward.draw path {
+html.js .fast-forward.draw .ff-skip path {
   animation: ff-draw 0.35s ease forwards;
 }
-html.js .fast-forward.draw path:nth-of-type(1) { animation-delay: 0s; }
-html.js .fast-forward.draw path:nth-of-type(2) { animation-delay: 0.25s; }
+html.js .fast-forward.draw .ff-skip path:nth-of-type(1) { animation-delay: 0s; }
+html.js .fast-forward.draw .ff-skip path:nth-of-type(2) { animation-delay: 0.25s; }
 /* icon fully drawn ~0.6s; the greeting then starts ~0.5s later (see JS) */
 @keyframes ff-draw { to { stroke-dashoffset: 0; } }
+
+/* Once the intro has fully played, the skip control transforms into a replay
+   control: the chevrons spin out as the circular replay arrow spins in. The
+   two icon states overlay each other in the same SVG and cross-fade on .done. */
+html.js .fast-forward .ff-skip,
+html.js .fast-forward .ff-replay {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+html.js .fast-forward .ff-replay {
+  opacity: 0;
+  transform: rotate(-150deg) scale(0.55);
+}
+html.js .fast-forward.done .ff-skip {
+  opacity: 0;
+  transform: rotate(150deg) scale(0.55);
+}
+html.js .fast-forward.done .ff-replay {
+  opacity: 1;
+  transform: none;
+}
 html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .fast-forward { display: none !important; } }
 
@@ -269,8 +291,14 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
           aria-label="Skip the intro animation" title="Skip intro">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
          stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M5 6l6 6-6 6" pathLength="1"/>
-      <path d="M13 6l6 6-6 6" pathLength="1"/>
+      <g class="ff-skip">
+        <path d="M5 6l6 6-6 6" pathLength="1"/>
+        <path d="M13 6l6 6-6 6" pathLength="1"/>
+      </g>
+      <g class="ff-replay">
+        <polyline points="1 4 1 10 7 10"/>
+        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+      </g>
     </svg>
   </button>
 
@@ -354,40 +382,78 @@ document.querySelectorAll('.blob').forEach(blob => {
     return words;
   }
 
-  function go() {
-    if (ff) ff.classList.add('draw');               // strokes the chevrons on now (page is visible)
-    const EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';   // soft, floaty settle (eases out at the end)
+  const EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';     // soft, floaty settle (eases out at the end)
+  const G_DELAYS = [1.1, 2.1, 2.4];                 // icon draws first; "Hi" begins ~0.5s after
+  let morphTimer = 0;
+
+  const greetWords = () => greeting ? Array.prototype.slice.call(greeting.querySelectorAll('.gw')) : [];
+  const ledeWords  = () => lede ? Array.prototype.filter.call(lede.childNodes, n => n.nodeType === 1 && n.tagName !== 'BR') : [];
+
+  // The control swaps roles: skip (chevrons) ⟷ replay (circular arrow).
+  function morphToReplay() {
+    if (!ff) return;
+    ff.classList.add('done');
+    ff.setAttribute('aria-label', 'Replay the intro');
+    ff.setAttribute('title', 'Replay intro');
+  }
+  function morphToChevrons() {
+    if (!ff) return;
+    ff.classList.remove('done');
+    ff.setAttribute('aria-label', 'Skip the intro animation');
+    ff.setAttribute('title', 'Skip intro');
+  }
+  // (Re)stroke the chevrons from scratch: drop .draw, force reflow, re-add.
+  function drawChevrons() {
+    if (!ff) return;
+    ff.classList.remove('draw');
+    void ff.offsetWidth;
+    ff.classList.add('draw');
+  }
+
+  // Play (or replay) the whole intro: reset every word to hidden, re-arm the
+  // chevron draw, trickle the greeting + lede back in, then settle on Replay.
+  function playIntro() {
+    if (!wrapped && lede) { wrapWords(lede); wrapped = true; }
+    clearTimeout(morphTimer);
+    morphToChevrons();
+    drawChevrons();
+
+    const gws = greetWords(), lws = ledeWords();
+    // Clear any inline state from a prior run / fast-forward, then restart.
+    gws.concat(lws).forEach(w => {
+      w.style.animation = 'none';
+      w.style.transition = '';
+      w.style.opacity = '';
+      w.style.transform = '';
+    });
+    if (greeting) void greeting.offsetWidth;        // flush the reset so animations restart
+
     if (greeting) {
-      // The icon strokes on first (~0.6s), then "Hi" begins ~0.5s after it lands.
-      const delays = [1.1, 2.1, 2.4];
-      greeting.querySelectorAll('.gw').forEach((w, i) => {
-        const d = delays[i] != null ? delays[i] : 1.6 + (i - 2) * 0.3;
+      greeting.style.opacity = 1;
+      gws.forEach((w, i) => {
+        const d = G_DELAYS[i] != null ? G_DELAYS[i] : 1.6 + (i - 2) * 0.3;
         w.style.animation = 'word-fade 0.85s ease ' + d + 's both';
       });
-      greeting.style.opacity = 1;
     }
     if (lede) {
-      wrapWords(lede); wrapped = true;    // wrap words/links; keep <br> paragraph breaks
-      let lt = 4.0;                       // a ~1s beat after the greeting lands
-      Array.prototype.forEach.call(lede.childNodes, node => {
-        if (node.nodeType !== 1) return;                 // skip spaces
-        if (node.tagName === 'BR') return;               // line break only — no pause
-        node.style.animation = 'word-in 0.95s ' + EASE + ' ' + lt.toFixed(3) + 's both';
-        lt += 0.032;                      // slightly slower, floaty left-to-right drift
-      });
       lede.style.opacity = 1;
-      // Retire the skip button once the trickle has finished on its own.
-      if (ff) setTimeout(hideFF, (lt + 0.95 + 0.4) * 1000);
+      let lt = 4.0;                                 // a ~1s beat after the greeting lands
+      lws.forEach(node => {
+        node.style.animation = 'word-in 0.95s ' + EASE + ' ' + lt.toFixed(3) + 's both';
+        lt += 0.032;                                // slightly slower, floaty left-to-right drift
+      });
+      // Once the trickle has finished on its own, become the replay control.
+      if (ff) morphTimer = setTimeout(morphToReplay, (lt + 0.95 + 0.3) * 1000);
     }
   }
 
-  // Fast-forward: fade whatever's left of the intro in, all at once. Pin each
-  // word at its current (mid-animation) state, then transition every one to
-  // visible together — so already-shown words don't flicker.
-  function hideFF() { if (ff) ff.classList.add('is-hidden'); }
+  // Fast-forward: fade whatever's left of the intro in at once, then settle on
+  // Replay. Pin each word at its current (mid-animation) state, then transition
+  // every one to visible together — so already-shown words don't flicker.
   function fastForward() {
     if (!wrapped && lede) { wrapWords(lede); wrapped = true; lede.style.opacity = 1; }
     if (greeting) greeting.style.opacity = 1;
+    clearTimeout(morphTimer);
     const words = document.querySelectorAll('.greeting .gw, .lede .reveal-word');
     words.forEach(w => {
       const cs = getComputedStyle(w);
@@ -403,9 +469,13 @@ document.querySelectorAll('.blob').forEach(blob => {
         w.style.transform = 'none';
       });
     });
-    hideFF();
+    if (ff) morphTimer = setTimeout(morphToReplay, 600);
   }
-  if (ff) ff.addEventListener('click', fastForward);
+
+  if (ff) ff.addEventListener('click', () => {
+    if (ff.classList.contains('done')) playIntro();   // replay
+    else fastForward();                               // skip to the end
+  });
 
   // Pin the button's vertical centre to the greeting line (it's right-aligned
   // via CSS). Re-run on resize and after the font settles the layout.
@@ -418,8 +488,8 @@ document.querySelectorAll('.blob').forEach(blob => {
   window.addEventListener('resize', placeFF);
 
   // Wait for the web font so the layout is settled before revealing.
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { placeFF(); go(); });
-  else go();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { placeFF(); playIntro(); });
+  else playIntro();
 })();
 </script>
 </body>

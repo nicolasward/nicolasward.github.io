@@ -519,10 +519,11 @@
     })();
   </script>
   <script>
-    // Article body: trickle each word in (like the landing). Wrap every word in
-    // .post-content, then animate only the words within the opening viewport so
-    // long articles don't drag and you never scroll into blank space. Runs
-    // before paint; the body is hidden via the .js gate until revealed here.
+    // Article body: trickle each block in line by line. A soft gradient mask
+    // sweeps top-to-bottom over every block, unveiling it one line at a time.
+    // The opening screen cascades on load; everything below the fold (and the
+    // footer sections) reveals as you scroll to it. No text-DOM surgery — the
+    // mask never touches the markup, so links/lists stay intact.
     (function () {
       if (!document.body.classList.contains('article')) return;
       var content = document.querySelector('.post-content');
@@ -530,92 +531,57 @@
       if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
         content.style.opacity = 1; return;
       }
-      var EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';
-      var SKIP = { PRE: 1, IMG: 1, FIGURE: 1, TABLE: 1, HR: 1, SVG: 1 };
-      var words = [];
-      function wrap(node) {
-        var kids = Array.prototype.slice.call(node.childNodes);
-        for (var k = 0; k < kids.length; k++) {
-          var n = kids[k];
-          if (n.nodeType === 3) {
-            if (!n.textContent.trim()) continue;
-            var parts = n.textContent.split(/(\s+)/);
-            var frag = document.createDocumentFragment();
-            var pendingDash = '';   // glue a standalone — / – onto the next word
-            for (var j = 0; j < parts.length; j++) {
-              var p = parts[j];
-              if (p === '') continue;
-              if (/^\s+$/.test(p)) {
-                if (pendingDash) continue;   // the space after a dash rides with it
-                frag.appendChild(document.createTextNode(p));
-              } else if (/^[—–]+$/.test(p)) {
-                pendingDash = p;
-              } else {
-                var w = document.createElement('span');
-                w.className = 'reveal-word';
-                w.textContent = pendingDash ? pendingDash + ' ' + p : p;
-                pendingDash = '';
-                frag.appendChild(w);
-                words.push(w);
-              }
-            }
-            if (pendingDash) {
-              var wd = document.createElement('span');
-              wd.className = 'reveal-word';
-              wd.textContent = pendingDash;
-              frag.appendChild(wd);
-              words.push(wd);
-            }
-            node.replaceChild(frag, n);
-          } else if (n.nodeType === 1) {
-            if (n.tagName === 'LI' || n.tagName === 'A') {
-              words.push(n);            // animate whole (word-splitting a link
-                                        // breaks its underline into stray stubs;
-                                        // a list item's hanging indent breaks too)
-            } else if (!SKIP[n.tagName]) {
-              wrap(n);
-            }
-          }
-        }
-      }
-      wrap(content);
 
-      var threshold = window.innerHeight * 1.15;   // only trickle the opening screen
-      var tops = [];
-      for (var i = 0; i < words.length; i++) tops.push(words[i].getBoundingClientRect().top);
-      var vi = 0;
-      for (var m = 0; m < words.length; m++) {
-        if (tops[m] < threshold) {
-          words[m].style.animation = 'word-in 0.5s ' + EASE + ' ' + (0.4 + vi * 0.014).toFixed(3) + 's both';
-          vi++;
-        }
+      var blocks = Array.prototype.slice.call(content.children);
+      blocks.forEach(function (el) { el.classList.add('reveal-block'); });
+      content.style.opacity = 1;
+
+      // Drop the mask once a block has finished revealing, so static text stays
+      // perfectly crisp (some browsers soften masked text rendering).
+      function cleanup(e) {
+        if (e.animationName !== 'line-reveal') return;
+        var t = e.currentTarget;
+        t.style.webkitMaskImage = 'none';
+        t.style.maskImage = 'none';
+      }
+      function reveal(el) {
+        el.addEventListener('animationend', cleanup);
+        el.classList.add('in');
       }
 
-      // Everything below the opening fold (body blocks past the threshold) plus
-      // the footer sections is hidden and fades in as you scroll to it.
-      var reveal = [];
-      for (var c = 0; c < content.children.length; c++) {
-        if (content.children[c].getBoundingClientRect().top >= threshold) reveal.push(content.children[c]);
-      }
+      var threshold = window.innerHeight * 1.05;   // the opening screen
+
+      // Below-the-fold body blocks + the footer sections wait for scroll.
+      var below = [];
+      blocks.forEach(function (el) {
+        if (el.getBoundingClientRect().top >= threshold) below.push(el);
+      });
       ['.post-share-section', '.linked-mentions', '.related-posts'].forEach(function (sel) {
-        var el = document.querySelector('article ' + sel);
-        if (el) reveal.push(el);
+        var s = document.querySelector('article ' + sel);
+        if (s) { s.classList.add('reveal-block'); below.push(s); }
       });
       var foot = document.querySelector('.site-footer');
-      if (foot) reveal.push(foot);
-      reveal.forEach(function (el) { el.classList.add('reveal-scroll'); });
+      if (foot) { foot.classList.add('reveal-block'); below.push(foot); }
 
-      content.style.opacity = 1;   // body visible; in-view words stay hidden via their fill
+      // Opening fold: cascade the visible blocks in with a staggered delay.
+      var vi = 0;
+      blocks.forEach(function (el) {
+        if (el.getBoundingClientRect().top < threshold) {
+          el.style.setProperty('--d', (0.15 + vi * 0.12).toFixed(2) + 's');
+          reveal(el);
+          vi++;
+        }
+      });
 
-      if (reveal.length && 'IntersectionObserver' in window) {
+      if (below.length && 'IntersectionObserver' in window) {
         var obs = new IntersectionObserver(function (entries) {
           entries.forEach(function (e) {
-            if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+            if (e.isIntersecting) { reveal(e.target); obs.unobserve(e.target); }
           });
         }, { rootMargin: '0px 0px -8% 0px' });
-        reveal.forEach(function (el) { obs.observe(el); });
+        below.forEach(function (el) { obs.observe(el); });
       } else {
-        reveal.forEach(function (el) { el.classList.add('in'); });
+        below.forEach(function (el) { el.classList.add('in'); });
       }
     })();
   </script>

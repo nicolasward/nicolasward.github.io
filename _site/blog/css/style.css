@@ -839,31 +839,36 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 .page-title   { animation-delay: 0.1s; }
 .post-meta    { animation-delay: 0.35s; }
 
-/* Article body: each word trickles in (wrapped by JS) — exactly like the
-   landing page. The whole body is hidden up front (JS only) and revealed once
-   the words have their animations, so there's no flash. */
-.reveal-word { display: inline-block; }
-@keyframes word-in {
-  from { opacity: 0; transform: translate(-4px, 11px); }
-  to   { opacity: 1; transform: none; }
+/* Article body: each block trickles in line by line. A soft-edged gradient mask
+   (taller than the block) sweeps from top to bottom, so the text is unveiled one
+   line at a time rather than word by word — neater, and it never touches the text
+   DOM (no inline-block wrapping, no broken underlines or list indents). The whole
+   body is hidden up front (JS only) and tagged block by block once revealed. */
+.reveal-block {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 58%, transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 58%, transparent 100%);
+  -webkit-mask-size: 100% 300%;
+          mask-size: 100% 300%;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: 0% 100%;   /* fully hidden (transparent band over block) */
+          mask-position: 0% 100%;
+}
+.reveal-block.in {
+  animation: line-reveal 0.85s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s) both;
+}
+@keyframes line-reveal {
+  from { -webkit-mask-position: 0% 100%; mask-position: 0% 100%; }
+  to   { -webkit-mask-position: 0% 0%;   mask-position: 0% 0%; }
 }
 .js body.article .post-content { opacity: 0; }
 
-/* Below-the-fold body blocks + the footer sections (share, mentions, related,
-   site footer) stay hidden and fade in as you scroll to them, so the bottom of
-   the article isn't visible while the top is still trickling in. */
-.js body.article .reveal-scroll {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.js body.article .reveal-scroll.in {
-  opacity: 1;
-  transform: none;
-}
 @media (prefers-reduced-motion: reduce) {
-  .js body.article .reveal-scroll { opacity: 1; transform: none; transition: none; }
+  .reveal-block {
+    -webkit-mask-image: none;
+            mask-image: none;
+  }
+  .reveal-block.in { animation: none; }
 }
 
 /* Static pages (about) have no date — the body floats in as one block. */

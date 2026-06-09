@@ -6,6 +6,7 @@ import os
 import re
 import shutil
 import math
+import html
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import quote
@@ -285,6 +286,11 @@ def build():
 
     # Write individual post pages
     for i, post in enumerate(posts):
+        # Chronological siblings (posts are sorted newest-first) for mobile
+        # swipe navigation: swipe right → newer, swipe left → older.
+        newer = posts[i - 1] if i > 0 else None
+        older = posts[i + 1] if i < len(posts) - 1 else None
+
         # Related posts: pick up to 3 others
         others = [p for j, p in enumerate(posts) if j != i]
         related_html = ""
@@ -318,6 +324,10 @@ def build():
             related_posts=related_html,
             linked_mentions=linked_mentions_html,
             share=share_row(f"{SITE_URL}{BASE_PATH}/{post['slug']}", post["title"]),
+            newer_url=(f"{BASE_PATH}/{newer['slug']}" if newer else ""),
+            newer_title=(html.escape(newer["title"], quote=True) if newer else ""),
+            older_url=(f"{BASE_PATH}/{older['slug']}" if older else ""),
+            older_title=(html.escape(older["title"], quote=True) if older else ""),
         )
 
         page_html = render(

@@ -125,6 +125,20 @@
 
   
 
+  <!-- Mobile swipe-between-articles edge hints (filled + shown by JS). -->
+  <div class="swipe-edge swipe-edge--left" aria-hidden="true">
+    <span class="swipe-chevron">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+    </span>
+    <span class="swipe-meta"><span class="swipe-dir">Newer</span><span class="swipe-title"></span></span>
+  </div>
+  <div class="swipe-edge swipe-edge--right" aria-hidden="true">
+    <span class="swipe-meta"><span class="swipe-dir">Older</span><span class="swipe-title"></span></span>
+    <span class="swipe-chevron">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+    </span>
+  </div>
+
   <script>
     (function () {
       const overlay    = document.getElementById('search-overlay');
@@ -831,6 +845,84 @@
           setTimeout(function () { qCopyBtn.classList.remove('copied'); }, 1500);
         });
       });
+    })();
+  </script>
+  <script>
+    // Mobile: swipe left/right between articles. A horizontal drag follows the
+    // finger, reveals an edge hint with the target post's title, and commits
+    // past a threshold (or on a quick flick). Touch + article pages only.
+    (function () {
+      if (!document.body.classList.contains('article')) return;
+      if (!('ontouchstart' in window) && !navigator.maxTouchPoints) return;
+      var data = document.querySelector('.post-siblings');
+      var main = document.querySelector('main');
+      if (!data || !main) return;
+
+      var newer = { url: data.getAttribute('data-newer-url'), title: data.getAttribute('data-newer-title') };
+      var older = { url: data.getAttribute('data-older-url'), title: data.getAttribute('data-older-title') };
+      var edgeL = document.querySelector('.swipe-edge--left');    // newer (swipe right)
+      var edgeR = document.querySelector('.swipe-edge--right');   // older (swipe left)
+      if (newer.url && edgeL) edgeL.querySelector('.swipe-title').textContent = newer.title;
+      if (older.url && edgeR) edgeR.querySelector('.swipe-title').textContent = older.title;
+
+      var W = function () { return window.innerWidth; };
+      var startX = 0, startY = 0, dx = 0, lock = null, active = false;
+
+      function setX(x) { main.style.transform = x ? 'translateX(' + x + 'px)' : ''; }
+      function showHint(edge, on, mag) {
+        if (!edge) return;
+        edge.style.opacity = on ? Math.min(1, mag).toFixed(3) : 0;
+        edge.style.transform = 'translateY(-50%) translateX(' + (on ? (edge === edgeL ? 1 : -1) * Math.min(1, mag) * 10 : 0) + 'px)';
+      }
+
+      function onStart(e) {
+        if (e.touches.length > 1) return;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        dx = 0; lock = null; active = true;
+        main.style.transition = 'none';
+      }
+      function onMove(e) {
+        if (!active || e.touches.length > 1) return;
+        var ddx = e.touches[0].clientX - startX, ddy = e.touches[0].clientY - startY;
+        if (lock === null) {
+          if (Math.abs(ddx) < 8 && Math.abs(ddy) < 8) return;
+          lock = Math.abs(ddx) > Math.abs(ddy) ? 'h' : 'v';
+          if (lock === 'h') document.body.classList.add('swiping');
+        }
+        if (lock !== 'h') return;
+        e.preventDefault();
+        dx = ddx;
+        var hasTarget = dx > 0 ? !!newer.url : !!older.url;
+        var eff = hasTarget ? dx : dx * 0.22;       // rubber-band when there's nowhere to go
+        setX(eff);
+        var mag = Math.abs(eff) / (W() * 0.3);
+        showHint(edgeL, dx > 0 && !!newer.url, mag);
+        showHint(edgeR, dx < 0 && !!older.url, mag);
+      }
+      function onEnd() {
+        if (!active) return;
+        active = false;
+        if (lock !== 'h') { document.body.classList.remove('swiping'); return; }
+        var hasTarget = dx > 0 ? !!newer.url : !!older.url;
+        var target = dx > 0 ? newer : older;
+        main.style.transition = 'transform 0.34s cubic-bezier(0.22, 1, 0.36, 1)';
+        if (hasTarget && Math.abs(dx) > W() * 0.28) {
+          if (navigator.vibrate) { try { navigator.vibrate(10); } catch (e) {} }
+          requestAnimationFrame(function () { setX((dx > 0 ? 1 : -1) * W()); });
+          setTimeout(function () { location.href = target.url; }, 300);
+        } else {
+          showHint(edgeL, false, 0);
+          showHint(edgeR, false, 0);
+          requestAnimationFrame(function () { setX(0); });
+          setTimeout(function () { document.body.classList.remove('swiping'); main.style.transition = ''; }, 340);
+        }
+      }
+
+      main.addEventListener('touchstart', onStart, { passive: true });
+      main.addEventListener('touchmove', onMove, { passive: false });
+      main.addEventListener('touchend', onEnd);
+      main.addEventListener('touchcancel', onEnd);
     })();
   </script>
 </body>

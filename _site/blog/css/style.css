@@ -885,6 +885,52 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
   .js body.article .reveal-fade { opacity: 1; transform: none; transition: none; }
 }
 
+/* ===== Mobile: swipe between articles ===== */
+/* The sibling data lives in a hidden <nav>; JS drives the edge hints. */
+.post-siblings { display: none; }
+/* Faint hint that slides in from the edge as you drag toward an adjacent post.
+   Hidden (opacity 0) until JS reveals it; a real touch gesture does the rest. */
+.swipe-edge {
+  position: fixed;
+  top: 50%;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  max-width: 64vw;
+  color: var(--fg);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.swipe-edge--left  { left: 0;  padding-left: max(0.6rem, env(safe-area-inset-left)); }
+.swipe-edge--right { right: 0; padding-right: max(0.6rem, env(safe-area-inset-right)); text-align: right; }
+.swipe-chevron { display: grid; place-items: center; flex: none; }
+.swipe-chevron svg { width: 1.45rem; height: 1.45rem; display: block; }
+.swipe-meta { display: flex; flex-direction: column; min-width: 0; }
+.swipe-dir {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+.swipe-title {
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.2;
+  max-height: 2.4em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+/* While dragging: lock horizontal overflow and hide the progress widget so the
+   page slides cleanly under the finger. */
+body.swiping { overflow-x: clip; }
+body.swiping #reading-progress { opacity: 0; transition: none; pointer-events: none; }
+
 /* Static pages (about) have no date — the body floats in as one block. */
 .page-title + .post-content {
   opacity: 0;

@@ -163,6 +163,9 @@ html.js .fast-forward {
   background: transparent;
   color: var(--fg);                        /* same ink as the first line */
   cursor: pointer;
+  touch-action: manipulation;              /* kill the ~300ms mobile tap delay */
+  -webkit-user-select: none;
+  user-select: none;
   -webkit-tap-highlight-color: transparent;
   opacity: 1;
   transition: opacity 0.35s ease, transform 0.15s ease;
@@ -454,6 +457,7 @@ document.querySelectorAll('.blob').forEach(blob => {
     if (!wrapped && lede) { wrapWords(lede); wrapped = true; lede.style.opacity = 1; }
     if (greeting) greeting.style.opacity = 1;
     clearTimeout(morphTimer);
+    morphToReplay();          // flip to replay on tap — reacts immediately, in step with the text
     const words = document.querySelectorAll('.greeting .gw, .lede .reveal-word');
     words.forEach(w => {
       const cs = getComputedStyle(w);
@@ -464,12 +468,11 @@ document.querySelectorAll('.blob').forEach(blob => {
     });
     requestAnimationFrame(() => {
       words.forEach(w => {
-        w.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        w.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
         w.style.opacity = '1';
         w.style.transform = 'none';
       });
     });
-    if (ff) morphTimer = setTimeout(morphToReplay, 600);
   }
 
   if (ff) ff.addEventListener('click', () => {

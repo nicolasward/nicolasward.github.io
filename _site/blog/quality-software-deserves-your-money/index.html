@@ -631,11 +631,12 @@
 
       var threshold = window.innerHeight * 1.05;
 
-      // Opening fold: cascade the visible blocks in on load.
+      // Opening fold: cascade the visible blocks in on load — starting after
+      // the header (title → meta → share) so the page reveals top-to-bottom.
       var vi = 0;
       blocks.forEach(function (el) {
         if (el.getBoundingClientRect().top < threshold) {
-          el.style.setProperty('--d', (0.15 + vi * 0.12).toFixed(2) + 's');
+          el.style.setProperty('--d', (0.78 + vi * 0.12).toFixed(2) + 's');
           el.addEventListener('animationend', cleanup);
           el.classList.add('in');
           vi++;

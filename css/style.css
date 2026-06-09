@@ -792,13 +792,14 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
   opacity: 0;
   animation: share-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-/* Follow straight on from the body cascade; circle still lands last. */
-.post-header .post-share .share-btn:nth-child(1) { animation-delay: 0.85s; }
-.post-header .post-share .share-btn:nth-child(2) { animation-delay: 0.91s; }
-.post-header .post-share .share-btn:nth-child(3) { animation-delay: 0.97s; }
-.post-header .post-share .share-btn:nth-child(4) { animation-delay: 1.03s; }
-.post-header .post-share .share-btn:nth-child(5) { animation-delay: 1.09s; }
-.post-header .post-share .share-btn:nth-child(6) { animation-delay: 1.15s; }
+/* Land right after the meta and before the body, so the page reveals cleanly
+   top-to-bottom (title → meta → share → body). */
+.post-header .post-share .share-btn:nth-child(1) { animation-delay: 0.46s; }
+.post-header .post-share .share-btn:nth-child(2) { animation-delay: 0.52s; }
+.post-header .post-share .share-btn:nth-child(3) { animation-delay: 0.58s; }
+.post-header .post-share .share-btn:nth-child(4) { animation-delay: 0.64s; }
+.post-header .post-share .share-btn:nth-child(5) { animation-delay: 0.70s; }
+.post-header .post-share .share-btn:nth-child(6) { animation-delay: 0.76s; }
 @keyframes share-in {
   from { opacity: 0; transform: translateX(-7px); }
   to   { opacity: 1; transform: translateX(0); }

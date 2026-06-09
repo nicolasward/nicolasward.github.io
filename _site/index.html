@@ -142,6 +142,36 @@ html.js .js-reveal { opacity: 0; }
   to   { opacity: 1; transform: none; }
 }
 
+/* Fast-forward: top-left skip button. Only useful with JS (the trickle only
+   runs with JS), so it stays hidden otherwise. Click fades whatever's left of
+   the intro in at once. */
+.fast-forward { display: none; }
+html.js .fast-forward {
+  position: fixed;
+  top: clamp(1rem, 3.2vh, 2rem);
+  left: clamp(1.25rem, 4vw, 2.5rem);
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg);
+  opacity: 0.3;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.35s ease, transform 0.15s ease;
+}
+html.js .fast-forward:hover  { opacity: 0.68; }
+html.js .fast-forward:active { transform: scale(0.88); }
+html.js .fast-forward svg    { width: 1.1rem; height: 1.1rem; display: block; }
+html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .fast-forward { display: none !important; } }
+
 /* "Atelier" — a coloured accent in the prose (Google-blue, vibrant on light). */
 .atelier { color: #1A73E8; }
 
@@ -220,6 +250,14 @@ html.js .js-reveal { opacity: 0; }
 </head>
 
 <body>
+  <button class="fast-forward" id="fast-forward" type="button"
+          aria-label="Skip the intro animation" title="Skip intro">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M3 5.5l8 6.5-8 6.5V5.5z"/>
+      <path d="M12 5.5l8 6.5-8 6.5V5.5z"/>
+    </svg>
+  </button>
+
   <div class="stage" aria-hidden="true">
     <div class="blob blob--teal"></div>
     <div class="blob blob--sunset"></div>
@@ -265,11 +303,14 @@ document.querySelectorAll('.blob').forEach(blob => {
   const greeting = document.querySelector('.greeting.js-reveal');
   const lede = document.querySelector('.lede.js-reveal');
   const all = [greeting, lede].filter(Boolean);
+  const ff = document.getElementById('fast-forward');
   if (!all.length) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
     all.forEach(el => { el.style.opacity = 1; });
+    if (ff) ff.classList.add('is-hidden');
     return;
   }
+  let wrapped = false;
 
   // Wrap each word in a span (keeping inline links/spans, which become words
   // too) so it can animate; preserve the spaces between them.
@@ -309,7 +350,7 @@ document.querySelectorAll('.blob').forEach(blob => {
       greeting.style.opacity = 1;
     }
     if (lede) {
-      wrapWords(lede);                    // wrap words/links; keep <br> paragraph breaks
+      wrapWords(lede); wrapped = true;    // wrap words/links; keep <br> paragraph breaks
       let lt = 3.2;                       // a ~1s beat after the greeting lands
       Array.prototype.forEach.call(lede.childNodes, node => {
         if (node.nodeType !== 1) return;                 // skip spaces
@@ -318,8 +359,36 @@ document.querySelectorAll('.blob').forEach(blob => {
         lt += 0.032;                      // slightly slower, floaty left-to-right drift
       });
       lede.style.opacity = 1;
+      // Retire the skip button once the trickle has finished on its own.
+      if (ff) setTimeout(hideFF, (lt + 0.95 + 0.4) * 1000);
     }
   }
+
+  // Fast-forward: fade whatever's left of the intro in, all at once. Pin each
+  // word at its current (mid-animation) state, then transition every one to
+  // visible together — so already-shown words don't flicker.
+  function hideFF() { if (ff) ff.classList.add('is-hidden'); }
+  function fastForward() {
+    if (!wrapped && lede) { wrapWords(lede); wrapped = true; lede.style.opacity = 1; }
+    if (greeting) greeting.style.opacity = 1;
+    const words = document.querySelectorAll('.greeting .gw, .lede .reveal-word');
+    words.forEach(w => {
+      const cs = getComputedStyle(w);
+      const op = cs.opacity, tr = cs.transform;
+      w.style.animation = 'none';
+      w.style.opacity = op;
+      w.style.transform = (tr && tr !== 'none') ? tr : 'none';
+    });
+    requestAnimationFrame(() => {
+      words.forEach(w => {
+        w.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        w.style.opacity = '1';
+        w.style.transform = 'none';
+      });
+    });
+    hideFF();
+  }
+  if (ff) ff.addEventListener('click', fastForward);
 
   // Wait for the web font so the layout is settled before revealing.
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(go);

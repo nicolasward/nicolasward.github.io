@@ -565,11 +565,12 @@
     })();
   </script>
   <script>
-    // Article body: trickle each block in line by line. A soft gradient mask
-    // sweeps top-to-bottom over every block, unveiling it one line at a time.
-    // The opening screen cascades on load; everything below the fold (and the
-    // footer sections) reveals as you scroll to it. No text-DOM surgery — the
-    // mask never touches the markup, so links/lists stay intact.
+    // Article body: trickle each block in line by line. On load the opening
+    // screen cascades in (a soft gradient mask sweeps over each block). Below
+    // the fold the reveal is scroll-LINKED: a fixed line near the bottom of the
+    // viewport with a one-line-tall feather, so each line unveils itself as it
+    // crosses that line while you scroll — never a whole paragraph at once.
+    // The mask never touches the markup, so links/lists stay intact.
     (function () {
       if (!document.body.classList.contains('article')) return;
       var content = document.querySelector('.post-content');
@@ -582,53 +583,72 @@
       blocks.forEach(function (el) { el.classList.add('reveal-block'); });
       content.style.opacity = 1;
 
-      // Drop the mask once a block has finished revealing, so static text stays
-      // perfectly crisp (some browsers soften masked text rendering).
       function cleanup(e) {
         if (e.animationName !== 'line-reveal') return;
         var t = e.currentTarget;
         t.style.webkitMaskImage = 'none';
         t.style.maskImage = 'none';
       }
-      function reveal(el) {
-        el.addEventListener('animationend', cleanup);
-        el.classList.add('in');
-      }
 
-      var threshold = window.innerHeight * 1.05;   // the opening screen
+      var threshold = window.innerHeight * 1.05;
 
-      // Below-the-fold body blocks + the footer sections wait for scroll.
-      var below = [];
-      blocks.forEach(function (el) {
-        if (el.getBoundingClientRect().top >= threshold) below.push(el);
-      });
-      ['.post-share-section', '.linked-mentions', '.related-posts'].forEach(function (sel) {
-        var s = document.querySelector('article ' + sel);
-        if (s) { s.classList.add('reveal-block'); below.push(s); }
-      });
-      var foot = document.querySelector('.site-footer');
-      if (foot) { foot.classList.add('reveal-block'); below.push(foot); }
-
-      // Opening fold: cascade the visible blocks in with a staggered delay.
+      // Opening fold: cascade the visible blocks in on load.
       var vi = 0;
       blocks.forEach(function (el) {
         if (el.getBoundingClientRect().top < threshold) {
           el.style.setProperty('--d', (0.15 + vi * 0.12).toFixed(2) + 's');
-          reveal(el);
+          el.addEventListener('animationend', cleanup);
+          el.classList.add('in');
           vi++;
         }
       });
 
-      if (below.length && 'IntersectionObserver' in window) {
-        var obs = new IntersectionObserver(function (entries) {
-          entries.forEach(function (e) {
-            if (e.isIntersecting) { reveal(e.target); obs.unobserve(e.target); }
-          });
-        }, { rootMargin: '0px 0px -8% 0px' });
-        below.forEach(function (el) { obs.observe(el); });
-      } else {
-        below.forEach(function (el) { el.classList.add('in'); });
+      // Below the fold: hand each block to the scroll-linked driver.
+      var driven = [];
+      function drive(el) {
+        // Switch off the percentage mask used for the load sweep; we feed this
+        // block a px-based gradient every frame instead.
+        el.style.webkitMaskSize = el.style.maskSize = '100% 100%';
+        el.style.webkitMaskRepeat = el.style.maskRepeat = 'no-repeat';
+        el.style.webkitMaskPosition = el.style.maskPosition = '0 0';
+        driven.push(el);
       }
+      blocks.forEach(function (el) {
+        if (el.getBoundingClientRect().top >= threshold) drive(el);
+      });
+      ['.post-share-section', '.linked-mentions', '.related-posts'].forEach(function (sel) {
+        var s = document.querySelector('article ' + sel);
+        if (s) { s.classList.add('reveal-block'); drive(s); }
+      });
+      var foot = document.querySelector('.site-footer');
+      if (foot) { foot.classList.add('reveal-block'); drive(foot); }
+
+      var BAND = 16;   // half the feather height in px (~one line of body text)
+
+      var ticking = false;
+      function update() {
+        ticking = false;
+        var line = window.innerHeight * 0.86;   // on-screen reveal line
+        for (var i = driven.length - 1; i >= 0; i--) {
+          var el = driven[i];
+          var r = el.getBoundingClientRect();
+          var boundary = line - r.top;          // px from block top down to the line
+          if (boundary >= r.height + BAND) {     // fully past -> reveal & retire
+            el.style.webkitMaskImage = el.style.maskImage = 'none';
+            driven.splice(i, 1);
+            continue;
+          }
+          var g = 'linear-gradient(to bottom, #000 ' + (boundary - BAND) +
+                  'px, transparent ' + (boundary + BAND) + 'px)';
+          el.style.webkitMaskImage = el.style.maskImage = g;
+        }
+      }
+      function onScroll() {
+        if (!ticking) { ticking = true; requestAnimationFrame(update); }
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      update();   // set the initial hidden/partly-visible state before paint
     })();
   </script>
   <script>

@@ -171,28 +171,30 @@ html.js .fast-forward {
   transition: opacity 0.35s ease, transform 0.15s ease;
 }
 html.js .fast-forward:active { transform: scale(0.9); }
-html.js .fast-forward svg    { width: 100%; height: 100%; display: block; }
-/* Each chevron strokes itself on in turn (like the blog's end-of-page check),
-   so the icon assembles chevron by chevron. Held hidden until JS adds .draw —
-   otherwise the CSS animation can run during the initial load paint and you
-   just see the finished icon. */
-html.js .fast-forward .ff-skip path {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
+/* The chevrons are FULLY drawn; a soft left-to-right wipe (mask) reveals them
+   on load — chevron by chevron, no round-cap "dot" the way animating
+   stroke-dashoffset produces. Held hidden until JS adds .draw, so the wipe is
+   actually seen rather than completing during the first paint. */
+html.js .fast-forward svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  -webkit-mask-image: linear-gradient(to right, #000 0%, #000 42%, transparent 60%, transparent 100%);
+          mask-image: linear-gradient(to right, #000 0%, #000 42%, transparent 60%, transparent 100%);
+  -webkit-mask-size: 300% 100%;
+          mask-size: 300% 100%;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: 100% 0;          /* transparent band over the glyph → hidden */
+          mask-position: 100% 0;
 }
-html.js .fast-forward.draw .ff-skip path {
-  animation: ff-draw 0.62s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+html.js .fast-forward.draw svg {
+  animation: ff-wipe 0.6s cubic-bezier(0.33, 1, 0.68, 1) forwards;
 }
-/* The two strokes overlap into one flowing gesture rather than two pops. */
-html.js .fast-forward.draw .ff-skip path:nth-of-type(1) { animation-delay: 0.06s; }
-html.js .fast-forward.draw .ff-skip path:nth-of-type(2) { animation-delay: 0.24s; }
-/* Keep the draw a single, clean property animation — mixing opacity into this
-   keyframe breaks the stroke interpolation on iOS Safari. */
-@keyframes ff-draw { to { stroke-dashoffset: 0; } }
-/* Soften the round-capped start by fading the whole glyph in alongside the
-   draw (separate, fully-specified keyframe so iOS animates it reliably). */
-html.js .fast-forward.draw svg { animation: ff-appear 0.34s ease both; }
-@keyframes ff-appear { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ff-wipe {
+  from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+  to   { -webkit-mask-position: 0% 0;   mask-position: 0% 0; }
+}
 
 /* Once the intro has fully played, the skip control transforms into a replay
    control: the chevrons spin out as the circular replay arrow spins in. The
@@ -392,7 +394,7 @@ document.querySelectorAll('.blob').forEach(blob => {
   }
 
   const EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';     // soft, floaty settle (eases out at the end)
-  const G_DELAYS = [1.35, 2.35, 2.65];              // icon draws first (~0.85s); "Hi" begins ~0.5s after
+  const G_DELAYS = [1.1, 2.1, 2.4];                 // icon wipes in first (~0.6s); "Hi" begins ~0.5s after
   let morphTimer = 0;
 
   const greetWords = () => greeting ? Array.prototype.slice.call(greeting.querySelectorAll('.gw')) : [];
@@ -446,7 +448,7 @@ document.querySelectorAll('.blob').forEach(blob => {
     }
     if (lede) {
       lede.style.opacity = 1;
-      let lt = 4.25;                                // a ~1s beat after the greeting lands
+      let lt = 4.0;                                 // a ~1s beat after the greeting lands
       lws.forEach(node => {
         node.style.animation = 'word-in 0.95s ' + EASE + ' ' + lt.toFixed(3) + 's both';
         lt += 0.032;                                // slightly slower, floaty left-to-right drift

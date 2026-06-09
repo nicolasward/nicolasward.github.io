@@ -586,7 +586,7 @@
         }
       });
 
-      // Below the fold: hand each block to the scroll-linked driver.
+      // Below the fold (body only): hand each block to the scroll-linked driver.
       var driven = [];
       function drive(el) {
         // Switch off the percentage mask used for the load sweep; we feed this
@@ -599,12 +599,24 @@
       blocks.forEach(function (el) {
         if (el.getBoundingClientRect().top >= threshold) drive(el);
       });
-      ['.post-share-section', '.linked-mentions', '.related-posts'].forEach(function (sel) {
-        var s = document.querySelector('article ' + sel);
-        if (s) { s.classList.add('reveal-block'); drive(s); }
+
+      // Footer sections: no line-by-line — each appears as one elegant fade-in
+      // as you reach it.
+      var fade = [];
+      ['.post-share-section', '.linked-mentions', '.related-posts', '.site-footer'].forEach(function (sel) {
+        var s = document.querySelector(sel.charAt(0) === '.' && sel !== '.site-footer' ? 'article ' + sel : sel);
+        if (s) { s.classList.remove('reveal-block'); s.classList.add('reveal-fade'); fade.push(s); }
       });
-      var foot = document.querySelector('.site-footer');
-      if (foot) { foot.classList.add('reveal-block'); drive(foot); }
+      if (fade.length && 'IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+          });
+        }, { rootMargin: '0px 0px -10% 0px' });
+        fade.forEach(function (el) { obs.observe(el); });
+      } else {
+        fade.forEach(function (el) { el.classList.add('in'); });
+      }
 
       var BAND = 16;   // half the feather height in px (~one line of body text)
 

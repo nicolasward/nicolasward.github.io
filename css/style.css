@@ -885,48 +885,47 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
   .js body.article .reveal-fade { opacity: 1; transform: none; transition: none; }
 }
 
-/* ===== Mobile: swipe between articles (full-page push) ===== */
-/* The sibling data lives in a hidden <nav>; JS drives the panels below. */
+/* ===== Mobile: swipe between articles ===== */
+/* The sibling data lives in a hidden <nav>; JS drives the edge hints. */
 .post-siblings { display: none; }
-/* A full-height "page" for the adjacent article that slides in from the edge,
-   tracking the finger. Parked off-screen until JS activates + positions it. */
-.swipe-page {
+/* Faint hint that slides in from the edge as you drag toward an adjacent post.
+   Hidden (opacity 0) until JS reveals it; a real touch gesture does the rest. */
+.swipe-edge {
   position: fixed;
-  inset: 0;
-  z-index: 70;
+  top: 50%;
+  z-index: 60;
   display: flex;
   align-items: center;
-  padding: 0 clamp(1.5rem, 7vw, 3rem);
-  background: var(--canvas);          /* opaque page field — reads as a fresh page */
-  transform: translateX(-100%);
-  visibility: hidden;
-  pointer-events: none;               /* purely visual — never intercept the drag */
-  will-change: transform;
-}
-.swipe-page.is-active { visibility: visible; }
-.swipe-page--older { transform: translateX(100%); justify-content: flex-end; text-align: right; }
-.swipe-page-inner { max-width: 32rem; }
-.swipe-page-title {
-  font-size: clamp(1.7rem, 7vw, 2.6rem);
-  font-weight: 700;
-  line-height: 1.12;
-  letter-spacing: -0.01em;
-  margin: 0.5rem 0 0.6rem;
+  gap: 0.55rem;
+  max-width: 64vw;
   color: var(--fg);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%);
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
-.swipe-page-meta { font-size: 0.85rem; color: var(--fg-muted); }
+.swipe-edge--left  { left: 0;  padding-left: max(0.6rem, env(safe-area-inset-left)); }
+.swipe-edge--right { right: 0; padding-right: max(0.6rem, env(safe-area-inset-right)); text-align: right; }
+.swipe-chevron { display: grid; place-items: center; flex: none; }
+.swipe-chevron svg { width: 1.45rem; height: 1.45rem; display: block; }
+.swipe-meta { display: flex; flex-direction: column; min-width: 0; }
 .swipe-dir {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.66rem;
+  font-size: 0.62rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--fg-muted);
 }
-.swipe-page--older .swipe-dir { flex-direction: row; justify-content: flex-end; }
-.swipe-dir svg { width: 1.05rem; height: 1.05rem; }
+.swipe-title {
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.2;
+  max-height: 2.4em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
 /* While dragging: lock horizontal overflow and hide the progress widget so the
    page slides cleanly under the finger. */
 body.swiping { overflow-x: clip; }

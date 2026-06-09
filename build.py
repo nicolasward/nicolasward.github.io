@@ -326,10 +326,8 @@ def build():
             share=share_row(f"{SITE_URL}{BASE_PATH}/{post['slug']}", post["title"]),
             newer_url=(f"{BASE_PATH}/{newer['slug']}" if newer else ""),
             newer_title=(html.escape(newer["title"], quote=True) if newer else ""),
-            newer_meta=(html.escape(f"{format_date_long(newer['date'])} · {newer['read_time']} min read") if newer else ""),
             older_url=(f"{BASE_PATH}/{older['slug']}" if older else ""),
             older_title=(html.escape(older["title"], quote=True) if older else ""),
-            older_meta=(html.escape(f"{format_date_long(older['date'])} · {older['read_time']} min read") if older else ""),
         )
 
         page_html = render(

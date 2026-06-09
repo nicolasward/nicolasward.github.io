@@ -573,7 +573,8 @@
     // crosses that line while you scroll — never a whole paragraph at once.
     // The mask never touches the markup, so links/lists stay intact.
     (function () {
-      if (!document.body.classList.contains('article')) return;
+      if (!document.body.classList.contains('article') &&
+          !document.body.classList.contains('page')) return;
       var content = document.querySelector('.post-content');
       if (!content) return;
       if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -595,10 +596,12 @@
 
       // Opening fold: cascade the visible blocks in on load — starting after
       // the header (title → meta → share) so the page reveals top-to-bottom.
+      // Static pages (About) have no share row, so the body follows the title.
+      var baseDelay = document.querySelector('.post-header .post-share') ? 0.78 : 0.4;
       var vi = 0;
       blocks.forEach(function (el) {
         if (el.getBoundingClientRect().top < threshold) {
-          el.style.setProperty('--d', (0.78 + vi * 0.12).toFixed(2) + 's');
+          el.style.setProperty('--d', (baseDelay + vi * 0.12).toFixed(2) + 's');
           el.addEventListener('animationend', cleanup);
           el.classList.add('in');
           vi++;

@@ -403,7 +403,7 @@ def build():
             title = meta.get("title", filepath.stem.replace("-", " ").title())
 
             pg_html = render(page_tpl, title=title, content=prefix_internal_links(html_content, slug_set, BASE_PATH))
-            full_html = render(base_tpl, base=BASE_PATH, title=f'{title} — {SITE_TITLE}', content=pg_html, nav_section=writing_nav, body_class="", selection_toolbar="")
+            full_html = render(base_tpl, base=BASE_PATH, title=f'{title} — {SITE_TITLE}', content=pg_html, nav_section=writing_nav, body_class="page", selection_toolbar="")
 
             pg_dir = BLOG_DIR / slug
             pg_dir.mkdir(parents=True, exist_ok=True)

@@ -863,7 +863,10 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 /* While dragging: lock horizontal overflow and hide the progress widget so the
    page slides cleanly under the finger. */
 body.swiping { overflow-x: clip; }
-body.swiping #reading-progress { opacity: 0; transition: none; pointer-events: none; }
+/* Hide the progress ring while swiping — !important so it beats the widget's
+   own (filled) entrance animation, which otherwise keeps it visible and it
+   jumps around as a fixed child of the translated <main>. */
+body.swiping #reading-progress { opacity: 0 !important; transition: none; pointer-events: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .post-title,

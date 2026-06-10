@@ -163,7 +163,7 @@ html.vt-contract::view-transition-old(root) {
   top: 0;
   z-index: 50;
   margin: 0 -1.5rem 2.6rem;
-  padding: 2.1rem 1.5rem 0.9rem;
+  padding: 1.15rem 1.5rem 0.9rem;
 }
 /* Frosted glass that DISSOLVES into the page along its lower edge (a soft
    gradient mask) instead of ending in a clinical hairline — it reads as glass
@@ -1916,7 +1916,7 @@ h3:hover .heading-anchor {
     margin-right: -1.25rem;
     padding-left: 1.25rem;
     padding-right: 1.25rem;
-    padding-top: calc(env(safe-area-inset-top, 0px) + 1.5rem);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 0.8rem);
   }
 
   .site-nav {

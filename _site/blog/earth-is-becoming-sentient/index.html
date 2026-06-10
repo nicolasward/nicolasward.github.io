@@ -877,5 +877,21 @@
       main.addEventListener('touchcancel', onEnd);
     })();
   </script>
+  <script>
+    // Sticky header: switch on the frosted background once it sticks to the top.
+    (function () {
+      var header = document.querySelector('.site-header');
+      if (!header) return;
+      var ticking = false;
+      function update() {
+        ticking = false;
+        header.classList.toggle('scrolled', header.getBoundingClientRect().top <= 0);
+      }
+      window.addEventListener('scroll', function () {
+        if (!ticking) { ticking = true; requestAnimationFrame(update); }
+      }, { passive: true });
+      update();
+    })();
+  </script>
 </body>
 </html>

@@ -153,9 +153,28 @@ html.vt-contract::view-transition-old(root) {
 }
 
 /* ===== Header / Nav ===== */
+/* Sticky frosted bar: breaks out of the container's horizontal padding so the
+   blur reaches the column/screen edges, with the nav re-inset. The background
+   only appears once the header sticks to the top (.scrolled, set by JS). */
 .site-header {
-  padding: 0;
-  margin-bottom: 57.8125px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  margin: 0 -1.5rem 2.6rem;
+  padding: 0.7rem 1.5rem;
+  background-color: transparent;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  transition: background-color 0.25s ease,
+              -webkit-backdrop-filter 0.25s ease,
+              backdrop-filter 0.25s ease,
+              box-shadow 0.25s ease;
+}
+.site-header.scrolled {
+  background-color: var(--overlay-bg);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+          backdrop-filter: blur(12px) saturate(140%);
+  box-shadow: 0 1px 0 var(--border);
 }
 
 .site-nav {
@@ -1864,6 +1883,15 @@ h3:hover .heading-anchor {
 
   .container {
     padding: max(3rem, calc(env(safe-area-inset-top) + 1rem)) 1.25rem 3rem;
+  }
+
+  /* Match the breakout to the mobile container padding so the bar reaches the
+     screen edges. */
+  .site-header {
+    margin-left: -1.25rem;
+    margin-right: -1.25rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
   }
 
   .site-nav {

@@ -866,14 +866,15 @@
     })();
   </script>
   <script>
-    // Sticky header: switch on the frosted background once it sticks to the top.
+    // Floating pill header: frost it in as soon as the page scrolls (the pill
+    // floats at top:0.7rem, so its rect.top never hits 0 — key off scrollY).
     (function () {
       var header = document.querySelector('.site-header');
       if (!header) return;
       var ticking = false;
       function update() {
         ticking = false;
-        header.classList.toggle('scrolled', header.getBoundingClientRect().top <= 0);
+        header.classList.toggle('scrolled', window.scrollY > 4);
       }
       window.addEventListener('scroll', function () {
         if (!ticking) { ticking = true; requestAnimationFrame(update); }

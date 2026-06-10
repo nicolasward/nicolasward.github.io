@@ -177,12 +177,7 @@ html.vt-contract::view-transition-old(root) {
   left: 0;
   right: 0;
   bottom: -20px;                       /* extend below so the dissolve is gradual */
-  /* Same grain texture as the page, laid over the cool-white wash, so the bar
-     shares the page's graininess instead of looking like flat dead white. */
   background-color: rgba(246, 248, 250, 0.66);
-  background-image: url("/grain.png");
-  background-size: var(--noise-size) var(--noise-size);
-  background-repeat: repeat;
   -webkit-backdrop-filter: blur(16px);
           backdrop-filter: blur(16px);
   -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 64%, transparent 100%);
@@ -192,11 +187,7 @@ html.vt-contract::view-transition-old(root) {
   pointer-events: none;
 }
 .site-header.scrolled::before { opacity: 1; }
-/* Dark mode has no page grain (the canvas is flat), so the bar matches: no grain. */
-[data-theme="dark"] .site-header::before {
-  background-color: rgba(16, 15, 15, 0.56);
-  background-image: none;
-}
+[data-theme="dark"] .site-header::before { background-color: rgba(16, 15, 15, 0.56); }
 
 .site-nav {
   display: flex;

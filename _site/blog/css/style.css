@@ -149,34 +149,36 @@ html.vt-contract::view-transition-old(root) {
   z-index: 2;
   max-width: 760px;
   margin: 0 auto;
-  /* Small top padding = the floating pill's gap from the top (matches its
-     sticky `top`, so it stays put without travelling). */
-  padding: 0.7rem 1.5rem 4rem;
+  /* Top padding = the floating pill's gap from the top (matches its sticky
+     `top`, so it stays put without travelling). */
+  padding: 1.2rem 1.5rem 4rem;
 }
 
 /* ===== Header / Nav ===== */
-/* Apple-style floating pill: a rounded, contained bar pinned with a small gap
-   from the top. At rest it's just the nav; on scroll a frosted blur, a dark-grey
-   contour and a soft shadow fade in so it reads as floating glass. Monochrome —
-   no colour. */
+/* Apple-style floating pill. At the top it spans the full body width with no
+   padding (the nav lines up with the body); on scroll the horizontal padding
+   animates in so the nav slides neatly into a frosted, dark-grey-contoured,
+   softly-shadowed pill. Monochrome — no colour. */
 .site-header {
   position: sticky;
-  top: 0.7rem;
+  top: 1.2rem;
   z-index: 50;
   margin: 0 0 2rem;
-  padding: 0.62rem 1.1rem;
+  padding: 0.62rem 0;                /* full body width at rest — nav aligns with body */
   border-radius: 18px;
   border: 1px solid transparent;
   background-color: transparent;
   -webkit-backdrop-filter: none;
           backdrop-filter: none;
-  transition: background-color 0.3s ease,
+  transition: padding 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 0.3s ease,
               -webkit-backdrop-filter 0.3s ease,
               backdrop-filter 0.3s ease,
               border-color 0.3s ease,
               box-shadow 0.3s ease;
 }
 .site-header.scrolled {
+  padding: 0.62rem 1.1rem;           /* nav slides into the pill */
   background-color: rgba(246, 248, 250, 0.62);
   -webkit-backdrop-filter: blur(14px);
           backdrop-filter: blur(14px);
@@ -1897,13 +1899,16 @@ h3:hover .heading-anchor {
 
   .container {
     /* Float gap above the pill = the pill's sticky `top` (incl. the safe area). */
-    padding: calc(env(safe-area-inset-top, 0px) + 0.5rem) 1.25rem 3rem;
+    padding: calc(env(safe-area-inset-top, 0px) + 0.9rem) 1.25rem 3rem;
   }
 
-  /* Contained pill (no full-bleed), pinned below the status-bar safe area. */
+  /* Full body width at rest; pinned below the status-bar safe area. */
   .site-header {
-    top: calc(env(safe-area-inset-top, 0px) + 0.5rem);
-    padding: 0.55rem 1rem;
+    top: calc(env(safe-area-inset-top, 0px) + 0.9rem);
+    padding: 0.55rem 0;
+  }
+  .site-header.scrolled {
+    padding: 0.55rem 1rem;   /* slides into the pill on scroll */
   }
 
   .site-nav {

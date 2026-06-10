@@ -315,7 +315,7 @@ html.vt-contract::view-transition-old(root) {
   mask-repeat: no-repeat;
   -webkit-mask-position: center;
   mask-position: center;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
 }
 
 [data-theme="dark"] .theme-toggle .toggle-knob {
@@ -332,6 +332,44 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 ::view-transition-group(theme-knob) {
   animation-duration: 0.5s;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ===== Toggle → close ✕ morph (search) ===== */
+/* The ✕ strokes live inside the toggle, collapsed to a single vertical line.
+   When search opens, JS lifts the toggle above the overlay and adds .as-close:
+   the pill border and the sun/moon knob dissolve while the line unfolds into
+   the cross. It all reverses on close, so the toggle genuinely morphs in place. */
+.theme-toggle .toggle-x {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 21px;
+  height: 21px;
+  transform: translate(-50%, -50%);
+  color: var(--fg-muted);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.theme-toggle .toggle-x line {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.theme-toggle .toggle-x .tx1 { transform: rotate(45deg); }    /* collapsed → vertical line */
+.theme-toggle .toggle-x .tx2 { transform: rotate(-45deg); }
+
+.theme-toggle.as-close { border-color: transparent; }         /* pill outline dissolves */
+.theme-toggle.as-close .toggle-knob { opacity: 0; }           /* sun/moon fades out */
+.theme-toggle.as-close .toggle-x { opacity: 1; transition-delay: 0.08s; }
+.theme-toggle.as-close .toggle-x .tx1,
+.theme-toggle.as-close .toggle-x .tx2 {
+  transform: rotate(0deg);                                    /* line unfolds into the cross */
+  transition-delay: 0.1s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle .toggle-x,
+  .theme-toggle .toggle-x line { transition: none; }
 }
 
 /* ===== Homepage post list ===== */
@@ -2037,15 +2075,13 @@ h3:hover .heading-anchor {
     display: none;
   }
 
-  /* Show the tap-to-close button instead — and land it over the theme toggle
-     (positioned in JS) so the toggle resolves into the cross. */
+  /* Show the tap-to-close button — but while searching the toggle becomes the
+     ✕ (see below), so hide this redundant one. */
   .search-close {
     display: inline-flex;
   }
-  /* Fade the real toggle out beneath the ✕ while search is open. */
-  html.searching .theme-toggle {
-    opacity: 0;
-    pointer-events: none;
+  html.searching .search-close {
+    display: none;
   }
 
   /* A more deliberate open on mobile: sit higher so results clear the keyboard,

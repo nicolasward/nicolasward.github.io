@@ -39,7 +39,7 @@
             <line x1="12.8" y1="12.8" x2="17.5" y2="17.5"/>
           </svg>
         </button>
-        <div class="theme-toggle" id="theme-toggle" role="button" tabindex="0" aria-label="Toggle theme" title="Press T to toggle"><span class="toggle-knob" aria-hidden="true"></span></div>
+        <div class="theme-toggle" id="theme-toggle" role="button" tabindex="0" aria-label="Toggle theme" title="Press T to toggle"><span class="toggle-knob" aria-hidden="true"></span><svg class="toggle-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line class="tx1" x1="6" y1="6" x2="18" y2="18"/><line class="tx2" x1="18" y1="6" x2="6" y2="18"/></svg></div>
       </nav>
     </header>
 
@@ -183,6 +183,8 @@ Addition feels productive.</span>
       const inputWrap  = document.getElementById('search-input-wrap');
       const results    = document.getElementById('search-results');
       const clearBtn   = document.getElementById('search-clear');
+      const toggle     = document.getElementById('theme-toggle');
+      let toggleHome   = null;   // the toggle's nav parent, so we can re-home it
       let INDEX = null;
       let isOpen = false;
       let selectedIndex = -1;
@@ -257,16 +259,23 @@ Addition feels productive.</span>
           overlay.style.setProperty('--sy', cy + 'px');
           overlay.style.setProperty('--sr', rad + 'px');
         }
-        // Land the close ✕ exactly over the theme toggle, so the toggle appears
-        // to resolve into the cross. (The real toggle can't paint above the
-        // overlay — it's trapped in .container's stacking context — so we move
-        // the overlay's own ✕ onto it and fade the toggle out beneath.)
-        var tgl = document.getElementById('theme-toggle');
-        if (tgl && searchClose) {
-          var tr = tgl.getBoundingClientRect();
-          searchClose.style.top = (tr.top + tr.height / 2 - searchClose.offsetHeight / 2) + 'px';
-          searchClose.style.left = (tr.left + tr.width / 2 - searchClose.offsetWidth / 2) + 'px';
-          searchClose.style.right = 'auto';
+        // Lift the REAL toggle out to <body> (above the overlay — it can't paint
+        // there from inside .container's stacking context) pinned at its exact
+        // spot, then morph it pill→✕ in place. So the toggle itself becomes the
+        // close control rather than being swapped for a separate one.
+        if (toggle) {
+          toggleHome = toggle.parentNode;
+          var trc = toggle.getBoundingClientRect();
+          toggle.style.position = 'fixed';
+          toggle.style.top = trc.top + 'px';
+          toggle.style.left = trc.left + 'px';
+          toggle.style.width = trc.width + 'px';
+          toggle.style.height = trc.height + 'px';
+          toggle.style.margin = '0';
+          toggle.style.zIndex = '1001';
+          document.body.appendChild(toggle);
+          // Next frame, trigger the morph so the transition actually runs.
+          requestAnimationFrame(function () { toggle.classList.add('as-close'); });
         }
         document.documentElement.classList.add('searching');
         overlay.classList.add('open');
@@ -307,12 +316,19 @@ Addition feels productive.</span>
         overlay.setAttribute('aria-hidden', 'true');
         isOpen = false;
         input.blur();
-        // Toggle fades back in (cross folds back to a line) as the overlay exits.
-        document.documentElement.classList.remove('searching');
+        // Morph the ✕ back to the toggle as the overlay exits.
+        if (toggle) toggle.classList.remove('as-close');
         if (closeTimeout) clearTimeout(closeTimeout);
         closeTimeout = setTimeout(() => {
           overlay.classList.remove('closing');
           document.documentElement.style.overflow = '';
+          document.documentElement.classList.remove('searching');
+          // Re-home the toggle into the nav (it's morphed back to a pill by now).
+          if (toggle && toggleHome) {
+            toggle.removeAttribute('style');
+            toggleHome.appendChild(toggle);
+            toggleHome = null;
+          }
           closeTimeout = null;
         }, EXIT_DURATION);
       }
@@ -380,6 +396,12 @@ Addition feels productive.</span>
       // On-screen close button (needed on touch where there's no Esc key)
       const searchClose = document.getElementById('search-close');
       if (searchClose) searchClose.addEventListener('click', () => close());
+
+      // While search is open the toggle IS the close ✕ — clicking it closes
+      // search (and the theme handler bails out, see toggleTheme's guard).
+      if (toggle) toggle.addEventListener('click', function () {
+        if (document.documentElement.classList.contains('searching')) close();
+      });
 
       document.addEventListener('keydown', function (e) {
         const tag = (document.activeElement && document.activeElement.tagName) || '';
@@ -553,6 +575,8 @@ Addition feels productive.</span>
       // circular wipe expanding outward from the toggle (View Transitions API),
       // led by the knob and lit at its wavefront; otherwise it just switches.
       function toggleTheme() {
+        // While search is open the toggle acts as the close ✕ — don't switch theme.
+        if (html.classList.contains('searching')) return;
         const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (navigator.vibrate) { try { navigator.vibrate(8); } catch (e) {} }  // tiny tactile tap

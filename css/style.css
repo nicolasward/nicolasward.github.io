@@ -342,38 +342,36 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* ===== Toggle contour → close ✕ morph (search) ===== */
-/* When search opens, JS lifts the toggle above the overlay and adds .as-close:
-   the two long edges of the capsule swing in and cross into the ✕ diagonals
-   while the round end caps and the sun/moon knob dissolve. It all reverses on
-   close — the contour itself morphs, smoothly, rather than being swapped. */
-.theme-toggle .ts-cap,
-.theme-toggle .ts-top,
-.theme-toggle .ts-bot {
-  transform-box: fill-box;
-  transform-origin: center;
-  transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1),
-              stroke-width 0.4s ease,
-              opacity 0.3s ease;
+/* ===== Toggle ⇄ close ✕ : snake morph (search) ===== */
+/* The pill outline and the ✕ are each a single continuous stroke. When search
+   opens (JS lifts the toggle above the overlay + adds .as-close) the pill
+   "snakes" away via stroke-dashoffset and the ✕ snakes in just behind it,
+   weaving through the centre around the sun/moon (which fades). Reverses on
+   close, so it reads as one line slithering between the two shapes. */
+.theme-toggle .toggle-shape path { stroke-dasharray: 100; }
+.theme-toggle .ts-pill {
+  stroke-width: 1.2;
+  stroke-dashoffset: 0;                                  /* drawn at rest */
+  /* On close the pill redraws LAST (delay lets the ✕ retract first). */
+  transition: stroke-dashoffset 0.5s cubic-bezier(0.65, 0, 0.35, 1) 0.18s;
 }
-
+.theme-toggle .ts-cross {
+  stroke-width: 1.8;
+  stroke-dashoffset: 100;                                /* hidden at rest */
+  transition: stroke-dashoffset 0.5s cubic-bezier(0.65, 0, 0.35, 1) 0s;
+}
 .theme-toggle.as-close .toggle-shape { color: var(--fg-muted); }   /* ✕ reads a touch stronger */
-.theme-toggle.as-close .ts-cap { opacity: 0; }                     /* round ends dissolve */
 .theme-toggle.as-close .toggle-knob { opacity: 0; }                /* sun/moon fades out */
-/* Map each 18-wide edge onto a square, 45° diagonal (stretch ×1.10, rotate ±45°,
-   drop to the centre) so the edges cross into a well-proportioned ✕. */
-.theme-toggle.as-close .ts-top {
-  transform: translate(0, 10px) rotate(45deg) scaleX(1.10);
-  stroke-width: 2;
+.theme-toggle.as-close .ts-pill {
+  stroke-dashoffset: 100;                                /* snakes away first … */
+  transition-delay: 0s;
 }
-.theme-toggle.as-close .ts-bot {
-  transform: translate(0, -10px) rotate(-45deg) scaleX(1.10);
-  stroke-width: 2;
+.theme-toggle.as-close .ts-cross {
+  stroke-dashoffset: 0;                                  /* … then the ✕ snakes in */
+  transition-delay: 0.18s;
 }
 @media (prefers-reduced-motion: reduce) {
-  .theme-toggle .ts-cap,
-  .theme-toggle .ts-top,
-  .theme-toggle .ts-bot { transition: none; }
+  .theme-toggle .toggle-shape path { transition: none; }
 }
 
 /* ===== Homepage post list ===== */

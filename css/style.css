@@ -273,19 +273,27 @@ html.vt-contract::view-transition-old(root) {
 .theme-toggle {
   width: 39.6px;
   height: 22px;
-  border-radius: 11px;
   background: transparent;
-  border: 1px solid var(--flexoki-300);
+  border: none;
   cursor: pointer;
   position: relative;
-  transition: border-color 0.2s ease, transform 0.12s ease, opacity 0.25s ease;
+  transition: transform 0.12s ease, opacity 0.25s ease;
 }
 /* Press feedback — the control dips, then settles. */
 .theme-toggle:active { transform: scale(0.9); }
 
-[data-theme="dark"] .theme-toggle {
-  border-color: var(--flexoki-900);
+/* The pill outline is an inline SVG (two edge lines + two end caps) so it can
+   genuinely morph: on .as-close the edge lines rotate/stretch into the ✕
+   diagonals while the caps fade. The stroke colour matches the old border. */
+.theme-toggle .toggle-shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--flexoki-300);
+  transition: color 0.4s ease;
 }
+[data-theme="dark"] .theme-toggle .toggle-shape { color: var(--flexoki-900); }
 
 @media (hover: hover) {
   .theme-toggle:hover .toggle-knob,
@@ -334,42 +342,35 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* ===== Toggle → close ✕ morph (search) ===== */
-/* The ✕ strokes live inside the toggle, collapsed to a single vertical line.
-   When search opens, JS lifts the toggle above the overlay and adds .as-close:
-   the pill border and the sun/moon knob dissolve while the line unfolds into
-   the cross. It all reverses on close, so the toggle genuinely morphs in place. */
-.theme-toggle .toggle-x {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 21px;
-  height: 21px;
-  transform: translate(-50%, -50%);
-  color: var(--fg-muted);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-}
-.theme-toggle .toggle-x line {
+/* ===== Toggle contour → close ✕ morph (search) ===== */
+/* When search opens, JS lifts the toggle above the overlay and adds .as-close:
+   the two long edges of the capsule swing in and cross into the ✕ diagonals
+   while the round end caps and the sun/moon knob dissolve. It all reverses on
+   close — the contour itself morphs, smoothly, rather than being swapped. */
+.theme-toggle .ts-cap,
+.theme-toggle .ts-top,
+.theme-toggle .ts-bot {
   transform-box: fill-box;
   transform-origin: center;
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1),
+              opacity 0.3s ease;
 }
-.theme-toggle .toggle-x .tx1 { transform: rotate(45deg); }    /* collapsed → vertical line */
-.theme-toggle .toggle-x .tx2 { transform: rotate(-45deg); }
 
-.theme-toggle.as-close { border-color: transparent; }         /* pill outline dissolves */
-.theme-toggle.as-close .toggle-knob { opacity: 0; }           /* sun/moon fades out */
-.theme-toggle.as-close .toggle-x { opacity: 1; transition-delay: 0.08s; }
-.theme-toggle.as-close .toggle-x .tx1,
-.theme-toggle.as-close .toggle-x .tx2 {
-  transform: rotate(0deg);                                    /* line unfolds into the cross */
-  transition-delay: 0.1s;
+.theme-toggle.as-close .toggle-shape { color: var(--fg-muted); }   /* ✕ reads a touch stronger */
+.theme-toggle.as-close .ts-cap { opacity: 0; }                     /* round ends dissolve */
+.theme-toggle.as-close .toggle-knob { opacity: 0; }                /* sun/moon fades out */
+/* Map each 18-wide edge exactly onto a diagonal: stretch ×1.543, rotate ±30.26°,
+   drop to the centre — so the top/bottom edges cross into a clean ✕. */
+.theme-toggle.as-close .ts-top {
+  transform: translate(0, 10px) rotate(30.26deg) scaleX(1.543);
+}
+.theme-toggle.as-close .ts-bot {
+  transform: translate(0, -10px) rotate(-30.26deg) scaleX(1.543);
 }
 @media (prefers-reduced-motion: reduce) {
-  .theme-toggle .toggle-x,
-  .theme-toggle .toggle-x line { transition: none; }
+  .theme-toggle .ts-cap,
+  .theme-toggle .ts-top,
+  .theme-toggle .ts-bot { transition: none; }
 }
 
 /* ===== Homepage post list ===== */

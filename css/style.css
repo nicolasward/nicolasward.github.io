@@ -149,54 +149,45 @@ html.vt-contract::view-transition-old(root) {
   z-index: 2;
   max-width: 760px;
   margin: 0 auto;
-  /* No top padding: the pinned header owns the top, so it doesn't travel. */
-  padding: 0 1.5rem 4rem;
+  /* Small top padding = the floating pill's gap from the top (matches its
+     sticky `top`, so it stays put without travelling). */
+  padding: 0.7rem 1.5rem 4rem;
 }
 
 /* ===== Header / Nav ===== */
-/* Pinned frosted bar: sits flush at the top from the first pixel (the container
-   has no top padding), so it stays put — it never travels up on scroll. Breaks
-   out of the container's horizontal padding so the blur reaches the edges. A
-   LIGHT blur + cool wash fade in smoothly once you scroll, so the header
-   gently veils the content without distracting from it. */
+/* Apple-style floating pill: a rounded, contained bar pinned with a small gap
+   from the top. At rest it's just the nav; on scroll a frosted blur, a dark-grey
+   contour and a soft shadow fade in so it reads as floating glass. Monochrome —
+   no colour. */
 .site-header {
   position: sticky;
-  top: 0;
+  top: 0.7rem;
   z-index: 50;
-  margin: 0 -1.5rem 2.4rem;
-  padding: 1.5rem 1.5rem 0.95rem;
+  margin: 0 0 2rem;
+  padding: 0.62rem 1.1rem;
+  border-radius: 18px;
+  border: 1px solid transparent;
+  background-color: transparent;
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  transition: background-color 0.3s ease,
+              -webkit-backdrop-filter 0.3s ease,
+              backdrop-filter 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
 }
-/* Frosted glass with a faint wash of the landing-page palette (teal → plum →
-   sunset) over the cool wash, so the bar carries a hint of colour. On a pseudo
-   so only the background is blurred + tinted, and it fades in smoothly. */
-.site-header::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-color: rgba(246, 248, 250, 0.55);   /* neutral cool wash — colour lives only in the line */
-  -webkit-backdrop-filter: blur(8px);
-          backdrop-filter: blur(8px);
-  opacity: 0;
-  transition: opacity 0.35s ease;
-  pointer-events: none;
+.site-header.scrolled {
+  background-color: rgba(246, 248, 250, 0.62);
+  -webkit-backdrop-filter: blur(14px);
+          backdrop-filter: blur(14px);
+  border-color: rgba(60, 62, 72, 0.24);                 /* dark-grey contour */
+  box-shadow: 0 8px 22px -14px rgba(20, 25, 40, 0.28);  /* soft float */
 }
-/* The splash: a fine warm sunset line (amber → orange → coral) along the bottom. */
-.site-header::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #FFB45E 0%, #FF7A1F 52%, #FF5E45 100%);
-  opacity: 0;
-  transition: opacity 0.35s ease;
-  pointer-events: none;
+[data-theme="dark"] .site-header.scrolled {
+  background-color: rgba(32, 31, 31, 0.55);
+  border-color: rgba(225, 226, 235, 0.16);
+  box-shadow: 0 8px 22px -14px rgba(0, 0, 0, 0.5);
 }
-.site-header.scrolled::before { opacity: 1; }
-.site-header.scrolled::after  { opacity: 0.9; }
-[data-theme="dark"] .site-header::before { background-color: rgba(16, 15, 15, 0.5); }
 
 .site-nav {
   display: flex;
@@ -1905,18 +1896,14 @@ h3:hover .heading-anchor {
   }
 
   .container {
-    /* No top padding — the pinned header owns the top (incl. the safe area). */
-    padding: 0 1.25rem 3rem;
+    /* Float gap above the pill = the pill's sticky `top` (incl. the safe area). */
+    padding: calc(env(safe-area-inset-top, 0px) + 0.5rem) 1.25rem 3rem;
   }
 
-  /* Match the breakout to the mobile container padding; the top padding clears
-     the status-bar safe area. */
+  /* Contained pill (no full-bleed), pinned below the status-bar safe area. */
   .site-header {
-    margin-left: -1.25rem;
-    margin-right: -1.25rem;
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-    padding-top: calc(env(safe-area-inset-top, 0px) + 1.1rem);
+    top: calc(env(safe-area-inset-top, 0px) + 0.5rem);
+    padding: 0.55rem 1rem;
   }
 
   .site-nav {

@@ -237,16 +237,29 @@
         isOpen = true;
         if (initialQuery !== undefined) input.value = initialQuery;
         syncClear(); // setting .value programmatically doesn't fire 'input', so sync manually
-        // Focus synchronously, inside the user gesture, so iOS Safari opens the
-        // keyboard and shows the caret right away (a focus deferred to the next
-        // frame is ignored by iOS because it's outside the originating gesture).
-        input.focus();
-        input.setSelectionRange(input.value.length, input.value.length);
-        requestAnimationFrame(() => {
+        var isTouch = navigator.maxTouchPoints > 0 ||
+                      (window.matchMedia && matchMedia('(pointer: coarse)').matches);
+        if (isTouch) {
+          // Let the open animation play first — focusing synchronously would
+          // throw the keyboard up over the entrance. Focus once it has settled
+          // (on iOS the keyboard then waits for a tap on the field, which is
+          // fine; on Android it rises after the reveal).
+          setTimeout(function () {
+            input.focus();
+            var len = input.value.length;
+            input.setSelectionRange(len, len);
+          }, 540);
+        } else {
+          // Desktop: focus synchronously, inside the user gesture, so the caret
+          // shows right away and you can type immediately.
           input.focus();
-          const len = input.value.length;
-          input.setSelectionRange(len, len);
-        });
+          input.setSelectionRange(input.value.length, input.value.length);
+          requestAnimationFrame(() => {
+            input.focus();
+            const len = input.value.length;
+            input.setSelectionRange(len, len);
+          });
+        }
         ensureIndex(() => render(input.value));
       }
       function close() {

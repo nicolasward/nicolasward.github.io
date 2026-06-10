@@ -35,37 +35,9 @@ _ICON_WHATSAPP = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true
 _ICON_MAIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>'
 _ICON_LINK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l2-2a5 5 0 0 0-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.07 0l-2 2a5 5 0 0 0 7.07 7.07l1.5-1.5"/></svg>'
 _ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
-_ICON_CLIPBOARD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>'
 # Matter (read-later): bookmark glyph standing in for the brand mark — swap in
 # the official SVG path here if desired.
 _ICON_MATTER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"/></svg>'
-_ICON_CHEVRON_LEFT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>'
-
-
-def selection_toolbar():
-    """Floating toolbar shown when a reader highlights article body text.
-    Two stacked states share one box: actions (copy / quote), then the quote
-    share icons. Hrefs are filled in client-side from the live selection."""
-    return (
-        '<div id="selection-toolbar" class="sel-toolbar" aria-hidden="true">'
-          '<div class="sel-actions">'
-            '<button class="sel-btn sel-act-copy" type="button"><span class="sel-btn-label">Copy</span></button>'
-            '<span class="sel-sep"></span>'
-            '<button class="sel-btn sel-act-quote" type="button"><span class="sel-btn-label">Quote</span></button>'
-          '</div>'
-          '<div class="sel-share">'
-            f'<button class="sel-back" type="button" aria-label="Back">{_ICON_CHEVRON_LEFT}</button>'
-            '<span class="sel-sep"></span>'
-            f'<a class="sel-icon" data-net="linkedin" target="_blank" rel="noopener" aria-label="Share quote on LinkedIn">{_ICON_LINKEDIN}</a>'
-            f'<a class="sel-icon" data-net="x" target="_blank" rel="noopener" aria-label="Share quote on X">{_ICON_X}</a>'
-            f'<a class="sel-icon" data-net="whatsapp" target="_blank" rel="noopener" aria-label="Share quote on WhatsApp">{_ICON_WHATSAPP}</a>'
-            f'<a class="sel-icon" data-net="email" aria-label="Share quote by email">{_ICON_MAIL}</a>'
-            '<button class="sel-icon sel-quote-copy" type="button" aria-label="Copy quote">'
-            f'<span class="icon-link">{_ICON_CLIPBOARD}</span><span class="icon-check">{_ICON_CHECK}</span>'
-            '</button>'
-          '</div>'
-        '</div>'
-    )
 
 
 def share_row(url, title):
@@ -337,7 +309,6 @@ def build():
             content=post_html,
             nav_section=writing_nav,
             body_class="article",
-            selection_toolbar=selection_toolbar(),
         )
 
         post_dir = BLOG_DIR / post["slug"]
@@ -387,7 +358,7 @@ def build():
     topic_links = ", ".join(f'<a href="#" data-search="{tag}">{tag}</a>' for tag in all_tags)
 
     home_html = render(home_tpl, post_items=post_items, topic_links=topic_links, latest_section=latest_section)
-    index_html = render(base_tpl, base=BASE_PATH, title=SITE_TITLE, content=home_html, nav_section=writing_nav, body_class="home", selection_toolbar="")
+    index_html = render(base_tpl, base=BASE_PATH, title=SITE_TITLE, content=home_html, nav_section=writing_nav, body_class="home")
     (BLOG_DIR / "index.html").write_text(index_html)
 
     # --- Build static pages ---
@@ -403,7 +374,7 @@ def build():
             title = meta.get("title", filepath.stem.replace("-", " ").title())
 
             pg_html = render(page_tpl, title=title, content=prefix_internal_links(html_content, slug_set, BASE_PATH))
-            full_html = render(base_tpl, base=BASE_PATH, title=f'{title} — {SITE_TITLE}', content=pg_html, nav_section=writing_nav, body_class="page", selection_toolbar="")
+            full_html = render(base_tpl, base=BASE_PATH, title=f'{title} — {SITE_TITLE}', content=pg_html, nav_section=writing_nav, body_class="page")
 
             pg_dir = BLOG_DIR / slug
             pg_dir.mkdir(parents=True, exist_ok=True)

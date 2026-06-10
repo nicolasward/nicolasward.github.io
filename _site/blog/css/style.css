@@ -149,9 +149,7 @@ html.vt-contract::view-transition-old(root) {
   z-index: 2;
   max-width: 760px;
   margin: 0 auto;
-  /* No top padding: the sticky header sits flush at the top from the first
-     pixel, so it never travels up before sticking — it stays constant. */
-  padding: 0 1.5rem 4rem;
+  padding: 4rem 1.5rem 4rem;
 }
 
 /* ===== Header / Nav ===== */
@@ -163,7 +161,7 @@ html.vt-contract::view-transition-old(root) {
   top: 0;
   z-index: 50;
   margin: 0 -1.5rem 2.6rem;
-  padding: 1.15rem 1.5rem 0.9rem;
+  padding: 0.7rem 1.5rem;
   background-color: transparent;
   -webkit-backdrop-filter: none;
           backdrop-filter: none;
@@ -1891,18 +1889,16 @@ h3:hover .heading-anchor {
   }
 
   .container {
-    /* No top padding — the header owns the top (incl. the safe-area inset). */
-    padding: 0 1.25rem 3rem;
+    padding: max(3rem, calc(env(safe-area-inset-top) + 1rem)) 1.25rem 3rem;
   }
 
   /* Match the breakout to the mobile container padding so the bar reaches the
-     screen edges; the top padding clears the status-bar safe area. */
+     screen edges. */
   .site-header {
     margin-left: -1.25rem;
     margin-right: -1.25rem;
     padding-left: 1.25rem;
     padding-right: 1.25rem;
-    padding-top: calc(env(safe-area-inset-top, 0px) + 0.8rem);
   }
 
   .site-nav {

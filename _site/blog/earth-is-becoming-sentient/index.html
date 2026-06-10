@@ -245,6 +245,14 @@
         toggle.style.margin = '0';
         toggle.style.zIndex = '1001';
         document.body.appendChild(toggle);
+        // Moving the toggle restarts any CSS animation on its children — on the
+        // homepage the nav-stroke-draw load animation would restart and (since a
+        // running animation beats a transition) fight the morph, leaving the pill
+        // drawn. Kill those one-shot load animations so the morph can run.
+        ['.ts-pill', '.ts-cross', '.toggle-knob'].forEach(function (sel) {
+          var el = toggle.querySelector(sel);
+          if (el) el.style.animation = 'none';
+        });
       }
       // Morph done — drop it back into its exact nav slot and clear the lift.
       function homeToggle() {

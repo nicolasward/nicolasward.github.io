@@ -578,6 +578,12 @@
     // can stagger the rise. Rows are hidden up front via the .js gate in CSS.
     (function () {
       if (!document.body.classList.contains('home')) return;
+      // Header first: reveal the nav links left-to-right.
+      var heads = document.querySelectorAll('.site-nav > a');
+      for (var h = 0; h < heads.length; h++) {
+        heads[h].style.setProperty('--hi', h);
+        heads[h].classList.add('head-in');
+      }
       var rows = document.querySelectorAll(
         'main .section-label, main .latest-card, main .section-divider, ' +
         'main .post-list li, main .topics-inline'

@@ -1391,6 +1391,16 @@ h3:hover .heading-anchor {
   to   { opacity: 0; }
 }
 
+/* Mobile entrance: the bar rises in and its underline draws open from centre. */
+@keyframes search-rise {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes search-draw {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
 /* True reverse exit — the order things appeared is the order they leave:
    hints first, then results bottom-up, then divider, then the search bar last. */
 
@@ -2026,6 +2036,25 @@ h3:hover .heading-anchor {
   /* Show the tap-to-close button instead */
   .search-close {
     display: inline-flex;
+  }
+
+  /* A more deliberate open on mobile: sit higher so results clear the keyboard,
+     then the bar rises in and its underline draws open from the centre (instead
+     of a flat fade), in step with the ripple from the magnifier. */
+  .search-modal {
+    top: 20%;
+    transform: translate(-50%, 0);
+  }
+  .search-overlay.open .search-input-wrap {
+    animation: search-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .search-overlay.open .search-divider {
+    transform-origin: center;
+    animation: search-draw 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .search-overlay.open .search-input-wrap,
+    .search-overlay.open .search-divider { animation: none; opacity: 1; transform: none; }
   }
 
   /* Linked-mention cards: calmer title size/weight on mobile */

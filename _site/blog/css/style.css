@@ -165,23 +165,42 @@ html.vt-contract::view-transition-old(root) {
   z-index: 50;
   margin: 0 -1.5rem 2.4rem;
   padding: 1.5rem 1.5rem 0.95rem;
-  background-color: transparent;
-  -webkit-backdrop-filter: none;
-          backdrop-filter: none;
-  transition: background-color 0.35s ease,
-              -webkit-backdrop-filter 0.35s ease,
-              backdrop-filter 0.35s ease,
-              box-shadow 0.35s ease;
 }
-.site-header.scrolled {
-  background-color: rgba(246, 248, 250, 0.55);
+/* Frosted glass with a faint wash of the landing-page palette (teal → plum →
+   sunset) over the cool wash, so the bar carries a hint of colour. On a pseudo
+   so only the background is blurred + tinted, and it fades in smoothly. */
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-color: rgba(246, 248, 250, 0.5);
+  background-image: linear-gradient(100deg,
+    rgba(0, 128, 128, 0.10) 0%,
+    rgba(124, 107, 234, 0.08) 50%,
+    rgba(255, 121, 27, 0.12) 100%);
   -webkit-backdrop-filter: blur(8px);
           backdrop-filter: blur(8px);
-  box-shadow: 0 1px 0 var(--border);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
 }
-[data-theme="dark"] .site-header.scrolled {
-  background-color: rgba(16, 15, 15, 0.55);
+/* The splash: a thin vibrant gradient line along the bottom edge. */
+.site-header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #008080 0%, #7C6BEA 50%, #FF791B 100%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
 }
+.site-header.scrolled::before { opacity: 1; }
+.site-header.scrolled::after  { opacity: 0.9; }
+[data-theme="dark"] .site-header::before { background-color: rgba(16, 15, 15, 0.5); }
 
 .site-nav {
   display: flex;

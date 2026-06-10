@@ -149,37 +149,38 @@ html.vt-contract::view-transition-old(root) {
   z-index: 2;
   max-width: 760px;
   margin: 0 auto;
-  padding: 4rem 1.5rem 4rem;
+  /* No top padding: the pinned header owns the top, so it doesn't travel. */
+  padding: 0 1.5rem 4rem;
 }
 
 /* ===== Header / Nav ===== */
-/* Sticky frosted bar: breaks out of the container's horizontal padding so the
-   blur reaches the column/screen edges, with the nav re-inset. The background
-   only appears once the header sticks to the top (.scrolled, set by JS). */
+/* Pinned frosted bar: sits flush at the top from the first pixel (the container
+   has no top padding), so it stays put — it never travels up on scroll. Breaks
+   out of the container's horizontal padding so the blur reaches the edges. A
+   LIGHT blur + cool wash fade in smoothly once you scroll, so the header
+   gently veils the content without distracting from it. */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 50;
-  margin: 0 -1.5rem 2.6rem;
-  padding: 0.7rem 1.5rem;
+  margin: 0 -1.5rem 2.4rem;
+  padding: 1.5rem 1.5rem 0.95rem;
   background-color: transparent;
   -webkit-backdrop-filter: none;
           backdrop-filter: none;
-  transition: background-color 0.25s ease,
-              -webkit-backdrop-filter 0.25s ease,
-              backdrop-filter 0.25s ease,
-              box-shadow 0.25s ease;
+  transition: background-color 0.35s ease,
+              -webkit-backdrop-filter 0.35s ease,
+              backdrop-filter 0.35s ease,
+              box-shadow 0.35s ease;
 }
 .site-header.scrolled {
-  /* Cool near-white to match the page field; no saturate() — it amplified the
-     warm grain behind the blur and read yellowish. */
-  background-color: rgba(246, 248, 250, 0.72);
-  -webkit-backdrop-filter: blur(14px);
-          backdrop-filter: blur(14px);
+  background-color: rgba(246, 248, 250, 0.55);
+  -webkit-backdrop-filter: blur(8px);
+          backdrop-filter: blur(8px);
   box-shadow: 0 1px 0 var(--border);
 }
 [data-theme="dark"] .site-header.scrolled {
-  background-color: rgba(16, 15, 15, 0.72);
+  background-color: rgba(16, 15, 15, 0.55);
 }
 
 .site-nav {
@@ -1889,16 +1890,18 @@ h3:hover .heading-anchor {
   }
 
   .container {
-    padding: max(3rem, calc(env(safe-area-inset-top) + 1rem)) 1.25rem 3rem;
+    /* No top padding — the pinned header owns the top (incl. the safe area). */
+    padding: 0 1.25rem 3rem;
   }
 
-  /* Match the breakout to the mobile container padding so the bar reaches the
-     screen edges. */
+  /* Match the breakout to the mobile container padding; the top padding clears
+     the status-bar safe area. */
   .site-header {
     margin-left: -1.25rem;
     margin-right: -1.25rem;
     padding-left: 1.25rem;
     padding-right: 1.25rem;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 1.1rem);
   }
 
   .site-nav {

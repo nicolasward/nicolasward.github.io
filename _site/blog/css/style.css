@@ -180,17 +180,31 @@ html.vt-contract::view-transition-old(root) {
   background-color: rgba(246, 248, 250, 0.62);
   -webkit-backdrop-filter: blur(14px);
           backdrop-filter: blur(14px);
-  /* Soft float + a warm orange→pink glow blooming around the pill (box-shadow
-     respects the rounded shape and is reliable on iOS, unlike SVG drop-shadow). */
-  box-shadow: 0 8px 22px -14px rgba(20, 25, 40, 0.28),
-              0 0 12px rgba(255, 138, 80, 0.38),
-              0 0 24px rgba(255, 96, 150, 0.22);
 }
 [data-theme="dark"] .site-header.scrolled {
   background-color: rgba(32, 31, 31, 0.55);
+}
+/* Float + warm orange→pink glow on a SEPARATE pseudo: Safari clips box-shadow on
+   an element that also has backdrop-filter, so the glow has to live elsewhere.
+   Fades in on scroll. */
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  box-shadow: 0 8px 22px -14px rgba(20, 25, 40, 0.28),
+              0 0 12px rgba(255, 138, 80, 0.45),
+              0 0 26px rgba(255, 96, 150, 0.28);
+}
+.site-header.scrolled::before { opacity: 1; }
+[data-theme="dark"] .site-header::before {
   box-shadow: 0 8px 22px -14px rgba(0, 0, 0, 0.5),
-              0 0 13px rgba(255, 140, 85, 0.45),
-              0 0 26px rgba(255, 100, 155, 0.28);
+              0 0 13px rgba(255, 140, 85, 0.5),
+              0 0 30px rgba(255, 100, 155, 0.34);
 }
 
 /* The contour STROKES ITSELF around the pill on scroll (like the toggle pill) —

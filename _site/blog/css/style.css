@@ -353,19 +353,22 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
   transform-box: fill-box;
   transform-origin: center;
   transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1),
+              stroke-width 0.4s ease,
               opacity 0.3s ease;
 }
 
 .theme-toggle.as-close .toggle-shape { color: var(--fg-muted); }   /* ✕ reads a touch stronger */
 .theme-toggle.as-close .ts-cap { opacity: 0; }                     /* round ends dissolve */
 .theme-toggle.as-close .toggle-knob { opacity: 0; }                /* sun/moon fades out */
-/* Map each 18-wide edge exactly onto a diagonal: stretch ×1.543, rotate ±30.26°,
-   drop to the centre — so the top/bottom edges cross into a clean ✕. */
+/* Map each 18-wide edge onto a square, 45° diagonal (stretch ×1.10, rotate ±45°,
+   drop to the centre) so the edges cross into a well-proportioned ✕. */
 .theme-toggle.as-close .ts-top {
-  transform: translate(0, 10px) rotate(30.26deg) scaleX(1.543);
+  transform: translate(0, 10px) rotate(45deg) scaleX(1.10);
+  stroke-width: 2;
 }
 .theme-toggle.as-close .ts-bot {
-  transform: translate(0, -10px) rotate(-30.26deg) scaleX(1.543);
+  transform: translate(0, -10px) rotate(-45deg) scaleX(1.10);
+  stroke-width: 2;
 }
 @media (prefers-reduced-motion: reduce) {
   .theme-toggle .ts-cap,
@@ -2059,6 +2062,12 @@ h3:hover .heading-anchor {
   .search-results a {
     font-size: 17px;
     gap: 0.5rem;
+  }
+
+  /* The bar sits high and the keyboard is deferred, so show more results before
+     clipping (the previous 40vh cut the list off well short of the fold). */
+  .search-results {
+    max-height: 66vh;
   }
 
   .search-results .post-date {

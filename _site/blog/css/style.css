@@ -191,6 +191,22 @@ html.vt-contract::view-transition-old(root) {
   box-shadow: 0 8px 22px -14px rgba(0, 0, 0, 0.5);
 }
 
+/* During the theme wipe, freeze the pill as an OPAQUE bar (no live backdrop-
+   filter) — View Transitions don't reliably capture backdrop-filter into the
+   snapshot, which briefly showed the unblurred content behind the pill. The
+   opaque snapshot has nothing to show through; it fades back to frosted after
+   the wipe via the base transition. transition:none makes the opaque state apply
+   instantly so the snapshot is clean. */
+html.vt-toggling .site-header.scrolled {
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  background-color: rgba(248, 249, 251, 0.97);
+  transition: none;
+}
+html.vt-toggling[data-theme="dark"] .site-header.scrolled {
+  background-color: rgba(27, 26, 26, 0.97);
+}
+
 .site-nav {
   display: flex;
   align-items: center;

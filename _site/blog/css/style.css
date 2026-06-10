@@ -1397,8 +1397,8 @@ h3:hover .heading-anchor {
   to   { opacity: 1; transform: none; }
 }
 @keyframes search-draw {
-  from { transform: scaleX(0); }
-  to   { transform: scaleX(1); }
+  from { opacity: 1; transform: scaleX(0); }
+  to   { opacity: 1; transform: scaleX(1); }
 }
 
 /* True reverse exit — the order things appeared is the order they leave:

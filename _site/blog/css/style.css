@@ -164,25 +164,30 @@ html.vt-contract::view-transition-old(root) {
   z-index: 50;
   margin: 0 -1.5rem 2.6rem;
   padding: 1.15rem 1.5rem 0.9rem;
-  background-color: transparent;
-  -webkit-backdrop-filter: none;
-          backdrop-filter: none;
-  transition: background-color 0.25s ease,
-              -webkit-backdrop-filter 0.25s ease,
-              backdrop-filter 0.25s ease,
-              box-shadow 0.25s ease;
 }
-.site-header.scrolled {
-  /* Cool near-white to match the page field; no saturate() — it amplified the
-     warm grain behind the blur and read yellowish. */
-  background-color: rgba(246, 248, 250, 0.72);
-  -webkit-backdrop-filter: blur(14px);
-          backdrop-filter: blur(14px);
-  box-shadow: 0 1px 0 var(--border);
+/* Frosted glass that DISSOLVES into the page along its lower edge (a soft
+   gradient mask) instead of ending in a clinical hairline — it reads as glass
+   melting into the content rather than a sterile bar. Lives on a pseudo so only
+   the background is blurred + masked, never the nav itself. */
+.site-header::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: -20px;                       /* extend below so the dissolve is gradual */
+  background-color: rgba(246, 248, 250, 0.66);
+  -webkit-backdrop-filter: blur(16px);
+          backdrop-filter: blur(16px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 64%, transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 0, #000 64%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
-[data-theme="dark"] .site-header.scrolled {
-  background-color: rgba(16, 15, 15, 0.72);
-}
+.site-header.scrolled::before { opacity: 1; }
+[data-theme="dark"] .site-header::before { background-color: rgba(16, 15, 15, 0.56); }
 
 .site-nav {
   display: flex;

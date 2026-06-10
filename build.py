@@ -187,6 +187,14 @@ def build():
     post_tpl = read_template("post.html")
     page_tpl = read_template("page.html")
 
+    # Cache-bust the stylesheets with a content hash so browsers always fetch the
+    # latest CSS instead of serving a stale cached copy after a change.
+    import hashlib
+    def _ver(name):
+        return hashlib.md5((CSS_DIR / name).read_bytes()).hexdigest()[:8]
+    base_tpl = base_tpl.replace('css/style.css"', f'css/style.css?v={_ver("style.css")}"')
+    base_tpl = base_tpl.replace('css/flexoki.css"', f'css/flexoki.css?v={_ver("flexoki.css")}"')
+
     # The "/ Writing" header link points back to the blog index. It appears on
     # every part of the blog, not just on individual articles.
     writing_nav = f'<a href="{BASE_PATH}" class="nav-section-link"><span class="nav-slash">/</span> <span class="nav-label">Writing</span></a>'

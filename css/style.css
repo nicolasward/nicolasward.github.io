@@ -577,7 +577,7 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
      holds the content back until the header has fully swept in (~1.35s, see
      .head-in) plus a deliberate half-second pause. */
   animation: home-roll 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: calc(1.85s + var(--i, 0) * 0.026s);
+  animation-delay: calc(1.35s + var(--i, 0) * 0.026s);
 }
 @keyframes home-roll {
   from { opacity: 0; transform: translate(-4px, 11px); }

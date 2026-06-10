@@ -278,7 +278,7 @@ html.vt-contract::view-transition-old(root) {
   border: 1px solid var(--flexoki-300);
   cursor: pointer;
   position: relative;
-  transition: border-color 0.2s ease, transform 0.12s ease;
+  transition: border-color 0.2s ease, transform 0.12s ease, opacity 0.25s ease;
 }
 /* Press feedback — the control dips, then settles. */
 .theme-toggle:active { transform: scale(0.9); }
@@ -2037,9 +2037,15 @@ h3:hover .heading-anchor {
     display: none;
   }
 
-  /* Show the tap-to-close button instead */
+  /* Show the tap-to-close button instead — and land it over the theme toggle
+     (positioned in JS) so the toggle resolves into the cross. */
   .search-close {
     display: inline-flex;
+  }
+  /* Fade the real toggle out beneath the ✕ while search is open. */
+  html.searching .theme-toggle {
+    opacity: 0;
+    pointer-events: none;
   }
 
   /* A more deliberate open on mobile: sit higher so results clear the keyboard,

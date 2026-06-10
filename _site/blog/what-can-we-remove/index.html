@@ -248,6 +248,18 @@
           overlay.style.setProperty('--sy', cy + 'px');
           overlay.style.setProperty('--sr', rad + 'px');
         }
+        // Land the close ✕ exactly over the theme toggle, so the toggle appears
+        // to resolve into the cross. (The real toggle can't paint above the
+        // overlay — it's trapped in .container's stacking context — so we move
+        // the overlay's own ✕ onto it and fade the toggle out beneath.)
+        var tgl = document.getElementById('theme-toggle');
+        if (tgl && searchClose) {
+          var tr = tgl.getBoundingClientRect();
+          searchClose.style.top = (tr.top + tr.height / 2 - searchClose.offsetHeight / 2) + 'px';
+          searchClose.style.left = (tr.left + tr.width / 2 - searchClose.offsetWidth / 2) + 'px';
+          searchClose.style.right = 'auto';
+        }
+        document.documentElement.classList.add('searching');
         overlay.classList.add('open');
         overlay.setAttribute('aria-hidden', 'false');
         document.documentElement.style.overflow = 'hidden';
@@ -286,6 +298,8 @@
         overlay.setAttribute('aria-hidden', 'true');
         isOpen = false;
         input.blur();
+        // Toggle fades back in (cross folds back to a line) as the overlay exits.
+        document.documentElement.classList.remove('searching');
         if (closeTimeout) clearTimeout(closeTimeout);
         closeTimeout = setTimeout(() => {
           overlay.classList.remove('closing');

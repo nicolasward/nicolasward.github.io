@@ -361,7 +361,9 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 .theme-toggle .ts-cross {
   stroke-width: 1.8;
   stroke-dashoffset: 100;                                /* hidden at rest */
-  transition: stroke-dashoffset 0.5s cubic-bezier(0.65, 0, 0.35, 1) 0s;
+  visibility: hidden;                                    /* …truly hidden, so the round cap leaves no dot */
+  transition: stroke-dashoffset 0.5s cubic-bezier(0.65, 0, 0.35, 1) 0s,
+              visibility 0s linear 0.5s;                 /* on close: hide only after it retracts */
 }
 .theme-toggle.as-close .toggle-shape { color: var(--fg-muted); }   /* ✕ reads a touch stronger */
 /* Fade the sun/moon out immediately on open (no delay) to clear the motion. */
@@ -372,7 +374,9 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 }
 .theme-toggle.as-close .ts-cross {
   stroke-dashoffset: 0;                                  /* … then the ✕ snakes in */
-  transition-delay: 0.18s;
+  visibility: visible;
+  transition: stroke-dashoffset 0.5s cubic-bezier(0.65, 0, 0.35, 1) 0.18s,
+              visibility 0s linear 0.18s;                /* visible right as it starts drawing */
 }
 @media (prefers-reduced-motion: reduce) {
   .theme-toggle .toggle-shape path { transition: none; }

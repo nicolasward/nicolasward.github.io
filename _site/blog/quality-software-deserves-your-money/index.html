@@ -12,6 +12,19 @@
   <link rel="stylesheet" href="/blog/css/style.css">
   <link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feed.xml">
   <script>
+    // Apply the saved/system theme SYNCHRONOUSLY, before the body renders, so
+    // the page paints in the right theme and the toggle knob starts already in
+    // position — otherwise it renders light then flips to dark, sliding the moon
+    // into place on every page load.
+    try {
+      var savedTheme = localStorage.getItem('theme');
+      var prefersDark = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches;
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        var tcm = document.getElementById('theme-color-meta');
+        if (tcm) tcm.setAttribute('content', '#100F0F');
+      }
+    } catch (e) {}
     // Mark that JS is available, so CSS can hide the homepage rows before
     // they roll in (no-JS users keep them visible).
     document.documentElement.classList.add('js');

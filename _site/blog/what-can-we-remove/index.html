@@ -176,6 +176,7 @@
       const clearBtn   = document.getElementById('search-clear');
       const toggle     = document.getElementById('theme-toggle');
       let toggleHome   = null;   // the toggle's nav parent, so we can re-home it
+      let togglePlaceholder = null;   // holds the toggle's slot in the nav while it's lifted
       let INDEX = null;
       let isOpen = false;
       let selectedIndex = -1;
@@ -232,6 +233,41 @@
         if (INDEX) { cb(); return; }
         fetch('/blog/search-index.json').then(r => r.json()).then(data => { INDEX = data; cb(); });
       }
+      // Lift the toggle above the overlay, leaving a same-size placeholder so the
+      // nav doesn't reflow (no overlap with the floating toggle). Guarded so a
+      // re-open during a close doesn't re-capture the wrong parent.
+      function liftToggle() {
+        if (!toggle || toggleHome) return;
+        toggleHome = toggle.parentNode;
+        var trc = toggle.getBoundingClientRect();
+        togglePlaceholder = document.createElement('div');
+        togglePlaceholder.setAttribute('aria-hidden', 'true');
+        togglePlaceholder.style.width = trc.width + 'px';
+        togglePlaceholder.style.height = trc.height + 'px';
+        toggleHome.insertBefore(togglePlaceholder, toggle);
+        toggle.style.position = 'fixed';
+        toggle.style.top = trc.top + 'px';
+        toggle.style.left = trc.left + 'px';
+        toggle.style.width = trc.width + 'px';
+        toggle.style.height = trc.height + 'px';
+        toggle.style.margin = '0';
+        toggle.style.zIndex = '1001';
+        document.body.appendChild(toggle);
+      }
+      // Morph done — drop it back into its exact nav slot and clear the lift.
+      function homeToggle() {
+        if (!toggle || !toggleHome) return;
+        toggle.classList.remove('as-close');
+        toggle.removeAttribute('style');
+        if (togglePlaceholder && togglePlaceholder.parentNode) {
+          togglePlaceholder.parentNode.insertBefore(toggle, togglePlaceholder);
+          togglePlaceholder.parentNode.removeChild(togglePlaceholder);
+        } else {
+          toggleHome.appendChild(toggle);
+        }
+        togglePlaceholder = null;
+        toggleHome = null;
+      }
       function open(initialQuery) {
         // Cancel any in-progress close
         if (closeTimeout) {
@@ -254,20 +290,8 @@
         // there from inside .container's stacking context) pinned at its exact
         // spot, then morph it pill→✕ in place. So the toggle itself becomes the
         // close control rather than being swapped for a separate one.
-        if (toggle) {
-          toggleHome = toggle.parentNode;
-          var trc = toggle.getBoundingClientRect();
-          toggle.style.position = 'fixed';
-          toggle.style.top = trc.top + 'px';
-          toggle.style.left = trc.left + 'px';
-          toggle.style.width = trc.width + 'px';
-          toggle.style.height = trc.height + 'px';
-          toggle.style.margin = '0';
-          toggle.style.zIndex = '1001';
-          document.body.appendChild(toggle);
-          // Next frame, trigger the morph so the transition actually runs.
-          requestAnimationFrame(function () { toggle.classList.add('as-close'); });
-        }
+        liftToggle();
+        requestAnimationFrame(function () { if (toggle) toggle.classList.add('as-close'); });
         document.documentElement.classList.add('searching');
         overlay.classList.add('open');
         overlay.setAttribute('aria-hidden', 'false');
@@ -314,12 +338,8 @@
           overlay.classList.remove('closing');
           document.documentElement.style.overflow = '';
           document.documentElement.classList.remove('searching');
-          // Re-home the toggle into the nav (it's morphed back to a pill by now).
-          if (toggle && toggleHome) {
-            toggle.removeAttribute('style');
-            toggleHome.appendChild(toggle);
-            toggleHome = null;
-          }
+          // Re-home the toggle into its exact nav slot (morphed back by now).
+          homeToggle();
           closeTimeout = null;
         }, EXIT_DURATION);
       }

@@ -192,7 +192,10 @@ html.vt-contract::view-transition-old(root) {
    back up. */
 .pill-outline {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;            /* SVG is a replaced element — must size it explicitly,
+  height: 100%;             inset:0 alone leaves it at the default 150px height */
   z-index: -1;            /* over the frosted fill, under the nav */
   overflow: visible;      /* don't clip the edge-straddling stroke */
   pointer-events: none;

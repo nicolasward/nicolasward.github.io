@@ -219,8 +219,8 @@ html.vt-contract::view-transition-old(root) {
 }
 .pill-outline rect {
   fill: none;
-  stroke: url(#pill-grad);   /* orange → coral → pink gradient border */
-  stroke-width: 1.5;
+  stroke: rgba(58, 60, 70, 0.4);   /* plain dark-grey contour */
+  stroke-width: 1;
   stroke-linecap: butt;   /* no round-cap dot when fully retracted */
   vector-effect: non-scaling-stroke;
   /* --pill-len is the outline's measured perimeter (set by JS); offset = len
@@ -228,6 +228,7 @@ html.vt-contract::view-transition-old(root) {
   stroke-dasharray: var(--pill-len, 3000);
   stroke-dashoffset: var(--pill-len, 3000); /* hidden at rest */
 }
+[data-theme="dark"] .pill-outline rect { stroke: rgba(225, 226, 235, 0.34); }
 /* Only enable the draw transition once the length is measured (.pill-armed) —
    otherwise setting --pill-len on load transitions the offset and flashes a
    draw. JS disarms momentarily on every re-measure for the same reason. */

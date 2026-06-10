@@ -166,7 +166,6 @@ html.vt-contract::view-transition-old(root) {
   margin: 0 0 2rem;
   padding: 0.62rem 0;                /* full body width at rest — nav aligns with body */
   border-radius: 18px;
-  border: 1px solid transparent;
   background-color: transparent;
   -webkit-backdrop-filter: none;
           backdrop-filter: none;
@@ -174,7 +173,6 @@ html.vt-contract::view-transition-old(root) {
               background-color 0.3s ease,
               -webkit-backdrop-filter 0.3s ease,
               backdrop-filter 0.3s ease,
-              border-color 0.3s ease,
               box-shadow 0.3s ease;
 }
 .site-header.scrolled {
@@ -182,14 +180,38 @@ html.vt-contract::view-transition-old(root) {
   background-color: rgba(246, 248, 250, 0.62);
   -webkit-backdrop-filter: blur(14px);
           backdrop-filter: blur(14px);
-  border-color: rgba(60, 62, 72, 0.24);                 /* dark-grey contour */
   box-shadow: 0 8px 22px -14px rgba(20, 25, 40, 0.28);  /* soft float */
 }
 [data-theme="dark"] .site-header.scrolled {
   background-color: rgba(32, 31, 31, 0.55);
-  border-color: rgba(225, 226, 235, 0.16);
   box-shadow: 0 8px 22px -14px rgba(0, 0, 0, 0.5);
 }
+
+/* The contour STROKES ITSELF around the pill on scroll (like the toggle pill) —
+   a rounded-rect outline drawn via stroke-dashoffset, then retraces on the way
+   back up. */
+.pill-outline {
+  position: absolute;
+  inset: 0;
+  z-index: -1;            /* over the frosted fill, under the nav */
+  overflow: visible;      /* don't clip the edge-straddling stroke */
+  pointer-events: none;
+}
+.pill-outline rect {
+  fill: none;
+  stroke: rgba(58, 60, 70, 0.4);
+  stroke-width: 1;
+  stroke-linecap: butt;   /* no round-cap dot when fully retracted */
+  vector-effect: non-scaling-stroke;
+  /* --pill-len is the outline's measured perimeter (set by JS); offset = len
+     hides it, 0 draws it. Fallback large enough to stay hidden pre-measure. */
+  stroke-dasharray: var(--pill-len, 3000);
+  stroke-dashoffset: var(--pill-len, 3000); /* hidden at rest */
+  transition: stroke-dashoffset 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+              stroke 0.3s ease;
+}
+.site-header.scrolled .pill-outline rect { stroke-dashoffset: 0; }   /* draws on scroll */
+[data-theme="dark"] .pill-outline rect { stroke: rgba(225, 226, 235, 0.34); }
 
 /* During the theme wipe, freeze the pill as an OPAQUE bar (no live backdrop-
    filter) — View Transitions don't reliably capture backdrop-filter into the

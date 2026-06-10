@@ -42,6 +42,7 @@
 <body class="article">
   <div class="container">
     <header class="site-header">
+      <svg class="pill-outline" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="18" ry="18"/></svg>
       <nav class="site-nav">
         <a href="/" class="site-title"><span class="nav-name">Nico Ward</span></a><a href="/blog" class="nav-section-link"><span class="nav-slash">/</span> <span class="nav-label">Writing</span></a>
         <span class="nav-spacer"></span>
@@ -882,11 +883,19 @@
     })();
   </script>
   <script>
-    // Floating pill header: frost it in as soon as the page scrolls (the pill
-    // floats at top:0.7rem, so its rect.top never hits 0 — key off scrollY).
+    // Floating pill header: frost it in as soon as the page scrolls, and measure
+    // the outline's perimeter so it can stroke itself around the pill on scroll.
     (function () {
       var header = document.querySelector('.site-header');
       if (!header) return;
+      var rect = header.querySelector('.pill-outline rect');
+      function measure() {
+        if (rect && rect.getTotalLength) {
+          try { rect.style.setProperty('--pill-len', rect.getTotalLength()); } catch (e) {}
+        }
+      }
+      measure();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
       var ticking = false;
       function update() {
         ticking = false;
@@ -895,6 +904,7 @@
       window.addEventListener('scroll', function () {
         if (!ticking) { ticking = true; requestAnimationFrame(update); }
       }, { passive: true });
+      window.addEventListener('resize', measure);
       update();
     })();
   </script>

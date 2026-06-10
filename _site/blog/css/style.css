@@ -323,7 +323,10 @@ html.vt-contract::view-transition-old(root) {
   mask-repeat: no-repeat;
   -webkit-mask-position: center;
   mask-position: center;
-  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+  /* The 0.68s opacity delay holds the knob hidden until the snake morph has
+     finished on CLOSE, so it doesn't clutter the motion (overridden to fade out
+     immediately on open — see .as-close below). */
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.3s ease 0.68s;
 }
 
 [data-theme="dark"] .theme-toggle .toggle-knob {
@@ -361,7 +364,8 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
   transition: stroke-dashoffset 0.5s cubic-bezier(0.65, 0, 0.35, 1) 0s;
 }
 .theme-toggle.as-close .toggle-shape { color: var(--fg-muted); }   /* ✕ reads a touch stronger */
-.theme-toggle.as-close .toggle-knob { opacity: 0; }                /* sun/moon fades out */
+/* Fade the sun/moon out immediately on open (no delay) to clear the motion. */
+.theme-toggle.as-close .toggle-knob { opacity: 0; transition: opacity 0.18s ease; }
 .theme-toggle.as-close .ts-pill {
   stroke-dashoffset: 100;                                /* snakes away first … */
   transition-delay: 0s;

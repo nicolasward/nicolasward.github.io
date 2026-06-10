@@ -1590,18 +1590,22 @@ h3:hover .heading-anchor {
   height: 22px;
 }
 
-/* The close ✕ scales open from its centre with a soft settling tilt, just after
-   the overlay starts rippling in (it's a mobile-only affordance). */
-.search-close { transform-origin: center; }
-.search-overlay.open .search-close {
-  animation: search-x-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) 0.16s both;
+/* The close control starts as a single vertical line and "opens up" into the ✕
+   — the two strokes rotate apart by 45° each. Closing reverses it (the cross
+   folds back into a line). A plain transition plays it both ways. */
+.search-close line {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
-@keyframes search-x-in {
-  from { opacity: 0; transform: scale(0.45) rotate(-35deg); }
-  to   { opacity: 1; transform: scale(1) rotate(0); }
+.search-close line:nth-child(1) { transform: rotate(45deg); }    /* collapsed → vertical */
+.search-close line:nth-child(2) { transform: rotate(-45deg); }
+.search-overlay.open .search-close line {
+  transform: rotate(0deg);                                       /* opened → cross */
+  transition-delay: 0.16s;                                       /* just after the overlay ripples in */
 }
 @media (prefers-reduced-motion: reduce) {
-  .search-overlay.open .search-close { animation: none; opacity: 1; transform: none; }
+  .search-close line { transition: none; transform: rotate(0deg) !important; }
 }
 
 .search-input::placeholder {

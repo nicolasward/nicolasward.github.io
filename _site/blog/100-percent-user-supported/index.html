@@ -906,7 +906,11 @@ Addition feels productive.</span>
         // height to the header in px; then measure the outline for the dash.
         if (svg) svg.style.height = header.offsetHeight + 'px';
         if (rect.getTotalLength) {
+          // Disarm the transition so setting --pill-len snaps (no flash of a
+          // draw on load / re-measure), then re-arm on the next frame.
+          header.classList.remove('pill-armed');
           try { rect.style.setProperty('--pill-len', rect.getTotalLength()); } catch (e) {}
+          requestAnimationFrame(function () { header.classList.add('pill-armed'); });
         }
       }
       measure();

@@ -212,6 +212,11 @@ html.vt-contract::view-transition-old(root) {
      hides it, 0 draws it. Fallback large enough to stay hidden pre-measure. */
   stroke-dasharray: var(--pill-len, 3000);
   stroke-dashoffset: var(--pill-len, 3000); /* hidden at rest */
+}
+/* Only enable the draw transition once the length is measured (.pill-armed) —
+   otherwise setting --pill-len on load transitions the offset and flashes a
+   draw. JS disarms momentarily on every re-measure for the same reason. */
+.site-header.pill-armed .pill-outline rect {
   transition: stroke-dashoffset 0.65s cubic-bezier(0.22, 1, 0.36, 1),
               stroke 0.3s ease;
 }

@@ -378,6 +378,33 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
   .theme-toggle .toggle-shape path { transition: none; }
 }
 
+/* ===== Homepage entrance: draw the nav icons in ===== */
+/* On the homepage, the magnifier and the toggle pill draw in as a single stroke
+   each (then the sun/moon settles in) — echoing the search-bar cross. */
+@keyframes nav-stroke-draw {
+  from { stroke-dashoffset: 100; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes nav-knob-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.js body.home .nav-search .search-glass {
+  stroke-dasharray: 100;
+  animation: nav-stroke-draw 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.3s backwards;
+}
+.js body.home .theme-toggle .ts-pill {
+  animation: nav-stroke-draw 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.5s backwards;
+}
+.js body.home .theme-toggle .toggle-knob {
+  animation: nav-knob-in 0.4s ease 1.15s backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .js body.home .nav-search .search-glass,
+  .js body.home .theme-toggle .ts-pill,
+  .js body.home .theme-toggle .toggle-knob { animation: none; }
+}
+
 /* ===== Homepage post list ===== */
 .post-list {
   list-style: none;

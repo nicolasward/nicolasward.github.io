@@ -194,8 +194,10 @@ html.vt-contract::view-transition-old(root) {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;            /* SVG is a replaced element — must size it explicitly,
-  height: 100%;             inset:0 alone leaves it at the default 150px height */
+  width: 100%;            /* width:100% resolves (definite parent width); the
+                            HEIGHT is set in px by JS — % height can't resolve
+                            against the header's auto height, so the replaced SVG
+                            would otherwise stay at its 150px intrinsic height. */
   z-index: -1;            /* over the frosted fill, under the nav */
   overflow: visible;      /* don't clip the edge-straddling stroke */
   pointer-events: none;

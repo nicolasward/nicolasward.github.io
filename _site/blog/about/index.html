@@ -840,8 +840,13 @@
       var header = document.querySelector('.site-header');
       if (!header) return;
       var rect = header.querySelector('.pill-outline rect');
+      var svg = header.querySelector('.pill-outline');
       function measure() {
-        if (rect && rect.getTotalLength) {
+        if (!rect) return;
+        // The replaced SVG can't take a % height (auto-height parent), so pin its
+        // height to the header in px; then measure the outline for the dash.
+        if (svg) svg.style.height = header.offsetHeight + 'px';
+        if (rect.getTotalLength) {
           try { rect.style.setProperty('--pill-len', rect.getTotalLength()); } catch (e) {}
         }
       }

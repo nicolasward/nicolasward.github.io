@@ -124,9 +124,8 @@ html[data-theme="dark"] body::before {
    default root cross-fade is kept but slowed and eased for a gentle settle. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 0.6s;
-  /* Quick off the mark, then a long gentle settle into the new theme. */
-  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-duration: 0.55s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   mix-blend-mode: normal;
 }
 
@@ -1784,6 +1783,7 @@ h3:hover .heading-anchor {
 /* Fill (dark part) — matches article body text */
 .progress-fill {
   stroke: var(--fg);
+  stroke-linecap: round;
   /* Start at 12 o'clock so the arc fills clockwise from the top. */
   transform: rotate(-90deg);
   transform-origin: center;

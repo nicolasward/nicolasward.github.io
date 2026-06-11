@@ -9,7 +9,7 @@
   <meta name="theme-color" id="theme-color-meta" content="#f6f8fa">
   <title>About me — Nico Ward</title>
   <link rel="stylesheet" href="/blog/css/flexoki.css?v=1ce9c242">
-  <link rel="stylesheet" href="/blog/css/style.css?v=404904fe">
+  <link rel="stylesheet" href="/blog/css/style.css?v=881d5318">
   <link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feed.xml">
   <script>
     // Apply the saved/system theme SYNCHRONOUSLY, before the body renders, so
@@ -639,26 +639,28 @@
       // Opening fold starts after the header (title → meta → share); static pages
       // (About) have no share row, so the body follows the title.
       var baseDelay = document.querySelector('.post-header .post-share') ? 0.78 : 0.4;
-      var vi = 0;
       var below = [], open = [];
       items.forEach(function (el) {
-        if (el.getBoundingClientRect().top < threshold) {
-          el.style.transitionDelay = (baseDelay + vi * 0.1).toFixed(2) + 's';
-          open.push(el);
-          vi++;
-        } else {
-          below.push(el);
-        }
+        if (el.getBoundingClientRect().top < threshold) open.push(el);
+        else below.push(el);
       });
-      // Let the opacity:0 start state paint once before flipping to .in. A single
-      // rAF runs before that first paint, so the browser coalesces .reveal-up +
-      // .in and skips the fade; a second rAF lands after a real paint, so the
-      // class change is a genuine transition (Safari skips first-render fades).
-      void content.offsetHeight;
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          open.forEach(function (el) { el.classList.add('in'); });
-        });
+
+      // Opening fold: drive each block with the Web Animations API. Unlike a CSS
+      // transition (which the browser skips on an element's first render — the
+      // "already there, then a mini slide" bug), animate() always plays from its
+      // explicit `from` keyframe, and fill:'both' holds the hidden state through
+      // the stagger delay, so there's no flash of visible text.
+      open.forEach(function (el, i) {
+        if (!el.animate) { el.classList.add('in'); return; }
+        var anim = el.animate(
+          [{ opacity: 0, transform: 'translateY(24px)' },
+           { opacity: 1, transform: 'none' }],
+          { duration: 900, delay: (baseDelay + i * 0.1) * 1000,
+            easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'both' }
+        );
+        // Hand the final state back to CSS so nothing snaps when the fill clears.
+        anim.finished.then(function () { el.classList.add('in'); anim.cancel(); })
+                     .catch(function () {});
       });
 
       // Below the fold: fade up as each scrolls into view.

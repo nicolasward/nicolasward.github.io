@@ -677,9 +677,8 @@
       var foot = document.querySelector('.site-footer');
       if (foot) items.push(foot);
 
-      items.forEach(function (el) { el.classList.add('reveal-up'); });
-      content.style.opacity = 1;
-
+      // Classify each block against the fold *before* revealing anything, so we
+      // can drop each straight into its hidden state — never flashing it visible.
       var threshold = window.innerHeight * 0.92;
       // Opening fold starts after the header (title → meta → share); static pages
       // (About) have no share row, so the body follows the title.
@@ -690,26 +689,31 @@
         else below.push(el);
       });
 
-      // Opening fold: drive each block with the Web Animations API. Unlike a CSS
-      // transition (which the browser skips on an element's first render — the
-      // "already there, then a mini slide" bug), animate() always plays from its
-      // explicit `from` keyframe, and fill:'both' holds the hidden state through
-      // the stagger delay, so there's no flash of visible text.
+      // Below the fold: hidden via CSS (.reveal-up carries the transition), then
+      // faded up as each scrolls into view. They're off-screen, so adding the
+      // class can never produce a visible fade-out.
+      below.forEach(function (el) { el.classList.add('reveal-up'); });
+
+      // Opening fold: held hidden and faded up by the Web Animations API — NOT
+      // .reveal-up, so there's no CSS transition that could fade these out when
+      // the container is revealed. animate() always plays from its explicit
+      // `from` keyframe, and fill:'both' holds opacity:0 through the stagger
+      // delay, so the block stays hidden until its turn, then glides up once.
       open.forEach(function (el, i) {
-        if (!el.animate) { el.classList.add('in'); return; }
+        if (!el.animate) return;  // ancient browser: leave it visible
         var anim = el.animate(
           [{ opacity: 0, transform: 'translateY(24px)' },
            { opacity: 1, transform: 'none' }],
           { duration: 900, delay: (baseDelay + i * 0.1) * 1000,
             easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'both' }
         );
-        // Hand the final state back to CSS, then clear the fill. Dropping
-        // .reveal-up (rather than adding .in) removes the transition entirely, so
-        // cancelling the animation can't kick off a second CSS fade ("appears
-        // again") — the element just rests at its default opacity:1.
-        anim.finished.then(function () { el.classList.remove('reveal-up'); anim.cancel(); })
-                     .catch(function () {});
+        // Clear the fill once done; the block rests at its default opacity:1
+        // (no .reveal-up base), so nothing snaps.
+        anim.finished.then(function () { anim.cancel(); }).catch(function () {});
       });
+
+      // Every block is now in its hidden state — safe to reveal the container.
+      content.style.opacity = 1;
 
       // Below the fold: fade up as each scrolls into view.
       if (below.length && 'IntersectionObserver' in window) {

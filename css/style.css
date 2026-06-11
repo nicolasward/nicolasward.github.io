@@ -956,11 +956,13 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
    editorial anchor above the fold. */
 .post-content > p:first-of-type::first-letter {
   float: left;
-  margin: 0.02em 0.09em 0 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 3.1em;
-  line-height: 0.78;
-  font-weight: 700;
+  margin: 0.02em 0.1em 0 0;
+  /* Warm humanist book serif — pairs far better with the humanist sans body
+     than Georgia did. Iowan/Charter ship on Apple, Palatino is near-universal. */
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Charter, Georgia, serif;
+  font-size: 3.2em;
+  line-height: 0.72;
+  font-weight: 600;
   color: var(--accent);
 }
 

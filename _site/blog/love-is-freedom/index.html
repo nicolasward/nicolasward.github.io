@@ -705,19 +705,20 @@
       // (About) have no share row, so the body follows the title.
       var baseDelay = document.querySelector('.post-header .post-share') ? 0.78 : 0.4;
       var vi = 0;
-      var below = [];
+      var below = [], open = [];
       items.forEach(function (el) {
         if (el.getBoundingClientRect().top < threshold) {
           el.style.transitionDelay = (baseDelay + vi * 0.1).toFixed(2) + 's';
+          open.push(el);
           vi++;
         } else {
           below.push(el);
         }
       });
-      // Reveal the opening fold next frame so the transition actually runs.
-      requestAnimationFrame(function () {
-        items.forEach(function (el) { if (below.indexOf(el) === -1) el.classList.add('in'); });
-      });
+      // Commit the opacity:0 start state with a forced reflow, then reveal — on
+      // first paint a plain rAF coalesces .reveal-up + .in and skips the fade-up.
+      void content.offsetHeight;
+      open.forEach(function (el) { el.classList.add('in'); });
 
       // Below the fold: fade up as each scrolls into view.
       if (below.length && 'IntersectionObserver' in window) {

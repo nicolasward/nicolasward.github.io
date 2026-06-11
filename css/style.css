@@ -632,16 +632,14 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 }
 
 .topics-inline a {
-  color: var(--accent);
+  color: var(--fg);
   text-decoration: underline;
-  text-underline-offset: 2px;
-  text-decoration-thickness: from-font;
   font-size: 19.275px;
 }
 
 @media (hover: hover) {
   .topics-inline a:hover {
-  text-decoration-thickness: 2px;
+  color: var(--accent);
 }
 }
 

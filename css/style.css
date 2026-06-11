@@ -119,28 +119,14 @@ html[data-theme="dark"] body::before {
   display: none;
 }
 
-/* Theme toggle: the new theme is revealed with a circular wipe expanding from
-   the toggle (driven by JS via the View Transitions API). Disable the default
-   cross-fade and put the new snapshot on top so the clip-path reveals it. */
+/* Theme toggle: the two themes slowly cross-fade into one another — a soft,
+   even dissolve (the "magnet clipping" feeling) rather than a moving wipe. The
+   default root cross-fade is kept but slowed and eased for a gentle settle. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation: none;
+  animation-duration: 0.55s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   mix-blend-mode: normal;
-}
-/* To dark: the new theme grows on top, with a bright cool glow at the wavefront. */
-::view-transition-new(root) {
-  z-index: 9999;
-  filter: drop-shadow(0 0 60px rgba(120, 165, 255, 0.95))
-          drop-shadow(0 0 22px rgba(170, 205, 255, 1));
-}
-::view-transition-old(root) { z-index: 1; }
-/* To light: the old (dark) theme sits on top and shrinks into the toggle, with a
-   warm sunrise glow at its receding edge. */
-html.vt-contract::view-transition-new(root) { z-index: 1; filter: none; }
-html.vt-contract::view-transition-old(root) {
-  z-index: 9999;
-  filter: drop-shadow(0 0 60px rgba(255, 160, 60, 1))
-          drop-shadow(0 0 22px rgba(255, 200, 120, 1));
 }
 
 /* ===== Layout ===== */

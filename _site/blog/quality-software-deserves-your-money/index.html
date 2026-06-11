@@ -9,7 +9,7 @@
   <meta name="theme-color" id="theme-color-meta" content="#f6f8fa">
   <title>Quality software deserves your hard-earned cash — Nico Ward</title>
   <link rel="stylesheet" href="/blog/css/flexoki.css?v=1ce9c242">
-  <link rel="stylesheet" href="/blog/css/style.css?v=79f287bf">
+  <link rel="stylesheet" href="/blog/css/style.css?v=63b791bf">
   <link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feed.xml">
   <script>
     // Apply the saved/system theme SYNCHRONOUSLY, before the body renders, so
@@ -622,9 +622,9 @@
         setTheme('dark');
       }
 
-      // Toggle the theme. Where supported, the new theme is revealed with a
-      // circular wipe expanding outward from the toggle (View Transitions API),
-      // led by the knob and lit at its wavefront; otherwise it just switches.
+      // Toggle the theme. Where supported, the two themes slowly cross-fade into
+      // one another (View Transitions API) — a soft, even dissolve; otherwise it
+      // just switches.
       function toggleTheme() {
         // While search is open the toggle acts as the close ✕ — don't switch theme.
         if (html.classList.contains('searching')) return;
@@ -633,29 +633,11 @@
         if (navigator.vibrate) { try { navigator.vibrate(8); } catch (e) {} }  // tiny tactile tap
         if (!document.startViewTransition || reduce) { setTheme(next); return; }
 
-        const rect = toggle.getBoundingClientRect();
-        const x = rect.left + rect.width / 2;
-        const y = rect.top + rect.height / 2;
-        const endRadius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-        const big   = 'circle(' + endRadius + 'px at ' + x + 'px ' + y + 'px)';
-        const small = 'circle(0px at ' + x + 'px ' + y + 'px)';
-        const toDark = next === 'dark';
-
-        // vt-contract flips the layering so the old (dark) theme shrinks back
-        // into the toggle when returning to light. vt-toggling freezes the knob's
-        // live slide so its view-transition snapshots are the true endpoints.
+        // vt-toggling freezes the knob's live slide so its view-transition
+        // snapshots are the true endpoints (rather than a half-slid blur).
         html.classList.add('vt-toggling');
-        if (!toDark) html.classList.add('vt-contract');
-
         const vt = document.startViewTransition(() => setTheme(next));
-        vt.ready.then(function () {
-          html.animate(
-            { clipPath: toDark ? [small, big] : [big, small] },
-            { duration: 520, easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-              pseudoElement: toDark ? '::view-transition-new(root)' : '::view-transition-old(root)' }
-          );
-        });
-        vt.finished.finally(function () { html.classList.remove('vt-contract', 'vt-toggling'); });
+        vt.finished.finally(function () { html.classList.remove('vt-toggling'); });
       }
 
       toggle.addEventListener('click', toggleTheme);

@@ -566,7 +566,7 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--accent);
+  color: var(--fg-muted);
 }
 
 .section-label {

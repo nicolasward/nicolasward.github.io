@@ -956,14 +956,13 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
    editorial anchor above the fold. */
 .post-content > p:first-of-type::first-letter {
   float: left;
-  margin: 0.05em 0.08em 0 0;
-  /* Same humanist sans as the body, but in a heavy weight — reads as a
-     deliberate weight/scale contrast rather than a clashing second typeface. */
-  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 3em;
-  line-height: 0.74;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  margin: 0.05em 0.06em 0 0;
+  /* Corinthia — a flowing formal calligraphic script. Loaded from Google Fonts
+     (see base.html). Script caps read small and ornate, so it's set large. */
+  font-family: "Corinthia", cursive;
+  font-size: 5.4em;
+  line-height: 0.62;
+  font-weight: 700;
   color: var(--accent);
 }
 

@@ -566,7 +566,7 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--fg-muted);
+  color: var(--accent);
 }
 
 .section-label {
@@ -632,14 +632,16 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 }
 
 .topics-inline a {
-  color: var(--fg);
+  color: var(--accent);
   text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: from-font;
   font-size: 19.275px;
 }
 
 @media (hover: hover) {
   .topics-inline a:hover {
-  color: var(--accent);
+  text-decoration-thickness: 2px;
 }
 }
 
@@ -950,6 +952,18 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
   margin-inline-start: 0px;
   margin-inline-end: 0px;
   unicode-bidi: isolate;
+}
+
+/* Drop cap: the opening paragraph leads with a large orange initial — a warm
+   editorial anchor above the fold. */
+.post-content > p:first-of-type::first-letter {
+  float: left;
+  margin: 0.02em 0.09em 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 3.1em;
+  line-height: 0.78;
+  font-weight: 700;
+  color: var(--accent);
 }
 
 .post-content h2 {
@@ -1785,7 +1799,7 @@ h3:hover .heading-anchor {
 
 /* Fill (dark part) — matches article body text */
 .progress-fill {
-  stroke: var(--fg);
+  stroke: var(--accent);
   stroke-linecap: round;
   /* Start at 12 o'clock so the arc fills clockwise from the top. */
   transform: rotate(-90deg);

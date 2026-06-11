@@ -658,8 +658,11 @@
           { duration: 900, delay: (baseDelay + i * 0.1) * 1000,
             easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'both' }
         );
-        // Hand the final state back to CSS so nothing snaps when the fill clears.
-        anim.finished.then(function () { el.classList.add('in'); anim.cancel(); })
+        // Hand the final state back to CSS, then clear the fill. Dropping
+        // .reveal-up (rather than adding .in) removes the transition entirely, so
+        // cancelling the animation can't kick off a second CSS fade ("appears
+        // again") — the element just rests at its default opacity:1.
+        anim.finished.then(function () { el.classList.remove('reveal-up'); anim.cancel(); })
                      .catch(function () {});
       });
 

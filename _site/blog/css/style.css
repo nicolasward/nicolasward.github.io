@@ -957,12 +957,12 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
 .post-content > p:first-of-type::first-letter {
   float: left;
   margin: 0.05em 0.06em 0 0;
-  /* Corinthia — a flowing formal calligraphic script. Loaded from Google Fonts
+  /* Beau Rivage — a flowing formal calligraphic script. Loaded from Google Fonts
      (see base.html). Script caps read small and ornate, so it's set large. */
-  font-family: "Corinthia", cursive;
-  font-size: 5.4em;
-  line-height: 0.62;
-  font-weight: 700;
+  font-family: "Beau Rivage", cursive;
+  font-size: 4.6em;
+  line-height: 0.68;
+  font-weight: 400;
   color: var(--accent);
 }
 

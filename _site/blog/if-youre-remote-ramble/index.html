@@ -9,7 +9,7 @@
   <meta name="theme-color" id="theme-color-meta" content="#f6f8fa">
   <title>If you're remote, ramble — Nico Ward</title>
   <link rel="stylesheet" href="/blog/css/flexoki.css?v=1ce9c242">
-  <link rel="stylesheet" href="/blog/css/style.css?v=5993089d">
+  <link rel="stylesheet" href="/blog/css/style.css?v=79f287bf">
   <link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feed.xml">
   <script>
     // Apply the saved/system theme SYNCHRONOUSLY, before the body renders, so
@@ -678,12 +678,9 @@
     })();
   </script>
   <script>
-    // Article body: trickle each block in line by line. On load the opening
-    // screen cascades in (a soft gradient mask sweeps over each block). Below
-    // the fold the reveal is scroll-LINKED: a fixed line near the bottom of the
-    // viewport with a one-line-tall feather, so each line unveils itself as it
-    // crosses that line while you scroll — never a whole paragraph at once.
-    // The mask never touches the markup, so links/lists stay intact.
+    // Article body: fade each block up into place — slow, soft upward motion
+    // (Apple-style). The opening fold staggers in on load (after the header);
+    // everything below fades up as it scrolls into view.
     (function () {
       if (!document.body.classList.contains('article') &&
           !document.body.classList.contains('page')) return;
@@ -693,91 +690,48 @@
         content.style.opacity = 1; return;
       }
 
-      var blocks = Array.prototype.slice.call(content.children);
-      blocks.forEach(function (el) { el.classList.add('reveal-block'); });
+      // Body blocks + the footer sections.
+      var items = Array.prototype.slice.call(content.children);
+      ['.post-share-section', '.linked-mentions', '.related-posts'].forEach(function (sel) {
+        var s = document.querySelector('article ' + sel);
+        if (s) items.push(s);
+      });
+      var foot = document.querySelector('.site-footer');
+      if (foot) items.push(foot);
+
+      items.forEach(function (el) { el.classList.add('reveal-up'); });
       content.style.opacity = 1;
 
-      function cleanup(e) {
-        if (e.animationName !== 'line-reveal') return;
-        var t = e.currentTarget;
-        t.style.webkitMaskImage = 'none';
-        t.style.maskImage = 'none';
-      }
-
-      var threshold = window.innerHeight * 1.05;
-
-      // Opening fold: cascade the visible blocks in on load — starting after
-      // the header (title → meta → share) so the page reveals top-to-bottom.
-      // Static pages (About) have no share row, so the body follows the title.
+      var threshold = window.innerHeight * 0.92;
+      // Opening fold starts after the header (title → meta → share); static pages
+      // (About) have no share row, so the body follows the title.
       var baseDelay = document.querySelector('.post-header .post-share') ? 0.78 : 0.4;
       var vi = 0;
-      blocks.forEach(function (el) {
+      var below = [];
+      items.forEach(function (el) {
         if (el.getBoundingClientRect().top < threshold) {
-          el.style.setProperty('--d', (baseDelay + vi * 0.12).toFixed(2) + 's');
-          el.addEventListener('animationend', cleanup);
-          el.classList.add('in');
+          el.style.transitionDelay = (baseDelay + vi * 0.1).toFixed(2) + 's';
           vi++;
+        } else {
+          below.push(el);
         }
       });
-
-      // Below the fold (body only): hand each block to the scroll-linked driver.
-      var driven = [];
-      function drive(el) {
-        // Switch off the percentage mask used for the load sweep; we feed this
-        // block a px-based gradient every frame instead.
-        el.style.webkitMaskSize = el.style.maskSize = '100% 100%';
-        el.style.webkitMaskRepeat = el.style.maskRepeat = 'no-repeat';
-        el.style.webkitMaskPosition = el.style.maskPosition = '0 0';
-        driven.push(el);
-      }
-      blocks.forEach(function (el) {
-        if (el.getBoundingClientRect().top >= threshold) drive(el);
+      // Reveal the opening fold next frame so the transition actually runs.
+      requestAnimationFrame(function () {
+        items.forEach(function (el) { if (below.indexOf(el) === -1) el.classList.add('in'); });
       });
 
-      // Footer sections: no line-by-line — each appears as one elegant fade-in
-      // as you reach it.
-      var fade = [];
-      ['.post-share-section', '.linked-mentions', '.related-posts', '.site-footer'].forEach(function (sel) {
-        var s = document.querySelector(sel.charAt(0) === '.' && sel !== '.site-footer' ? 'article ' + sel : sel);
-        if (s) { s.classList.remove('reveal-block'); s.classList.add('reveal-fade'); fade.push(s); }
-      });
-      if (fade.length && 'IntersectionObserver' in window) {
+      // Below the fold: fade up as each scrolls into view.
+      if (below.length && 'IntersectionObserver' in window) {
         var obs = new IntersectionObserver(function (entries) {
           entries.forEach(function (e) {
             if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
           });
-        }, { rootMargin: '0px 0px -10% 0px' });
-        fade.forEach(function (el) { obs.observe(el); });
+        }, { rootMargin: '0px 0px -12% 0px' });
+        below.forEach(function (el) { obs.observe(el); });
       } else {
-        fade.forEach(function (el) { el.classList.add('in'); });
+        below.forEach(function (el) { el.classList.add('in'); });
       }
-
-      var BAND = 16;   // half the feather height in px (~one line of body text)
-
-      var ticking = false;
-      function update() {
-        ticking = false;
-        var line = window.innerHeight * 0.86;   // on-screen reveal line
-        for (var i = driven.length - 1; i >= 0; i--) {
-          var el = driven[i];
-          var r = el.getBoundingClientRect();
-          var boundary = line - r.top;          // px from block top down to the line
-          if (boundary >= r.height + BAND) {     // fully past -> reveal & retire
-            el.style.webkitMaskImage = el.style.maskImage = 'none';
-            driven.splice(i, 1);
-            continue;
-          }
-          var g = 'linear-gradient(to bottom, #000 ' + (boundary - BAND) +
-                  'px, transparent ' + (boundary + BAND) + 'px)';
-          el.style.webkitMaskImage = el.style.maskImage = g;
-        }
-      }
-      function onScroll() {
-        if (!ticking) { ticking = true; requestAnimationFrame(update); }
-      }
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', onScroll);
-      update();   // set the initial hidden/partly-visible state before paint
     })();
   </script>
   <script>

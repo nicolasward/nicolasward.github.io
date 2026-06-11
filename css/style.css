@@ -867,54 +867,28 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 .page-title   { animation-delay: 0.1s; }
 .post-meta    { animation-delay: 0.35s; }
 
-/* Article body: each block trickles in line by line. A soft-edged gradient mask
-   (taller than the block) sweeps from top to bottom, so the text is unveiled one
-   line at a time rather than word by word — neater, and it never touches the text
-   DOM (no inline-block wrapping, no broken underlines or list indents). The whole
-   body is hidden up front (JS only) and tagged block by block once revealed. */
-.reveal-block {
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 58%, transparent 100%);
-          mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 58%, transparent 100%);
-  -webkit-mask-size: 100% 300%;
-          mask-size: 100% 300%;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
-  -webkit-mask-position: 0% 100%;   /* fully hidden (transparent band over block) */
-          mask-position: 0% 100%;
+/* Article body: each block (paragraph, heading, list, …) fades up into place
+   with a slow, soft upward motion — Apple-style. Opening-fold blocks stagger in
+   on load; the rest reveal as they scroll into view (see JS). */
+.js body.article .reveal-up,
+.js body.page .reveal-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
 }
-.reveal-block.in {
-  animation: line-reveal 0.85s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s) both;
-}
-@keyframes line-reveal {
-  from { -webkit-mask-position: 0% 100%; mask-position: 0% 100%; }
-  to   { -webkit-mask-position: 0% 0%;   mask-position: 0% 0%; }
+.js body.article .reveal-up.in,
+.js body.page .reveal-up.in {
+  opacity: 1;
+  transform: none;
 }
 .js body.article .post-content,
 .js body.page .post-content { opacity: 0; }
 
-/* Footer sections (share, mentions, related, site footer) skip the line-by-line
-   treatment — each fades up as one elegant block when you reach it. */
-.js body.article .reveal-fade,
-.js body.page .reveal-fade {
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.js body.article .reveal-fade.in,
-.js body.page .reveal-fade.in {
-  opacity: 1;
-  transform: none;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .reveal-block {
-    -webkit-mask-image: none;
-            mask-image: none;
-  }
-  .reveal-block.in { animation: none; }
-  .js body.article .reveal-fade,
-  .js body.page .reveal-fade { opacity: 1; transform: none; transition: none; }
+  .js body.article .reveal-up,
+  .js body.page .reveal-up { opacity: 1; transform: none; transition: none; }
 }
 
 /* ===== Mobile: swipe between articles ===== */

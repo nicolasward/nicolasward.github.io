@@ -179,6 +179,7 @@ html.js .fast-forward svg {
   width: 100%;
   height: 100%;
   display: block;
+  opacity: 0;                             /* hidden until the entrance runs */
   -webkit-mask-image: linear-gradient(to right, #000 0%, #000 42%, transparent 60%, transparent 100%);
           mask-image: linear-gradient(to right, #000 0%, #000 42%, transparent 60%, transparent 100%);
   -webkit-mask-size: 300% 100%;
@@ -188,12 +189,15 @@ html.js .fast-forward svg {
   -webkit-mask-position: 100% 0;          /* transparent band over the glyph → hidden */
           mask-position: 100% 0;
 }
+/* Entrance: fade + left-to-right wipe. The 0.2s delay guarantees it starts after
+   the first paint (so it's never finished before it's seen), and the fade makes
+   it unmistakable even on the small glyph. */
 html.js .fast-forward.draw svg {
-  animation: ff-wipe 0.6s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  animation: ff-wipe 0.7s cubic-bezier(0.33, 1, 0.68, 1) 0.2s forwards;
 }
 @keyframes ff-wipe {
-  from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
-  to   { -webkit-mask-position: 0% 0;   mask-position: 0% 0; }
+  from { opacity: 0; -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+  to   { opacity: 1; -webkit-mask-position: 0% 0;   mask-position: 0% 0; }
 }
 
 /* Once the intro has fully played, the skip control transforms into a replay

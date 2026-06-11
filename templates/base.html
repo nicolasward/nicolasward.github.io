@@ -636,10 +636,16 @@
           below.push(el);
         }
       });
-      // Commit the opacity:0 start state with a forced reflow, then reveal — on
-      // first paint a plain rAF coalesces .reveal-up + .in and skips the fade-up.
+      // Let the opacity:0 start state paint once before flipping to .in. A single
+      // rAF runs before that first paint, so the browser coalesces .reveal-up +
+      // .in and skips the fade; a second rAF lands after a real paint, so the
+      // class change is a genuine transition (Safari skips first-render fades).
       void content.offsetHeight;
-      open.forEach(function (el) { el.classList.add('in'); });
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          open.forEach(function (el) { el.classList.add('in'); });
+        });
+      });
 
       // Below the fold: fade up as each scrolls into view.
       if (below.length && 'IntersectionObserver' in window) {

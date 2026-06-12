@@ -973,30 +973,13 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
   line-height: 1;
   text-transform: uppercase;
 }
-/* Fill layer: a rounded window that clips the pencil scribble to the tile shape.
-   No background of its own — the scribble (a thick zig-zag stroke) IS the fill;
-   fully drawn its overlapping rows read as a solid tile. */
+/* Solid fill behind the letter (its own layer so it can flood in separately). */
 .post-content .dropcap-fill {
   position: absolute;
   inset: 0;
   z-index: 0;
   border-radius: 5px;
-  overflow: hidden;
-}
-.post-content .dropcap-scribble {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.post-content .dropcap-scribble path {
-  fill: none;
-  stroke: var(--fg);
-  stroke-width: 13;            /* wider than the row spacing, so rows overlap solid */
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: var(--scribble-len, 2000);
-  stroke-dashoffset: 0;        /* fully coloured in by default (solid resting tile) */
+  background: var(--fg);
 }
 /* Outline that draws itself. Same colour as the fill, so once filled it's
    invisible; sits above the fill, below the letter. */
@@ -1023,23 +1006,34 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
 }
 
 /* Self-drawing entrance — only when JS arms it with .draw. The outline strokes
-   around the box first, then a pencil scribbles the tile in: a thick zig-zag
-   stroke snakes left-right-left down the square, its overlapping rows building
-   up to a solid fill, revealing the knocked-out letter as it passes. */
-@keyframes dropcap-stroke   { to { stroke-dashoffset: 0; } }
-@keyframes dropcap-scribble { to { stroke-dashoffset: 0; } }
+   around the box first, then the tile "colours in" along a diagonal — like
+   shading with a pencil — via a soft-edged mask wipe shared by the fill and the
+   knocked-out letter, so they shade in together. */
+@keyframes dropcap-stroke { to { stroke-dashoffset: 0; } }
+@keyframes dropcap-shade  { to { -webkit-mask-position: 0% 0%; mask-position: 0% 0%; } }
 .post-content .dropcap.draw .dropcap-outline rect {
   animation: dropcap-stroke 0.6s cubic-bezier(0.65, 0, 0.35, 1) var(--cap-delay) both;
 }
-.post-content .dropcap.draw .dropcap-scribble path {
-  stroke-dashoffset: var(--scribble-len, 2000);   /* start bare, then scribble in */
-  animation: dropcap-scribble 0.78s cubic-bezier(0.4, 0, 0.6, 1) calc(var(--cap-delay) + 0.42s) forwards;
+.post-content .dropcap.draw .dropcap-fill,
+.post-content .dropcap.draw .dropcap-letter {
+  /* Solid until 30%, soft to transparent by 50% — the soft band is the pencil's
+     leading edge. Oversized (400%) so the start is fully bare and the end fully
+     filled, sweeping top-left → bottom-right. */
+  -webkit-mask-image: linear-gradient(135deg, #000 30%, transparent 50%);
+  mask-image: linear-gradient(135deg, #000 30%, transparent 50%);
+  -webkit-mask-size: 400% 400%;
+  mask-size: 400% 400%;
+  -webkit-mask-position: 100% 100%;
+  mask-position: 100% 100%;
+  animation: dropcap-shade 0.62s cubic-bezier(0.45, 0, 0.4, 1) calc(var(--cap-delay) + 0.4s) forwards;
 }
 @media (prefers-reduced-motion: reduce) {
   .post-content .dropcap.draw .dropcap-outline rect,
-  .post-content .dropcap.draw .dropcap-scribble path {
+  .post-content .dropcap.draw .dropcap-fill,
+  .post-content .dropcap.draw .dropcap-letter {
     animation: none;
-    stroke-dashoffset: 0;
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 }
 

@@ -523,20 +523,8 @@
       var span = document.createElement('span');
       span.className = 'dropcap';
 
-      // Fill = a rounded clip window holding the pencil scribble (a thick
-      // boustrophedon zig-zag whose overlapping rows fill the tile solid).
       var fill = document.createElement('span');
       fill.className = 'dropcap-fill';
-      var scribbleSvg = document.createElementNS(SVGNS, 'svg');
-      scribbleSvg.setAttribute('class', 'dropcap-scribble');
-      scribbleSvg.setAttribute('viewBox', '0 0 100 100');
-      scribbleSvg.setAttribute('preserveAspectRatio', 'none');
-      scribbleSvg.setAttribute('aria-hidden', 'true');
-      var scribble = document.createElementNS(SVGNS, 'path');
-      scribble.setAttribute('d',
-        'M6 6 H94 V17 H6 V28 H94 V39 H6 V50 H94 V61 H6 V72 H94 V83 H6 V94 H94');
-      scribbleSvg.appendChild(scribble);
-      fill.appendChild(scribbleSvg);
 
       var svg = document.createElementNS(SVGNS, 'svg');
       svg.setAttribute('class', 'dropcap-outline');
@@ -567,7 +555,6 @@
       // base CSS state is the finished, filled tile).
       if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       try { rect.style.setProperty('--cap-len', rect.getTotalLength()); } catch (e) {}
-      try { scribble.style.setProperty('--scribble-len', scribble.getTotalLength()); } catch (e) {}
       requestAnimationFrame(function () { span.classList.add('draw'); });
     })();
 

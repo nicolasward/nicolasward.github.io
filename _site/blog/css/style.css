@@ -952,10 +952,10 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
   unicode-bidi: isolate;
 }
 
-/* Drop cap: the opening letter sits in a fixed-size solid tile in the inverse
-   theme colour (dark tile in light mode, light tile in dark mode) — always the
-   same footprint regardless of which letter it is. The letter itself is wrapped
-   in span.dropcap by JS (::first-letter can't be sized into a box). */
+/* Drop cap: the opening letter sits in a fixed-size solid orange tile, the
+   letter knocked out in the page colour — always the same footprint regardless
+   of which letter it is. The letter itself is wrapped in span.dropcap by JS
+   (::first-letter can't be sized into a box). */
 .post-content .dropcap {
   float: left;
   display: flex;
@@ -963,9 +963,9 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
   justify-content: center;
   width: 1.62em;
   height: 1.62em;
-  margin: 0.1em 0.42em 0.08em 0;
+  margin: 0.1em 0.3em 0.08em 0;
   border-radius: 5px;
-  background: var(--fg);
+  background: var(--accent);
   color: var(--bg);
   font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 2.3em;

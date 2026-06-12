@@ -5,7 +5,7 @@ slug: if-youre-remote-ramble
 tags: advice, writing, tools
 ---
 
-When you work remotely, the casual hallway conversations disappear. The serendipitous exchanges that happen when you bump into someone at the coffee machine — gone. You have to create those moments deliberately.
+Over-communicate on purpose. When you work remotely, the casual hallway conversations disappear. The serendipitous exchanges that happen when you bump into someone at the coffee machine — gone. You have to create those moments deliberately.
 
 One of the best ways to do this is to ramble. Write longer messages than you think you need to. Share context that seems obvious. Explain your reasoning even when nobody asked.
 

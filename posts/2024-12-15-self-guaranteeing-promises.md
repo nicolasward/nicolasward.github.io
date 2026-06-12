@@ -5,7 +5,7 @@ slug: self-guaranteeing-promises
 tags: ideas, design, philosophy
 ---
 
-Some promises are self-guaranteeing. The act of making the promise creates the conditions for keeping it.
+Trust can be built into a system. Some promises are self-guaranteeing. The act of making the promise creates the conditions for keeping it.
 
 When a company says "we will never sell your data," the promise itself creates internal alignment. Engineers design systems that don't collect unnecessary data. Product managers stop asking for features that would require selling data. The promise constrains the design space in healthy ways.
 

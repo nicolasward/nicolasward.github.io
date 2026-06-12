@@ -5,7 +5,7 @@ slug: pain-is-information
 tags: ideas, learning, philosophy
 ---
 
-Pain — physical or emotional — is the body's most honest signal. It doesn't lie, it doesn't exaggerate for effect, and it doesn't have an agenda. It simply tells you that something needs attention.
+Listen before you flinch. Pain — physical or emotional — is the body's most honest signal. It doesn't lie, it doesn't exaggerate for effect, and it doesn't have an agenda. It simply tells you that something needs attention.
 
 The instinct is to avoid pain, to numb it, to push through it. But the wiser response is to listen to it.
 

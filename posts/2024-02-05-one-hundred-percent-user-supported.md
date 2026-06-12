@@ -5,7 +5,7 @@ slug: 100-percent-user-supported
 tags: money, design, tools
 ---
 
-There's a business model that doesn't get enough credit: charging users money for a product they love.
+Money changes a relationship, usually for the better. There's a business model that doesn't get enough credit: charging users money for a product they love.
 
 No ads. No data harvesting. No venture capital treadmill. Just people paying for something valuable. It's the oldest business model in the world, and it still works. As I wrote in [Quality software deserves your hard-earned cash](/quality-software-deserves-your-money), independent makers create tools that respect your privacy and don't lock you in.
 

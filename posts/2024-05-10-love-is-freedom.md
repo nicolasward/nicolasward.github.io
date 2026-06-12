@@ -5,7 +5,7 @@ slug: love-is-freedom
 tags: philosophy
 ---
 
-The truest form of love is giving someone the freedom to be themselves. Not the version of them you wish they were. Not the version they think you want. The version they actually are.
+Freedom comes first. The truest form of love is giving someone the freedom to be themselves. Not the version of them you wish they were. Not the version they think you want. The version they actually are.
 
 This sounds simple, but it's one of the hardest things humans do. We're wired to shape others to fit our expectations. We call it helping, advising, improving. But often it's just control wearing a friendly mask.
 

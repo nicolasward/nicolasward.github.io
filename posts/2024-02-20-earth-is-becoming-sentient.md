@@ -5,7 +5,7 @@ slug: earth-is-becoming-sentient
 tags: AI, ideas, philosophy
 ---
 
-The edge of a sheet of paper slices through the tip of your finger and blood begins to flow from the wound. This injury, as small as it may be, must be repaired. Blood cells rush to the site, clotting, scabbing, healing. You never asked for it, but a few days later your finger is as good as new.
+Picture this. The edge of a sheet of paper slices through the tip of your finger and blood begins to flow from the wound. This injury, as small as it may be, must be repaired. Blood cells rush to the site, clotting, scabbing, healing. You never asked for it, but a few days later your finger is as good as new.
 
 It has been said that humans are passengers on Spaceship Earth. This view is too simple. Earth is not a vehicle but a body — the body of a planet-sized being that is developing senses, an intelligence, a will, and even the ability to reproduce. We are cells building this body and maintaining it.
 

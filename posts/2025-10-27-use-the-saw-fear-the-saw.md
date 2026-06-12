@@ -5,6 +5,8 @@ slug: use-the-saw-fear-the-saw
 tags: tools, ideas, design
 ---
 
+A sharp tool rewards respect and punishes carelessness.
+
 1. What did you do this year that you’d never done before?
 2. Did you keep your new year’s resolutions?
 3. Did anyone close to you give birth?

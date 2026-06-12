@@ -5,7 +5,7 @@ slug: what-can-we-remove
 tags: design, tools, ideas
 ---
 
-The most underrated question in design is not "what should we add?" but "what can we remove?"
+Subtraction is a discipline. The most underrated question in design is not "what should we add?" but "what can we remove?"
 
 Addition feels productive. You're building, growing, expanding. But the best products are often defined by what they leave out. Every feature you don't add is a feature you don't have to maintain, document, or explain.
 

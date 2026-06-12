@@ -5,4 +5,4 @@ slug: software-is-liquid
 tags: software, ai, design
 ---
 
-This is a test post about stochastic software and micro-reasoning units.
+Water takes the shape of its container. This is a test post about stochastic software and micro-reasoning units.

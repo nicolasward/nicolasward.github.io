@@ -5,7 +5,7 @@ slug: choose-optimism
 tags: philosophy, advice
 ---
 
-Pessimism sounds smart. Optimism sounds naive. But optimism is the only worldview that leads to action.
+Here is a bias worth keeping. Pessimism sounds smart. Optimism sounds naive. But optimism is the only worldview that leads to action.
 
 If you believe the future is bleak no matter what, there's no reason to try. If you believe the future can be better, you have every reason to work toward it. Optimism isn't about ignoring problems — it's about believing they can be solved.
 

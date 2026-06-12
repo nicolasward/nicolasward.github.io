@@ -954,9 +954,12 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
 
 /* Drop cap: the opening letter sits in a fixed-size solid tile in the inverse
    theme colour (dark tile in light mode, light tile in dark mode) — always the
-   same footprint regardless of which letter it is. The letter itself is wrapped
-   in span.dropcap by JS (::first-letter can't be sized into a box). */
+   same footprint regardless of which letter it is. Built as three layers by JS
+   (fill + outline SVG + letter) so the entrance can draw itself: the square
+   outline strokes around, the fill floods in, then the letter pops. */
 .post-content .dropcap {
+  --cap-delay: 0.9s;
+  position: relative;
   float: left;
   display: flex;
   align-items: center;
@@ -964,14 +967,65 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
   width: 1.62em;
   height: 1.62em;
   margin: 0.1em 0.3em 0.08em 0;
-  border-radius: 5px;
-  background: var(--fg);
   color: var(--bg);
   font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 2.3em;
   font-weight: 700;
   line-height: 1;
   text-transform: uppercase;
+}
+/* Solid fill behind the letter (its own layer so it can flood in separately). */
+.post-content .dropcap-fill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 5px;
+  background: var(--fg);
+}
+/* Outline that draws itself. Same colour as the fill, so once filled it's
+   invisible; sits above the fill, below the letter. */
+.post-content .dropcap-outline {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: visible;
+  pointer-events: none;
+}
+.post-content .dropcap-outline rect {
+  fill: none;
+  stroke: var(--fg);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: var(--cap-len, 380);
+  stroke-dashoffset: var(--cap-len, 380);  /* undrawn by default; fill covers it */
+}
+.post-content .dropcap-letter {
+  position: relative;
+  z-index: 2;
+}
+
+/* Self-drawing entrance — only when JS arms it with .draw. */
+@keyframes dropcap-stroke  { to   { stroke-dashoffset: 0; } }
+@keyframes dropcap-flood   { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dropcap-pop     { from { opacity: 0; transform: scale(0.5); }
+                             to   { opacity: 1; transform: scale(1); } }
+.post-content .dropcap.draw .dropcap-outline rect {
+  animation: dropcap-stroke 0.6s cubic-bezier(0.65, 0, 0.35, 1) var(--cap-delay) both;
+}
+.post-content .dropcap.draw .dropcap-fill {
+  opacity: 0;
+  animation: dropcap-flood 0.35s ease calc(var(--cap-delay) + 0.46s) forwards;
+}
+.post-content .dropcap.draw .dropcap-letter {
+  opacity: 0;
+  animation: dropcap-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--cap-delay) + 0.52s) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .post-content .dropcap.draw .dropcap-outline rect,
+  .post-content .dropcap.draw .dropcap-fill,
+  .post-content .dropcap.draw .dropcap-letter { animation: none; opacity: 1; }
 }
 
 .post-content h2 {

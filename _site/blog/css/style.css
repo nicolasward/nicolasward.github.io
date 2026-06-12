@@ -956,12 +956,13 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
    editorial anchor above the fold. */
 .post-content > p:first-of-type::first-letter {
   float: left;
-  margin: 0.05em 0.06em 0 0;
-  /* Beau Rivage — a flowing formal calligraphic script. Loaded from Google Fonts
-     (see base.html). Script caps read small and ornate, so it's set large. */
+  /* Beau Rivage's swashes overhang the glyph's advance width, so wrapped text
+     needs a generous right gap to clear them; a little top room lets the upper
+     flourishes breathe above the first line. */
+  margin: 0.12em 0.32em 0 0.04em;
   font-family: "Beau Rivage", cursive;
-  font-size: 4.6em;
-  line-height: 0.68;
+  font-size: 4em;
+  line-height: 0.66;
   font-weight: 400;
   color: var(--accent);
 }

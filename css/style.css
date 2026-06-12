@@ -860,7 +860,6 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 .js body.page .reveal-up {
   opacity: 0;
   transform: translateY(24px);
-  will-change: opacity, transform;
 }
 /* The transition lives on the .in state only, so *adding* .reveal-up is an
    instant hide (no fade-out of blocks that happen to be visible when JS runs);

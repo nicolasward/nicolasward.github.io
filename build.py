@@ -161,14 +161,18 @@ def build():
         shutil.rmtree(OUTPUT_DIR)
     OUTPUT_DIR.mkdir()
 
-    # Landing page → site root (index.html + its assets)
+    # Landing page → site root (index.html + its assets). Old template baggage
+    # that nothing references (Font Awesome, jQuery plugins, legacy scripts) is
+    # left out of the artifact entirely.
+    LANDING_EXCLUDE = {".DS_Store", "fa", "plugins", "scripts"}
     if LANDING_DIR.exists():
         for item in LANDING_DIR.iterdir():
-            if item.name == ".DS_Store":
+            if item.name in LANDING_EXCLUDE:
                 continue
             dest = OUTPUT_DIR / item.name
             if item.is_dir():
-                shutil.copytree(item, dest)
+                shutil.copytree(item, dest,
+                                ignore=shutil.ignore_patterns(".DS_Store"))
             else:
                 shutil.copy2(item, dest)
 
@@ -178,22 +182,48 @@ def build():
     # Blog lives under /blog
     BLOG_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Copy CSS
+    # --- CSS / JS: minify where the minifiers are available (they're in
+    # requirements.txt, so CI always minifies; a bare local env still builds,
+    # just unminified). Output is byte-identical in rendering either way.
+    try:
+        from rcssmin import cssmin as _cssmin
+    except ImportError:
+        _cssmin = lambda s: s
+    try:
+        from rjsmin import jsmin as _jsmin
+    except ImportError:
+        _jsmin = lambda s: s
+
+    import hashlib
+    def _hash(text):
+        return hashlib.md5(text.encode("utf-8")).hexdigest()[:8]
+
+    # Copy CSS (minified)
     css_out = BLOG_DIR / "css"
-    shutil.copytree(CSS_DIR, css_out)
+    css_out.mkdir()
+    css_ver = {}
+    for f in CSS_DIR.glob("*.css"):
+        minified = _cssmin(f.read_text(encoding="utf-8"))
+        (css_out / f.name).write_text(minified, encoding="utf-8")
+        css_ver[f.name] = _hash(minified)
 
     base_tpl = read_template("base.html")
     home_tpl = read_template("home.html")
     post_tpl = read_template("post.html")
     page_tpl = read_template("page.html")
 
-    # Cache-bust the stylesheets with a content hash so browsers always fetch the
-    # latest CSS instead of serving a stale cached copy after a change.
-    import hashlib
-    def _ver(name):
-        return hashlib.md5((CSS_DIR / name).read_bytes()).hexdigest()[:8]
-    base_tpl = base_tpl.replace('css/style.css"', f'css/style.css?v={_ver("style.css")}"')
-    base_tpl = base_tpl.replace('css/flexoki.css"', f'css/flexoki.css?v={_ver("flexoki.css")}"')
+    # Site JS: one shared, cacheable file instead of inline scripts repeated in
+    # every page's HTML (smaller pages; the JS is fetched once and cached).
+    js_out = BLOG_DIR / "js"
+    js_out.mkdir()
+    site_js = _jsmin(render(read_template("site.js"), base=BASE_PATH))
+    (js_out / "site.js").write_text(site_js, encoding="utf-8")
+
+    # Cache-bust the stylesheets and JS with a content hash so browsers always
+    # fetch the latest copy after a change, and cache it indefinitely otherwise.
+    base_tpl = base_tpl.replace('css/style.css"', f'css/style.css?v={css_ver["style.css"]}"')
+    base_tpl = base_tpl.replace('css/flexoki.css"', f'css/flexoki.css?v={css_ver["flexoki.css"]}"')
+    base_tpl = base_tpl.replace('js/site.js"', f'js/site.js?v={_hash(site_js)}"')
 
     # The "/ Writing" header link points back to the blog index. It appears on
     # every part of the blog, not just on individual articles.

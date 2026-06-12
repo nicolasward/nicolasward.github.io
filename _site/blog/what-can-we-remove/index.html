@@ -465,7 +465,8 @@
       let wasComplete = false, firstRun = true;
       // The dark arc stays empty until the entrance, then draws clockwise to
       // its value in sync with the track ring-draw (see entrance timing below).
-      let entered = false;
+      // The percent text counts 0 → value over that same entrance window.
+      let entered = false, countingUp = false, currentPercent = 0;
 
       // Pop a burst of accent-orange confetti out of the circle on completion.
       function burst() {
@@ -504,7 +505,10 @@
         const progress = Math.max(0, Math.min(1, seen / articleHeight));
         const percent = Math.round(progress * 100);
 
-        percentEl.textContent = percent + '%';
+        currentPercent = percent;
+        // While the entrance count-up is running, it owns the text; before the
+        // entrance the text holds at 0%. Otherwise track the live value.
+        if (entered && !countingUp) percentEl.textContent = percent + '%';
         if (entered) fill.style.strokeDashoffset = CIRCUMFERENCE * (1 - progress);
 
         const done = percent >= 100;
@@ -524,11 +528,30 @@
         requestAnimationFrame(() => { update(); ticking = false; });
       }
 
-      update();   // sets the percent text; the arc stays empty until entrance
+      // Count the percent text up from 0 to its entrance value over `duration`,
+      // easing out so it decelerates into place alongside the arc draw.
+      function countUp(target, duration) {
+        countingUp = true;
+        if (target <= 0) { percentEl.textContent = '0%'; countingUp = false; return; }
+        const start = performance.now();
+        (function frame(now) {
+          const t = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - t, 3);   // easeOutCubic — mirrors the arc
+          percentEl.textContent = Math.round(eased * target) + '%';
+          if (t < 1) {
+            requestAnimationFrame(frame);
+          } else {
+            countingUp = false;
+            percentEl.textContent = currentPercent + '%';   // settle on live value
+          }
+        })(start);
+      }
+
+      update();   // computes the value; text holds at 0% until the entrance
 
       // Draw the dark arc in clockwise on load, synced with the track ring-draw
-      // (which starts at 1.7s and runs 0.7s). Reduced motion skips straight to
-      // the live value.
+      // (which starts at 1.7s and runs 0.7s), and count the number up in lockstep.
+      // Reduced motion skips straight to the live value.
       if (reduceMotion) {
         entered = true;
         update();
@@ -536,7 +559,9 @@
         setTimeout(function () {
           fill.style.transition = 'stroke-dashoffset 0.7s cubic-bezier(0.22, 1, 0.36, 1)';
           entered = true;
-          update();   // animates the arc from empty to the current value
+          countingUp = true;        // suppress the text in update() so it can count
+          update();                 // animates the arc from empty to the current value
+          countUp(currentPercent, 700);   // number counts up over the same window
           setTimeout(function () {
             // Restore the snappy transition for live scrolling.
             fill.style.transition = 'stroke-dashoffset 0.15s ease, stroke 0.35s ease';

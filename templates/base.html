@@ -8,9 +8,6 @@
        to match the page field. Updated live by the theme toggle below. -->
   <meta name="theme-color" id="theme-color-meta" content="#f6f8fa">
   <title>{{title}}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Beau+Rivage&display=swap">
   <link rel="stylesheet" href="{{base}}/css/flexoki.css">
   <link rel="stylesheet" href="{{base}}/css/style.css">
   <link rel="alternate" type="application/rss+xml" title="RSS" href="{{base}}/feed.xml">
@@ -597,6 +594,33 @@
         rows[i].style.setProperty('--i', i);
         rows[i].classList.add('roll-in');
       }
+    })();
+  </script>
+  <script>
+    // Drop cap: wrap the first letter of the opening paragraph in span.dropcap
+    // so CSS can render it as a fixed-size theme-inverse tile. (::first-letter
+    // can't be sized into a box, hence the wrap.)
+    (function () {
+      if (!document.body.classList.contains('article') &&
+          !document.body.classList.contains('page')) return;
+      var p = document.querySelector('.post-content > p');
+      if (!p) return;
+      var walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT, null);
+      var node = walker.nextNode();
+      while (node && !node.nodeValue.trim()) node = walker.nextNode();
+      if (!node) return;
+      var text = node.nodeValue;
+      var i = 0;
+      while (i < text.length && /\s/.test(text[i])) i++;
+      if (i >= text.length || !/[A-Za-z0-9]/.test(text[i])) return;  // only real letters
+      var span = document.createElement('span');
+      span.className = 'dropcap';
+      span.textContent = text[i];
+      var parent = node.parentNode;
+      if (i > 0) parent.insertBefore(document.createTextNode(text.slice(0, i)), node);
+      parent.insertBefore(span, node);
+      parent.insertBefore(document.createTextNode(text.slice(i + 1)), node);
+      parent.removeChild(node);
     })();
   </script>
   <script>

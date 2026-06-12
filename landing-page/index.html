@@ -242,6 +242,23 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   animation: cta-shimmer 4.5s ease-in-out 2s infinite;
 }
 
+/* "design" — a flexoki-green sibling to the orange "writing" link, with the
+   same glow sweep through the glyphs (offset in time so the two coloured words
+   never shimmer in unison). Links to the article explaining this very site. */
+.design-link {
+  text-decoration: none;
+  background-image: linear-gradient(90deg,
+    #66800B 0%, #66800B 44%, #BEC97E 50%, #66800B 56%, #66800B 100%);
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: cta-shimmer 4.5s ease-in-out 3.6s infinite;
+}
+
 /* Plain underlined inline links (LinkedIn, email). */
 .text-link {
   color: inherit;
@@ -257,7 +274,7 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) {
   /* No entrance animation — show everything immediately. */
   html.js .js-reveal,
-  .greeting, .lede, .write-link, .reveal-word, .gw {
+  .greeting, .lede, .write-link, .design-link, .reveal-word, .gw {
     animation: none;
     opacity: 1;
     transform: none;
@@ -325,7 +342,7 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   <div class="container">
     <div class="hero">
       <p class="greeting js-reveal"><span class="gw">Hi</span><span class="gw">, I&#8217;m</span> <span class="gw">Nico.</span></p>
-      <h1 class="lede js-reveal">I build human-machine learning systems &#8212; interfaces that help humans learn better.<br>I&#8217;m the founder of <span class="atelier">Atelier</span>, an AI studio working to unlock the next evolution in human learning and development.<br>I also enjoy <a class="write-link" href="/blog">writing</a> &#8212; about AI, design, and other random things. You can reach me on <a class="text-link" href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" rel="noopener">LinkedIn</a> or via <a class="text-link" href="mailto:ward.nicolas@outlook.com">email</a>.</h1>
+      <h1 class="lede js-reveal">I build human-machine learning systems &#8212; interfaces that help humans learn better.<br>I&#8217;m the founder of <span class="atelier">Atelier</span>, an AI studio working to unlock the next evolution in human learning and development.<br>I also enjoy <a class="write-link" href="/blog">writing</a> &#8212; about AI, <a class="design-link" href="/blog/design-and-delight">design</a>, and other random things. You can reach me on <a class="text-link" href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" rel="noopener">LinkedIn</a> or via <a class="text-link" href="mailto:ward.nicolas@outlook.com">email</a>.</h1>
     </div>
   </div>
 

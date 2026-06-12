@@ -4,6 +4,13 @@
   <title>Nico Ward</title>
   <description>Thoughts on design, technology, and building things.</description>
   <item>
+    <title>Design and delight</title>
+    <link>/blog/design-and-delight</link>
+    <pubDate>2026-06-12</pubDate>
+    <description><![CDATA[<p>Design is invisible until it isn't. When a thing is well made, you don't notice the making — you just glide through it, and the work disappears behind the result. But every so often something catches your eye and makes you smile: a detail that nobody asked for, that no spec required, that exists only because someone cared. That second thing is delight, and it's the part most people skip.</p>
+<p>This site is small. A landing page and a blog. But I treated every pixel of it as a decision, and I]]></description>
+  </item>
+  <item>
     <title>Software is liquid</title>
     <link>/blog/software-is-liquid</link>
     <pubDate>2026-03-22</pubDate>
@@ -82,15 +89,6 @@
 <p>If you believe the future is bleak no matter what, there's no reason to try. If you believe the future can be better, you have every reason to work toward it. Optimism isn't about ignoring problems — it's about believing they can be solved.</p>
 <h2 id="optimism-as-a-strategy">Optimism as a strategy</h2>
 <p>The most effective people are almost always opti]]></description>
-  </item>
-  <item>
-    <title>Pain is information</title>
-    <link>/blog/pain-is-information</link>
-    <pubDate>2023-11-05</pubDate>
-    <description><![CDATA[<p>Listen before you flinch. Pain — physical or emotional — is the body's most honest signal. It doesn't lie, it doesn't exaggerate for effect, and it doesn't have an agenda. It simply tells you that something needs attention.</p>
-<p>The instinct is to avoid pain, to numb it, to push through it. But the wiser response is to listen to it.</p>
-<h2 id="pain-as-a-teacher">Pain as a teacher</h2>
-<p>Think about the last time you touched a hot stove. The pain wasn't the problem — it was the message. Wi]]></description>
   </item>
 </channel>
 </rss>

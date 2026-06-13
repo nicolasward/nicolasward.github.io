@@ -482,7 +482,8 @@
 
       toggle.addEventListener('click', toggleTheme);
 
-      // T key — toggle theme; H key — go home
+      // T key — toggle theme; H key — go home; ← / → — newer / older article
+      // (the desktop equivalent of the mobile swipe-between-articles gesture).
       document.addEventListener('keydown', function(e) {
         const tag = (document.activeElement && document.activeElement.tagName) || '';
         if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
@@ -495,6 +496,12 @@
           e.preventDefault();
           e.stopPropagation();
           window.location.href = '{{base}}';
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+          if (html.classList.contains('searching')) return;
+          var sib = document.querySelector('.post-siblings');   // only present on articles
+          if (!sib) return;
+          var url = sib.getAttribute(e.key === 'ArrowLeft' ? 'data-newer-url' : 'data-older-url');
+          if (url) { e.preventDefault(); e.stopPropagation(); window.location.href = url; }
         }
       }, true);
     })();

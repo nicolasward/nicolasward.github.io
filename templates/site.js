@@ -429,19 +429,33 @@
       const themeColorMeta = document.getElementById('theme-color-meta');
       const THEME_COLORS = { light: '#f6f8fa', dark: '#100F0F' };
 
-      function setTheme(theme) {
+      // Apply a theme WITHOUT persisting it — used for the device default and for
+      // live OS changes, so the site keeps tracking the device.
+      function applyTheme(theme) {
         html.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
         if (themeColorMeta) themeColorMeta.setAttribute('content', THEME_COLORS[theme] || THEME_COLORS.light);
       }
-
-      // Init from saved preference or system
-      const saved = localStorage.getItem('theme');
-      if (saved) {
-        setTheme(saved);
-      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        setTheme('dark');
+      // Apply AND remember — only for an explicit choice made via the toggle.
+      function setTheme(theme) {
+        applyTheme(theme);
+        localStorage.setItem('theme-choice', theme);
       }
+
+      const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+      localStorage.removeItem('theme');   // retire the old key (it auto-persisted the system value, locking it)
+
+      // Init: an explicit saved choice wins; otherwise follow the device — without
+      // persisting, so it keeps adapting on later visits and OS changes.
+      const choice = localStorage.getItem('theme-choice');
+      applyTheme(choice ? choice : (systemDark.matches ? 'dark' : 'light'));
+
+      // Live-adapt: follow the device when it flips light/dark, unless the user
+      // has explicitly chosen a theme via the toggle.
+      function onSystemThemeChange(e) {
+        if (!localStorage.getItem('theme-choice')) applyTheme(e.matches ? 'dark' : 'light');
+      }
+      if (systemDark.addEventListener) systemDark.addEventListener('change', onSystemThemeChange);
+      else if (systemDark.addListener) systemDark.addListener(onSystemThemeChange);  // older Safari
 
       // Toggle the theme. Where supported, the two themes slowly cross-fade into
       // one another (View Transitions API) — a soft, even dissolve; otherwise it

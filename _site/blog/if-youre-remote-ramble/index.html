@@ -17,9 +17,11 @@
     // position — otherwise it renders light then flips to dark, sliding the moon
     // into place on every page load.
     try {
-      var savedTheme = localStorage.getItem('theme');
+      // Default: follow the device's light/dark mode. Only an explicit choice
+      // made via the toggle (stored as theme-choice) overrides the device.
+      var themeChoice = localStorage.getItem('theme-choice');
       var prefersDark = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches;
-      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      if (themeChoice === 'dark' || (!themeChoice && prefersDark)) {
         document.documentElement.setAttribute('data-theme', 'dark');
         var tcm = document.getElementById('theme-color-meta');
         if (tcm) tcm.setAttribute('content', '#100F0F');
@@ -177,6 +179,6 @@
     </span>
   </div>
 
-  <script src="/blog/js/site.js?v=479dd711"></script>
+  <script src="/blog/js/site.js?v=a81a95f5"></script>
 </body>
 </html>

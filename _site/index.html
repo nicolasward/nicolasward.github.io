@@ -183,12 +183,13 @@ html.js .fast-forward .ff-skip path {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;                    /* undrawn by default */
 }
-/* Entrance: each chevron strokes itself in, the second a beat after the first. */
+/* Entrance: a clear beat after the background settles, each chevron strokes
+   itself in, the second a beat after the first. */
 html.js .fast-forward.draw .ff-skip path {
-  animation: ff-draw 0.5s cubic-bezier(0.65, 0, 0.35, 1) 0.2s forwards;
+  animation: ff-draw 0.55s cubic-bezier(0.65, 0, 0.35, 1) 0.75s forwards;
 }
 html.js .fast-forward.draw .ff-skip path:last-child {
-  animation-delay: 0.34s;
+  animation-delay: 0.92s;
 }
 @keyframes ff-draw {
   to { stroke-dashoffset: 0; }

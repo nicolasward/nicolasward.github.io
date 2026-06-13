@@ -163,12 +163,9 @@ html[data-theme="dark"] body::before {
 }
 .site-header.scrolled {
   padding: 0.62rem 1.1rem;           /* nav slides into the pill */
-  background-color: rgba(246, 248, 250, 0.62);
-  -webkit-backdrop-filter: blur(14px);
-          backdrop-filter: blur(14px);
-}
-[data-theme="dark"] .site-header.scrolled {
-  background-color: rgba(32, 31, 31, 0.55);
+  background-color: var(--progress-bg);   /* same frosted backing + blur as the reading-progress ring */
+  -webkit-backdrop-filter: blur(8px);
+          backdrop-filter: blur(8px);
 }
 /* Soft float on a SEPARATE pseudo (Safari clips box-shadow on an element that
    also has backdrop-filter). Fades in on scroll. */

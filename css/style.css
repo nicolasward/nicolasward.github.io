@@ -1351,6 +1351,52 @@ h3:hover .heading-anchor {
 }
 }
 
+/* Keyboard-shortcut legend — quiet, desktop-only (see .pro-tips). The kbd chips
+   reuse the search-overlay hint styling for consistency. */
+.footer-keys {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.1rem;
+  margin-top: 1.1rem;
+  color: var(--fg-muted);
+  font-size: 0.8rem;
+}
+.footer-keys .key-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0;                 /* reset for the <button> variants */
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: 1;
+}
+button.key-hint { cursor: pointer; }
+.footer-keys kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--kbd-bg);
+  font-family: inherit;
+  font-size: 0.72rem;
+  color: var(--fg);
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+@media (hover: hover) {
+  button.key-hint:hover kbd { color: var(--accent); border-color: var(--accent); }
+  button.key-hint:active kbd { transform: translateY(1px); }
+}
+/* The ← → hint only makes sense where article navigation exists. */
+.footer-keys .key-hint--nav { display: none; }
+body.article .footer-keys .key-hint--nav { display: inline-flex; }
+
 /* ===== Global search overlay ===== */
 .search-overlay {
   position: fixed;

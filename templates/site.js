@@ -504,6 +504,17 @@
           if (url) { e.preventDefault(); e.stopPropagation(); window.location.href = url; }
         }
       }, true);
+
+      // Footer shortcut legend: the S/T/H chips trigger the real controls.
+      var footerKeys = document.querySelector('.footer-keys');
+      if (footerKeys) footerKeys.addEventListener('click', function (e) {
+        var btn = e.target.closest('.key-hint[data-act]');
+        if (!btn) return;
+        var act = btn.getAttribute('data-act');
+        if (act === 'search') { var s = document.getElementById('nav-search'); if (s) s.click(); }
+        else if (act === 'theme') { if (toggle) toggle.click(); }
+        else if (act === 'home') { window.location.href = '{{base}}'; }
+      });
     })();
 
     // Homepage: roll the content out line by line on load. Runs synchronously

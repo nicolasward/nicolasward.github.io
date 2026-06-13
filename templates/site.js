@@ -761,6 +761,11 @@
         // The replaced SVG can't take a % height (auto-height parent), so pin its
         // height to the header in px; then measure the outline for the dash.
         if (svg) svg.style.height = header.offsetHeight + 'px';
+        // Match the CSS capsule: corner radius = half the height, so the drawn
+        // contour is fully rounded too.
+        var rad = header.offsetHeight / 2;
+        rect.setAttribute('rx', rad);
+        rect.setAttribute('ry', rad);
         if (rect.getTotalLength) {
           // Disarm the transition so setting --pill-len snaps (no flash of a
           // draw on load / re-measure), then re-arm on the next frame.

@@ -151,7 +151,7 @@ html[data-theme="dark"] body::before {
   z-index: 50;
   margin: 0 0 2rem;
   padding: 0.62rem 0;                /* full body width at rest — nav aligns with body */
-  border-radius: 18px;
+  border-radius: 999px;              /* fully rounded capsule ends */
   background-color: transparent;
   -webkit-backdrop-filter: none;
           backdrop-filter: none;

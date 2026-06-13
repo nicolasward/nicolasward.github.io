@@ -180,6 +180,9 @@ html.js .fast-forward svg {
   display: block;
 }
 html.js .fast-forward .ff-skip path {
+  stroke-linecap: butt;                    /* a round cap renders a stray dot at the
+                                              path start while undrawn; butt caps
+                                              show nothing at a zero-length dash */
   stroke-dasharray: 1;
   stroke-dashoffset: 1;                    /* undrawn by default */
 }

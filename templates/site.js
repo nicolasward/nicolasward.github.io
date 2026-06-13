@@ -449,13 +449,18 @@
       const choice = localStorage.getItem('theme-choice');
       applyTheme(choice ? choice : (systemDark.matches ? 'dark' : 'light'));
 
-      // Live-adapt: follow the device when it flips light/dark, unless the user
-      // has explicitly chosen a theme via the toggle.
-      function onSystemThemeChange(e) {
-        if (!localStorage.getItem('theme-choice')) applyTheme(e.matches ? 'dark' : 'light');
+      // Live-adapt: follow the device unless the user has explicitly chosen a
+      // theme via the toggle.
+      function followSystem() {
+        if (!localStorage.getItem('theme-choice')) applyTheme(systemDark.matches ? 'dark' : 'light');
       }
-      if (systemDark.addEventListener) systemDark.addEventListener('change', onSystemThemeChange);
-      else if (systemDark.addListener) systemDark.addListener(onSystemThemeChange);  // older Safari
+      if (systemDark.addEventListener) systemDark.addEventListener('change', followSystem);
+      else if (systemDark.addListener) systemDark.addListener(followSystem);  // older Safari
+      // On mobile, switching the system theme usually means leaving Safari
+      // (Control Centre / Settings) and coming back — the change event can be
+      // missed while backgrounded, so re-check whenever the tab becomes visible.
+      document.addEventListener('visibilitychange', function () { if (!document.hidden) followSystem(); });
+      window.addEventListener('pageshow', followSystem);
 
       // Toggle the theme. Where supported, the two themes slowly cross-fade into
       // one another (View Transitions API) — a soft, even dissolve; otherwise it

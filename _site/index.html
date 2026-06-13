@@ -170,33 +170,28 @@ html.js .fast-forward {
   transition: opacity 0.35s ease, transform 0.15s ease;
 }
 html.js .fast-forward:active { transform: scale(0.9); }
-/* The chevrons are FULLY drawn; a soft left-to-right wipe (mask) reveals them
-   on load — chevron by chevron, no round-cap "dot" the way animating
-   stroke-dashoffset produces. Held hidden until JS adds .draw, so the wipe is
-   actually seen rather than completing during the first paint. */
+/* The chevrons draw themselves in on load via stroke-dashoffset — the same
+   technique as the blog header's search glass and toggle. pathLength="1" lets us
+   dash in normalised units; the strokes are undrawn until JS adds .draw, so the
+   draw is actually seen rather than completing during the first paint. */
 html.js .fast-forward svg {
   width: 100%;
   height: 100%;
   display: block;
-  opacity: 0;                             /* hidden until the entrance runs */
-  -webkit-mask-image: linear-gradient(to right, #000 0%, #000 42%, transparent 60%, transparent 100%);
-          mask-image: linear-gradient(to right, #000 0%, #000 42%, transparent 60%, transparent 100%);
-  -webkit-mask-size: 300% 100%;
-          mask-size: 300% 100%;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
-  -webkit-mask-position: 100% 0;          /* transparent band over the glyph → hidden */
-          mask-position: 100% 0;
 }
-/* Entrance: fade + left-to-right wipe. The 0.2s delay guarantees it starts after
-   the first paint (so it's never finished before it's seen), and the fade makes
-   it unmistakable even on the small glyph. */
-html.js .fast-forward.draw svg {
-  animation: ff-wipe 0.7s cubic-bezier(0.33, 1, 0.68, 1) 0.2s forwards;
+html.js .fast-forward .ff-skip path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;                    /* undrawn by default */
 }
-@keyframes ff-wipe {
-  from { opacity: 0; -webkit-mask-position: 100% 0; mask-position: 100% 0; }
-  to   { opacity: 1; -webkit-mask-position: 0% 0;   mask-position: 0% 0; }
+/* Entrance: each chevron strokes itself in, the second a beat after the first. */
+html.js .fast-forward.draw .ff-skip path {
+  animation: ff-draw 0.5s cubic-bezier(0.65, 0, 0.35, 1) 0.2s forwards;
+}
+html.js .fast-forward.draw .ff-skip path:last-child {
+  animation-delay: 0.34s;
+}
+@keyframes ff-draw {
+  to { stroke-dashoffset: 0; }
 }
 
 /* Once the intro has fully played, the skip control transforms into a replay
@@ -433,14 +428,6 @@ document.querySelectorAll('.blob').forEach(blob => {
     ff.setAttribute('aria-label', 'Skip the intro animation');
     ff.setAttribute('title', 'Skip intro');
   }
-  // (Re)stroke the chevrons from scratch: drop .draw, force reflow, re-add.
-  function drawChevrons() {
-    if (!ff) return;
-    ff.classList.remove('draw');
-    void ff.offsetWidth;
-    ff.classList.add('draw');
-  }
-
   // Flip to Replay only when the intro actually finishes — keyed off the last
   // word's animationend, not a timer, so backgrounding the tab (which pauses CSS
   // animations) can never fire it early while the text is still mid-entrance.
@@ -455,11 +442,13 @@ document.querySelectorAll('.blob').forEach(blob => {
 
   // Play (or replay) the whole intro: reset every word to hidden, re-arm the
   // chevron draw, trickle the greeting + lede back in, then settle on Replay.
+  // Replaying morphs the replay arrow back into the chevrons (the .done cross-
+  // fade) — it does NOT re-stroke them, so there's no jarring "reload". The
+  // chevrons stroke themselves in exactly once, on first load (see startIntro).
   function playIntro() {
     if (!wrapped && lede) { wrapWords(lede); wrapped = true; }
     clearReplayArm();
     morphToChevrons();
-    drawChevrons();
 
     const gws = greetWords(), lws = ledeWords();
     // Clear any inline state from a prior run / fast-forward, then restart.
@@ -530,9 +519,12 @@ document.querySelectorAll('.blob').forEach(blob => {
   placeFF();
   window.addEventListener('resize', placeFF);
 
+  // Draw the chevrons in once (stroke-dashoffset entrance), then play the intro.
+  function startIntro() { if (ff) ff.classList.add('draw'); playIntro(); }
+
   // Wait for the web font so the layout is settled before revealing.
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { placeFF(); playIntro(); });
-  else playIntro();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { placeFF(); startIntro(); });
+  else startIntro();
 })();
 </script>
 </body>

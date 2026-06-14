@@ -2093,36 +2093,41 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-input:disabled { opacity: 1; -webkit-text-fill-color: var(--fg-muted); color: var(--fg-muted); }
 .newsletter-gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 /* Submit: a round accent button whose icon morphs arrow → spinner → check. */
+/* Labeled "Subscribe" pill — deliberately NOT a round disc, so it can't be
+   mistaken for the round reading-progress widget that shares the page end. */
 .newsletter-submit {
   flex: 0 0 auto;
   display: inline-grid;
   place-items: center;
-  width: 2.7rem;
-  height: 2.7rem;
+  padding: 0.62rem 1.15rem;
   border: none;
-  border-radius: 50%;
+  border-radius: 999px;
   background: var(--fg);              /* ink/knockout, like the drop-cap tile + progress ring */
   color: var(--bg);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 500;
+  white-space: nowrap;
   cursor: pointer;
   transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), filter 0.2s ease;
 }
-@media (hover: hover) { .newsletter-submit:hover { filter: brightness(1.07); transform: scale(1.05); } }
-.newsletter-submit:active { transform: scale(0.93); }
-.newsletter-submit .ns-icon {
-  grid-area: 1 / 1;            /* stack the three icons */
-  width: 1.25rem;
-  height: 1.25rem;
+@media (hover: hover) { .newsletter-submit:hover { filter: brightness(1.12); transform: translateY(-1px); } }
+.newsletter-submit:active { transform: translateY(0) scale(0.98); }
+/* The label sizes the pill; the spinner/check stack on top and cross-fade in. */
+.newsletter-submit .ns-state {
+  grid-area: 1 / 1;
   transition: opacity 0.2s ease;
 }
+.newsletter-submit .ns-icon { width: 1.15rem; height: 1.15rem; }
 .newsletter-submit .ns-spinner,
 .newsletter-submit .ns-check { opacity: 0; }
 .ns-check path { stroke-dasharray: 1; stroke-dashoffset: 1; }
 /* Loading */
 .newsletter-form.is-loading .newsletter-submit { cursor: default; }
-.newsletter-form.is-loading .ns-arrow { opacity: 0; }
+.newsletter-form.is-loading .ns-label { opacity: 0; }
 .newsletter-form.is-loading .ns-spinner { opacity: 1; animation: ns-spin 0.7s linear infinite; }
 /* Done */
-.newsletter-form.is-done .ns-arrow,
+.newsletter-form.is-done .ns-label,
 .newsletter-form.is-done .ns-spinner { opacity: 0; }
 .newsletter-form.is-done .ns-check { opacity: 1; }
 .newsletter-form.is-done .ns-check path { animation: ns-check-draw 0.45s cubic-bezier(0.65, 0, 0.35, 1) forwards; }

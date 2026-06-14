@@ -2049,8 +2049,8 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 .newsletter-outline rect {
   fill: none;
-  stroke: var(--border);              /* same as the card border, for a seamless handoff */
-  stroke-width: 1;
+  stroke: var(--fg-muted);            /* clearly visible against the page as it retracts */
+  stroke-width: 1.5;
   vector-effect: non-scaling-stroke;
 }
 .newsletter-card.is-undrawing {
@@ -2059,9 +2059,12 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   box-shadow: none;
   transition: background-color 0.4s ease, border-color 0.35s ease, box-shadow 0.4s ease;
 }
+/* The text/form fade away neatly first (a soft lift), so the outline retract
+   reads clearly on the emptied card. */
 .newsletter-card.is-undrawing > :not(.newsletter-outline) {
   opacity: 0;
-  transition: opacity 0.35s ease;
+  transform: translateY(-4px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 .newsletter-card {
   position: relative;

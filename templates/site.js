@@ -883,11 +883,11 @@
           var len = rect.getTotalLength();
           rect.style.strokeDasharray = len;
           rect.style.strokeDashoffset = '0';   // fully drawn — coincides with the border
-          card.classList.add('is-undrawing');  // fade content + fill; outline stays
-          void rect.getBoundingClientRect();    // commit the start state
-          rect.style.transition = 'stroke-dashoffset 0.66s cubic-bezier(0.22, 1, 0.36, 1)';
-          requestAnimationFrame(function () { rect.style.strokeDashoffset = '' + len; });  // retract
-          setTimeout(collapse, 620);           // close the gap as the outline finishes
+          rect.style.transition = 'stroke-dashoffset 0.72s cubic-bezier(0.22, 1, 0.36, 1)';
+          card.classList.add('is-undrawing');  // fade content + fill first, leaving the outline
+          // Let the text finish fading, THEN retract the outline so it reads clearly.
+          setTimeout(function () { rect.style.strokeDashoffset = '' + len; }, 360);
+          setTimeout(collapse, 1040);          // close the gap as the retract finishes
         }
         function succeed() {
           form.classList.remove('is-loading');

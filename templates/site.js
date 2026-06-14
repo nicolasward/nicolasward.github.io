@@ -868,6 +868,11 @@
           svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
           svg.setAttribute('preserveAspectRatio', 'none');
           svg.setAttribute('aria-hidden', 'true');
+          // The SVG's containing block is the card's PADDING box (inside the 1px
+          // border); shift it out by the border so the outline lands exactly on
+          // the border line rather than 1px inside it.
+          svg.style.top = '-1px';
+          svg.style.left = '-1px';
           var rect = document.createElementNS(NS, 'rect');
           rect.setAttribute('x', '0.5');        // 1px stroke centered on the card's border line
           rect.setAttribute('y', '0.5');

@@ -2295,8 +2295,8 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; transform: scale(1); }
 .subscribe-close svg { width: 1.4rem; height: 1.4rem; }
 @media (hover: hover) { .subscribe-close:hover { color: var(--fg); } }
 
-/* "You're subscribed" note shown when the badge is tapped (positioned in JS). */
-.subscribe-note {
+/* Small pill toast (positioned in JS): "You're subscribed!", "Link copied", … */
+.toast-pill {
   position: fixed;
   z-index: 1001;
   padding: 0.45rem 0.8rem;
@@ -2311,13 +2311,13 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; transform: scale(1); }
   pointer-events: none;
   box-shadow: 0 8px 22px -14px rgba(20, 25, 40, 0.5);
 }
-.subscribe-note.show { opacity: 1; transform: none; }
+.toast-pill.show { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .nav-subscribe svg,
   .subscribe-overlay,
   .subscribe-modal,
-  .subscribe-note { transition: none; }
+  .toast-pill { transition: none; }
 }
 
 /* ===== Responsive ===== */

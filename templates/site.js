@@ -63,6 +63,24 @@
       };
     })();
 
+    // Shared pill toast: a small "..." pill that pops just below an anchor
+    // element and fades out (used for "You're subscribed!", "Link copied", …).
+    var Toast = (function () {
+      var el = null, t = null;
+      return {
+        show: function (text, anchor) {
+          if (!el) { el = document.createElement('div'); el.className = 'toast-pill'; document.body.appendChild(el); }
+          el.textContent = text;
+          el.classList.add('show');
+          var r = anchor.getBoundingClientRect();
+          el.style.top = (r.bottom + 10) + 'px';
+          el.style.left = Math.max(8, Math.min(r.left + r.width / 2 - el.offsetWidth / 2, window.innerWidth - 8 - el.offsetWidth)) + 'px';
+          clearTimeout(t);
+          t = setTimeout(function () { el.classList.remove('show'); }, 2000);
+        }
+      };
+    })();
+
     (function () {
       const overlay    = document.getElementById('search-overlay');
       const input      = document.getElementById('search-input');
@@ -701,13 +719,14 @@
       }
     })();
 
-    // Copy-link share button: copy the current URL, flash a checkmark.
+    // Copy-link share button: copy the current URL, flash a checkmark + "Link copied" pill.
     (function () {
       document.querySelectorAll('.share-copy').forEach(function (btn) {
         btn.addEventListener('click', function () {
           var flash = function () {
             btn.classList.add('copied');
             setTimeout(function () { btn.classList.remove('copied'); }, 1500);
+            Toast.show('Link copied', btn);
           };
           if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(location.href).then(flash, flash);
@@ -963,21 +982,7 @@
 
       try { if (localStorage.getItem('newsletter-subscribed') === '1') btn.classList.add('is-subscribed'); } catch (e) {}
 
-      var note;
-      function showNote() {
-        if (!note) {
-          note = document.createElement('div');
-          note.className = 'subscribe-note';
-          note.textContent = 'You’re subscribed!';
-          document.body.appendChild(note);
-        }
-        var r = btn.getBoundingClientRect();
-        note.classList.add('show');
-        note.style.top = (r.bottom + 10) + 'px';
-        note.style.left = Math.max(8, Math.min(r.left + r.width / 2 - note.offsetWidth / 2, window.innerWidth - 8 - note.offsetWidth)) + 'px';
-        clearTimeout(note._t);
-        note._t = setTimeout(function () { note.classList.remove('show'); }, 2200);
-      }
+      function showNote() { Toast.show('You’re subscribed!', btn); }
 
       var lastFocus = null, closing = false;
       function openOverlay() {

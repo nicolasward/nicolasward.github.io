@@ -667,6 +667,26 @@
       }
     })();
 
+    // Home page: the newsletter sits outside the article reveal above, so give it
+    // the same fade-up-on-scroll there.
+    (function () {
+      if (!document.body.classList.contains('home')) return;
+      var nl = document.querySelector('.newsletter');
+      if (!nl) return;
+      if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      nl.classList.add('reveal-up');
+      if ('IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+          });
+        }, { rootMargin: '0px 0px -12% 0px' });
+        obs.observe(nl);
+      } else {
+        nl.classList.add('in');
+      }
+    })();
+
     // Copy-link share button: copy the current URL, flash a checkmark.
     (function () {
       document.querySelectorAll('.share-copy').forEach(function (btn) {

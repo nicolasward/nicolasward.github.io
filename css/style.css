@@ -854,7 +854,8 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
    with a slow, soft upward motion — Apple-style. Opening-fold blocks stagger in
    on load; the rest reveal as they scroll into view (see JS). */
 .js body.article .reveal-up,
-.js body.page .reveal-up {
+.js body.page .reveal-up,
+.js body.home .reveal-up {
   opacity: 0;
   transform: translateY(24px);
 }
@@ -862,7 +863,8 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
    instant hide (no fade-out of blocks that happen to be visible when JS runs);
    only the scroll-in reveal animates. */
 .js body.article .reveal-up.in,
-.js body.page .reveal-up.in {
+.js body.page .reveal-up.in,
+.js body.home .reveal-up.in {
   opacity: 1;
   transform: none;
   transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
@@ -873,7 +875,8 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .js body.article .reveal-up,
-  .js body.page .reveal-up { opacity: 1; transform: none; transition: none; }
+  .js body.page .reveal-up,
+  .js body.home .reveal-up { opacity: 1; transform: none; transition: none; }
 }
 
 /* ===== Mobile: swipe between articles ===== */

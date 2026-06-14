@@ -2040,9 +2040,9 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 /* Dismissal (see dismiss() in site.js): on subscribe the card softly scales down,
    blurs, and fades — an iOS modal-dismiss feel — then the section collapses. */
 .newsletter-card.is-dismissing {
-  transform: scale(0.97);
+  transform: translateY(-68px) scale(0.96);   /* lifts off upward */
   opacity: 0;
-  filter: blur(8px);
+  filter: blur(3px);                            /* hint of motion-softening */
   pointer-events: none;
 }
 .newsletter-card {
@@ -2053,9 +2053,9 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   background: var(--field);          /* cool white base (matches the page field) */
   box-shadow: 0 14px 34px -24px rgba(20, 25, 40, 0.45);
   transition: border-color 0.35s ease,
-              transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.5s ease,
-              filter 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+              transform 0.62s cubic-bezier(0.55, 0, 0.78, 0),   /* rocket: slow lift, then accelerates */
+              opacity 0.55s cubic-bezier(0.5, 0, 0.85, 0.4),
+              filter 0.6s ease;
 }
 /* On subscribe the 1px border becomes a gradient ring matching the colour flush:
    a masked pseudo (gradient minus its inner content-box = just the ring) that

@@ -2044,6 +2044,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 2;                         /* above the aurora + content so it stays as they fade */
   overflow: visible;
   pointer-events: none;
 }
@@ -2068,16 +2069,41 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 .newsletter-card {
   position: relative;
+  overflow: hidden;                  /* clip the aurora to the rounded corners */
   padding: 1.6rem 1.8rem;
   border: 1px solid var(--border);
   border-radius: 20px;
-  background: var(--field);          /* cool white card (matches the page field), not warm paper */
+  background: var(--field);          /* cool white base (matches the page field) */
   box-shadow: 0 14px 34px -24px rgba(20, 25, 40, 0.45);
 }
 [data-theme="dark"] .newsletter-card {
   background: var(--surface);        /* subtly above the near-black canvas */
   box-shadow: 0 14px 34px -22px rgba(0, 0, 0, 0.6);
 }
+/* Soft gradient aurora behind the content — a nod to the landing page's blobs
+   (teal / sunset / plum). On its own layer so it fades cleanly during the undraw. */
+.newsletter-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(80% 120% at 6% -12%,  rgba(127, 227, 217, 0.34), transparent 56%),
+    radial-gradient(72% 120% at 99% 2%,   rgba(255, 168, 92, 0.30),  transparent 56%),
+    radial-gradient(95% 140% at 60% 114%, rgba(140, 120, 235, 0.28), transparent 60%);
+  transition: opacity 0.35s ease;
+}
+[data-theme="dark"] .newsletter-card::before {
+  background:
+    radial-gradient(80% 120% at 6% -12%,  rgba(127, 227, 217, 0.18), transparent 56%),
+    radial-gradient(72% 120% at 99% 2%,   rgba(255, 168, 92, 0.16),  transparent 56%),
+    radial-gradient(95% 140% at 60% 114%, rgba(140, 120, 235, 0.24), transparent 60%);
+}
+.newsletter-card.is-undrawing::before { opacity: 0; }
+/* Keep the content above the aurora layer. */
+.newsletter-intro,
+.newsletter-form { position: relative; z-index: 1; }
 .newsletter-heading {
   margin: 0 0 0.45rem;
   font-size: 1.32rem;

@@ -2047,7 +2047,6 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 .newsletter-card {
   position: relative;
-  overflow: hidden;                  /* clip the aurora to the rounded corners */
   padding: 1.6rem 1.8rem;
   border: 1px solid var(--border);
   border-radius: 20px;
@@ -2058,8 +2057,26 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
               opacity 0.5s ease,
               filter 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
+/* On subscribe the 1px border becomes a gradient ring matching the colour flush:
+   a masked pseudo (gradient minus its inner content-box = just the ring) that
+   fades in as the solid border fades out. */
+.newsletter-card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;                       /* reach the card's border-box edge */
+  border-radius: 21px;               /* card radius + the 1px border */
+  padding: 1px;                      /* ring thickness = the border */
+  background: linear-gradient(135deg, #7FE3D9 0%, #FFA85C 50%, #8C78EB 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+.newsletter-card.is-subscribed::after { opacity: 1; }
 /* On success the border lights up in the accent, alongside the orange check. */
-.newsletter-card.is-subscribed { border-color: var(--fg); }
+.newsletter-card.is-subscribed { border-color: transparent; }   /* the gradient ring takes over */
 [data-theme="dark"] .newsletter-card {
   background: var(--surface);        /* subtly above the near-black canvas */
   box-shadow: 0 14px 34px -22px rgba(0, 0, 0, 0.6);
@@ -2072,6 +2089,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   position: absolute;
   inset: 0;
   z-index: 0;
+  border-radius: inherit;            /* clip the aurora to rounded corners (card no longer clips) */
   pointer-events: none;
   background:
     radial-gradient(80% 120% at 6% -12%,  rgba(127, 227, 217, 0.34), transparent 56%),

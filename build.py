@@ -166,6 +166,7 @@ def newsletter_section():
     </div>
     <form class="newsletter-form" data-endpoint="" novalidate>
       <div class="newsletter-field">
+        <svg class="ns-field-outline" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="20" ry="20"/></svg>
         <input class="newsletter-input" type="email" name="email" inputmode="email"
                autocomplete="email" spellcheck="false" placeholder="you@example.com"
                aria-label="Email address" required>

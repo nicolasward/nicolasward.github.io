@@ -827,6 +827,25 @@
         var section = form.closest('.newsletter');
         var endpoint = form.getAttribute('data-endpoint') || '';
 
+        // Size the focus-draw outline to the pill and arm its transition (same
+        // pattern as the header pill: measure, set --field-len + capsule rx, then
+        // re-arm next frame so setting the length doesn't animate on load).
+        var outlineRect = field && field.querySelector('.ns-field-outline rect');
+        var outlineSvg  = field && field.querySelector('.ns-field-outline');
+        function measureField() {
+          if (!outlineRect) return;
+          outlineSvg.style.height = field.offsetHeight + 'px';
+          var r = field.offsetHeight / 2;
+          outlineRect.setAttribute('rx', r);
+          outlineRect.setAttribute('ry', r);
+          field.classList.remove('ns-armed');
+          try { outlineRect.style.setProperty('--field-len', outlineRect.getTotalLength()); } catch (e) {}
+          requestAnimationFrame(function () { field.classList.add('ns-armed'); });
+        }
+        measureField();
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureField);
+        window.addEventListener('resize', measureField, { passive: true });
+
         function setMsg(text, kind) {
           msg.textContent = text || '';
           msg.classList.remove('is-error', 'is-success');

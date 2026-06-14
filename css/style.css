@@ -2254,11 +2254,72 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
 .subscribe-modal {
   width: 100%;
   max-width: 460px;
-  transform: translateY(14px) scale(0.97);
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.subscribe-overlay.open .subscribe-modal { transform: none; }
 .subscribe-overlay .newsletter { margin: 0; }
+
+/* --- Draw-in entrance ---------------------------------------------------
+   On open the card sketches itself: a 1px outline traces the card, then the
+   field pill, then the interior content rises in and the send icon draws.
+   The card's own borders stay transparent until the outlines land, then a
+   crossfade hands back to the real borders so focus states keep working.
+   (Outline geometry + lengths are set per-open in site.js.) */
+.subscribe-overlay .newsletter-card,
+.subscribe-overlay .newsletter-field { border-color: transparent; }
+.subscribe-overlay .newsletter-field { position: relative; }
+.subscribe-overlay.drawn .newsletter-card:not(.is-subscribed) { border-color: var(--border); }
+.subscribe-overlay.drawn .newsletter-field { border-color: var(--border); }
+.subscribe-overlay.drawn .newsletter-field:focus-within { border-color: var(--fg); }
+
+.draw-outline {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 2;
+}
+.draw-outline rect {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: var(--len, 1);
+  stroke-dashoffset: var(--len, 1);
+}
+.subscribe-overlay.open .draw-card rect {
+  transition: stroke-dashoffset 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  stroke-dashoffset: 0;
+}
+.subscribe-overlay.open .draw-field rect {
+  transition: stroke-dashoffset 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.45s;
+  stroke-dashoffset: 0;
+}
+/* The drawn outlines fade out as the real borders fade in (seamless crossfade). */
+.subscribe-overlay.drawn .draw-outline { opacity: 0; transition: opacity 0.3s ease; }
+
+/* Interior content rises in just after the outline starts tracing. */
+.subscribe-overlay .newsletter-intro,
+.subscribe-overlay .newsletter-form {
+  opacity: 0;
+  transform: translateY(9px);
+}
+.subscribe-overlay.open .newsletter-intro {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.5s ease 0.55s, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.55s;
+}
+.subscribe-overlay.open .newsletter-form {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.5s ease 0.72s, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.72s;
+}
+/* The send icon draws itself in last, once the field pill has landed. */
+.subscribe-overlay .ns-send path { stroke-dasharray: 100; stroke-dashoffset: 100; }
+.subscribe-overlay.open .ns-send path {
+  transition: stroke-dashoffset 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.95s;
+  stroke-dashoffset: 0;
+}
 .subscribe-close {
   position: absolute;
   top: 1.4rem;
@@ -2300,6 +2361,17 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
   .subscribe-modal,
   .toast-pill { transition: none; }
   .nav-subscribe.just-subscribed .ns-badge path { animation: none; }
+  /* Skip the draw-in: show the real card straight away. */
+  .draw-outline { display: none; }
+  .subscribe-overlay .newsletter-card,
+  .subscribe-overlay .newsletter-field { border-color: var(--border); }
+  .subscribe-overlay .newsletter-intro,
+  .subscribe-overlay .newsletter-form {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .subscribe-overlay .ns-send path { stroke-dashoffset: 0; transition: none; }
 }
 
 /* ===== Responsive ===== */

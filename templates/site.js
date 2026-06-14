@@ -726,7 +726,7 @@
           var flash = function () {
             btn.classList.add('copied');
             setTimeout(function () { btn.classList.remove('copied'); }, 1500);
-            Toast.show('Link copied', btn);
+            Toast.show('Copied to clipboard', btn);
           };
           if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(location.href).then(flash, flash);
@@ -979,27 +979,74 @@
       if (!btn) return;
       var overlay  = document.getElementById('subscribe-overlay');
       var closeBtn = document.getElementById('subscribe-close');
+      var reduce   = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       try { if (localStorage.getItem('newsletter-subscribed') === '1') btn.classList.add('is-subscribed'); } catch (e) {}
 
       function showNote() { Toast.show('You’re subscribed!', btn); }
 
-      var lastFocus = null, closing = false;
+      // --- Draw-in outlines: a 1px <rect> traced over the card + the field pill,
+      // built once then re-sized on each open (the card may reflow with viewport).
+      var cardOutline = null, fieldOutline = null;
+      function makeOutline(cls) {
+        var NS = 'http://www.w3.org/2000/svg';
+        var svg = document.createElementNS(NS, 'svg');
+        svg.setAttribute('class', 'draw-outline ' + cls);
+        svg.setAttribute('aria-hidden', 'true');
+        svg.appendChild(document.createElementNS(NS, 'rect'));
+        return svg;
+      }
+      function sizeOutline(svg, el, rx) {
+        var w = el.offsetWidth, h = el.offsetHeight;
+        if (!w || !h) return;
+        svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+        var rect = svg.firstChild;
+        rect.setAttribute('x', 0.5);
+        rect.setAttribute('y', 0.5);
+        rect.setAttribute('width', w - 1);
+        rect.setAttribute('height', h - 1);
+        rect.setAttribute('rx', rx);
+        rect.setAttribute('ry', rx);
+        var len = rect.getTotalLength ? rect.getTotalLength() : 2 * (w + h);
+        rect.style.setProperty('--len', len);
+      }
+      function prepDraw() {
+        if (!overlay || reduce) return;
+        var card  = overlay.querySelector('.newsletter-card');
+        var field = overlay.querySelector('.newsletter-field');
+        if (!card || !field) return;
+        if (!cardOutline)  { cardOutline  = makeOutline('draw-card');  card.appendChild(cardOutline); }
+        if (!fieldOutline) { fieldOutline = makeOutline('draw-field'); field.appendChild(fieldOutline); }
+        sizeOutline(cardOutline, card, 20);                 // card radius
+        sizeOutline(fieldOutline, field, field.offsetHeight / 2);   // capsule
+      }
+
+      var lastFocus = null, closing = false, drawTimer = null;
       function openOverlay() {
         if (!overlay) return;
         closing = false;
         lastFocus = document.activeElement;
         ToggleClose.engage(closeOverlay);   // toggle morphs into the ✕ close (like search)
+        overlay.classList.remove('drawn');
+        prepDraw();                         // size + reset the outlines (hidden)
+        // Flush the reset (dashoffset = full) before flipping to .open, so the
+        // stroke-dashoffset transition actually animates from full → 0 (the trace).
+        void overlay.offsetWidth;
         overlay.classList.add('open');
         overlay.setAttribute('aria-hidden', 'false');
         document.documentElement.style.overflow = 'hidden';
+        // Hand the drawn outlines back to the real borders once the trace lands.
+        clearTimeout(drawTimer);
+        drawTimer = setTimeout(function () { overlay.classList.add('drawn'); }, reduce ? 0 : 1500);
+        // Focus the input only after the content has risen in (it's invisible before).
         var input = overlay.querySelector('.newsletter-input');
-        setTimeout(function () { if (input) input.focus(); }, 120);
+        setTimeout(function () { if (input) input.focus(); }, reduce ? 60 : 1000);
       }
       function closeOverlay() {
         if (!overlay || closing) return;
         closing = true;
-        overlay.classList.remove('open');
+        clearTimeout(drawTimer);
+        overlay.classList.remove('open', 'drawn');
         overlay.setAttribute('aria-hidden', 'true');
         document.documentElement.style.overflow = '';
         ToggleClose.startClose();           // morph the ✕ back to the toggle

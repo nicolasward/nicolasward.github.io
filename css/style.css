@@ -486,12 +486,12 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 }
 .js body.home .nav-search .search-glass {
   stroke-dasharray: 100;
-  animation: nav-stroke-draw 0.5s cubic-bezier(0.65, 0, 0.35, 1) 0.3s backwards;
+  animation: nav-stroke-draw 0.4s cubic-bezier(0.65, 0, 0.35, 1) 0.55s backwards;
 }
 /* The toggle draws only after the magnifier has finished (sequential, not
    concurrent), then the sun/moon settles in. */
 .js body.home .theme-toggle .ts-pill {
-  animation: nav-stroke-draw 0.5s cubic-bezier(0.65, 0, 0.35, 1) 0.8s backwards;
+  animation: nav-stroke-draw 0.4s cubic-bezier(0.65, 0, 0.35, 1) 0.9s backwards;
 }
 .js body.home .theme-toggle .toggle-knob {
   animation: nav-knob-in 0.35s ease 1.3s backwards;
@@ -501,7 +501,7 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 .js body.home .nav-subscribe:not(.is-subscribed) .ns-mailbox > *,
 .js body.home .nav-subscribe.is-subscribed .ns-badge path {
   stroke-dasharray: 100;
-  animation: nav-stroke-draw 0.55s cubic-bezier(0.65, 0, 0.35, 1) 0.2s backwards;
+  animation: nav-stroke-draw 0.4s cubic-bezier(0.65, 0, 0.35, 1) 0.2s backwards;
 }
 @media (prefers-reduced-motion: reduce) {
   .js body.home .site-nav > a,

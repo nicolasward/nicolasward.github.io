@@ -990,7 +990,9 @@
         overlay.setAttribute('aria-hidden', 'true');
         document.documentElement.style.overflow = '';
         ToggleClose.startClose();           // morph the ✕ back to the toggle
-        setTimeout(function () { ToggleClose.finishClose(); closing = false; }, 400);
+        // Re-home only after the snake morph fully completes (pill redraws ~0.68s),
+        // matching the search overlay — otherwise it looks rushed.
+        setTimeout(function () { ToggleClose.finishClose(); closing = false; }, 800);
         if (lastFocus && lastFocus.focus) lastFocus.focus();
       }
 

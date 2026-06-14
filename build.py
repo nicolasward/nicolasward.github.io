@@ -155,6 +155,33 @@ def format_date_list(date_str):
 # Build
 # ---------------------------------------------------------------------------
 
+def newsletter_section():
+    """Email signup block (custom UI). Runs in demo mode until an endpoint is set
+    on the form via data-endpoint — see the newsletter handler in site.js."""
+    return '''<section class="newsletter" aria-labelledby="newsletter-heading">
+  <div class="newsletter-card">
+    <div class="newsletter-intro">
+      <h2 class="newsletter-heading" id="newsletter-heading">Get new essays by email</h2>
+      <p class="newsletter-dek">Occasional writing on AI, design, and building things worth keeping. No spam, no tracking — unsubscribe in one click.</p>
+    </div>
+    <form class="newsletter-form" data-endpoint="" novalidate>
+      <div class="newsletter-field">
+        <input class="newsletter-input" type="email" name="email" inputmode="email"
+               autocomplete="email" spellcheck="false" placeholder="you@example.com"
+               aria-label="Email address" required>
+        <input class="newsletter-gotcha" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="newsletter-submit" type="submit" aria-label="Subscribe">
+          <svg class="ns-icon ns-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="M13 6l6 6-6 6"/></svg>
+          <svg class="ns-icon ns-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/></svg>
+          <svg class="ns-icon ns-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" pathLength="1"/></svg>
+        </button>
+      </div>
+      <p class="newsletter-msg" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>'''
+
+
 def build():
     # Clean output
     if OUTPUT_DIR.exists():
@@ -333,6 +360,7 @@ def build():
             content=prefix_internal_links(post["html"], slug_set, BASE_PATH),
             related_posts=related_html,
             linked_mentions=linked_mentions_html,
+            newsletter=newsletter_section(),
             share=share_row(f"{SITE_URL}{BASE_PATH}/{post['slug']}", post["title"]),
             newer_url=(f"{BASE_PATH}/{newer['slug']}" if newer else ""),
             newer_title=(html.escape(newer["title"], quote=True) if newer else ""),
@@ -395,7 +423,7 @@ def build():
     all_tags = sorted(set(tag for p in posts for tag in p["tags"]))
     topic_links = ", ".join(f'<a href="#" data-search="{tag}">{tag}</a>' for tag in all_tags)
 
-    home_html = render(home_tpl, post_items=post_items, topic_links=topic_links, latest_section=latest_section)
+    home_html = render(home_tpl, post_items=post_items, topic_links=topic_links, latest_section=latest_section, newsletter=newsletter_section())
     index_html = render(base_tpl, base=BASE_PATH, title=SITE_TITLE, content=home_html, nav_section=writing_nav, body_class="home")
     (BLOG_DIR / "index.html").write_text(index_html)
 

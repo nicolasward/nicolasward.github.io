@@ -2035,6 +2035,121 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   }
 }
 
+/* ===== Newsletter ===== */
+.newsletter { margin: 3rem 0 0; }
+.newsletter-card {
+  position: relative;
+  padding: 2rem 1.9rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: 0 14px 34px -24px rgba(20, 25, 40, 0.45);
+}
+[data-theme="dark"] .newsletter-card { box-shadow: 0 14px 34px -22px rgba(0, 0, 0, 0.6); }
+.newsletter-heading {
+  margin: 0 0 0.45rem;
+  font-size: 1.32rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}
+.newsletter-dek {
+  margin: 0 0 1.35rem;
+  max-width: 48ch;
+  color: var(--fg-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.newsletter-form { margin: 0; }
+/* Pill field with an inset look; the submit lives inside it on the right. */
+.newsletter-field {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.3rem 0.3rem 1.05rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.newsletter-field:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(255, 121, 27, 0.18);   /* accent at low alpha */
+}
+.newsletter-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.55rem 0;
+  border: none;
+  background: none;
+  color: var(--fg);
+  font: inherit;
+  font-size: 1rem;
+  outline: none;
+}
+.newsletter-input::placeholder { color: var(--fg-muted); opacity: 0.7; }
+.newsletter-input:disabled { opacity: 1; -webkit-text-fill-color: var(--fg-muted); color: var(--fg-muted); }
+.newsletter-gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+/* Submit: a round accent button whose icon morphs arrow → spinner → check. */
+.newsletter-submit {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  width: 2.7rem;
+  height: 2.7rem;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), filter 0.2s ease;
+}
+@media (hover: hover) { .newsletter-submit:hover { filter: brightness(1.07); transform: scale(1.05); } }
+.newsletter-submit:active { transform: scale(0.93); }
+.newsletter-submit .ns-icon {
+  grid-area: 1 / 1;            /* stack the three icons */
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: opacity 0.2s ease;
+}
+.newsletter-submit .ns-spinner,
+.newsletter-submit .ns-check { opacity: 0; }
+.ns-check path { stroke-dasharray: 1; stroke-dashoffset: 1; }
+/* Loading */
+.newsletter-form.is-loading .newsletter-submit { cursor: default; }
+.newsletter-form.is-loading .ns-arrow { opacity: 0; }
+.newsletter-form.is-loading .ns-spinner { opacity: 1; animation: ns-spin 0.7s linear infinite; }
+/* Done */
+.newsletter-form.is-done .ns-arrow,
+.newsletter-form.is-done .ns-spinner { opacity: 0; }
+.newsletter-form.is-done .ns-check { opacity: 1; }
+.newsletter-form.is-done .ns-check path { animation: ns-check-draw 0.45s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
+@keyframes ns-spin { to { transform: rotate(360deg); } }
+@keyframes ns-check-draw { to { stroke-dashoffset: 0; } }
+/* Inline message */
+.newsletter-msg {
+  margin: 0.85rem 0 0 0.2rem;
+  min-height: 1.2em;
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+}
+.newsletter-msg.is-error { color: var(--flexoki-red-500); }
+.newsletter-msg.is-success { color: var(--accent); }
+/* Invalid-email shake */
+.newsletter-field.shake { animation: ns-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+@keyframes ns-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .newsletter-submit,
+  .newsletter-submit .ns-icon,
+  .newsletter-field { transition: none; }
+  .newsletter-form.is-loading .ns-spinner,
+  .newsletter-form.is-done .ns-check path,
+  .newsletter-field.shake { animation: none; }
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 600px) {
   html {

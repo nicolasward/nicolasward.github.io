@@ -609,7 +609,7 @@
 
       // Body blocks + the footer sections.
       var items = Array.prototype.slice.call(content.children);
-      ['.post-share-section', '.linked-mentions', '.related-posts'].forEach(function (sel) {
+      ['.post-share-section', '.linked-mentions', '.newsletter', '.related-posts'].forEach(function (sel) {
         var s = document.querySelector('article ' + sel);
         if (s) items.push(s);
       });
@@ -804,4 +804,92 @@
       }, { passive: true });
       window.addEventListener('resize', measure);
       update();
+    })();
+
+    // Newsletter signup. Runs the full interaction; POSTs to the form's
+    // data-endpoint when one is set, otherwise DEMO MODE (a simulated round-trip)
+    // so the UX is fully testable. To go live, set data-endpoint on the form in
+    // build.py's newsletter_section() and, if needed, adjust the field name(s)
+    // below for your provider:
+    //   Buttondown : https://buttondown.com/api/emails/embed-subscribe/USERNAME   (field: email)
+    //   Mailchimp  : https://DC.list-manage.com/subscribe/post?u=U&id=ID          (field: EMAIL)
+    //   Kit        : https://app.kit.com/forms/FORM_ID/subscriptions              (field: email_address)
+    (function () {
+      var forms = document.querySelectorAll('.newsletter-form');
+      if (!forms.length) return;
+      var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      // Reuse the reading-progress confetti, bursting from the submit button.
+      function burst(origin) {
+        if (reduce) return;
+        var r = origin.getBoundingClientRect();
+        var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        for (var i = 0; i < 26; i++) {
+          var p = document.createElement('div');
+          p.className = 'confetti-piece';
+          var a = Math.random() * Math.PI * 2, d = 45 + Math.random() * 80;
+          p.style.left = cx + 'px';
+          p.style.top = cy + 'px';
+          p.style.setProperty('--tx', (Math.cos(a) * d).toFixed(1) + 'px');
+          p.style.setProperty('--ty', (Math.sin(a) * d).toFixed(1) + 'px');
+          p.style.setProperty('--rot', Math.round(Math.random() * 720 - 360) + 'deg');
+          p.style.setProperty('--size', (6 + Math.random() * 5).toFixed(1) + 'px');
+          p.style.setProperty('--b', (0.85 + Math.random() * 0.4).toFixed(2));
+          p.style.setProperty('--dur', Math.round(650 + Math.random() * 450) + 'ms');
+          p.addEventListener('animationend', function () { this.remove(); });
+          document.body.appendChild(p);
+        }
+      }
+
+      Array.prototype.forEach.call(forms, function (form) {
+        var input  = form.querySelector('.newsletter-input');
+        var field  = form.querySelector('.newsletter-field');
+        var submit = form.querySelector('.newsletter-submit');
+        var msg    = form.querySelector('.newsletter-msg');
+        var gotcha = form.querySelector('.newsletter-gotcha');
+        var endpoint = form.getAttribute('data-endpoint') || '';
+
+        function setMsg(text, kind) {
+          msg.textContent = text || '';
+          msg.classList.remove('is-error', 'is-success');
+          if (kind) msg.classList.add('is-' + kind);
+        }
+        function fail(text) {
+          form.classList.remove('is-loading');
+          setMsg(text, 'error');
+          field.classList.remove('shake');
+          void field.offsetWidth;            // restart the shake
+          field.classList.add('shake');
+          input.focus();
+        }
+        function succeed() {
+          form.classList.remove('is-loading');
+          form.classList.add('is-done');
+          input.disabled = true;
+          setMsg('You’re in. Check your inbox to confirm.', 'success');
+          burst(submit);
+        }
+
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (form.classList.contains('is-loading') || form.classList.contains('is-done')) return;
+          if (gotcha && gotcha.value) { succeed(); return; }   // bot trap: feign success
+          var email = (input.value || '').trim();
+          if (!EMAIL_RE.test(email)) { fail('Please enter a valid email address.'); return; }
+
+          setMsg('');
+          form.classList.add('is-loading');
+
+          if (!endpoint) {
+            setTimeout(succeed, reduce ? 0 : 1100);            // DEMO MODE
+            return;
+          }
+          var body = new FormData();
+          body.append('email', email);
+          fetch(endpoint, { method: 'POST', body: body, mode: 'no-cors' })
+            .then(function () { succeed(); })
+            .catch(function () { fail('Something went wrong. Please try again.'); });
+        });
+      });
     })();

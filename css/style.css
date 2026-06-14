@@ -2036,15 +2036,13 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 
 /* ===== Newsletter ===== */
-.newsletter {
-  margin: 3rem 0 0;
-  perspective: 1100px;               /* depth for the 3D spin-out on subscribe */
-}
-/* Dismissal (see dismiss() in site.js): on subscribe the whole card spins in 3D
-   and shrinks away, then the section collapses. */
-.newsletter-card.is-spinning {
-  transform: rotateY(115deg) rotateX(8deg) scale(0.35);
+.newsletter { margin: 3rem 0 0; }
+/* Dismissal (see dismiss() in site.js): on subscribe the card softly scales down,
+   blurs, and fades — an iOS modal-dismiss feel — then the section collapses. */
+.newsletter-card.is-dismissing {
+  transform: scale(0.97);
   opacity: 0;
+  filter: blur(8px);
   pointer-events: none;
 }
 .newsletter-card {
@@ -2055,10 +2053,10 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   border-radius: 20px;
   background: var(--field);          /* cool white base (matches the page field) */
   box-shadow: 0 14px 34px -24px rgba(20, 25, 40, 0.45);
-  transform-origin: center;
   transition: border-color 0.35s ease,
-              transform 0.6s cubic-bezier(0.6, 0, 0.35, 1),
-              opacity 0.5s ease 0.1s;
+              transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.5s ease,
+              filter 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* On success the border lights up in the accent, alongside the orange check. */
 .newsletter-card.is-subscribed { border-color: var(--accent); }

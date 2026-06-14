@@ -852,15 +852,14 @@
           });
         }
         // Draw the card out: content + fill fade while an outline traced over the
-        // 3D spin + shrink, then collapse the gap once the spin finishes.
+        // Soft scale-down + blur + fade (keeping the orange border), then collapse.
         function dismiss() {
           var card = section && section.querySelector('.newsletter-card');
           if (reduce || !card) { if (section) section.style.display = 'none'; return; }
           section.style.pointerEvents = 'none';
-          card.classList.remove('is-subscribed');
-          card.classList.add('is-spinning');
+          card.classList.add('is-dismissing');
           card.addEventListener('transitionend', function te(ev) {
-            if (ev.propertyName !== 'transform') return;   // wait for the spin, not opacity
+            if (ev.propertyName !== 'transform') return;   // wait for the dismiss, not border-color
             card.removeEventListener('transitionend', te);
             collapse();
           });

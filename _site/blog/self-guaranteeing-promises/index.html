@@ -9,7 +9,7 @@
   <meta name="theme-color" id="theme-color-meta" content="#f6f8fa">
   <title>Self-guaranteeing promises — Nico Ward</title>
   <link rel="stylesheet" href="/blog/css/flexoki.css?v=64abfaf4">
-  <link rel="stylesheet" href="/blog/css/style.css?v=af553368">
+  <link rel="stylesheet" href="/blog/css/style.css?v=8b07e1ea">
   <link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feed.xml">
   <script>
     // Apply the saved/system theme SYNCHRONOUSLY, before the body renders, so
@@ -42,6 +42,9 @@
   </script>
 </head>
 <body class="article">
+  <!-- Shared gradient for the success checkmarks (referenced by all cards + the
+       header badge), defined once to avoid duplicate IDs across instances. -->
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute"><defs><linearGradient id="ns-check-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7FE3D9"/><stop offset="0.5" stop-color="#FFA85C"/><stop offset="1" stop-color="#8C78EB"/></linearGradient></defs></svg>
   <div class="container">
     <header class="site-header">
       <svg class="pill-outline" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="18" ry="18"/></svg>
@@ -49,6 +52,10 @@
         <a href="/" class="site-title"><span class="nav-name">Nico Ward</span></a><a href="/blog" class="nav-section-link"><span class="nav-slash">/</span> <span class="nav-label">Writing</span></a>
         <span class="nav-spacer"></span>
         <a href="/blog/about">About</a>
+        <button class="nav-subscribe" id="nav-subscribe" type="button" aria-label="Subscribe to the newsletter" title="Subscribe">
+          <svg class="ns-env" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.2"/><path d="m3.6 7 8.4 5.8 8.4-5.8"/></svg>
+          <svg class="ns-badge" viewBox="0 0 24 24" fill="none" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="url(#ns-check-grad)"/></svg>
+        </button>
         <button class="nav-search" id="nav-search" type="button" aria-label="Search" title="Press S to search">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
             <path class="search-glass" pathLength="100" d="M12.39 12.39 A5.5 5.5 0 0 1 4.61 4.61 A5.5 5.5 0 0 1 12.39 12.39 L17.5 17.5"/>
@@ -106,7 +113,7 @@
         <input class="newsletter-gotcha" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
         <button class="newsletter-submit" type="submit" aria-label="Subscribe">
           <svg class="ns-state ns-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9 22 2Z"/></svg>
-          <svg class="ns-state ns-check" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><defs><linearGradient id="ns-check-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7FE3D9"/><stop offset="0.5" stop-color="#FFA85C"/><stop offset="1" stop-color="#8C78EB"/></linearGradient></defs><path d="M5 12.5l4.5 4.5L19 7.5" stroke="url(#ns-check-grad)" pathLength="1"/></svg>
+          <svg class="ns-state ns-check" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="url(#ns-check-grad)" pathLength="1"/></svg>
         </button>
       </div>
       <p class="newsletter-msg" role="status" aria-live="polite"></p>
@@ -192,6 +199,35 @@
     </div>
   </div>
 
+  <div class="subscribe-overlay" id="subscribe-overlay" aria-hidden="true">
+    <button class="subscribe-close" id="subscribe-close" type="button" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+    </button>
+    <div class="subscribe-modal" role="dialog" aria-label="Subscribe to the newsletter">
+      <section class="newsletter" aria-labelledby="newsletter-heading">
+  <div class="newsletter-card">
+    <div class="newsletter-intro">
+      <h2 class="newsletter-heading" id="newsletter-heading">Get new essays in your inbox</h2>
+      <p class="newsletter-dek">Occasional writings on AI, design, and the human mind.</p>
+    </div>
+    <form class="newsletter-form" data-endpoint="" novalidate>
+      <div class="newsletter-field">
+        <input class="newsletter-input" type="email" name="email" inputmode="email"
+               autocomplete="email" spellcheck="false" placeholder="you@example.com"
+               aria-label="Email address" required>
+        <input class="newsletter-gotcha" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="newsletter-submit" type="submit" aria-label="Subscribe">
+          <svg class="ns-state ns-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9 22 2Z"/></svg>
+          <svg class="ns-state ns-check" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="url(#ns-check-grad)" pathLength="1"/></svg>
+        </button>
+      </div>
+      <p class="newsletter-msg" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+    </div>
+  </div>
+
   <!-- Mobile swipe-between-articles edge hints (filled + shown by JS). -->
   <div class="swipe-edge swipe-edge--left" aria-hidden="true">
     <span class="swipe-chevron">
@@ -206,6 +242,6 @@
     </span>
   </div>
 
-  <script src="/blog/js/site.js?v=e5e571d6"></script>
+  <script src="/blog/js/site.js?v=123822d9"></script>
 </body>
 </html>

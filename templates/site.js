@@ -671,7 +671,7 @@
     // the same fade-up-on-scroll there.
     (function () {
       if (!document.body.classList.contains('home')) return;
-      var nl = document.querySelector('.newsletter');
+      var nl = document.querySelector('main .newsletter');   // the inline card, not the overlay
       if (!nl) return;
       if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       nl.classList.add('reveal-up');
@@ -885,13 +885,19 @@
           });
         }
         function succeed() {
-          form.classList.add('is-done');         // plane morphs to the (orange) check
+          form.classList.add('is-done');         // plane morphs to the check
           input.disabled = true;
           var card = section && section.querySelector('.newsletter-card');
-          if (card) card.classList.add('is-subscribed');   // orange border + colour flush
+          if (card) card.classList.add('is-subscribed');   // gradient border + colour flush
           var btn = form.querySelector('.newsletter-submit');
           if (btn) btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
-          setTimeout(dismiss, reduce ? 1600 : 1500);       // let the colour flush land + hold
+          // Persist + broadcast so the header badge flips (and the modal can close).
+          try { localStorage.setItem('newsletter-subscribed', '1'); } catch (e) {}
+          document.dispatchEvent(new CustomEvent('newsletter:subscribed'));
+          // Inline cards lift off; the overlay card stays put — its modal closes instead.
+          if (!form.closest('.subscribe-overlay')) {
+            setTimeout(dismiss, reduce ? 1600 : 1500);     // let the colour flush land + hold
+          }
         }
 
         form.addEventListener('submit', function (e) {
@@ -908,5 +914,68 @@
           }
           succeed();
         });
+      });
+    })();
+
+    // Header subscribe button: opens the signup card in an overlay so people can
+    // convert from anywhere. Once subscribed (persisted), it becomes a gradient
+    // check badge that shows a quiet "You're subscribed" note on tap.
+    (function () {
+      var btn = document.getElementById('nav-subscribe');
+      if (!btn) return;
+      var overlay  = document.getElementById('subscribe-overlay');
+      var closeBtn = document.getElementById('subscribe-close');
+
+      try { if (localStorage.getItem('newsletter-subscribed') === '1') btn.classList.add('is-subscribed'); } catch (e) {}
+
+      var note;
+      function showNote() {
+        if (!note) {
+          note = document.createElement('div');
+          note.className = 'subscribe-note';
+          note.textContent = 'You’re subscribed ✓';
+          document.body.appendChild(note);
+        }
+        var r = btn.getBoundingClientRect();
+        note.classList.add('show');
+        note.style.top = (r.bottom + 10) + 'px';
+        note.style.left = Math.max(8, Math.min(r.left + r.width / 2 - note.offsetWidth / 2, window.innerWidth - 8 - note.offsetWidth)) + 'px';
+        clearTimeout(note._t);
+        note._t = setTimeout(function () { note.classList.remove('show'); }, 2200);
+      }
+
+      var lastFocus = null;
+      function openOverlay() {
+        if (!overlay) return;
+        lastFocus = document.activeElement;
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.documentElement.style.overflow = 'hidden';
+        var input = overlay.querySelector('.newsletter-input');
+        setTimeout(function () { if (input) input.focus(); }, 90);
+      }
+      function closeOverlay() {
+        if (!overlay) return;
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+        document.documentElement.style.overflow = '';
+        if (lastFocus && lastFocus.focus) lastFocus.focus();
+      }
+
+      btn.addEventListener('click', function () {
+        if (btn.classList.contains('is-subscribed')) { showNote(); return; }
+        openOverlay();
+      });
+      if (overlay) {
+        overlay.addEventListener('click', function (e) { if (e.target === overlay) closeOverlay(); });
+        if (closeBtn) closeBtn.addEventListener('click', closeOverlay);
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && overlay.classList.contains('open')) closeOverlay();
+        });
+      }
+
+      document.addEventListener('newsletter:subscribed', function () {
+        btn.classList.add('is-subscribed');
+        if (overlay && overlay.classList.contains('open')) setTimeout(closeOverlay, 1500);
       });
     })();

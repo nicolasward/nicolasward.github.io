@@ -172,13 +172,26 @@ def newsletter_section():
         <input class="newsletter-gotcha" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
         <button class="newsletter-submit" type="submit" aria-label="Subscribe">
           <svg class="ns-state ns-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9 22 2Z"/></svg>
-          <svg class="ns-state ns-check" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><defs><linearGradient id="ns-check-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7FE3D9"/><stop offset="0.5" stop-color="#FFA85C"/><stop offset="1" stop-color="#8C78EB"/></linearGradient></defs><path d="M5 12.5l4.5 4.5L19 7.5" stroke="url(#ns-check-grad)" pathLength="1"/></svg>
+          <svg class="ns-state ns-check" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="url(#ns-check-grad)" pathLength="1"/></svg>
         </button>
       </div>
       <p class="newsletter-msg" role="status" aria-live="polite"></p>
     </form>
   </div>
 </section>'''
+
+
+def subscribe_overlay():
+    """A centered modal that drops the same signup card — opened from the header
+    envelope, so people can convert from anywhere (see site.js)."""
+    return f'''<div class="subscribe-overlay" id="subscribe-overlay" aria-hidden="true">
+    <button class="subscribe-close" id="subscribe-close" type="button" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+    </button>
+    <div class="subscribe-modal" role="dialog" aria-label="Subscribe to the newsletter">
+      {newsletter_section()}
+    </div>
+  </div>'''
 
 
 def build():
@@ -374,6 +387,7 @@ def build():
             content=post_html,
             nav_section=writing_nav,
             body_class="article",
+            subscribe_overlay=subscribe_overlay(),
         )
 
         post_dir = BLOG_DIR / post["slug"]
@@ -423,7 +437,7 @@ def build():
     topic_links = ", ".join(f'<a href="#" data-search="{tag}">{tag}</a>' for tag in all_tags)
 
     home_html = render(home_tpl, post_items=post_items, topic_links=topic_links, latest_section=latest_section, newsletter=newsletter_section())
-    index_html = render(base_tpl, base=BASE_PATH, title=SITE_TITLE, content=home_html, nav_section=writing_nav, body_class="home")
+    index_html = render(base_tpl, base=BASE_PATH, title=SITE_TITLE, content=home_html, nav_section=writing_nav, body_class="home", subscribe_overlay=subscribe_overlay())
     (BLOG_DIR / "index.html").write_text(index_html)
 
     # --- Build static pages ---
@@ -439,7 +453,7 @@ def build():
             title = meta.get("title", filepath.stem.replace("-", " ").title())
 
             pg_html = render(page_tpl, title=title, content=prefix_internal_links(html_content, slug_set, BASE_PATH))
-            full_html = render(base_tpl, base=BASE_PATH, title=f'{title} — {SITE_TITLE}', content=pg_html, nav_section=writing_nav, body_class="page")
+            full_html = render(base_tpl, base=BASE_PATH, title=f'{title} — {SITE_TITLE}', content=pg_html, nav_section=writing_nav, body_class="page", subscribe_overlay=subscribe_overlay())
 
             pg_dir = BLOG_DIR / slug
             pg_dir.mkdir(parents=True, exist_ok=True)

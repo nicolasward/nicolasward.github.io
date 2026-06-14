@@ -2215,6 +2215,99 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   .newsletter-field.shake { animation: none; }
 }
 
+/* ===== Header subscribe button + overlay ===== */
+.nav-subscribe {
+  display: inline-grid;              /* stack envelope + check badge */
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--fg-muted);
+  transition: color 0.15s ease;
+}
+@media (hover: hover) { .nav-subscribe:not(.is-subscribed):hover { color: var(--accent); } }
+.nav-subscribe svg {
+  grid-area: 1 / 1;
+  width: 19px;
+  height: 19px;
+  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.nav-subscribe .ns-badge { opacity: 0; transform: scale(0.4); }
+/* Subscribed: the envelope morphs into the gradient check badge. */
+.nav-subscribe.is-subscribed .ns-env { opacity: 0; transform: scale(0.4); }
+.nav-subscribe.is-subscribed .ns-badge { opacity: 1; transform: scale(1); }
+.nav-subscribe.is-subscribed { cursor: default; }
+
+/* Centered modal that drops the signup card. */
+.subscribe-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: var(--overlay-bg);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.subscribe-overlay.open { opacity: 1; pointer-events: auto; }
+.subscribe-modal {
+  width: 100%;
+  max-width: 460px;
+  transform: translateY(14px) scale(0.97);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.subscribe-overlay.open .subscribe-modal { transform: none; }
+.subscribe-overlay .newsletter { margin: 0; }
+.subscribe-close {
+  position: absolute;
+  top: 1.4rem;
+  right: 1.4rem;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--fg-muted);
+  transition: color 0.15s ease;
+}
+.subscribe-close svg { width: 1.4rem; height: 1.4rem; }
+@media (hover: hover) { .subscribe-close:hover { color: var(--fg); } }
+
+/* "You're subscribed" note shown when the badge is tapped (positioned in JS). */
+.subscribe-note {
+  position: fixed;
+  z-index: 1001;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: var(--fg);
+  color: var(--bg);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  box-shadow: 0 8px 22px -14px rgba(20, 25, 40, 0.5);
+}
+.subscribe-note.show { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-subscribe svg,
+  .subscribe-overlay,
+  .subscribe-modal,
+  .subscribe-note { transition: none; }
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 600px) {
   html {

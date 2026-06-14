@@ -772,32 +772,7 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 
 /* Quiet confirmation: a small pill rises above the icon, holds, then fades
    out on its own when the .copied class is removed. */
-.share-copy .copied-label {
-  position: absolute;
-  top: calc(100% + 1rem);
-  left: 50%;
-  white-space: nowrap;
-  padding: 0.3rem 0.7rem;
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.1px;
-  line-height: 1;
-  color: var(--fg-muted);
-  background: transparent;
-  border: 1px solid var(--fg-muted);
-  border-radius: 999px;
-  opacity: 0;
-  transform: translate(-50%, calc(-50% - 4px));
-  pointer-events: none;
-  transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.share-copy.copied .copied-label {
-  opacity: 1;
-  transform: translate(-50%, -50%);
-}
-@media (prefers-reduced-motion: reduce) {
-  .share-copy .copied-label { transition: opacity 0.15s ease; transform: translate(-50%, -50%); }
-}
+/* (The old .copied-label outline pill was replaced by the shared .toast-pill.) */
 
 /* Themed text selection — a soft accent wash, site-wide. */
 ::selection      { background: rgba(255, 121, 27, 0.22); }

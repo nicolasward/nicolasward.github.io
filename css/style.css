@@ -2059,7 +2059,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
               filter 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* On success the border lights up in the accent, alongside the orange check. */
-.newsletter-card.is-subscribed { border-color: var(--accent); }
+.newsletter-card.is-subscribed { border-color: var(--fg); }
 [data-theme="dark"] .newsletter-card {
   background: var(--surface);        /* subtly above the near-black canvas */
   box-shadow: 0 14px 34px -22px rgba(0, 0, 0, 0.6);
@@ -2164,7 +2164,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-form.is-done .ns-send { opacity: 0; }
 .newsletter-form.is-done .ns-check {
   opacity: 1;
-  color: var(--accent);              /* orange check */
+  color: var(--fg);                  /* dark-grey check */
   animation: ns-check-pop 0.32s cubic-bezier(0.34, 1.8, 0.5, 1) forwards;
 }
 .newsletter-form.is-done .ns-check path {

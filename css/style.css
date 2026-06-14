@@ -2036,10 +2036,17 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 
 /* ===== Newsletter ===== */
-.newsletter { margin: 3rem 0 0; }
+.newsletter {
+  margin: 3rem 0 0;
+  /* Collapse + fade away after a successful subscribe (height pinned in JS). */
+  transition: height 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              margin-top 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.4s ease;
+}
+.newsletter.is-dismissing { opacity: 0; pointer-events: none; }
 .newsletter-card {
   position: relative;
-  padding: 2rem 1.9rem;
+  padding: 1.6rem 1.8rem;
   border: 1px solid var(--border);
   border-radius: 20px;
   background: var(--field);          /* cool white card (matches the page field), not warm paper */
@@ -2056,7 +2063,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   letter-spacing: -0.012em;
 }
 .newsletter-dek {
-  margin: 0 0 1.35rem;
+  margin: 0 0 1.05rem;
   max-width: 48ch;
   color: var(--fg-muted);
   font-size: 0.95rem;
@@ -2135,11 +2142,11 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 @keyframes ns-check-draw { to { stroke-dashoffset: 0; } }
 /* Inline message */
 .newsletter-msg {
-  margin: 0.85rem 0 0 0.2rem;
-  min-height: 1.2em;
+  margin: 0.7rem 0 0 0.2rem;
   font-size: 0.85rem;
   color: var(--fg-muted);
 }
+.newsletter-msg:empty { margin: 0; }
 .newsletter-msg.is-error { color: var(--flexoki-red-500); }
 .newsletter-msg.is-success { color: var(--fg); }
 /* Invalid-email shake */

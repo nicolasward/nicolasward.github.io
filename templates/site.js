@@ -820,34 +820,12 @@
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      // Reuse the reading-progress confetti, bursting from the submit button.
-      function burst(origin) {
-        if (reduce) return;
-        var r = origin.getBoundingClientRect();
-        var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-        for (var i = 0; i < 26; i++) {
-          var p = document.createElement('div');
-          p.className = 'confetti-piece';
-          var a = Math.random() * Math.PI * 2, d = 45 + Math.random() * 80;
-          p.style.left = cx + 'px';
-          p.style.top = cy + 'px';
-          p.style.setProperty('--tx', (Math.cos(a) * d).toFixed(1) + 'px');
-          p.style.setProperty('--ty', (Math.sin(a) * d).toFixed(1) + 'px');
-          p.style.setProperty('--rot', Math.round(Math.random() * 720 - 360) + 'deg');
-          p.style.setProperty('--size', (6 + Math.random() * 5).toFixed(1) + 'px');
-          p.style.setProperty('--b', (0.85 + Math.random() * 0.4).toFixed(2));
-          p.style.setProperty('--dur', Math.round(650 + Math.random() * 450) + 'ms');
-          p.addEventListener('animationend', function () { this.remove(); });
-          document.body.appendChild(p);
-        }
-      }
-
       Array.prototype.forEach.call(forms, function (form) {
         var input  = form.querySelector('.newsletter-input');
         var field  = form.querySelector('.newsletter-field');
-        var submit = form.querySelector('.newsletter-submit');
         var msg    = form.querySelector('.newsletter-msg');
         var gotcha = form.querySelector('.newsletter-gotcha');
+        var section = form.closest('.newsletter');
         var endpoint = form.getAttribute('data-endpoint') || '';
 
         function setMsg(text, kind) {
@@ -863,12 +841,30 @@
           field.classList.add('shake');
           input.focus();
         }
+        // Collapse the whole card away (height pinned, then animated to 0) — the
+        // section is "drawn out" once you're subscribed, echoing the header pill.
+        function dismiss() {
+          if (!section) return;
+          if (reduce) { section.style.display = 'none'; return; }
+          section.style.height = section.offsetHeight + 'px';
+          section.style.overflow = 'hidden';
+          void section.offsetHeight;          // commit the start height
+          // Inline transition/opacity so they win over the article reveal-up rules.
+          section.style.transition = 'height 0.55s cubic-bezier(0.22, 1, 0.36, 1), ' +
+            'margin-top 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease';
+          section.classList.add('is-dismissing');
+          requestAnimationFrame(function () {
+            section.style.height = '0px';
+            section.style.marginTop = '0px';
+            section.style.opacity = '0';
+          });
+        }
         function succeed() {
           form.classList.remove('is-loading');
           form.classList.add('is-done');
           input.disabled = true;
-          setMsg('You’re in. Check your inbox to confirm.', 'success');
-          burst(submit);
+          setMsg('You’re in — check your inbox to confirm.', 'success');
+          setTimeout(dismiss, reduce ? 1500 : 1150);   // let the check land, then draw out
         }
 
         form.addEventListener('submit', function (e) {

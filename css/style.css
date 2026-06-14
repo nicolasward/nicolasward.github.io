@@ -2072,8 +2072,8 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 .newsletter-field:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(255, 121, 27, 0.18);   /* accent at low alpha */
+  border-color: var(--fg-muted);
+  box-shadow: 0 0 0 3px rgba(128, 128, 128, 0.16);   /* neutral grey, theme-agnostic */
 }
 .newsletter-input {
   flex: 1 1 auto;
@@ -2098,8 +2098,8 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   height: 2.7rem;
   border: none;
   border-radius: 50%;
-  background: var(--accent);
-  color: #fff;
+  background: var(--fg);              /* ink/knockout, like the drop-cap tile + progress ring */
+  color: var(--bg);
   cursor: pointer;
   transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), filter 0.2s ease;
 }
@@ -2133,7 +2133,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   color: var(--fg-muted);
 }
 .newsletter-msg.is-error { color: var(--flexoki-red-500); }
-.newsletter-msg.is-success { color: var(--accent); }
+.newsletter-msg.is-success { color: var(--fg); }
 /* Invalid-email shake */
 .newsletter-field.shake { animation: ns-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
 @keyframes ns-shake {

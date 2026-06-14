@@ -719,11 +719,15 @@
       }
     })();
 
-    // Copy-link share button: copy the current URL, show a "Link copied" pill.
+    // Copy-link share button: copy the current URL, flash the icon checkmark + a "Link copied" pill.
     (function () {
       document.querySelectorAll('.share-copy').forEach(function (btn) {
         btn.addEventListener('click', function () {
-          var flash = function () { Toast.show('Link copied', btn); };
+          var flash = function () {
+            btn.classList.add('copied');
+            setTimeout(function () { btn.classList.remove('copied'); }, 1500);
+            Toast.show('Link copied', btn);
+          };
           if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(location.href).then(flash, flash);
           } else {

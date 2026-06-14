@@ -923,11 +923,12 @@
         // Draw the card out: content + fill fade while an outline traced over the
         // Soft scale-down + blur + fade (keeping the orange border), then collapse.
         var inOverlay = !!form.closest('.subscribe-overlay');
+        function lifted() { document.dispatchEvent(new CustomEvent('newsletter:lifted')); }
         function dismiss() {
           var card = section && section.querySelector('.newsletter-card');
           if (reduce || !card) {
-            if (inOverlay) document.dispatchEvent(new CustomEvent('newsletter:lifted'));
-            else if (section) section.style.display = 'none';
+            lifted();                                  // the card is "gone" — flip the badge
+            if (!inOverlay && section) section.style.display = 'none';
             return;
           }
           section.style.pointerEvents = 'none';
@@ -935,9 +936,8 @@
           card.addEventListener('transitionend', function te(ev) {
             if (ev.propertyName !== 'transform') return;   // wait for the liftoff, not border-color
             card.removeEventListener('transitionend', te);
-            // Overlay card: the modal closes once lifted; inline card: collapse the gap.
-            if (inOverlay) document.dispatchEvent(new CustomEvent('newsletter:lifted'));
-            else collapse();
+            lifted();                                  // liftoff done (overlay + inline alike)
+            if (!inOverlay) collapse();                // inline: also close the gap
           });
         }
         function succeed() {
@@ -1021,12 +1021,10 @@
         });
       }
 
-      document.addEventListener('newsletter:subscribed', function () {
-        btn.classList.add('is-subscribed');
-      });
-      // The overlay card lifts off on success (same rocket as inline cards); once
-      // it's lifted, close the modal.
+      // Only flip the badge once the card has actually lifted off (and the modal
+      // closes), and draw the check in rather than popping it.
       document.addEventListener('newsletter:lifted', function () {
+        btn.classList.add('is-subscribed', 'just-subscribed');
         if (overlay && overlay.classList.contains('open')) closeOverlay();
       });
     })();

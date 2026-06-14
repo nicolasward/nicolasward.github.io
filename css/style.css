@@ -2245,13 +2245,19 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   height: 19px;
   transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.nav-subscribe .ns-badge { opacity: 0; transform: scale(0.4); }
-/* Subscribed: the envelope morphs into the gradient check badge. */
+.nav-subscribe .ns-badge { opacity: 0; }
+.nav-subscribe .ns-badge path { stroke-dasharray: 100; stroke-dashoffset: 0; }  /* drawn at rest */
+/* Subscribed: the envelope fades to the gradient check badge. */
 .nav-subscribe.is-subscribed .ns-mailbox { opacity: 0; transform: scale(0.4); }
-.nav-subscribe.is-subscribed .ns-badge { opacity: 1; transform: scale(1); }
+.nav-subscribe.is-subscribed .ns-badge { opacity: 1; }
+/* Just subscribed (this session): the check draws itself in, rather than popping. */
+.nav-subscribe.just-subscribed .ns-badge path {
+  animation: ns-badge-draw 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes ns-badge-draw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
 /* Pre-marked subscribed (head script): badge shown from first paint, no blink. */
 html.subscribed .nav-subscribe .ns-mailbox { opacity: 0; transform: scale(0.4); }
-html.subscribed .nav-subscribe .ns-badge { opacity: 1; transform: scale(1); }
+html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
 .nav-subscribe.is-subscribed { cursor: default; }
 
 /* Centered modal that drops the signup card. */
@@ -2318,6 +2324,7 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; transform: scale(1); }
   .subscribe-overlay,
   .subscribe-modal,
   .toast-pill { transition: none; }
+  .nav-subscribe.just-subscribed .ns-badge path { animation: none; }
 }
 
 /* ===== Responsive ===== */

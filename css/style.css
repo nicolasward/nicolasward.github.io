@@ -2086,7 +2086,6 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
     radial-gradient(72% 120% at 99% 2%,   rgba(255, 168, 92, 0.16),  transparent 56%),
     radial-gradient(95% 140% at 60% 114%, rgba(140, 120, 235, 0.24), transparent 60%);
 }
-.newsletter-card.is-undrawing::before { opacity: 0; }
 /* Keep the content above the aurora layer. */
 .newsletter-intro,
 .newsletter-form { position: relative; z-index: 1; }

@@ -2065,7 +2065,8 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   box-shadow: 0 14px 34px -22px rgba(0, 0, 0, 0.6);
 }
 /* Soft gradient aurora behind the content — a nod to the landing page's blobs
-   (teal / sunset / plum). On its own layer so it fades cleanly during the undraw. */
+   (teal / sunset / plum). Greyscale at rest (monochrome, like the rest of the
+   page); on subscribe it flushes to full colour. */
 .newsletter-card::before {
   content: "";
   position: absolute;
@@ -2076,8 +2077,11 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
     radial-gradient(80% 120% at 6% -12%,  rgba(127, 227, 217, 0.34), transparent 56%),
     radial-gradient(72% 120% at 99% 2%,   rgba(255, 168, 92, 0.30),  transparent 56%),
     radial-gradient(95% 140% at 60% 114%, rgba(140, 120, 235, 0.28), transparent 60%);
-  transition: opacity 0.35s ease;
+  filter: grayscale(1);              /* drained of colour until success */
+  transition: filter 0.7s cubic-bezier(0.4, 0, 0.2, 1);
 }
+/* The colour floods in on subscribe. */
+.newsletter-card.is-subscribed::before { filter: grayscale(0) saturate(1.3); }
 [data-theme="dark"] .newsletter-card::before {
   background:
     radial-gradient(80% 120% at 6% -12%,  rgba(127, 227, 217, 0.18), transparent 56%),

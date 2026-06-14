@@ -868,10 +868,10 @@
           form.classList.add('is-done');         // plane morphs to the (orange) check
           input.disabled = true;
           var card = section && section.querySelector('.newsletter-card');
-          if (card) card.classList.add('is-subscribed');   // border lights up orange
+          if (card) card.classList.add('is-subscribed');   // orange border + colour flush
           var btn = form.querySelector('.newsletter-submit');
           if (btn) btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
-          setTimeout(dismiss, reduce ? 1500 : 1250);
+          setTimeout(dismiss, reduce ? 1600 : 1500);       // let the colour flush land + hold
         }
 
         form.addEventListener('submit', function (e) {

@@ -2180,8 +2180,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 /* Punchy: the plane vanishes fast, the check springs in and snaps its stroke. */
 .newsletter-form.is-done .ns-send { opacity: 0; }
 .newsletter-form.is-done .ns-check {
-  opacity: 1;
-  color: var(--fg);                  /* dark-grey check */
+  opacity: 1;                        /* stroke is a teal→sunset→plum gradient (see markup) */
   animation: ns-check-pop 0.32s cubic-bezier(0.34, 1.8, 0.5, 1) forwards;
 }
 .newsletter-form.is-done .ns-check path {

@@ -2050,7 +2050,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 .newsletter-outline rect {
   fill: none;
-  stroke: var(--fg-muted);            /* clearly visible against the page as it retracts */
+  stroke: var(--fg);                  /* full ink, so the retract reads clearly */
   stroke-width: 1.5;
   vector-effect: non-scaling-stroke;
 }
@@ -2123,7 +2123,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.3rem 0.3rem 0.3rem 1.05rem;
+  padding: 0.4rem 0.85rem 0.4rem 1.1rem;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--canvas);         /* cool recessed field against the white card */
@@ -2148,43 +2148,34 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-input:disabled { opacity: 1; -webkit-text-fill-color: var(--fg-muted); color: var(--fg-muted); }
 .newsletter-gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 /* Submit: a round accent button whose icon morphs arrow → spinner → check. */
-/* Round icon button — a paper-plane (send) that morphs into a checkmark on
-   success: the plane scales/fades out as the check draws itself in. */
+/* Bare send icon (no circle) that morphs into a checkmark on success: the plane
+   fades out as the check draws itself in. */
 .newsletter-submit {
   flex: 0 0 auto;
   display: inline-grid;
   place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 1.9rem;
+  height: 1.9rem;
+  padding: 0;
   border: none;
-  border-radius: 50%;
-  background: var(--fg);              /* ink/knockout, like the drop-cap tile + progress ring */
-  color: var(--bg);
+  background: none;
+  color: var(--fg);
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), filter 0.2s ease;
+  transition: transform 0.15s ease, color 0.2s ease;
 }
-@media (hover: hover) { .newsletter-submit:hover { filter: brightness(1.12); transform: scale(1.05); } }
-.newsletter-submit:active { transform: scale(0.93); }
-/* The three states stack and cross-fade with a slight scale (the morph). */
+@media (hover: hover) { .newsletter-submit:hover { color: var(--fg-muted); } }
+.newsletter-submit:active { transform: scale(0.9); }
 .newsletter-submit .ns-state {
-  grid-area: 1 / 1;
-  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  grid-area: 1 / 1;                   /* stack plane + check */
+  width: 1.3rem;
+  height: 1.3rem;
+  transition: opacity 0.25s ease;
 }
-.newsletter-submit .ns-icon { width: 1.1rem; height: 1.1rem; }
-.newsletter-submit .ns-send { transform: rotate(0) scale(1); }
-.newsletter-submit .ns-spinner,
-.newsletter-submit .ns-check { opacity: 0; transform: scale(0.5); }
+.newsletter-submit .ns-check { opacity: 0; }
 .ns-check path { stroke-dasharray: 1; stroke-dashoffset: 1; }
-/* Loading: the plane lifts away, spinner takes over */
-.newsletter-form.is-loading .newsletter-submit { cursor: default; }
-.newsletter-form.is-loading .ns-send { opacity: 0; transform: translate(3px, -3px) scale(0.6); }
-.newsletter-form.is-loading .ns-spinner { opacity: 1; transform: scale(1); animation: ns-spin 0.7s linear infinite; }
-/* Done: morph to a checkmark that draws itself in */
-.newsletter-form.is-done .ns-send { opacity: 0; transform: translate(4px, -4px) scale(0.6); }
-.newsletter-form.is-done .ns-spinner { opacity: 0; transform: scale(0.5); }
-.newsletter-form.is-done .ns-check { opacity: 1; transform: scale(1); }
-.newsletter-form.is-done .ns-check path { animation: ns-check-draw 0.45s cubic-bezier(0.65, 0, 0.35, 1) 0.1s forwards; }
-@keyframes ns-spin { to { transform: rotate(360deg); } }
+.newsletter-form.is-done .ns-send { opacity: 0; }
+.newsletter-form.is-done .ns-check { opacity: 1; }
+.newsletter-form.is-done .ns-check path { animation: ns-check-draw 0.42s cubic-bezier(0.65, 0, 0.35, 1) 0.12s forwards; }
 @keyframes ns-check-draw { to { stroke-dashoffset: 0; } }
 /* Inline message */
 .newsletter-msg {
@@ -2203,10 +2194,8 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   40%, 80% { transform: translateX(5px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .newsletter-submit,
-  .newsletter-submit .ns-icon,
+  .newsletter-submit .ns-state,
   .newsletter-field { transition: none; }
-  .newsletter-form.is-loading .ns-spinner,
   .newsletter-form.is-done .ns-check path,
   .newsletter-field.shake { animation: none; }
 }

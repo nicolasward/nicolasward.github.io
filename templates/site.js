@@ -806,11 +806,10 @@
       update();
     })();
 
-    // Newsletter signup. Runs the full interaction; POSTs to the form's
-    // data-endpoint when one is set, otherwise DEMO MODE (a simulated round-trip)
-    // so the UX is fully testable. To go live, set data-endpoint on the form in
-    // build.py's newsletter_section() and, if needed, adjust the field name(s)
-    // below for your provider:
+    // Newsletter signup. Validate, then fire-and-forget the POST to the form's
+    // data-endpoint (when set) — there's nothing to wait on, so the success state
+    // shows immediately. To go live, set data-endpoint in build.py's
+    // newsletter_section() and use your provider's field name:
     //   Buttondown : https://buttondown.com/api/emails/embed-subscribe/USERNAME   (field: email)
     //   Mailchimp  : https://DC.list-manage.com/subscribe/post?u=U&id=ID          (field: EMAIL)
     //   Kit        : https://app.kit.com/forms/FORM_ID/subscriptions              (field: email_address)
@@ -834,14 +833,13 @@
           if (kind) msg.classList.add('is-' + kind);
         }
         function fail(text) {
-          form.classList.remove('is-loading');
           setMsg(text, 'error');
           field.classList.remove('shake');
           void field.offsetWidth;            // restart the shake
           field.classList.add('shake');
           input.focus();
         }
-        // Collapse the now-empty section to nothing (height pinned, then to 0).
+        // Collapse the emptied section to nothing.
         function collapse() {
           section.style.height = section.offsetHeight + 'px';
           section.style.overflow = 'hidden';
@@ -853,13 +851,13 @@
             section.style.marginTop = '0px';
           });
         }
-        // Draw the card OUT: fade its content + fill (.is-undrawing), then retract
-        // an outline traced over its border — the header pill's draw in reverse.
+        // Draw the card out: content + fill fade while an outline traced over the
+        // border retracts (the header pill's draw, in reverse), then it collapses.
         function dismiss() {
-          if (!section) return;
-          var card = section.querySelector('.newsletter-card');
-          if (reduce || !card) { section.style.display = 'none'; return; }
+          var card = section && section.querySelector('.newsletter-card');
+          if (reduce || !card) { if (section) section.style.display = 'none'; return; }
           section.style.pointerEvents = 'none';
+          card.style.overflow = 'visible';      // don't clip the retracting stroke
 
           var w = card.offsetWidth, h = card.offsetHeight;
           var NS = 'http://www.w3.org/2000/svg';
@@ -871,51 +869,46 @@
           svg.setAttribute('preserveAspectRatio', 'none');
           svg.setAttribute('aria-hidden', 'true');
           var rect = document.createElementNS(NS, 'rect');
-          rect.setAttribute('x', '0.5');
-          rect.setAttribute('y', '0.5');
-          rect.setAttribute('width', w - 1);
-          rect.setAttribute('height', h - 1);
-          rect.setAttribute('rx', '20');     // matches the card radius
+          rect.setAttribute('x', '1');
+          rect.setAttribute('y', '1');
+          rect.setAttribute('width', w - 2);
+          rect.setAttribute('height', h - 2);
+          rect.setAttribute('rx', '20');        // matches the card radius
           rect.setAttribute('ry', '20');
           svg.appendChild(rect);
           card.appendChild(svg);
 
           var len = rect.getTotalLength();
           rect.style.strokeDasharray = len;
-          rect.style.strokeDashoffset = '0';   // fully drawn — coincides with the border
-          rect.style.transition = 'stroke-dashoffset 0.72s cubic-bezier(0.22, 1, 0.36, 1)';
-          card.classList.add('is-undrawing');  // fade content + fill first, leaving the outline
-          // Let the text finish fading, THEN retract the outline so it reads clearly.
-          setTimeout(function () { rect.style.strokeDashoffset = '' + len; }, 360);
-          setTimeout(collapse, 1040);          // close the gap as the retract finishes
+          rect.style.strokeDashoffset = '0';
+          rect.style.transition = 'stroke-dashoffset 0.7s cubic-bezier(0.65, 0, 0.35, 1)';
+          card.classList.add('is-undrawing');   // content + fill fade out together
+          rect.addEventListener('transitionend', collapse, { once: true });
+          // Two frames so the drawn (offset:0) state paints before we retract it.
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () { rect.style.strokeDashoffset = '' + len; });
+          });
         }
         function succeed() {
-          form.classList.remove('is-loading');
-          form.classList.add('is-done');
+          form.classList.add('is-done');         // plane morphs to check
           input.disabled = true;
           setMsg('You’re in — check your inbox to confirm.', 'success');
-          setTimeout(dismiss, reduce ? 1500 : 1150);   // let the check land, then draw out
+          setTimeout(dismiss, reduce ? 1500 : 1250);
         }
 
         form.addEventListener('submit', function (e) {
           e.preventDefault();
-          if (form.classList.contains('is-loading') || form.classList.contains('is-done')) return;
-          if (gotcha && gotcha.value) { succeed(); return; }   // bot trap: feign success
+          if (form.classList.contains('is-done')) return;
+          if (gotcha && gotcha.value) return;    // bot trap: ignore silently
           var email = (input.value || '').trim();
           if (!EMAIL_RE.test(email)) { fail('Please enter a valid email address.'); return; }
-
-          setMsg('');
-          form.classList.add('is-loading');
-
-          if (!endpoint) {
-            setTimeout(succeed, reduce ? 0 : 1100);            // DEMO MODE
-            return;
+          // Fire-and-forget — nothing to wait on, so confirm immediately.
+          if (endpoint) {
+            var body = new FormData();
+            body.append('email', email);
+            try { fetch(endpoint, { method: 'POST', body: body, mode: 'no-cors' }); } catch (err) {}
           }
-          var body = new FormData();
-          body.append('email', email);
-          fetch(endpoint, { method: 'POST', body: body, mode: 'no-cors' })
-            .then(function () { succeed(); })
-            .catch(function () { fail('Something went wrong. Please try again.'); });
+          succeed();
         });
       });
     })();

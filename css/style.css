@@ -2036,14 +2036,33 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 
 /* ===== Newsletter ===== */
-.newsletter {
-  margin: 3rem 0 0;
-  /* Collapse + fade away after a successful subscribe (height pinned in JS). */
-  transition: height 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-              margin-top 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-              opacity 0.4s ease;
+.newsletter { margin: 3rem 0 0; }
+/* Dismissal (see dismiss() in site.js): on subscribe the card's content + fill
+   fade to leave only its outline, the outline un-draws (stroke retracts — the
+   header pill in reverse), then the section collapses. */
+.newsletter-outline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
 }
-.newsletter.is-dismissing { opacity: 0; pointer-events: none; }
+.newsletter-outline rect {
+  fill: none;
+  stroke: var(--border);              /* same as the card border, for a seamless handoff */
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.newsletter-card.is-undrawing {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  transition: background-color 0.4s ease, border-color 0.35s ease, box-shadow 0.4s ease;
+}
+.newsletter-card.is-undrawing > :not(.newsletter-outline) {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
 .newsletter-card {
   position: relative;
   padding: 1.6rem 1.8rem;

@@ -841,23 +841,53 @@
           field.classList.add('shake');
           input.focus();
         }
-        // Collapse the whole card away (height pinned, then animated to 0) — the
-        // section is "drawn out" once you're subscribed, echoing the header pill.
-        function dismiss() {
-          if (!section) return;
-          if (reduce) { section.style.display = 'none'; return; }
+        // Collapse the now-empty section to nothing (height pinned, then to 0).
+        function collapse() {
           section.style.height = section.offsetHeight + 'px';
           section.style.overflow = 'hidden';
-          void section.offsetHeight;          // commit the start height
-          // Inline transition/opacity so they win over the article reveal-up rules.
-          section.style.transition = 'height 0.55s cubic-bezier(0.22, 1, 0.36, 1), ' +
-            'margin-top 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease';
-          section.classList.add('is-dismissing');
+          void section.offsetHeight;
+          section.style.transition = 'height 0.5s cubic-bezier(0.22, 1, 0.36, 1), ' +
+            'margin-top 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
           requestAnimationFrame(function () {
             section.style.height = '0px';
             section.style.marginTop = '0px';
-            section.style.opacity = '0';
           });
+        }
+        // Draw the card OUT: fade its content + fill (.is-undrawing), then retract
+        // an outline traced over its border — the header pill's draw in reverse.
+        function dismiss() {
+          if (!section) return;
+          var card = section.querySelector('.newsletter-card');
+          if (reduce || !card) { section.style.display = 'none'; return; }
+          section.style.pointerEvents = 'none';
+
+          var w = card.offsetWidth, h = card.offsetHeight;
+          var NS = 'http://www.w3.org/2000/svg';
+          var svg = document.createElementNS(NS, 'svg');
+          svg.setAttribute('class', 'newsletter-outline');
+          svg.setAttribute('width', w);
+          svg.setAttribute('height', h);
+          svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+          svg.setAttribute('preserveAspectRatio', 'none');
+          svg.setAttribute('aria-hidden', 'true');
+          var rect = document.createElementNS(NS, 'rect');
+          rect.setAttribute('x', '0.5');
+          rect.setAttribute('y', '0.5');
+          rect.setAttribute('width', w - 1);
+          rect.setAttribute('height', h - 1);
+          rect.setAttribute('rx', '20');     // matches the card radius
+          rect.setAttribute('ry', '20');
+          svg.appendChild(rect);
+          card.appendChild(svg);
+
+          var len = rect.getTotalLength();
+          rect.style.strokeDasharray = len;
+          rect.style.strokeDashoffset = '0';   // fully drawn — coincides with the border
+          card.classList.add('is-undrawing');  // fade content + fill; outline stays
+          void rect.getBoundingClientRect();    // commit the start state
+          rect.style.transition = 'stroke-dashoffset 0.66s cubic-bezier(0.22, 1, 0.36, 1)';
+          requestAnimationFrame(function () { rect.style.strokeDashoffset = '' + len; });  // retract
+          setTimeout(collapse, 620);           // close the gap as the outline finishes
         }
         function succeed() {
           form.classList.remove('is-loading');

@@ -2148,44 +2148,42 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-input:disabled { opacity: 1; -webkit-text-fill-color: var(--fg-muted); color: var(--fg-muted); }
 .newsletter-gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 /* Submit: a round accent button whose icon morphs arrow → spinner → check. */
-/* Labeled "Subscribe" pill — deliberately NOT a round disc, so it can't be
-   mistaken for the round reading-progress widget that shares the page end. */
+/* Round icon button — a paper-plane (send) that morphs into a checkmark on
+   success: the plane scales/fades out as the check draws itself in. */
 .newsletter-submit {
   flex: 0 0 auto;
   display: inline-grid;
   place-items: center;
-  padding: 0.62rem 1.15rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border: none;
-  border-radius: 999px;
+  border-radius: 50%;
   background: var(--fg);              /* ink/knockout, like the drop-cap tile + progress ring */
   color: var(--bg);
-  font: inherit;
-  font-size: 0.92rem;
-  font-weight: 500;
-  white-space: nowrap;
   cursor: pointer;
   transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), filter 0.2s ease;
 }
-@media (hover: hover) { .newsletter-submit:hover { filter: brightness(1.12); transform: translateY(-1px); } }
-.newsletter-submit:active { transform: translateY(0) scale(0.98); }
-/* The label sizes the pill; the spinner/check stack on top and cross-fade in. */
+@media (hover: hover) { .newsletter-submit:hover { filter: brightness(1.12); transform: scale(1.05); } }
+.newsletter-submit:active { transform: scale(0.93); }
+/* The three states stack and cross-fade with a slight scale (the morph). */
 .newsletter-submit .ns-state {
   grid-area: 1 / 1;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.newsletter-submit .ns-icon { width: 1.15rem; height: 1.15rem; }
+.newsletter-submit .ns-icon { width: 1.1rem; height: 1.1rem; }
+.newsletter-submit .ns-send { transform: rotate(0) scale(1); }
 .newsletter-submit .ns-spinner,
-.newsletter-submit .ns-check { opacity: 0; }
+.newsletter-submit .ns-check { opacity: 0; transform: scale(0.5); }
 .ns-check path { stroke-dasharray: 1; stroke-dashoffset: 1; }
-/* Loading */
+/* Loading: the plane lifts away, spinner takes over */
 .newsletter-form.is-loading .newsletter-submit { cursor: default; }
-.newsletter-form.is-loading .ns-label { opacity: 0; }
-.newsletter-form.is-loading .ns-spinner { opacity: 1; animation: ns-spin 0.7s linear infinite; }
-/* Done */
-.newsletter-form.is-done .ns-label,
-.newsletter-form.is-done .ns-spinner { opacity: 0; }
-.newsletter-form.is-done .ns-check { opacity: 1; }
-.newsletter-form.is-done .ns-check path { animation: ns-check-draw 0.45s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
+.newsletter-form.is-loading .ns-send { opacity: 0; transform: translate(3px, -3px) scale(0.6); }
+.newsletter-form.is-loading .ns-spinner { opacity: 1; transform: scale(1); animation: ns-spin 0.7s linear infinite; }
+/* Done: morph to a checkmark that draws itself in */
+.newsletter-form.is-done .ns-send { opacity: 0; transform: translate(4px, -4px) scale(0.6); }
+.newsletter-form.is-done .ns-spinner { opacity: 0; transform: scale(0.5); }
+.newsletter-form.is-done .ns-check { opacity: 1; transform: scale(1); }
+.newsletter-form.is-done .ns-check path { animation: ns-check-draw 0.45s cubic-bezier(0.65, 0, 0.35, 1) 0.1s forwards; }
 @keyframes ns-spin { to { transform: rotate(360deg); } }
 @keyframes ns-check-draw { to { stroke-dashoffset: 0; } }
 /* Inline message */

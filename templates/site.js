@@ -869,10 +869,10 @@
           svg.setAttribute('preserveAspectRatio', 'none');
           svg.setAttribute('aria-hidden', 'true');
           var rect = document.createElementNS(NS, 'rect');
-          rect.setAttribute('x', '1');
-          rect.setAttribute('y', '1');
-          rect.setAttribute('width', w - 2);
-          rect.setAttribute('height', h - 2);
+          rect.setAttribute('x', '0.5');        // 1px stroke centered on the card's border line
+          rect.setAttribute('y', '0.5');
+          rect.setAttribute('width', w - 1);
+          rect.setAttribute('height', h - 1);
           rect.setAttribute('rx', '20');        // matches the card radius
           rect.setAttribute('ry', '20');
           svg.appendChild(rect);

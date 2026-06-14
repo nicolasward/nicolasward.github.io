@@ -2051,7 +2051,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-outline rect {
   fill: none;
   stroke: var(--accent);              /* continues the orange success border as it retracts */
-  stroke-width: 1.5;
+  stroke-width: 1;                    /* match the card's 1px border so it doesn't thicken */
   vector-effect: non-scaling-stroke;
 }
 .newsletter-card.is-undrawing {

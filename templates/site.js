@@ -933,7 +933,7 @@
         if (!note) {
           note = document.createElement('div');
           note.className = 'subscribe-note';
-          note.textContent = 'You’re subscribed ✓';
+          note.textContent = 'You’re subscribed!';
           document.body.appendChild(note);
         }
         var r = btn.getBoundingClientRect();

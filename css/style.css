@@ -2238,7 +2238,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 .nav-subscribe .ns-badge { opacity: 0; transform: scale(0.4); }
 /* Subscribed: the envelope morphs into the gradient check badge. */
-.nav-subscribe.is-subscribed .ns-env { opacity: 0; transform: scale(0.4); }
+.nav-subscribe.is-subscribed .ns-mailbox { opacity: 0; transform: scale(0.4); }
 .nav-subscribe.is-subscribed .ns-badge { opacity: 1; transform: scale(1); }
 .nav-subscribe.is-subscribed { cursor: default; }
 

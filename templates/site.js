@@ -858,6 +858,7 @@
           if (reduce || !card) { if (section) section.style.display = 'none'; return; }
           section.style.pointerEvents = 'none';
           card.style.overflow = 'visible';      // don't clip the retracting stroke
+          card.classList.remove('is-subscribed'); // hand the orange line over to the SVG outline
 
           var w = card.offsetWidth, h = card.offsetHeight;
           var NS = 'http://www.w3.org/2000/svg';

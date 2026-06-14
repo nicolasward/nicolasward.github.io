@@ -496,10 +496,19 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 .js body.home .theme-toggle .toggle-knob {
   animation: nav-knob-in 0.35s ease 1.3s backwards;
 }
+/* The subscribe icon (mailbox, or the check badge if already subscribed) draws
+   in too — just before the magnifier, following the left-to-right order. */
+.js body.home .nav-subscribe:not(.is-subscribed) .ns-mailbox > *,
+.js body.home .nav-subscribe.is-subscribed .ns-badge path {
+  stroke-dasharray: 100;
+  animation: nav-stroke-draw 0.55s cubic-bezier(0.65, 0, 0.35, 1) 0.2s backwards;
+}
 @media (prefers-reduced-motion: reduce) {
   .js body.home .site-nav > a,
   .js body.home .head-in,
   .js body.home .nav-search .search-glass,
+  .js body.home .nav-subscribe .ns-mailbox > *,
+  .js body.home .nav-subscribe .ns-badge path,
   .js body.home .theme-toggle .ts-pill,
   .js body.home .theme-toggle .toggle-knob { animation: none; opacity: 1; }
 }

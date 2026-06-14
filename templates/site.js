@@ -2,6 +2,62 @@
 // (minified + content-hash cache-busted). Each block is an IIFE, exactly
 // as they previously appeared as separate inline <script> tags.
 
+    // Shared controller: lend the theme toggle to an overlay as its ✕ close
+    // control (lift it out to <body>, morph pill→✕, route its click to the
+    // overlay's close). Used by both the search and subscribe overlays.
+    var ToggleClose = (function () {
+      var toggle = document.getElementById('theme-toggle');
+      var home = null, placeholder = null, activeClose = null;
+      function lift() {
+        if (!toggle || home) return;
+        home = toggle.parentNode;
+        var r = toggle.getBoundingClientRect();
+        placeholder = document.createElement('div');
+        placeholder.setAttribute('aria-hidden', 'true');
+        placeholder.style.width = r.width + 'px';
+        placeholder.style.height = r.height + 'px';
+        home.insertBefore(placeholder, toggle);
+        toggle.style.position = 'fixed';
+        toggle.style.top = r.top + 'px';
+        toggle.style.left = r.left + 'px';
+        toggle.style.width = r.width + 'px';
+        toggle.style.height = r.height + 'px';
+        toggle.style.margin = '0';
+        toggle.style.zIndex = '1001';
+        document.body.appendChild(toggle);
+        // Moving the toggle restarts its children's CSS animations; kill the
+        // one-shot load draws so the morph can run.
+        ['.ts-pill', '.ts-cross', '.toggle-knob'].forEach(function (sel) {
+          var el = toggle.querySelector(sel); if (el) el.style.animation = 'none';
+        });
+      }
+      function rehome() {
+        if (!toggle || !home) return;
+        toggle.classList.remove('as-close');
+        toggle.removeAttribute('style');
+        if (placeholder && placeholder.parentNode) {
+          placeholder.parentNode.insertBefore(toggle, placeholder);
+          placeholder.parentNode.removeChild(placeholder);
+        } else {
+          home.appendChild(toggle);
+        }
+        placeholder = null; home = null;
+      }
+      if (toggle) toggle.addEventListener('click', function () {
+        if (activeClose) activeClose();   // when engaged, the toggle ✕ closes the overlay
+      });
+      return {
+        engage: function (closeFn) {
+          activeClose = closeFn;
+          lift();
+          requestAnimationFrame(function () { if (toggle) toggle.classList.add('as-close'); });
+        },
+        startClose: function () { if (toggle) toggle.classList.remove('as-close'); },  // morph back as the overlay exits
+        finishClose: function () { activeClose = null; rehome(); },                    // re-home once exited
+        isEngaged: function () { return !!activeClose; }
+      };
+    })();
+
     (function () {
       const overlay    = document.getElementById('search-overlay');
       const input      = document.getElementById('search-input');
@@ -67,48 +123,10 @@
         if (INDEX) { cb(); return; }
         fetch('{{base}}/search-index.json').then(r => r.json()).then(data => { INDEX = data; cb(); });
       }
-      // Lift the toggle above the overlay, leaving a same-size placeholder so the
-      // nav doesn't reflow (no overlap with the floating toggle). Guarded so a
-      // re-open during a close doesn't re-capture the wrong parent.
-      function liftToggle() {
-        if (!toggle || toggleHome) return;
-        toggleHome = toggle.parentNode;
-        var trc = toggle.getBoundingClientRect();
-        togglePlaceholder = document.createElement('div');
-        togglePlaceholder.setAttribute('aria-hidden', 'true');
-        togglePlaceholder.style.width = trc.width + 'px';
-        togglePlaceholder.style.height = trc.height + 'px';
-        toggleHome.insertBefore(togglePlaceholder, toggle);
-        toggle.style.position = 'fixed';
-        toggle.style.top = trc.top + 'px';
-        toggle.style.left = trc.left + 'px';
-        toggle.style.width = trc.width + 'px';
-        toggle.style.height = trc.height + 'px';
-        toggle.style.margin = '0';
-        toggle.style.zIndex = '1001';
-        document.body.appendChild(toggle);
-        // Moving the toggle restarts any CSS animation on its children — on the
-        // homepage the nav-stroke-draw load animation would restart and (since a
-        // running animation beats a transition) fight the morph, leaving the pill
-        // drawn. Kill those one-shot load animations so the morph can run.
-        ['.ts-pill', '.ts-cross', '.toggle-knob'].forEach(function (sel) {
-          var el = toggle.querySelector(sel);
-          if (el) el.style.animation = 'none';
-        });
-      }
-      // Morph done — drop it back into its exact nav slot and clear the lift.
+      // (Toggle lift/morph now lives in the shared ToggleClose controller.)
       function homeToggle() {
-        if (!toggle || !toggleHome) return;
-        toggle.classList.remove('as-close');
-        toggle.removeAttribute('style');
-        if (togglePlaceholder && togglePlaceholder.parentNode) {
-          togglePlaceholder.parentNode.insertBefore(toggle, togglePlaceholder);
-          togglePlaceholder.parentNode.removeChild(togglePlaceholder);
-        } else {
-          toggleHome.appendChild(toggle);
-        }
-        togglePlaceholder = null;
-        toggleHome = null;
+        // kept as a thin shim for the close flow below
+        ToggleClose.finishClose();
       }
       function open(initialQuery) {
         // Cancel any in-progress close
@@ -128,12 +146,9 @@
           overlay.style.setProperty('--sy', cy + 'px');
           overlay.style.setProperty('--sr', rad + 'px');
         }
-        // Lift the REAL toggle out to <body> (above the overlay — it can't paint
-        // there from inside .container's stacking context) pinned at its exact
-        // spot, then morph it pill→✕ in place. So the toggle itself becomes the
-        // close control rather than being swapped for a separate one.
-        liftToggle();
-        requestAnimationFrame(function () { if (toggle) toggle.classList.add('as-close'); });
+        // The toggle becomes the ✕ close control (lifted out + morphed) — clicking
+        // it closes search (see ToggleClose).
+        ToggleClose.engage(close);
         document.documentElement.classList.add('searching');
         overlay.classList.add('open');
         overlay.setAttribute('aria-hidden', 'false');
@@ -173,15 +188,13 @@
         overlay.setAttribute('aria-hidden', 'true');
         isOpen = false;
         input.blur();
-        // Morph the ✕ back to the toggle as the overlay exits.
-        if (toggle) toggle.classList.remove('as-close');
+        ToggleClose.startClose();   // morph the ✕ back to the toggle as the overlay exits
         if (closeTimeout) clearTimeout(closeTimeout);
         closeTimeout = setTimeout(() => {
           overlay.classList.remove('closing');
           document.documentElement.style.overflow = '';
           document.documentElement.classList.remove('searching');
-          // Re-home the toggle into its exact nav slot (morphed back by now).
-          homeToggle();
+          ToggleClose.finishClose();   // re-home the toggle into its nav slot
           closeTimeout = null;
         }, EXIT_DURATION);
       }
@@ -250,11 +263,7 @@
       const searchClose = document.getElementById('search-close');
       if (searchClose) searchClose.addEventListener('click', () => close());
 
-      // While search is open the toggle IS the close ✕ — clicking it closes
-      // search (and the theme handler bails out, see toggleTheme's guard).
-      if (toggle) toggle.addEventListener('click', function () {
-        if (document.documentElement.classList.contains('searching')) close();
-      });
+      // (The toggle-✕ click is routed to close() via ToggleClose.engage above.)
 
       document.addEventListener('keydown', function (e) {
         const tag = (document.activeElement && document.activeElement.tagName) || '';
@@ -466,8 +475,8 @@
       // one another (View Transitions API) — a soft, even dissolve; otherwise it
       // just switches.
       function toggleTheme() {
-        // While search is open the toggle acts as the close ✕ — don't switch theme.
-        if (html.classList.contains('searching')) return;
+        // While an overlay (search/subscribe) uses the toggle as its ✕, don't switch theme.
+        if (ToggleClose.isEngaged()) return;
         const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (navigator.vibrate) { try { navigator.vibrate(8); } catch (e) {} }  // tiny tactile tap
@@ -497,7 +506,7 @@
           e.stopPropagation();
           window.location.href = '{{base}}';
         } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-          if (html.classList.contains('searching')) return;
+          if (ToggleClose.isEngaged()) return;   // an overlay is open
           var sib = document.querySelector('.post-siblings');   // only present on articles
           if (!sib) return;
           var url = sib.getAttribute(e.key === 'ArrowLeft' ? 'data-newer-url' : 'data-older-url');
@@ -839,6 +848,19 @@
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+      // Once subscribed (from any touchpoint, this visit or a prior one), the
+      // inline cards across the site retire — the header badge stands in for them.
+      function retireInlineCards() {
+        Array.prototype.forEach.call(document.querySelectorAll('.newsletter'), function (nl) {
+          if (nl.closest('.subscribe-overlay')) return;            // keep the overlay card
+          var f = nl.querySelector('.newsletter-form');
+          if (f && f.classList.contains('is-done')) return;        // the submitted one animates itself out
+          nl.style.display = 'none';
+        });
+      }
+      try { if (localStorage.getItem('newsletter-subscribed') === '1') retireInlineCards(); } catch (e) {}
+      document.addEventListener('newsletter:subscribed', function () { setTimeout(retireInlineCards, 50); });
+
       Array.prototype.forEach.call(forms, function (form) {
         var input  = form.querySelector('.newsletter-input');
         var field  = form.querySelector('.newsletter-field');
@@ -873,15 +895,22 @@
         }
         // Draw the card out: content + fill fade while an outline traced over the
         // Soft scale-down + blur + fade (keeping the orange border), then collapse.
+        var inOverlay = !!form.closest('.subscribe-overlay');
         function dismiss() {
           var card = section && section.querySelector('.newsletter-card');
-          if (reduce || !card) { if (section) section.style.display = 'none'; return; }
+          if (reduce || !card) {
+            if (inOverlay) document.dispatchEvent(new CustomEvent('newsletter:lifted'));
+            else if (section) section.style.display = 'none';
+            return;
+          }
           section.style.pointerEvents = 'none';
           card.classList.add('is-dismissing');
           card.addEventListener('transitionend', function te(ev) {
-            if (ev.propertyName !== 'transform') return;   // wait for the dismiss, not border-color
+            if (ev.propertyName !== 'transform') return;   // wait for the liftoff, not border-color
             card.removeEventListener('transitionend', te);
-            collapse();
+            // Overlay card: the modal closes once lifted; inline card: collapse the gap.
+            if (inOverlay) document.dispatchEvent(new CustomEvent('newsletter:lifted'));
+            else collapse();
           });
         }
         function succeed() {
@@ -891,13 +920,11 @@
           if (card) card.classList.add('is-subscribed');   // gradient border + colour flush
           var btn = form.querySelector('.newsletter-submit');
           if (btn) btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
-          // Persist + broadcast so the header badge flips (and the modal can close).
+          // Persist + broadcast so the header badge flips (and other cards retire).
           try { localStorage.setItem('newsletter-subscribed', '1'); } catch (e) {}
           document.dispatchEvent(new CustomEvent('newsletter:subscribed'));
-          // Inline cards lift off; the overlay card stays put — its modal closes instead.
-          if (!form.closest('.subscribe-overlay')) {
-            setTimeout(dismiss, reduce ? 1600 : 1500);     // let the colour flush land + hold
-          }
+          // The card lifts off (overlay + inline alike); the overlay then closes.
+          setTimeout(dismiss, reduce ? 1600 : 1500);       // let the colour flush land + hold
         }
 
         form.addEventListener('submit', function (e) {
@@ -944,21 +971,26 @@
         note._t = setTimeout(function () { note.classList.remove('show'); }, 2200);
       }
 
-      var lastFocus = null;
+      var lastFocus = null, closing = false;
       function openOverlay() {
         if (!overlay) return;
+        closing = false;
         lastFocus = document.activeElement;
+        ToggleClose.engage(closeOverlay);   // toggle morphs into the ✕ close (like search)
         overlay.classList.add('open');
         overlay.setAttribute('aria-hidden', 'false');
         document.documentElement.style.overflow = 'hidden';
         var input = overlay.querySelector('.newsletter-input');
-        setTimeout(function () { if (input) input.focus(); }, 90);
+        setTimeout(function () { if (input) input.focus(); }, 120);
       }
       function closeOverlay() {
-        if (!overlay) return;
+        if (!overlay || closing) return;
+        closing = true;
         overlay.classList.remove('open');
         overlay.setAttribute('aria-hidden', 'true');
         document.documentElement.style.overflow = '';
+        ToggleClose.startClose();           // morph the ✕ back to the toggle
+        setTimeout(function () { ToggleClose.finishClose(); closing = false; }, 400);
         if (lastFocus && lastFocus.focus) lastFocus.focus();
       }
 
@@ -976,6 +1008,10 @@
 
       document.addEventListener('newsletter:subscribed', function () {
         btn.classList.add('is-subscribed');
-        if (overlay && overlay.classList.contains('open')) setTimeout(closeOverlay, 1500);
+      });
+      // The overlay card lifts off on success (same rocket as inline cards); once
+      // it's lifted, close the modal.
+      document.addEventListener('newsletter:lifted', function () {
+        if (overlay && overlay.classList.contains('open')) closeOverlay();
       });
     })();

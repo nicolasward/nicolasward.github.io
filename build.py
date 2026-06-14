@@ -185,9 +185,6 @@ def subscribe_overlay():
     """A centered modal that drops the same signup card — opened from the header
     envelope, so people can convert from anywhere (see site.js)."""
     return f'''<div class="subscribe-overlay" id="subscribe-overlay" aria-hidden="true">
-    <button class="subscribe-close" id="subscribe-close" type="button" aria-label="Close">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
-    </button>
     <div class="subscribe-modal" role="dialog" aria-label="Subscribe to the newsletter">
       {newsletter_section()}
     </div>

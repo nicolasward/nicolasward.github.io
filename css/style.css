@@ -2107,7 +2107,6 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-form { margin: 0; }
 /* Pill field with an inset look; the submit lives inside it on the right. */
 .newsletter-field {
-  position: relative;
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -2115,31 +2114,11 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--canvas);         /* cool recessed field against the white card */
+  transition: border-color 0.25s ease;
 }
-/* On focus, a stroke draws itself around the pill — exactly like the header pill
-   contour (stroke-dashoffset; height + rx set in JS; armed after measuring so it
-   doesn't draw on load). */
-.ns-field-outline {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 2;
-  overflow: visible;
-  pointer-events: none;
-}
-.ns-field-outline rect {
-  fill: none;
-  stroke: var(--fg-muted);
-  stroke-width: 1.5;
-  vector-effect: non-scaling-stroke;
-  stroke-dasharray: var(--field-len, 1200);
-  stroke-dashoffset: var(--field-len, 1200);   /* undrawn at rest */
-}
-.newsletter-field.ns-armed .ns-field-outline rect {
-  transition: stroke-dashoffset 0.65s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.newsletter-field:focus-within .ns-field-outline rect { stroke-dashoffset: 0; }
+/* On focus, the bar and the card border both light up in the same dark grey. */
+.newsletter-field:focus-within { border-color: var(--fg); }
+.newsletter-card:focus-within { border-color: var(--fg); }
 .newsletter-input {
   flex: 1 1 auto;
   min-width: 0;

@@ -852,47 +852,17 @@
           });
         }
         // Draw the card out: content + fill fade while an outline traced over the
-        // border retracts (the header pill's draw, in reverse), then it collapses.
+        // 3D spin + shrink, then collapse the gap once the spin finishes.
         function dismiss() {
           var card = section && section.querySelector('.newsletter-card');
           if (reduce || !card) { if (section) section.style.display = 'none'; return; }
           section.style.pointerEvents = 'none';
-          card.style.overflow = 'visible';      // don't clip the retracting stroke
-          card.classList.remove('is-subscribed'); // hand the orange line over to the SVG outline
-
-          var w = card.offsetWidth, h = card.offsetHeight;
-          var NS = 'http://www.w3.org/2000/svg';
-          var svg = document.createElementNS(NS, 'svg');
-          svg.setAttribute('class', 'newsletter-outline');
-          svg.setAttribute('width', w);
-          svg.setAttribute('height', h);
-          svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
-          svg.setAttribute('preserveAspectRatio', 'none');
-          svg.setAttribute('aria-hidden', 'true');
-          // The SVG's containing block is the card's PADDING box (inside the 1px
-          // border); shift it out by the border so the outline lands exactly on
-          // the border line rather than 1px inside it.
-          svg.style.top = '-1px';
-          svg.style.left = '-1px';
-          var rect = document.createElementNS(NS, 'rect');
-          rect.setAttribute('x', '0.5');        // 1px stroke centered on the card's border line
-          rect.setAttribute('y', '0.5');
-          rect.setAttribute('width', w - 1);
-          rect.setAttribute('height', h - 1);
-          rect.setAttribute('rx', '20');        // matches the card radius
-          rect.setAttribute('ry', '20');
-          svg.appendChild(rect);
-          card.appendChild(svg);
-
-          var len = rect.getTotalLength();
-          rect.style.strokeDasharray = len;
-          rect.style.strokeDashoffset = '0';
-          rect.style.transition = 'stroke-dashoffset 0.7s cubic-bezier(0.65, 0, 0.35, 1)';
-          card.classList.add('is-undrawing');   // content + fill fade out together
-          rect.addEventListener('transitionend', collapse, { once: true });
-          // Two frames so the drawn (offset:0) state paints before we retract it.
-          requestAnimationFrame(function () {
-            requestAnimationFrame(function () { rect.style.strokeDashoffset = '' + len; });
+          card.classList.remove('is-subscribed');
+          card.classList.add('is-spinning');
+          card.addEventListener('transitionend', function te(ev) {
+            if (ev.propertyName !== 'transform') return;   // wait for the spin, not opacity
+            card.removeEventListener('transitionend', te);
+            collapse();
           });
         }
         function succeed() {

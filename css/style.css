@@ -2036,37 +2036,16 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 
 /* ===== Newsletter ===== */
-.newsletter { margin: 3rem 0 0; }
-/* Dismissal (see dismiss() in site.js): on subscribe the card's content + fill
-   fade to leave only its outline, the outline un-draws (stroke retracts — the
-   header pill in reverse), then the section collapses. */
-.newsletter-outline {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 2;                         /* above the aurora + content so it stays as they fade */
-  overflow: visible;
-  pointer-events: none;
+.newsletter {
+  margin: 3rem 0 0;
+  perspective: 1100px;               /* depth for the 3D spin-out on subscribe */
 }
-.newsletter-outline rect {
-  fill: none;
-  stroke: var(--accent);              /* continues the orange success border as it retracts */
-  stroke-width: 1;                    /* match the card's 1px border so it doesn't thicken */
-  vector-effect: non-scaling-stroke;
-}
-.newsletter-card.is-undrawing {
-  background: transparent;
-  border-color: transparent;         /* snaps off instantly (no transition) so it never
-                                        overlaps the SVG outline that takes its place */
-  box-shadow: none;
-  transition: background-color 0.4s ease, box-shadow 0.4s ease;
-}
-/* The text/form fade away neatly first (a soft lift), so the outline retract
-   reads clearly on the emptied card. */
-.newsletter-card.is-undrawing > :not(.newsletter-outline) {
+/* Dismissal (see dismiss() in site.js): on subscribe the whole card spins in 3D
+   and shrinks away, then the section collapses. */
+.newsletter-card.is-spinning {
+  transform: rotateY(115deg) rotateX(8deg) scale(0.35);
   opacity: 0;
-  transform: translateY(-4px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
 }
 .newsletter-card {
   position: relative;
@@ -2076,7 +2055,10 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   border-radius: 20px;
   background: var(--field);          /* cool white base (matches the page field) */
   box-shadow: 0 14px 34px -24px rgba(20, 25, 40, 0.45);
-  transition: border-color 0.35s ease;
+  transform-origin: center;
+  transition: border-color 0.35s ease,
+              transform 0.6s cubic-bezier(0.6, 0, 0.35, 1),
+              opacity 0.5s ease 0.1s;
 }
 /* On success the border lights up in the accent, alongside the orange check. */
 .newsletter-card.is-subscribed { border-color: var(--accent); }
@@ -2173,13 +2155,21 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   grid-area: 1 / 1;                   /* stack plane + check */
   width: 1.3rem;
   height: 1.3rem;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.12s ease;    /* quick swap */
 }
-.newsletter-submit .ns-check { opacity: 0; }
+.newsletter-submit .ns-check { opacity: 0; transform-origin: center; }
 .ns-check path { stroke-dasharray: 1; stroke-dashoffset: 1; }
+/* Punchy: the plane vanishes fast, the check springs in and snaps its stroke. */
 .newsletter-form.is-done .ns-send { opacity: 0; }
-.newsletter-form.is-done .ns-check { opacity: 1; color: var(--accent); }  /* orange check */
-.newsletter-form.is-done .ns-check path { animation: ns-check-draw 0.42s cubic-bezier(0.65, 0, 0.35, 1) 0.12s forwards; }
+.newsletter-form.is-done .ns-check {
+  opacity: 1;
+  color: var(--accent);              /* orange check */
+  animation: ns-check-pop 0.32s cubic-bezier(0.34, 1.8, 0.5, 1) forwards;
+}
+.newsletter-form.is-done .ns-check path {
+  animation: ns-check-draw 0.24s cubic-bezier(0.6, 0, 0.25, 1) 0.04s forwards;
+}
+@keyframes ns-check-pop { from { transform: scale(0.3); } to { transform: scale(1); } }
 @keyframes ns-check-draw { to { stroke-dashoffset: 0; } }
 /* Inline message */
 .newsletter-msg {
@@ -2200,6 +2190,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 @media (prefers-reduced-motion: reduce) {
   .newsletter-submit .ns-state,
   .newsletter-field { transition: none; }
+  .newsletter-form.is-done .ns-check,
   .newsletter-form.is-done .ns-check path,
   .newsletter-field.shake { animation: none; }
 }

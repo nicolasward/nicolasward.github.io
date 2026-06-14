@@ -2050,7 +2050,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 .newsletter-outline rect {
   fill: none;
-  stroke: var(--fg);                  /* full ink, so the retract reads clearly */
+  stroke: var(--accent);              /* continues the orange success border as it retracts */
   stroke-width: 1.5;
   vector-effect: non-scaling-stroke;
 }
@@ -2075,7 +2075,10 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   border-radius: 20px;
   background: var(--field);          /* cool white base (matches the page field) */
   box-shadow: 0 14px 34px -24px rgba(20, 25, 40, 0.45);
+  transition: border-color 0.35s ease;
 }
+/* On success the border lights up in the accent, alongside the orange check. */
+.newsletter-card.is-subscribed { border-color: var(--accent); }
 [data-theme="dark"] .newsletter-card {
   background: var(--surface);        /* subtly above the near-black canvas */
   box-shadow: 0 14px 34px -22px rgba(0, 0, 0, 0.6);
@@ -2174,7 +2177,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-submit .ns-check { opacity: 0; }
 .ns-check path { stroke-dasharray: 1; stroke-dashoffset: 1; }
 .newsletter-form.is-done .ns-send { opacity: 0; }
-.newsletter-form.is-done .ns-check { opacity: 1; }
+.newsletter-form.is-done .ns-check { opacity: 1; color: var(--accent); }  /* orange check */
 .newsletter-form.is-done .ns-check path { animation: ns-check-draw 0.42s cubic-bezier(0.65, 0, 0.35, 1) 0.12s forwards; }
 @keyframes ns-check-draw { to { stroke-dashoffset: 0; } }
 /* Inline message */

@@ -890,9 +890,12 @@
           });
         }
         function succeed() {
-          form.classList.add('is-done');         // plane morphs to check
+          form.classList.add('is-done');         // plane morphs to the (orange) check
           input.disabled = true;
-          setMsg('You’re in — check your inbox to confirm.', 'success');
+          var card = section && section.querySelector('.newsletter-card');
+          if (card) card.classList.add('is-subscribed');   // border lights up orange
+          var btn = form.querySelector('.newsletter-submit');
+          if (btn) btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
           setTimeout(dismiss, reduce ? 1500 : 1250);
         }
 

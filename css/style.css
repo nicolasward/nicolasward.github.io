@@ -2249,6 +2249,9 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 /* Subscribed: the envelope morphs into the gradient check badge. */
 .nav-subscribe.is-subscribed .ns-mailbox { opacity: 0; transform: scale(0.4); }
 .nav-subscribe.is-subscribed .ns-badge { opacity: 1; transform: scale(1); }
+/* Pre-marked subscribed (head script): badge shown from first paint, no blink. */
+html.subscribed .nav-subscribe .ns-mailbox { opacity: 0; transform: scale(0.4); }
+html.subscribed .nav-subscribe .ns-badge { opacity: 1; transform: scale(1); }
 .nav-subscribe.is-subscribed { cursor: default; }
 
 /* Centered modal that drops the signup card. */

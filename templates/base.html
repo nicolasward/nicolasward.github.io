@@ -27,6 +27,12 @@
         if (tcm) tcm.setAttribute('content', '#100F0F');
       }
     } catch (e) {}
+    // Already subscribed? Mark it before paint so the header check badge shows
+    // from the first frame (no morph-in blink on every navigation).
+    try {
+      if (localStorage.getItem('newsletter-subscribed') === '1')
+        document.documentElement.classList.add('subscribed');
+    } catch (e) {}
     // Mark that JS is available, so CSS can hide the homepage rows before
     // they roll in (no-JS users keep them visible).
     document.documentElement.classList.add('js');

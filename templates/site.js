@@ -53,7 +53,12 @@
           requestAnimationFrame(function () { if (toggle) toggle.classList.add('as-close'); });
         },
         startClose: function () { if (toggle) toggle.classList.remove('as-close'); },  // morph back as the overlay exits
-        finishClose: function () { activeClose = null; rehome(); },                    // re-home once exited
+        finishClose: function () {
+          activeClose = null;
+          rehome();
+          // Re-sync the header pill to the real scroll position now the toggle is back.
+          try { window.dispatchEvent(new Event('scroll')); } catch (e) {}
+        },
         isEngaged: function () { return !!activeClose; }
       };
     })();
@@ -826,6 +831,9 @@
       var ticking = false;
       function update() {
         ticking = false;
+        // Freeze the pill state while an overlay has borrowed the toggle, so the
+        // header doesn't reflow (pill in/out) under the lifted toggle and snap it.
+        if (ToggleClose.isEngaged()) return;
         header.classList.toggle('scrolled', window.scrollY > 4);
       }
       window.addEventListener('scroll', function () {

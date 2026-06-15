@@ -105,7 +105,10 @@
         rect.setAttribute('height', h - 1);
         rect.setAttribute('rx', rx);
         rect.setAttribute('ry', rx);
-        var len = rect.getTotalLength ? rect.getTotalLength() : 2 * (w + h);
+        // Pad the dash length so the stroke overlaps itself where it meets,
+        // closing the loop cleanly (getTotalLength can fall a hair short of the
+        // true perimeter, otherwise leaving a gap at the seam).
+        var len = (rect.getTotalLength ? rect.getTotalLength() : 2 * (w + h)) + 6;
         rect.style.setProperty('--len', len);
         return len;
       }

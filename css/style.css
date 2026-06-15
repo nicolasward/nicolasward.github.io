@@ -2404,6 +2404,7 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
   fill: none;
   stroke: var(--fg);                 /* dark-grey sketch line */
   stroke-width: 1;
+  stroke-linecap: round;             /* rounded ends on the drawing line */
   vector-effect: non-scaling-stroke;
   stroke-dasharray: var(--len, 1);
   stroke-dashoffset: var(--len, 1);

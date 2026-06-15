@@ -2232,6 +2232,9 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   color: var(--fg);
   font: inherit;
   font-size: 1rem;
+  font-weight: 500;              /* match the search input's weight + tracking */
+  letter-spacing: -0.02em;
+  caret-color: var(--accent);   /* orange cursor, like the search bar */
   outline: none;
 }
 .newsletter-input::placeholder { color: var(--fg-muted); opacity: 0.7; }

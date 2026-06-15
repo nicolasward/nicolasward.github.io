@@ -749,7 +749,7 @@
 
       function measure() {
         cards.forEach(function (c) {
-          c.cl = Outline.size(c.cardSvg, c.card, 20);
+          c.cl = Outline.size(c.cardSvg, c.card, 24);
         });
       }
       function clamp(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
@@ -1128,7 +1128,7 @@
         if (!card || !field) return;
         if (!cardOutline)  { cardOutline  = Outline.make('draw-card');  card.appendChild(cardOutline); }
         if (!fieldOutline) { fieldOutline = Outline.make('draw-field'); field.appendChild(fieldOutline); }
-        Outline.size(cardOutline, card, 20);                       // card radius
+        Outline.size(cardOutline, card, 24);                       // card radius
         Outline.size(fieldOutline, field, field.offsetHeight / 2); // capsule
       }
       // Re-fit the overlay contour if the card changes size while open (e.g. an

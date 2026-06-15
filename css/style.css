@@ -2077,7 +2077,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   position: relative;
   padding: 1.6rem 1.8rem;
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: 24px;
   background: var(--field);          /* cool white base (matches the page field) */
   box-shadow: 0 14px 34px -24px rgba(20, 25, 40, 0.45);
   transition: border-color 0.35s ease;   /* liftoff itself is the ns-liftoff keyframes */
@@ -2089,7 +2089,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   content: "";
   position: absolute;
   inset: -1px;                       /* reach the card's border-box edge */
-  border-radius: 21px;               /* card radius + the 1px border */
+  border-radius: 25px;               /* card radius + the 1px border */
   padding: 1px;                      /* ring thickness = the border */
   background: linear-gradient(135deg, #7FE3D9 0%, #FFA85C 50%, #8C78EB 100%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
@@ -2461,12 +2461,10 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
    like the rest, see site.js); its real border sits muted, going full dark grey
    only on hover / focus. The popup keeps its drawn dark contour at all times. */
 @media (hover: hover) {
-  main .newsletter-card { border-color: var(--fg-faint); }
+  /* The card itself is borderless on desktop — just white + its soft shadow. */
+  main .newsletter-card { border-color: transparent; }
+  /* The input bar keeps a muted border, going dark on (card) hover / focus. */
   main .newsletter-field { border-color: var(--fg-faint); }
-  /* Hovering the card darkens both the card and the input-bar borders — but
-     not once subscribed (the gradient ring takes over, so the real border
-     must stay transparent or it shows through at the corners). */
-  main .newsletter-card:not(.is-subscribed):hover,
   main .newsletter-card:not(.is-subscribed):hover .newsletter-field,
   main .newsletter-card:not(.is-subscribed) .newsletter-field:focus-within { border-color: var(--fg); }
 }

@@ -951,8 +951,8 @@
       var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       // A celebratory confetti rain on success (before liftoff): lots of orange
-      // pieces drop from the top of the page, sway, spin and fade as they fall.
-      // Body-fixed at viewport coords, like the reading-ring confetti.
+      // pieces pop out near the top of the page, then sway, spin, and fade as
+      // they fall. Body-fixed at viewport coords, like the reading-ring confetti.
       function confettiBurst() {
         if (reduce || typeof document.body.animate !== 'function') return;
         var vw = window.innerWidth, vh = window.innerHeight, N = 64;
@@ -966,17 +966,21 @@
           bit.style.top = '0px';
           bit.style.filter = 'brightness(' + (0.85 + Math.random() * 0.4).toFixed(2) + ')';
           document.body.appendChild(bit);
-          var startY = -40 - Math.random() * 260;        // staggered, above the top
+          var startY = -10 + Math.random() * 50;         // near the top edge
+          var popUp = 30 + Math.random() * 45;           // the upward pop
+          var popX = (Math.random() - 0.5) * 110;        // outward pop
+          var sway = popX * 0.6 + (Math.random() - 0.5) * 80;
           var endY = vh + 60;                            // past the bottom
-          var sway = (Math.random() - 0.5) * 140;        // gentle horizontal drift
+          var midY = startY + (endY - startY) * 0.62;
           var rot = Math.round(Math.random() * 1080 - 540);
           var dur = 2600 + Math.random() * 2200;         // slow, graceful fall
           var delay = Math.random() * 800;               // keep it raining, not all at once
           bit.animate([
-            { transform: 'translate(-50%, ' + startY.toFixed(0) + 'px) rotate(0deg)', opacity: 1, offset: 0 },
-            { transform: 'translate(calc(-50% + ' + sway.toFixed(0) + 'px), ' + ((startY + endY) / 2).toFixed(0) + 'px) rotate(' + Math.round(rot * 0.5) + 'deg)', opacity: 1, offset: 0.55 },
-            { transform: 'translate(calc(-50% + ' + (sway * 0.4).toFixed(0) + 'px), ' + endY.toFixed(0) + 'px) rotate(' + rot + 'deg)', opacity: 0, offset: 1 }
-          ], { duration: dur, delay: delay, easing: 'cubic-bezier(0.37, 0, 0.63, 1)', fill: 'both' });
+            { transform: 'translate(-50%, ' + startY.toFixed(0) + 'px) scale(0.2) rotate(0deg)', opacity: 1, offset: 0, easing: 'cubic-bezier(0.12, 0.9, 0.25, 1)' },
+            { transform: 'translate(calc(-50% + ' + popX.toFixed(0) + 'px), ' + (startY - popUp).toFixed(0) + 'px) scale(1.12) rotate(' + Math.round(rot * 0.12) + 'deg)', opacity: 1, offset: 0.09, easing: 'cubic-bezier(0.4, 0, 0.65, 1)' },
+            { transform: 'translate(calc(-50% + ' + sway.toFixed(0) + 'px), ' + midY.toFixed(0) + 'px) scale(1) rotate(' + Math.round(rot * 0.6) + 'deg)', opacity: 1, offset: 0.7, easing: 'cubic-bezier(0.4, 0, 0.65, 1)' },
+            { transform: 'translate(calc(-50% + ' + (sway * 0.5).toFixed(0) + 'px), ' + endY.toFixed(0) + 'px) scale(1) rotate(' + rot + 'deg)', opacity: 0, offset: 1 }
+          ], { duration: dur, delay: delay, fill: 'both' });
           (function (b, total) { setTimeout(function () { if (b.parentNode) b.parentNode.removeChild(b); }, total + 80); })(bit, dur + delay);
         }
       }

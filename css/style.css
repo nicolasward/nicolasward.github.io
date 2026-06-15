@@ -1983,7 +1983,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 .reading-progress.complete .progress-shine { opacity: 1; }
 .reading-progress.complete .progress-shine::before {
-  animation: progress-shine-sweep 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.12s 1;
+  animation: progress-shine-sweep 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.34s 1;
 }
 @keyframes progress-shine-sweep {
   from { transform: translateX(-180%) rotate(18deg); }

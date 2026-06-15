@@ -950,6 +950,37 @@
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+      // A celebratory confetti burst out of the card on success (before liftoff).
+      function confettiBurst(card) {
+        if (reduce || !card || !card.animate) return;
+        var colors = ['#7FE3D9', '#FFA85C', '#8C78EB', '#FF791B', '#3AA99F'];
+        var layer = document.createElement('div');
+        layer.className = 'confetti-layer';
+        card.appendChild(layer);
+        for (var i = 0; i < 28; i++) {
+          var bit = document.createElement('i');
+          bit.className = 'confetti-bit';
+          bit.style.background = colors[i % colors.length];
+          var w = 5 + Math.random() * 4;
+          bit.style.width = w + 'px';
+          bit.style.height = (w + Math.random() * 6) + 'px';
+          if (Math.random() < 0.3) bit.style.borderRadius = '50%';
+          layer.appendChild(bit);
+          var ang = (-90 + (Math.random() * 130 - 65)) * Math.PI / 180;  // mostly up, ±65°
+          var dist = 80 + Math.random() * 150;
+          var dx = Math.cos(ang) * dist;
+          var peak = Math.sin(ang) * dist;            // negative = up
+          var fall = 130 + Math.random() * 140;       // then falls past the start
+          var rot = Math.random() * 720 - 360;
+          bit.animate([
+            { transform: 'translate(-50%, -50%) rotate(0deg)', opacity: 1, offset: 0 },
+            { transform: 'translate(calc(-50% + ' + (dx * 0.7) + 'px), calc(-50% + ' + peak + 'px)) rotate(' + (rot * 0.6) + 'deg)', opacity: 1, offset: 0.45 },
+            { transform: 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + (peak + fall) + 'px)) rotate(' + rot + 'deg)', opacity: 0, offset: 1 }
+          ], { duration: 850 + Math.random() * 550, easing: 'cubic-bezier(0.18, 0.7, 0.3, 1)', fill: 'forwards' });
+        }
+        setTimeout(function () { if (layer.parentNode) layer.parentNode.removeChild(layer); }, 1700);
+      }
+
       // Once subscribed (from any touchpoint, this visit or a prior one), the
       // inline cards across the site retire — the header badge stands in for them.
       function retireInlineCards() {
@@ -1008,9 +1039,9 @@
           }
           section.style.pointerEvents = 'none';
           card.classList.add('is-dismissing');
-          card.addEventListener('transitionend', function te(ev) {
-            if (ev.propertyName !== 'transform') return;   // wait for the liftoff, not border-color
-            card.removeEventListener('transitionend', te);
+          card.addEventListener('animationend', function te(ev) {
+            if (ev.animationName !== 'ns-liftoff') return;   // the liftoff keyframes
+            card.removeEventListener('animationend', te);
             lifted();                                  // liftoff done (overlay + inline alike)
             if (!inOverlay) collapse();                // inline: also close the gap
           });
@@ -1019,14 +1050,17 @@
           form.classList.add('is-done');         // plane morphs to the check
           input.disabled = true;
           var card = section && section.querySelector('.newsletter-card');
-          if (card) card.classList.add('is-subscribed');   // gradient border + colour flush
+          if (card) {
+            card.classList.add('is-subscribed');   // gradient border + colour flush
+            confettiBurst(card);                   // celebrate, out of the card
+          }
           var btn = form.querySelector('.newsletter-submit');
           if (btn) btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
           // Persist + broadcast so the header badge flips (and other cards retire).
           try { localStorage.setItem('newsletter-subscribed', '1'); } catch (e) {}
           document.dispatchEvent(new CustomEvent('newsletter:subscribed'));
-          // The card lifts off (overlay + inline alike); the overlay then closes.
-          setTimeout(dismiss, reduce ? 1600 : 1500);       // let the colour flush land + hold
+          // Hold while the confetti pops + the colour flush lands, then lift off.
+          setTimeout(dismiss, reduce ? 1600 : 1800);
         }
 
         form.addEventListener('submit', function (e) {

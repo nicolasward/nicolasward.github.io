@@ -2025,13 +2025,32 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 /* ===== Newsletter ===== */
 .newsletter { margin: 3rem 0 0; }
 /* Dismissal (see dismiss() in site.js): on subscribe the card whooshes up and
-   away — the Apple Mail "sent" effect: it lifts off high and fast (hard
-   acceleration), fading + blurring only once it has travelled, then collapses. */
+   away — the Apple Mail "sent" effect. It first dips down a touch (gathering
+   momentum), then launches high and fast, fading + blurring only once it has
+   travelled, then collapses. */
 .newsletter-card.is-dismissing {
-  transform: translateY(-150px) scale(0.9);    /* lifts off high */
-  opacity: 0;
-  filter: blur(5px);                            /* motion-softening near the top */
+  animation: ns-liftoff 0.9s forwards;
   pointer-events: none;
+}
+@keyframes ns-liftoff {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    filter: blur(0);
+    animation-timing-function: cubic-bezier(0.34, 0, 0.5, 1);   /* settle into the dip */
+  }
+  22% {
+    transform: translateY(16px) scale(0.99);                    /* anticipation: pull back */
+    opacity: 1;
+    filter: blur(0);
+    animation-timing-function: cubic-bezier(0.55, 0, 0.78, 0);  /* then hard launch */
+  }
+  60% { opacity: 1; }                                           /* stay solid through the launch */
+  100% {
+    transform: translateY(-185px) scale(0.88);                  /* flies out high */
+    opacity: 0;
+    filter: blur(5px);
+  }
 }
 .newsletter-card {
   position: relative;
@@ -2040,10 +2059,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   border-radius: 20px;
   background: var(--field);          /* cool white base (matches the page field) */
   box-shadow: 0 14px 34px -24px rgba(20, 25, 40, 0.45);
-  transition: border-color 0.35s ease,
-              transform 0.72s cubic-bezier(0.4, 0, 0.65, 0.1),  /* whoosh: gentle start, hard launch */
-              opacity 0.42s ease-in 0.2s,                       /* fades only after it has lifted */
-              filter 0.55s ease 0.12s;
+  transition: border-color 0.35s ease;   /* liftoff itself is the ns-liftoff keyframes */
 }
 /* On subscribe the 1px border becomes a gradient ring matching the colour flush:
    a masked pseudo (gradient minus its inner content-box = just the ring) that
@@ -2097,34 +2113,28 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 /* Keep the content above the aurora layer. */
 .newsletter-intro,
 .newsletter-form { position: relative; z-index: 1; }
+/* Confetti burst on success (spawned + animated in site.js). Pieces start near
+   the card centre and fly out beyond its edges (the card doesn't clip). */
+.confetti-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  overflow: visible;
+  pointer-events: none;
+}
+.confetti-bit {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  display: block;
+  border-radius: 1.5px;
+  will-change: transform, opacity;
+}
 .newsletter-heading {
-  position: relative;
   margin: 0 0 0.45rem;
   font-size: 1.32rem;
   font-weight: 600;
   letter-spacing: -0.012em;
-}
-/* On success the heading flushes with the same teal→sunset→plum gradient as the
-   card's success border, swooshed in left→right (a duplicate gradient-clipped
-   copy revealed by clip-path over the dark original). */
-.newsletter-heading::after {
-  content: attr(data-text);
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(100deg, #7FE3D9 0%, #FFA85C 50%, #8C78EB 100%);
-  -webkit-background-clip: text;
-          background-clip: text;
-  -webkit-text-fill-color: transparent;
-          color: transparent;
-  clip-path: inset(0 100% 0 0);      /* hidden until success */
-  pointer-events: none;
-}
-.newsletter-card.is-subscribed .newsletter-heading::after {
-  animation: ns-heading-swoosh 0.7s cubic-bezier(0.5, 0, 0.2, 1) forwards;
-}
-@keyframes ns-heading-swoosh {
-  from { clip-path: inset(0 100% 0 0); }
-  to   { clip-path: inset(0 0 0 0); }
 }
 .newsletter-dek {
   margin: 0 0 1.05rem;
@@ -2136,6 +2146,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-form { margin: 0; }
 /* Pill field with an inset look; the submit lives inside it on the right. */
 .newsletter-field {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -2145,6 +2156,24 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   background: var(--canvas);         /* cool recessed field against the white card */
   transition: border-color 0.25s ease;
 }
+/* On success the input bar takes the same gradient ring as the card border
+   (a masked pseudo = gradient minus its inner content-box = just the ring). */
+.newsletter-field::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 999px;
+  padding: 1px;
+  background: linear-gradient(135deg, #7FE3D9 0%, #FFA85C 50%, #8C78EB 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+.newsletter-card.is-subscribed .newsletter-field { border-color: transparent; }
+.newsletter-card.is-subscribed .newsletter-field::after { opacity: 1; }
 /* On focus, the bar and the card border both light up in the same dark grey. */
 .newsletter-field:focus-within { border-color: var(--fg); }
 .newsletter-card:focus-within { border-color: var(--fg); }
@@ -2302,14 +2331,14 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
 .newsletter-card.is-subscribed .draw-outline { opacity: 0; transition: opacity 0.4s ease; }
 
 /* Inline cards develop in: once the outer border has drawn, the dark grey
-   flushes into the contents as a neat left-to-right swipe (a hard-ish edge that
-   tracks scroll via --flush — stopping mid-scroll leaves part dark, part muted).
-   The un-swept part is held very muted. */
+   glimmers into the contents as a soft diagonal sweep (top-left → bottom-right)
+   that tracks scroll via --flush — stopping mid-scroll leaves part dark, part
+   muted. The un-swept part is held very muted. */
 .newsletter-card.has-draw .newsletter-intro,
 .newsletter-card.has-draw .newsletter-form {
-  --edge: calc(var(--flush, 0) * 130% - 15%);
-  -webkit-mask-image: linear-gradient(90deg, #000 var(--edge), rgba(0, 0, 0, 0.1) calc(var(--edge) + 15%));
-          mask-image: linear-gradient(90deg, #000 var(--edge), rgba(0, 0, 0, 0.1) calc(var(--edge) + 15%));
+  --edge: calc(var(--flush, 0) * 150% - 25%);
+  -webkit-mask-image: linear-gradient(135deg, #000 var(--edge), rgba(0, 0, 0, 0.08) calc(var(--edge) + 26%));
+          mask-image: linear-gradient(135deg, #000 var(--edge), rgba(0, 0, 0, 0.08) calc(var(--edge) + 26%));
   -webkit-mask-repeat: no-repeat;
           mask-repeat: no-repeat;
 }

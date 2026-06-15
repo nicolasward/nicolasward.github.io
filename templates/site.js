@@ -950,38 +950,36 @@
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      // A confetti bomb on success (before liftoff): one synchronised pop near
-      // the top of the page — all the orange pieces explode outward from a
-      // single point, then gravity carries them down, swaying, spinning and
-      // fading. Body-fixed at viewport coords, like the reading-ring confetti.
+      // A confetti pop on success (before liftoff): orange pieces burst from
+      // across the top of the screen, spread sideways, then fall straight down
+      // under gravity (accelerating, no hang), swaying, spinning and fading.
+      // Body-fixed at viewport coords, like the reading-ring confetti.
       function confettiBurst() {
         if (reduce || typeof document.body.animate !== 'function') return;
         var vw = window.innerWidth, vh = window.innerHeight, N = 70;
-        var ox = vw / 2, oy = vh * 0.1;                  // bomb origin: near top centre
         for (var i = 0; i < N; i++) {
           var bit = document.createElement('i');
           bit.className = 'confetti-bit';
           var size = 6 + Math.random() * 5;
           bit.style.width = size.toFixed(1) + 'px';
           bit.style.height = (size * 0.42).toFixed(1) + 'px';
-          bit.style.left = ox.toFixed(1) + 'px';
-          bit.style.top = oy.toFixed(1) + 'px';
+          bit.style.left = (Math.random() * vw).toFixed(1) + 'px';   // across the top
+          bit.style.top = (-12 + Math.random() * 14).toFixed(1) + 'px';
           bit.style.filter = 'brightness(' + (0.85 + Math.random() * 0.4).toFixed(2) + ')';
           document.body.appendChild(bit);
-          var ang = Math.random() * Math.PI * 2;         // radial blast
-          var burst = 90 + Math.random() * 290;          // explosion radius (the pop)
-          var bx = Math.cos(ang) * burst;
-          var by = Math.sin(ang) * burst;
-          var sway = (Math.random() - 0.5) * 130;        // drift as it falls
-          var fall = vh * 0.7 + Math.random() * vh * 0.5;// gravity carries it past the bottom
-          var rot = Math.round(Math.random() * 1080 - 540);
-          var dur = 2600 + Math.random() * 2200;         // slow, graceful fall
-          var delay = Math.random() * 70;                // ~one synchronised pop
+          var kickX = (Math.random() - 0.5) * 150;       // sideways pop off the top
+          var dropA = 25 + Math.random() * 45;           // small downward burst
+          var sway = (Math.random() - 0.5) * 70;         // gentle drift on the way down
+          var endY = vh + 40;
+          var midY = (endY * 0.4).toFixed(0);            // ease-in: most distance falls late
+          var rot = Math.round(Math.random() * 900 - 450);
+          var dur = 1100 + Math.random() * 850;          // quick, like the reading ring
+          var delay = Math.random() * 140;
           bit.animate([
-            { transform: 'translate(-50%,-50%) rotate(0deg)', opacity: 1, offset: 0, easing: 'cubic-bezier(0.1, 0.75, 0.3, 1)' },   // explode out fast
-            { transform: 'translate(calc(-50% + ' + bx.toFixed(0) + 'px), calc(-50% + ' + by.toFixed(0) + 'px)) rotate(' + Math.round(rot * 0.3) + 'deg)', opacity: 1, offset: 0.2, easing: 'cubic-bezier(0.4, 0, 0.65, 1)' },  // burst peak
-            { transform: 'translate(calc(-50% + ' + (bx + sway * 0.6).toFixed(0) + 'px), calc(-50% + ' + (by + fall * 0.6).toFixed(0) + 'px)) rotate(' + Math.round(rot * 0.6) + 'deg)', opacity: 1, offset: 0.72, easing: 'cubic-bezier(0.4, 0, 0.65, 1)' },
-            { transform: 'translate(calc(-50% + ' + (bx + sway).toFixed(0) + 'px), calc(-50% + ' + (by + fall).toFixed(0) + 'px)) rotate(' + rot + 'deg)', opacity: 0, offset: 1 }
+            { transform: 'translate(-50%, 0px) rotate(0deg)', opacity: 1, offset: 0, easing: 'cubic-bezier(0.25, 0.8, 0.4, 1)' },          // pop sideways off the top
+            { transform: 'translate(calc(-50% + ' + kickX.toFixed(0) + 'px), ' + dropA.toFixed(0) + 'px) rotate(' + Math.round(rot * 0.25) + 'deg)', opacity: 1, offset: 0.18, easing: 'cubic-bezier(0.5, 0, 0.85, 0.6)' },  // then gravity takes over
+            { transform: 'translate(calc(-50% + ' + (kickX + sway * 0.5).toFixed(0) + 'px), ' + midY + 'px) rotate(' + Math.round(rot * 0.6) + 'deg)', opacity: 1, offset: 0.55, easing: 'linear' },
+            { transform: 'translate(calc(-50% + ' + (kickX + sway).toFixed(0) + 'px), ' + endY.toFixed(0) + 'px) rotate(' + rot + 'deg)', opacity: 0, offset: 1 }
           ], { duration: dur, delay: delay, fill: 'both' });
           (function (b, total) { setTimeout(function () { if (b.parentNode) b.parentNode.removeChild(b); }, total + 80); })(bit, dur + delay);
         }
@@ -1063,8 +1061,8 @@
           // Persist + broadcast so the header badge flips (and other cards retire).
           try { localStorage.setItem('newsletter-subscribed', '1'); } catch (e) {}
           document.dispatchEvent(new CustomEvent('newsletter:subscribed'));
-          // Hold while the confetti rains + the colour flush lands, then lift off.
-          setTimeout(dismiss, reduce ? 1600 : 2000);
+          // Hold while the confetti pops + the colour flush lands, then lift off.
+          setTimeout(dismiss, reduce ? 1500 : 1600);
         }
 
         form.addEventListener('submit', function (e) {

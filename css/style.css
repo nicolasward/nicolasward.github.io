@@ -1905,9 +1905,9 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   transition: stroke-dashoffset 0.15s ease, stroke 0.35s ease;
 }
 
-/* Completed disc fills with the signature multi-colour gradient */
+/* Completed disc fills with a quick solid blue */
 .progress-disc {
-  fill: url(#progress-grad);
+  fill: #007AFF;
   transform: scale(0);
   transform-origin: 20px 20px;
   transform-box: fill-box;

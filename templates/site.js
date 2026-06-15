@@ -888,9 +888,11 @@
         if (!header.classList.contains('scrolled')) return;
         header.style.webkitBackdropFilter = 'blur(8.4px)';
         header.style.backdropFilter = 'blur(8.4px)';
+        header.style.transform = 'translateZ(0)';        // nudge the compositor too
         requestAnimationFrame(function () {
           header.style.webkitBackdropFilter = '';
           header.style.backdropFilter = '';
+          header.style.transform = '';
         });
       }
       window.addEventListener('header:refresh', refresh);

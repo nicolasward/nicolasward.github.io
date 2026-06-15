@@ -2354,11 +2354,17 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
   place-items: center;
   padding: 1.5rem;
   background: var(--overlay-bg);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.35s ease;
+}
+/* Only blur while it's actually shown — leaving backdrop-filter applied on the
+   closed (opacity:0) overlay keeps iOS blurring the page behind it, which
+   ghosts the sticky header. */
+.subscribe-overlay.open,
+.subscribe-overlay.closing {
+  -webkit-backdrop-filter: blur(16px);
+          backdrop-filter: blur(16px);
 }
 .subscribe-overlay.open { opacity: 1; pointer-events: auto; }
 .subscribe-modal {

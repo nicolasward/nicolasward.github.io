@@ -884,22 +884,19 @@
       // ghosted snapshot until something forces a repaint. Briefly perturbing the
       // blur value (imperceptibly) flushes a fresh one. Listened-for so overlays
       // can ask for it as they fade out.
-      var refreshT = 0;
-      function refresh() {
-        if (!header.classList.contains('scrolled')) return;
-        if (Date.now() - refreshT < 600) return;          // debounce so it flickers at most once
-        refreshT = Date.now();
-        // Hard reset: drop the blur for a single frame to force iOS to recreate
-        // the backdrop layer (the gentle value-nudge wasn't enough to clear the
-        // stale, ghosted snapshot left after the popup closed over the header).
+      // A full-screen overlay (subscribe) with its own backdrop-filter covers the
+      // header; on iOS that leaves the header's frosted backdrop showing a stale,
+      // ghosted snapshot when the overlay closes. While covered, turn the header's
+      // own backdrop off (nothing to go stale, and it's hidden anyway); restore it
+      // on close for a clean, fresh render — no flicker.
+      window.addEventListener('header:freeze', function () {
         header.style.webkitBackdropFilter = 'none';
         header.style.backdropFilter = 'none';
-        requestAnimationFrame(function () {
-          header.style.webkitBackdropFilter = '';
-          header.style.backdropFilter = '';
-        });
-      }
-      window.addEventListener('header:refresh', refresh);
+      });
+      window.addEventListener('header:refresh', function () {
+        header.style.webkitBackdropFilter = '';
+        header.style.backdropFilter = '';
+      });
       function measure() {
         if (!rect) return;
         // Don't remeasure while an overlay has borrowed the toggle: submitting
@@ -1107,12 +1104,13 @@
         Outline.size(fieldOutline, field, field.offsetHeight / 2); // capsule
       }
 
-      var lastFocus = null, closing = false, tapT = null;
+      var lastFocus = null, closing = false;
       function openOverlay() {
         if (!overlay) return;
         closing = false;
         lastFocus = document.activeElement;
         ToggleClose.engage(closeOverlay);   // toggle morphs into the ✕ close (like search)
+        window.dispatchEvent(new Event('header:freeze'));  // park the header's backdrop while covered
         overlay.classList.remove('closing');
         prepDraw();                         // size + reset the outlines (hidden)
         // Flush the reset (dashoffset = full) before flipping to .open, so the
@@ -1131,9 +1129,11 @@
         document.documentElement.style.overflow = '';
         ToggleClose.startClose();           // morph the ✕ back to the toggle
         if (lastFocus && lastFocus.focus) lastFocus.focus();
-        // Once the overlay's backdrop-filter is gone, force the sticky header to
-        // re-render its own frosted backdrop (iOS otherwise leaves it ghosted).
-        var refreshHeader = function () { window.dispatchEvent(new Event('header:refresh')); };
+        // Restore the header's own backdrop as the overlay's blur clears (it was
+        // parked while covered) — a clean, fresh render with no stale ghost.
+        var refreshHeader = function () {
+          requestAnimationFrame(function () { window.dispatchEvent(new Event('header:refresh')); });
+        };
         var finish = function () {
           overlay.classList.remove('open', 'closing');
           overlay.setAttribute('aria-hidden', 'true');
@@ -1144,7 +1144,7 @@
         if (skipOutro === true || reduce) {
           overlay.classList.remove('open');   // blur drops immediately (gated on .open)
           overlay.setAttribute('aria-hidden', 'true');
-          setTimeout(refreshHeader, 420);     // after the tint has faded out
+          refreshHeader();                    // header refrosts behind the fading tint
           setTimeout(finish, 800);
           return;
         }
@@ -1152,26 +1152,31 @@
         // undraws + sinks, then dek, then tagline, then the card border undraws),
         // and fade the backdrop once the content is on its way out.
         overlay.classList.add('closing');
-        setTimeout(function () { overlay.classList.remove('open'); }, 500);
+        setTimeout(function () { overlay.classList.remove('open'); refreshHeader(); }, 500);
         setTimeout(finish, 950);
-        setTimeout(refreshHeader, 1050);      // after .closing (and its blur) is gone
       }
 
       btn.addEventListener('click', function () {
         if (btn.classList.contains('is-subscribed')) {
           showNote();
-          btn.classList.remove('tapped');
-          void btn.offsetWidth;               // restart the glimmer on every tap
-          btn.classList.add('tapped');
-          clearTimeout(tapT);
-          tapT = setTimeout(function () { btn.classList.remove('tapped'); }, 700);
+          glimmer();
           return;
         }
         openOverlay();
       });
-      btn.addEventListener('animationend', function (e) {
-        if (e.animationName === 'ns-badge-glimmer') btn.classList.remove('tapped');
-      });
+      // Send a bright dash travelling along the check — driven via the Web
+      // Animations API so it reliably restarts on every tap (and cleans up after
+      // itself) regardless of class/animation state.
+      function glimmer() {
+        var shine = btn.querySelector('.ns-badge-shine');
+        if (reduce || !shine || !shine.animate) return;
+        shine.animate([
+          { strokeDashoffset: 16,   opacity: 0, offset: 0 },
+          { opacity: 1, offset: 0.12 },
+          { opacity: 1, offset: 0.88 },
+          { strokeDashoffset: -100, opacity: 0, offset: 1 }
+        ], { duration: 600, easing: 'ease-in-out' });
+      }
       if (overlay) {
         overlay.addEventListener('click', function (e) { if (e.target === overlay) closeOverlay(); });
         if (closeBtn) closeBtn.addEventListener('click', closeOverlay);

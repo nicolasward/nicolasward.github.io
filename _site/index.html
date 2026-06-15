@@ -481,6 +481,16 @@ document.querySelectorAll('.blob').forEach(blob => {
     else fastForward();                               // skip to the end
   });
 
+  // Pressing Enter does the same as clicking the double chevron — unless a link
+  // or button is focused, which keeps its native Enter behaviour.
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || !ff) return;
+    const el = document.activeElement;
+    if (el && (el.tagName === 'A' || el.tagName === 'BUTTON')) return;
+    e.preventDefault();
+    ff.click();
+  });
+
   // Pin the button's vertical centre to the greeting line (it's right-aligned
   // via CSS). Re-run on resize and after the font settles the layout.
   function placeFF() {

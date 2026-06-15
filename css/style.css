@@ -2326,19 +2326,22 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 @keyframes ns-badge-draw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
 /* Tapping the subscribed badge sends a glimmer travelling along the check
-   (a short bright dash sweeping from its left end to its right). */
+   (a short bright dash sweeping from its left end to its right). Opacity is
+   driven inside the keyframe so the shine always returns to invisible, even if
+   the .tapped class lingers. */
 .ns-badge-shine {
   stroke-dasharray: 16 220;
   stroke-dashoffset: 16;     /* bright dash parked just off the path → invisible at rest */
   opacity: 0;
 }
 .nav-subscribe.tapped .ns-badge-shine {
-  opacity: 1;
   animation: ns-badge-glimmer 0.55s ease-in-out;
 }
 @keyframes ns-badge-glimmer {
-  from { stroke-dashoffset: 16; }
-  to   { stroke-dashoffset: -100; }
+  0%   { stroke-dashoffset: 16;   opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { stroke-dashoffset: -100; opacity: 0; }
 }
 /* Pre-marked subscribed (head script): badge shown from first paint, no blink. */
 html.subscribed .nav-subscribe .ns-mailbox { opacity: 0; transform: scale(0.4); }

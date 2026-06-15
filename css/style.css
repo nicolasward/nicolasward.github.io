@@ -2024,12 +2024,13 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 
 /* ===== Newsletter ===== */
 .newsletter { margin: 3rem 0 0; }
-/* Dismissal (see dismiss() in site.js): on subscribe the card softly scales down,
-   blurs, and fades — an iOS modal-dismiss feel — then the section collapses. */
+/* Dismissal (see dismiss() in site.js): on subscribe the card whooshes up and
+   away — the Apple Mail "sent" effect: it lifts off high and fast (hard
+   acceleration), fading + blurring only once it has travelled, then collapses. */
 .newsletter-card.is-dismissing {
-  transform: translateY(-68px) scale(0.96);   /* lifts off upward */
+  transform: translateY(-150px) scale(0.9);    /* lifts off high */
   opacity: 0;
-  filter: blur(3px);                            /* hint of motion-softening */
+  filter: blur(5px);                            /* motion-softening near the top */
   pointer-events: none;
 }
 .newsletter-card {
@@ -2040,9 +2041,9 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   background: var(--field);          /* cool white base (matches the page field) */
   box-shadow: 0 14px 34px -24px rgba(20, 25, 40, 0.45);
   transition: border-color 0.35s ease,
-              transform 0.62s cubic-bezier(0.55, 0, 0.78, 0),   /* rocket: slow lift, then accelerates */
-              opacity 0.55s cubic-bezier(0.5, 0, 0.85, 0.4),
-              filter 0.6s ease;
+              transform 0.72s cubic-bezier(0.4, 0, 0.65, 0.1),  /* whoosh: gentle start, hard launch */
+              opacity 0.42s ease-in 0.2s,                       /* fades only after it has lifted */
+              filter 0.55s ease 0.12s;
 }
 /* On subscribe the 1px border becomes a gradient ring matching the colour flush:
    a masked pseudo (gradient minus its inner content-box = just the ring) that
@@ -2097,10 +2098,33 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-intro,
 .newsletter-form { position: relative; z-index: 1; }
 .newsletter-heading {
+  position: relative;
   margin: 0 0 0.45rem;
   font-size: 1.32rem;
   font-weight: 600;
   letter-spacing: -0.012em;
+}
+/* On success the heading flushes with the same teal→sunset→plum gradient as the
+   card's success border, swooshed in left→right (a duplicate gradient-clipped
+   copy revealed by clip-path over the dark original). */
+.newsletter-heading::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, #7FE3D9 0%, #FFA85C 50%, #8C78EB 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+          color: transparent;
+  clip-path: inset(0 100% 0 0);      /* hidden until success */
+  pointer-events: none;
+}
+.newsletter-card.is-subscribed .newsletter-heading::after {
+  animation: ns-heading-swoosh 0.7s cubic-bezier(0.5, 0, 0.2, 1) forwards;
+}
+@keyframes ns-heading-swoosh {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
 }
 .newsletter-dek {
   margin: 0 0 1.05rem;
@@ -2277,11 +2301,23 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
 /* On subscribe the gradient ring takes over — fade the dark sketch away. */
 .newsletter-card.is-subscribed .draw-outline { opacity: 0; transition: opacity 0.4s ease; }
 
-/* Inline cards develop in: the contents flush from muted grey to full as the
-   contour traces (driven by --flush, set per-scroll in site.js). */
+/* Inline cards develop in: once the outer border has drawn, the dark grey
+   flushes into the contents as a neat left-to-right swipe (a hard-ish edge that
+   tracks scroll via --flush — stopping mid-scroll leaves part dark, part muted).
+   The un-swept part is held very muted. */
 .newsletter-card.has-draw .newsletter-intro,
 .newsletter-card.has-draw .newsletter-form {
-  opacity: calc(0.4 + 0.6 * var(--flush, 0));
+  --edge: calc(var(--flush, 0) * 130% - 15%);
+  -webkit-mask-image: linear-gradient(90deg, #000 var(--edge), rgba(0, 0, 0, 0.1) calc(var(--edge) + 15%));
+          mask-image: linear-gradient(90deg, #000 var(--edge), rgba(0, 0, 0, 0.1) calc(var(--edge) + 15%));
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+}
+/* On success the whole card is revealed (no partial wipe) for the colour flush. */
+.newsletter-card.has-draw.is-subscribed .newsletter-intro,
+.newsletter-card.has-draw.is-subscribed .newsletter-form {
+  -webkit-mask-image: none;
+          mask-image: none;
 }
 
 .draw-outline {
@@ -2335,6 +2371,34 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
 .subscribe-overlay.open .draw-field rect {
   transition: stroke-dashoffset 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.8s;
   stroke-dashoffset: 0;
+}
+
+/* Outro when dismissed without subscribing — the intro in reverse: the input
+   bar undraws + sinks away first, then the dek, then the tagline (bottom to
+   top), and finally the card border undraws. (These come after the .open rules
+   so they win while both classes are present.) */
+.subscribe-overlay.closing .newsletter-form {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.35s ease 0s, transform 0.4s cubic-bezier(0.4, 0, 0.7, 0.2) 0s;
+}
+.subscribe-overlay.closing .draw-field rect {
+  transition: stroke-dashoffset 0.4s cubic-bezier(0.6, 0, 0.4, 1) 0s;
+  stroke-dashoffset: var(--len, 1);
+}
+.subscribe-overlay.closing .newsletter-dek {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.35s ease 0.12s, transform 0.4s cubic-bezier(0.4, 0, 0.7, 0.2) 0.12s;
+}
+.subscribe-overlay.closing .newsletter-heading {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.35s ease 0.24s, transform 0.4s cubic-bezier(0.4, 0, 0.7, 0.2) 0.24s;
+}
+.subscribe-overlay.closing .draw-card rect {
+  transition: stroke-dashoffset 0.45s cubic-bezier(0.6, 0, 0.4, 1) 0.36s;
+  stroke-dashoffset: var(--len, 1);
 }
 .subscribe-close {
   position: absolute;

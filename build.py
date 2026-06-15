@@ -160,7 +160,7 @@ def newsletter_section():
     return '''<section class="newsletter" aria-labelledby="newsletter-heading">
   <div class="newsletter-card">
     <div class="newsletter-intro">
-      <h2 class="newsletter-heading" id="newsletter-heading">Get new essays in your inbox</h2>
+      <h2 class="newsletter-heading" id="newsletter-heading" data-text="Get new essays in your inbox">Get new essays in your inbox</h2>
       <p class="newsletter-dek">Occasional writings on AI, design, and the human mind.</p>
     </div>
     <form class="newsletter-form" data-endpoint="" novalidate>

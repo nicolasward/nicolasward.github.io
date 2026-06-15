@@ -1081,6 +1081,7 @@
         closing = false;
         lastFocus = document.activeElement;
         ToggleClose.engage(closeOverlay);   // toggle morphs into the ✕ close (like search)
+        overlay.classList.remove('closing');
         prepDraw();                         // size + reset the outlines (hidden)
         // Flush the reset (dashoffset = full) before flipping to .open, so the
         // stroke-dashoffset transition actually animates from full → 0 (the trace).
@@ -1092,17 +1093,31 @@
         var input = overlay.querySelector('.newsletter-input');
         setTimeout(function () { if (input) input.focus(); }, reduce ? 60 : 1500);
       }
-      function closeOverlay() {
+      function closeOverlay(skipOutro) {
         if (!overlay || closing) return;
         closing = true;
-        overlay.classList.remove('open');
-        overlay.setAttribute('aria-hidden', 'true');
         document.documentElement.style.overflow = '';
         ToggleClose.startClose();           // morph the ✕ back to the toggle
-        // Re-home only after the snake morph fully completes (pill redraws ~0.68s),
-        // matching the search overlay — otherwise it looks rushed.
-        setTimeout(function () { ToggleClose.finishClose(); closing = false; }, 800);
         if (lastFocus && lastFocus.focus) lastFocus.focus();
+        var finish = function () {
+          overlay.classList.remove('open', 'closing');
+          overlay.setAttribute('aria-hidden', 'true');
+          ToggleClose.finishClose();        // re-home the toggle once the morph completes
+          closing = false;
+        };
+        // Subscribed: the card already whooshed off — just fade the backdrop.
+        if (skipOutro === true || reduce) {
+          overlay.classList.remove('open');
+          overlay.setAttribute('aria-hidden', 'true');
+          setTimeout(finish, 800);
+          return;
+        }
+        // Dismissed without subscribing: play the intro in reverse (input bar
+        // undraws + sinks, then dek, then tagline, then the card border undraws),
+        // and fade the backdrop once the content is on its way out.
+        overlay.classList.add('closing');
+        setTimeout(function () { overlay.classList.remove('open'); }, 500);
+        setTimeout(finish, 950);
       }
 
       btn.addEventListener('click', function () {
@@ -1121,6 +1136,6 @@
       // closes), and draw the check in rather than popping it.
       document.addEventListener('newsletter:lifted', function () {
         btn.classList.add('is-subscribed', 'just-subscribed');
-        if (overlay && overlay.classList.contains('open')) closeOverlay();
+        if (overlay && overlay.classList.contains('open')) closeOverlay(true);  // skip outro — card already lifted
       });
     })();

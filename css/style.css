@@ -465,8 +465,9 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 /* On the homepage, the magnifier and the toggle pill draw in as a single stroke
    each (then the sun/moon settles in) — echoing the search-bar cross. */
 @keyframes nav-stroke-draw {
-  from { stroke-dashoffset: 100; }
-  to   { stroke-dashoffset: 0; }
+  0%   { stroke-dashoffset: 100; opacity: 0; }   /* invisible while held back, so round caps don't leave a dot */
+  12%  { opacity: 1; }
+  100% { stroke-dashoffset: 0;   opacity: 1; }
 }
 @keyframes nav-knob-in {
   from { opacity: 0; }
@@ -2256,12 +2257,15 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-field:focus-within .newsletter-submit { color: var(--fg); }
 @media (hover: hover) {
   .newsletter-submit:hover { color: var(--accent); }   /* accent orange on hover */
-  /* …and the plane folds in on itself (origami) and unfolds. */
-  .newsletter-submit:hover .ns-send { animation: ns-plane-fold 0.6s cubic-bezier(0.45, 0, 0.3, 1); }
+  /* …and the plane flies a little loop, then lands back in place. */
+  .newsletter-submit:hover .ns-send { animation: ns-plane-fly 0.9s ease-in-out; }
 }
-@keyframes ns-plane-fold {
-  0%, 100% { transform: scaleX(1); }
-  50%      { transform: scaleX(0.07); }
+@keyframes ns-plane-fly {
+  0%   { transform: translate(0, 0)      rotate(0deg); }
+  25%  { transform: translate(5px, -5px)  rotate(90deg); }
+  50%  { transform: translate(0, -10px)   rotate(180deg); }
+  75%  { transform: translate(-5px, -5px) rotate(270deg); }
+  100% { transform: translate(0, 0)      rotate(360deg); }
 }
 .newsletter-submit:active { transform: scale(0.9); }
 .newsletter-submit .ns-state {

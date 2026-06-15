@@ -2253,7 +2253,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   cursor: pointer;
   transition: transform 0.15s ease, color 0.2s ease;
 }
-@media (hover: hover) { .newsletter-submit:hover { color: var(--fg-muted); } }
+@media (hover: hover) { .newsletter-submit:hover { color: var(--accent); } }
 .newsletter-submit:active { transform: scale(0.9); }
 .newsletter-submit .ns-state {
   grid-area: 1 / 1;                   /* stack plane + check */
@@ -2444,12 +2444,12 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
 /* On desktop the card + input-box borders sit muted, going full dark grey only
    on hover / focus. (Touch devices keep the dark border — no hover to reveal.) */
 @media (hover: hover) {
-  .draw-outline rect { stroke: var(--fg-muted); }
+  .draw-outline rect { stroke: var(--fg-faint); }
   .newsletter-card:hover .draw-card rect { stroke: var(--fg); }
   .newsletter-field:hover .draw-field rect,
   .newsletter-field:focus-within .draw-field rect { stroke: var(--fg); }
 
-  .newsletter-card.has-draw .newsletter-field { border-color: var(--fg-muted); }
+  .newsletter-card.has-draw .newsletter-field { border-color: var(--fg-faint); }
   .newsletter-card.has-draw .newsletter-field:hover,
   .newsletter-card.has-draw .newsletter-field:focus-within { border-color: var(--fg); }
 }

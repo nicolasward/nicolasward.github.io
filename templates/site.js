@@ -769,6 +769,13 @@
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', function () { measure(); draw(); });
       window.addEventListener('load', function () { measure(); draw(); });  // fonts/images settled
+      // Re-fit the contour whenever the card itself changes size — e.g. an error
+      // message appears below the field, or the layout reflows — otherwise the
+      // fixed-viewBox outline stretches to the new height and distorts.
+      if (window.ResizeObserver) {
+        var ro = new ResizeObserver(function () { measure(); draw(); });
+        cards.forEach(function (c) { ro.observe(c.card); });
+      }
     })();
 
     // Copy-link share button: copy the current URL, flash the icon checkmark + a "Link copied" pill.
@@ -1102,6 +1109,14 @@
         if (!fieldOutline) { fieldOutline = Outline.make('draw-field'); field.appendChild(fieldOutline); }
         Outline.size(cardOutline, card, 20);                       // card radius
         Outline.size(fieldOutline, field, field.offsetHeight / 2); // capsule
+      }
+      // Re-fit the overlay contour if the card changes size while open (e.g. an
+      // error message appears) so the fixed-viewBox outline doesn't distort.
+      if (window.ResizeObserver && overlay) {
+        var ovCard = overlay.querySelector('.newsletter-card');
+        if (ovCard) new ResizeObserver(function () {
+          if (overlay.classList.contains('open')) prepDraw();
+        }).observe(ovCard);
       }
 
       var lastFocus = null, closing = false;

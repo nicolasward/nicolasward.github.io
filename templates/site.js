@@ -880,6 +880,11 @@
       var svg = header.querySelector('.pill-outline');
       function measure() {
         if (!rect) return;
+        // Don't remeasure while an overlay has borrowed the toggle: submitting
+        // disables the input, which dismisses the keyboard and fires resize
+        // events mid-collapse — measuring then leaves the pill malformed until a
+        // later remeasure. We do one clean remeasure once the overlay releases it.
+        if (ToggleClose.isEngaged()) return;
         // The replaced SVG can't take a % height (auto-height parent), so pin its
         // height to the header in px; then measure the outline for the dash.
         if (svg) svg.style.height = header.offsetHeight + 'px';
@@ -898,12 +903,15 @@
       }
       measure();
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
-      var ticking = false;
+      var ticking = false, wasEngaged = false;
       function update() {
         ticking = false;
         // Freeze the pill state while an overlay has borrowed the toggle, so the
         // header doesn't reflow (pill in/out) under the lifted toggle and snap it.
-        if (ToggleClose.isEngaged()) return;
+        if (ToggleClose.isEngaged()) { wasEngaged = true; return; }
+        // Just released: do the remeasure we skipped (now the keyboard/layout has
+        // settled), so the pill snaps straight to its correct, drawn shape.
+        if (wasEngaged) { wasEngaged = false; measure(); }
         header.classList.toggle('scrolled', window.scrollY > 4);
       }
       window.addEventListener('scroll', function () {

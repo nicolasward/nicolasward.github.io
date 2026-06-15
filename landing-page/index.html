@@ -223,46 +223,14 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .fast-forward { display: none !important; } }
 
 /* "Atelier" — a coloured accent in the prose (Google-blue, vibrant on light). */
-.atelier { color: #1A73E8; }
-
-/* "write" — the signature accent orange, kept alive with a soft glow that
-   sweeps through the word (clipped to the glyphs) to signal it's clickable. */
-.write-link {
-  text-decoration: none;
-  background-image: linear-gradient(90deg,
-    #FF791B 0%, #FF791B 44%, #FFC9A3 50%, #FF791B 56%, #FF791B 100%);
-  background-size: 300% 100%;
-  background-position: 100% 0;
-  background-repeat: no-repeat;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  animation: cta-shimmer 4.5s ease-in-out 2s infinite;
-}
-
-/* "design" — an amber-yellow sibling to the orange "writing" link, with the
-   same glow sweep through the glyphs (offset in time so the two coloured words
-   never shimmer in unison). Links to the article explaining this very site. */
-.design-link {
-  text-decoration: none;
-  background-image: linear-gradient(90deg,
-    #FBBC05 0%, #FBBC05 44%, #FEE08A 50%, #FBBC05 56%, #FBBC05 100%);
-  background-size: 300% 100%;
-  background-position: 100% 0;
-  background-repeat: no-repeat;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  animation: cta-shimmer 4.5s ease-in-out 3.6s infinite;
-}
-
-/* Plain underlined inline links (LinkedIn, email). */
+/* All inline links share the dark-grey ink of the greeting — no colour, no
+   underline; the darker weight against the light-grey body is the affordance. */
+.atelier,
+.write-link,
+.design-link,
 .text-link {
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 0.14em;
+  color: var(--fg);
+  text-decoration: none;
 }
 @keyframes cta-shimmer {
   0%     { background-position: 100% 0; }   /* glow parked off-screen (right) */

@@ -2262,10 +2262,11 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
    becomes the visible border. The real border drops to zero width (not just
    transparent) so the drawn line sits exactly on the box edge — otherwise the
    contour, anchored to the padding box, reads as a second outline ~1px inside
-   the fill edge. The overlay draws only the card (the input bar fades in with
-   a real border); the inline cards draw both the card + field pill, scrubbed
-   to scroll (set from site.js). */
+   the fill edge. The overlay draws the card then the input bar (each with its
+   contour); the inline cards draw both the card + field pill, scrubbed to
+   scroll (set from site.js). */
 .subscribe-overlay .newsletter-card,
+.subscribe-overlay .newsletter-field,
 .newsletter-card.has-draw,
 .newsletter-card.has-draw .newsletter-field { border-width: 0; }
 .subscribe-overlay .newsletter-field,
@@ -2298,10 +2299,11 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
   stroke-dashoffset: var(--len, 1);
 }
 /* Overlay entrance (Apple-like cascade): the card contour draws (a touch
-   slow), then the tagline enters, then the dek, then the input bar + plane
-   fade up together — no drawing for those, just our signature upward motion. */
+   slow), then the tagline enters, then the dek, then the input bar rises in
+   with its own contour drawing alongside it (and the plane fading) — our
+   signature upward motion throughout. */
 .subscribe-overlay.open .draw-card rect {
-  transition: stroke-dashoffset 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
   stroke-dashoffset: 0;
 }
 .subscribe-overlay .newsletter-heading,
@@ -2313,17 +2315,23 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
 .subscribe-overlay.open .newsletter-heading {
   opacity: 1;
   transform: none;
-  transition: opacity 0.55s ease 0.9s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.9s;
+  transition: opacity 0.55s ease 0.5s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.5s;
 }
 .subscribe-overlay.open .newsletter-dek {
   opacity: 1;
   transform: none;
-  transition: opacity 0.55s ease 1.05s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 1.05s;
+  transition: opacity 0.55s ease 0.65s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.65s;
 }
+/* The input bar rises in and its contour draws together — appears as one
+   crisp unit (directly, not a belated fade). */
 .subscribe-overlay.open .newsletter-form {
   opacity: 1;
   transform: none;
-  transition: opacity 0.55s ease 1.2s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 1.2s;
+  transition: opacity 0.5s ease 0.8s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.8s;
+}
+.subscribe-overlay.open .draw-field rect {
+  transition: stroke-dashoffset 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.8s;
+  stroke-dashoffset: 0;
 }
 .subscribe-close {
   position: absolute;
@@ -2366,9 +2374,10 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
   .subscribe-modal,
   .toast-pill { transition: none; }
   .nav-subscribe.just-subscribed .ns-badge path { animation: none; }
-  /* Skip the draw-in: show the card straight away (keep the dark border). */
+  /* Skip the draw-in: show the card straight away (keep the dark borders). */
   .draw-outline { display: none; }
-  .subscribe-overlay .newsletter-card { border-width: 1px; border-color: var(--fg); }
+  .subscribe-overlay .newsletter-card,
+  .subscribe-overlay .newsletter-field { border-width: 1px; border-color: var(--fg); }
   .subscribe-overlay .newsletter-heading,
   .subscribe-overlay .newsletter-dek,
   .subscribe-overlay .newsletter-form {

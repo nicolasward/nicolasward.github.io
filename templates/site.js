@@ -770,12 +770,13 @@
         var nearBottom = maxScroll > 0 ? clamp((sy - (maxScroll - vh * 0.5)) / (vh * 0.5)) : 1;
         cards.forEach(function (c) {
           var top = c.card.getBoundingClientRect().top;
-          // Trace as the card rises through the lower-middle of the viewport:
-          // 0 when its top is near the bottom (~90% down), 1 once it reaches a
-          // touch above the middle (~45% down). Drawing over that band means
-          // it's still tracing as you bring the card into reading position —
-          // not finished beforehand — and untraces as you scroll back down.
-          var p  = Math.max(clamp((vh * 0.9 - top) / (vh * 0.45)), nearBottom);
+          // Trace as the card rises through the middle of the viewport: it
+          // only begins once the card's top has climbed to ~70% down (the card
+          // is already a third into view, not just peeking), and completes near
+          // the upper third (~30% down). Drawing over that band means it's
+          // still tracing as you bring the card into reading position — not
+          // started while it's still at the bottom — and untraces on the way back.
+          var p  = Math.max(clamp((vh * 0.7 - top) / (vh * 0.4)), nearBottom);
           var cp = clamp(p / 0.6);                 // card outline over the first 60%
           var fp = clamp((p - 0.6) / 0.4);         // field contour over the last 40%
           c.co.style.strokeDashoffset = c.cl * (1 - cp);
@@ -1061,16 +1062,19 @@
 
       function showNote() { Toast.show('You’re subscribed!', btn); }
 
-      // --- Draw-in outline: the shared dark sketch, traced over the card only
-      // (the input bar fades in with its own border). Built once, re-sized on
-      // each open (it may reflow).
-      var cardOutline = null;
+      // --- Draw-in outlines: the shared dark sketch, traced over the card and
+      // the input bar (so the bar appears with its own contour). Built once,
+      // re-sized on each open (it may reflow).
+      var cardOutline = null, fieldOutline = null;
       function prepDraw() {
         if (!overlay || reduce) return;
-        var card = overlay.querySelector('.newsletter-card');
-        if (!card) return;
-        if (!cardOutline) { cardOutline = Outline.make('draw-card'); card.appendChild(cardOutline); }
-        Outline.size(cardOutline, card, 20);                 // card radius
+        var card  = overlay.querySelector('.newsletter-card');
+        var field = overlay.querySelector('.newsletter-field');
+        if (!card || !field) return;
+        if (!cardOutline)  { cardOutline  = Outline.make('draw-card');  card.appendChild(cardOutline); }
+        if (!fieldOutline) { fieldOutline = Outline.make('draw-field'); field.appendChild(fieldOutline); }
+        Outline.size(cardOutline, card, 20);                       // card radius
+        Outline.size(fieldOutline, field, field.offsetHeight / 2); // capsule
       }
 
       var lastFocus = null, closing = false;

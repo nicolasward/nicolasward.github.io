@@ -2255,20 +2255,29 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   transition: transform 0.15s ease, color 0.2s ease;
 }
 .newsletter-field:focus-within .newsletter-submit { color: var(--fg); }
-/* The wings retract toward the keel on hover and sweep back open when you
-   leave (a CSS `d` morph, transitioned between the two states). */
-.ns-body {
-  d: path("M22 2 15 22 11 13 2 9 22 2Z");                 /* wings open */
-  transition: d 0.45s cubic-bezier(0.5, 0, 0.3, 1);
-}
+/* The wings sweep inward along an arc (swing-wing style) on hover and sweep
+   back open on leave. An arc needs waypoints, so it's an animation — run
+   forward on hover, reversed on leave, to keep it a clean hover state. */
+.ns-body { d: path("M22 2 15 22 11 13 2 9 22 2Z"); }
 @media (hover: hover) {
   /* Accent orange on hover — even while the field is focused. */
   .newsletter-submit:hover,
   .newsletter-field:focus-within .newsletter-submit:hover { color: var(--accent); }
-  .newsletter-submit:hover .ns-body { d: path("M22 2 14 14 11 13 13 11 22 2Z"); }  /* wings retracted */
+  .newsletter-submit:hover .ns-body {
+    animation: ns-wings-sweep 0.5s cubic-bezier(0.45, 0, 0.3, 1) forwards;
+  }
+  .newsletter-submit:not(:hover) .ns-body {
+    animation: ns-wings-sweep 0.5s cubic-bezier(0.45, 0, 0.3, 1) reverse forwards;
+  }
+}
+@keyframes ns-wings-sweep {
+  0%   { d: path("M22 2 15 22 11 13 2 9 22 2Z"); }    /* wings open */
+  50%  { d: path("M22 2 19 17 11 13 4 13 22 2Z"); }   /* mid arc */
+  100% { d: path("M22 2 15 13 11 13 11 12 22 2Z"); }  /* swept in to the keel */
 }
 @media (prefers-reduced-motion: reduce) {
-  .ns-body { transition: none; }
+  .newsletter-submit:hover .ns-body,
+  .newsletter-submit:not(:hover) .ns-body { animation: none; }
 }
 .newsletter-submit:active { transform: scale(0.9); }
 .newsletter-submit .ns-state {

@@ -2114,16 +2114,22 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 /* Keep the content above the aurora layer. */
 .newsletter-intro,
 .newsletter-form { position: relative; z-index: 1; }
-/* Confetti burst on success (spawned + animated in site.js): small orange
-   pieces flung outward from the card border, falling + fading. Body-fixed at
-   viewport coords, like the reading-ring confetti. */
+/* Confetti burst on success (spawned in site.js): the exact reading-ring pop
+   (radial fly-out + fade via @keyframes confetti-fly), but anchored to the
+   paper-plane button (left/top 50% of it) so it tracks the plane's position. */
 .confetti-bit {
-  position: fixed;
-  z-index: 1002;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 50;
+  width: var(--size, 8px);
+  height: calc(var(--size, 8px) * 0.42);
   background: var(--accent);
+  filter: brightness(var(--b, 1));
   border-radius: 1px;
   pointer-events: none;
   will-change: transform, opacity;
+  animation: confetti-fly var(--dur, 800ms) cubic-bezier(0.15, 0.65, 0.35, 1) forwards;
 }
 .newsletter-heading {
   margin: 0 0 0.45rem;
@@ -2190,6 +2196,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 /* Bare send icon (no circle) that morphs into a checkmark on success: the plane
    fades out as the check draws itself in. */
 .newsletter-submit {
+  position: relative;                /* anchors the success confetti to the plane */
   flex: 0 0 auto;
   display: inline-grid;
   place-items: center;

@@ -950,50 +950,25 @@
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      // A confetti pop on success (before liftoff): orange pieces explode
-      // radially from the paper-plane button, then fall under real gravity — the
-      // trajectory is sampled from a projectile (initial burst velocity +
-      // constant gravity), so the motion is physically natural. Body-fixed at
-      // viewport coords, like the reading-ring confetti.
+      // A confetti pop on success (before liftoff): the exact reading-ring burst
+      // (radial fly-out + fade, see .confetti-bit / @keyframes confetti-fly), but
+      // parented to the paper-plane button so it stays aligned with the plane
+      // regardless of keyboard/scroll/layout shifts.
       function confettiBurst(origin) {
-        if (reduce || typeof document.body.animate !== 'function' || !origin) return;
-        var vh = window.innerHeight, N = 70;
-        var r = origin.getBoundingClientRect();
-        var ox = r.left + r.width / 2, oy = r.top + r.height / 2;   // the paper-plane centre
-        var endY = vh + 50, H = endY - oy;
-        var offs = [0, 0.12, 0.26, 0.42, 0.58, 0.74, 0.88, 1];
-        for (var i = 0; i < N; i++) {
-          var bit = document.createElement('i');
-          bit.className = 'confetti-bit';
-          var size = 6 + Math.random() * 5;
-          bit.style.width = size.toFixed(1) + 'px';
-          bit.style.height = (size * 0.42).toFixed(1) + 'px';
-          bit.style.left = '0px';
-          bit.style.top = '0px';
-          bit.style.filter = 'brightness(' + (0.85 + Math.random() * 0.4).toFixed(2) + ')';
-          document.body.appendChild(bit);
-          var ang = Math.random() * Math.PI * 2;         // full radial blast
-          var speed = 90 + Math.random() * 250;          // initial blast speed (px/s)
-          var vx0 = Math.cos(ang) * speed;
-          var vy0 = Math.sin(ang) * speed;               // up (neg) or down (pos)
-          var g = 280 + Math.random() * 130;             // gravity (px/s²) — graceful
-          var T = (-vy0 + Math.sqrt(vy0 * vy0 + 2 * g * H)) / g;   // time to reach endY (s)
-          var swayAmp = 14 + Math.random() * 22, swayW = (1.5 + Math.random() * 1.5) * Math.PI, phase = Math.random() * 6.28;
-          var rot = Math.round(Math.random() * 900 - 450);
-          var frames = offs.map(function (o) {
-            var t = o * T;
-            var x = ox + vx0 * t + swayAmp * Math.sin(swayW * t + phase);
-            var y = oy + vy0 * t + 0.5 * g * t * t;
-            return {
-              transform: 'translate(calc(-50% + ' + x.toFixed(1) + 'px), calc(-50% + ' + y.toFixed(1) + 'px)) rotate(' + Math.round(rot * o) + 'deg)',
-              opacity: o < 0.72 ? 1 : Math.max(0, 1 - (o - 0.72) / 0.28),
-              offset: o,
-              easing: 'linear'
-            };
-          });
-          var delay = Math.random() * 120;
-          bit.animate(frames, { duration: Math.round(T * 1000), delay: delay, fill: 'both' });
-          (function (b, total) { setTimeout(function () { if (b.parentNode) b.parentNode.removeChild(b); }, total + 80); })(bit, Math.round(T * 1000) + delay);
+        if (reduce || !origin) return;
+        for (var i = 0; i < 50; i++) {
+          var piece = document.createElement('div');
+          piece.className = 'confetti-bit';
+          var angle = Math.random() * Math.PI * 2;
+          var dist = 55 + Math.random() * 90;
+          piece.style.setProperty('--tx', (Math.cos(angle) * dist).toFixed(1) + 'px');
+          piece.style.setProperty('--ty', (Math.sin(angle) * dist).toFixed(1) + 'px');
+          piece.style.setProperty('--rot', Math.round(Math.random() * 720 - 360) + 'deg');
+          piece.style.setProperty('--size', (6 + Math.random() * 5).toFixed(1) + 'px');
+          piece.style.setProperty('--b', (0.85 + Math.random() * 0.4).toFixed(2));
+          piece.style.setProperty('--dur', Math.round(650 + Math.random() * 450) + 'ms');
+          piece.addEventListener('animationend', function () { this.remove(); });
+          origin.appendChild(piece);
         }
       }
 
@@ -1074,7 +1049,7 @@
           try { localStorage.setItem('newsletter-subscribed', '1'); } catch (e) {}
           document.dispatchEvent(new CustomEvent('newsletter:subscribed'));
           // Hold while the confetti pops + the colour flush lands, then lift off.
-          setTimeout(dismiss, reduce ? 1500 : 1800);
+          setTimeout(dismiss, reduce ? 1500 : 1400);
         }
 
         form.addEventListener('submit', function (e) {

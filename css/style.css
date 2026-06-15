@@ -2255,17 +2255,17 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   transition: transform 0.15s ease, color 0.2s ease;
 }
 .newsletter-field:focus-within .newsletter-submit { color: var(--fg); }
+.newsletter-submit .ns-send { transform-origin: 20% 58%; }   /* hinge near the left/keel for the fold */
 @media (hover: hover) {
   .newsletter-submit:hover { color: var(--accent); }   /* accent orange on hover */
-  /* …and the plane refolds itself — crisp origami creases in 3D, then settles. */
-  .newsletter-submit:hover .ns-send { animation: ns-plane-origami 0.8s cubic-bezier(0.6, 0, 0.25, 1); }
+  /* …and the plane creases over on its hinge and unfolds (a paper fold). */
+  .newsletter-submit:hover .ns-send { animation: ns-plane-fold 0.7s cubic-bezier(0.55, 0, 0.25, 1); }
 }
-@keyframes ns-plane-origami {
-  0%   { transform: perspective(110px) rotateX(0deg)  rotateY(0deg); }
-  28%  { transform: perspective(110px) rotateX(85deg) rotateY(0deg); }            /* fold forward along a crease */
-  52%  { transform: perspective(110px) rotateX(10deg) rotateY(85deg); }           /* fold along the keel */
-  74%  { transform: perspective(110px) rotateX(0deg)  rotateY(0deg) scale(1.12); }/* snap into shape */
-  100% { transform: perspective(110px) rotateX(0deg)  rotateY(0deg) scale(1); }   /* settle */
+@keyframes ns-plane-fold {
+  0%   { transform: perspective(130px) rotateY(0deg); }
+  42%  { transform: perspective(130px) rotateY(85deg); }   /* crease over (edge-on) */
+  56%  { transform: perspective(130px) rotateY(85deg); }   /* hold the crease */
+  100% { transform: perspective(130px) rotateY(0deg); }    /* unfold flat again */
 }
 .newsletter-submit:active { transform: scale(0.9); }
 .newsletter-submit .ns-state {

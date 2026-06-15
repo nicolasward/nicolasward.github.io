@@ -976,7 +976,7 @@
             { transform: 'translate(-50%, ' + startY.toFixed(0) + 'px) rotate(0deg)', opacity: 1, offset: 0 },
             { transform: 'translate(calc(-50% + ' + sway.toFixed(0) + 'px), ' + ((startY + endY) / 2).toFixed(0) + 'px) rotate(' + Math.round(rot * 0.5) + 'deg)', opacity: 1, offset: 0.55 },
             { transform: 'translate(calc(-50% + ' + (sway * 0.4).toFixed(0) + 'px), ' + endY.toFixed(0) + 'px) rotate(' + rot + 'deg)', opacity: 0, offset: 1 }
-          ], { duration: dur, delay: delay, easing: 'cubic-bezier(0.37, 0, 0.63, 1)', fill: 'forwards' });
+          ], { duration: dur, delay: delay, easing: 'cubic-bezier(0.37, 0, 0.63, 1)', fill: 'both' });
           (function (b, total) { setTimeout(function () { if (b.parentNode) b.parentNode.removeChild(b); }, total + 80); })(bit, dur + delay);
         }
       }

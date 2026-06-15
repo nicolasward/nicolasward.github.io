@@ -1989,7 +1989,8 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .confetti-piece { display: none; }
+  .confetti-piece,
+  .confetti-bit { display: none; }
 }
 
 @media (max-width: 600px) {
@@ -2113,21 +2114,15 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 /* Keep the content above the aurora layer. */
 .newsletter-intro,
 .newsletter-form { position: relative; z-index: 1; }
-/* Confetti burst on success (spawned + animated in site.js). Pieces start near
-   the card centre and fly out beyond its edges (the card doesn't clip). */
-.confetti-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  overflow: visible;
-  pointer-events: none;
-}
+/* Confetti burst on success (spawned + animated in site.js): small orange
+   pieces flung outward from the card border, falling + fading. Body-fixed at
+   viewport coords, like the reading-ring confetti. */
 .confetti-bit {
-  position: absolute;
-  left: 50%;
-  top: 46%;
-  display: block;
-  border-radius: 1.5px;
+  position: fixed;
+  z-index: 1002;
+  background: var(--accent);
+  border-radius: 1px;
+  pointer-events: none;
   will-change: transform, opacity;
 }
 .newsletter-heading {

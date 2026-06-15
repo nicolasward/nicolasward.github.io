@@ -950,35 +950,52 @@
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      // A celebratory confetti burst out of the card on success (before liftoff).
+      // A celebratory confetti burst on success (before liftoff): orange pieces
+      // flung outward from all along the card's border, then falling + fading —
+      // matching the reading-ring confetti. Pieces are body-fixed (viewport
+      // coords), so they fall naturally and don't ride the card's liftoff.
+      function perimeterPoint(r, t) {
+        var w = r.width, h = r.height, per = 2 * (w + h);
+        var d = (((t % 1) + 1) % 1) * per;
+        if (d < w) return { x: r.left + d, y: r.top };
+        d -= w; if (d < h) return { x: r.right, y: r.top + d };
+        d -= h; if (d < w) return { x: r.right - d, y: r.bottom };
+        d -= w; return { x: r.left, y: r.bottom - d };
+      }
       function confettiBurst(card) {
         if (reduce || !card || !card.animate) return;
-        var colors = ['#7FE3D9', '#FFA85C', '#8C78EB', '#FF791B', '#3AA99F'];
-        var layer = document.createElement('div');
-        layer.className = 'confetti-layer';
-        card.appendChild(layer);
-        for (var i = 0; i < 28; i++) {
+        var r = card.getBoundingClientRect();
+        var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        var N = 38;
+        for (var i = 0; i < N; i++) {
+          var pt = perimeterPoint(r, i / N + (Math.random() - 0.5) * 0.02);
+          var nx = pt.x - cx, ny = pt.y - cy, nl = Math.hypot(nx, ny) || 1;
+          nx /= nl; ny /= nl;                          // outward normal at this border point
+          var tx = -ny, ty = nx;                       // tangent (for a little scatter)
           var bit = document.createElement('i');
           bit.className = 'confetti-bit';
-          bit.style.background = colors[i % colors.length];
-          var w = 5 + Math.random() * 4;
-          bit.style.width = w + 'px';
-          bit.style.height = (w + Math.random() * 6) + 'px';
-          if (Math.random() < 0.3) bit.style.borderRadius = '50%';
-          layer.appendChild(bit);
-          var ang = (-90 + (Math.random() * 130 - 65)) * Math.PI / 180;  // mostly up, ±65°
-          var dist = 80 + Math.random() * 150;
-          var dx = Math.cos(ang) * dist;
-          var peak = Math.sin(ang) * dist;            // negative = up
-          var fall = 130 + Math.random() * 140;       // then falls past the start
-          var rot = Math.random() * 720 - 360;
+          var size = 6 + Math.random() * 5;
+          bit.style.width = size.toFixed(1) + 'px';
+          bit.style.height = (size * 0.42).toFixed(1) + 'px';
+          bit.style.left = pt.x.toFixed(1) + 'px';
+          bit.style.top = pt.y.toFixed(1) + 'px';
+          bit.style.filter = 'brightness(' + (0.85 + Math.random() * 0.4).toFixed(2) + ')';
+          document.body.appendChild(bit);
+          var out = 30 + Math.random() * 80;           // explode outward from the border
+          var scat = (Math.random() - 0.5) * 50;       // tangential scatter
+          var bx = nx * out + tx * scat;
+          var by = ny * out + ty * scat;               // burst peak offset
+          var fall = 130 + Math.random() * 180;        // gravity pulls down
+          var drift = (Math.random() - 0.5) * 40;
+          var rot = Math.round(Math.random() * 720 - 360);
+          var dur = 1500 + Math.random() * 750;        // slow + graceful
           bit.animate([
-            { transform: 'translate(-50%, -50%) rotate(0deg)', opacity: 1, offset: 0 },
-            { transform: 'translate(calc(-50% + ' + (dx * 0.7) + 'px), calc(-50% + ' + peak + 'px)) rotate(' + (rot * 0.6) + 'deg)', opacity: 1, offset: 0.45 },
-            { transform: 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + (peak + fall) + 'px)) rotate(' + rot + 'deg)', opacity: 0, offset: 1 }
-          ], { duration: 850 + Math.random() * 550, easing: 'cubic-bezier(0.18, 0.7, 0.3, 1)', fill: 'forwards' });
+            { transform: 'translate(-50%,-50%) rotate(0deg)', opacity: 1, offset: 0, easing: 'cubic-bezier(0.1, 0.7, 0.3, 1)' },
+            { transform: 'translate(calc(-50% + ' + bx.toFixed(1) + 'px), calc(-50% + ' + by.toFixed(1) + 'px)) rotate(' + Math.round(rot * 0.4) + 'deg)', opacity: 1, offset: 0.32, easing: 'cubic-bezier(0.4, 0, 0.7, 0.35)' },
+            { transform: 'translate(calc(-50% + ' + (bx + drift).toFixed(1) + 'px), calc(-50% + ' + (by + fall).toFixed(1) + 'px)) rotate(' + rot + 'deg)', opacity: 0, offset: 1 }
+          ], { duration: dur, fill: 'forwards' });
+          (function (b, d) { setTimeout(function () { if (b.parentNode) b.parentNode.removeChild(b); }, d + 80); })(bit, dur);
         }
-        setTimeout(function () { if (layer.parentNode) layer.parentNode.removeChild(layer); }, 1700);
       }
 
       // Once subscribed (from any touchpoint, this visit or a prior one), the
@@ -1059,8 +1076,8 @@
           // Persist + broadcast so the header badge flips (and other cards retire).
           try { localStorage.setItem('newsletter-subscribed', '1'); } catch (e) {}
           document.dispatchEvent(new CustomEvent('newsletter:subscribed'));
-          // Hold while the confetti pops + the colour flush lands, then lift off.
-          setTimeout(dismiss, reduce ? 1600 : 1800);
+          // Hold while the confetti rains + the colour flush lands, then lift off.
+          setTimeout(dismiss, reduce ? 1600 : 2000);
         }
 
         form.addEventListener('submit', function (e) {

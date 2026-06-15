@@ -2263,17 +2263,23 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   /* Accent orange on hover — even while the field is focused. */
   .newsletter-submit:hover,
   .newsletter-field:focus-within .newsletter-submit:hover { color: var(--accent); }
+  /* Distinct in/out names so each transition restarts cleanly and slides. */
   .newsletter-submit:hover .ns-body {
-    animation: ns-wings-sweep 0.5s cubic-bezier(0.45, 0, 0.3, 1) forwards;
+    animation: ns-wings-in 0.5s cubic-bezier(0.45, 0, 0.3, 1) forwards;
   }
   .newsletter-submit:not(:hover) .ns-body {
-    animation: ns-wings-sweep 0.5s cubic-bezier(0.45, 0, 0.3, 1) reverse forwards;
+    animation: ns-wings-out 0.5s cubic-bezier(0.45, 0, 0.3, 1) forwards;
   }
 }
-@keyframes ns-wings-sweep {
+@keyframes ns-wings-in {
   0%   { d: path("M22 2 15 22 11 13 2 9 22 2Z"); }    /* wings open */
   50%  { d: path("M22 2 19 17 11 13 4 13 22 2Z"); }   /* mid arc */
   100% { d: path("M22 2 15 13 11 13 11 12 22 2Z"); }  /* swept in to the keel */
+}
+@keyframes ns-wings-out {
+  0%   { d: path("M22 2 15 13 11 13 11 12 22 2Z"); }
+  50%  { d: path("M22 2 19 17 11 13 4 13 22 2Z"); }
+  100% { d: path("M22 2 15 22 11 13 2 9 22 2Z"); }
 }
 @media (prefers-reduced-motion: reduce) {
   .newsletter-submit:hover .ns-body,
@@ -2466,9 +2472,10 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
    only on hover / focus. The popup keeps its drawn dark contour at all times. */
 @media (hover: hover) {
   main .newsletter-card { border-color: var(--fg-faint); }
-  main .newsletter-card:hover { border-color: var(--fg); }
   main .newsletter-field { border-color: var(--fg-faint); }
-  main .newsletter-field:hover,
+  /* Hovering the card darkens both the card and the input-bar borders. */
+  main .newsletter-card:hover,
+  main .newsletter-card:hover .newsletter-field,
   main .newsletter-field:focus-within { border-color: var(--fg); }
 }
 /* Overlay entrance (Apple-like cascade): the card contour draws (a touch

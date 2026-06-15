@@ -756,6 +756,7 @@
           var flush = clamp((p - 0.55) / 0.45);
           c.co.style.strokeDashoffset = c.cl * (1 - cp);
           c.card.style.setProperty('--flush', flush);
+          c.card.style.opacity = clamp(cp / 0.08);   // invisible until the trace begins, then fades in
         });
       }
       var ticking = false;

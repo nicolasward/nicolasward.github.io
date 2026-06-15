@@ -958,7 +958,9 @@
       function confettiBurst() {
         if (reduce || typeof document.body.animate !== 'function') return;
         var vw = window.innerWidth, vh = window.innerHeight, N = 70;
-        var ox = vw / 2, oy = -160, endY = vh + 50;      // origin above the top edge
+        var ox = vw / 2, oy = -14, endY = vh + 50;       // origin just above the top edge
+        // (kept just off-screen so the burst shows on click — not after a long
+        // fall-in — yet there's no visible origin point)
         var H = endY - oy;
         var offs = [0, 0.12, 0.26, 0.42, 0.58, 0.74, 0.88, 1];
         for (var i = 0; i < N; i++) {

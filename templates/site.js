@@ -1142,7 +1142,7 @@
         openOverlay();
       });
       btn.addEventListener('animationend', function (e) {
-        if (e.animationName === 'ns-badge-flip') btn.classList.remove('tapped');
+        if (e.animationName === 'ns-badge-pop') btn.classList.remove('tapped');
       });
       if (overlay) {
         overlay.addEventListener('click', function (e) { if (e.target === overlay) closeOverlay(); });

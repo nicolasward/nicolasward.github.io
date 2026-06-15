@@ -917,7 +917,10 @@
       window.addEventListener('scroll', function () {
         if (!ticking) { ticking = true; requestAnimationFrame(update); }
       }, { passive: true });
-      window.addEventListener('resize', measure);
+      window.addEventListener('resize', function () {
+        if (ToggleClose.isEngaged()) { wasEngaged = true; return; }   // remeasure cleanly on release
+        measure();
+      });
       update();
     })();
 

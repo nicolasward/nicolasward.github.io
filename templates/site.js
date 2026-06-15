@@ -950,18 +950,17 @@
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      // A confetti pop on success (before liftoff): orange pieces blast from a
-      // single point just above the top of the screen (off-screen, so there's no
-      // awkward visible origin), then fall under real gravity — the trajectory is
-      // sampled from a projectile (initial burst velocity + constant gravity), so
-      // the motion is physically natural. Body-fixed, like the reading-ring confetti.
-      function confettiBurst() {
-        if (reduce || typeof document.body.animate !== 'function') return;
-        var vw = window.innerWidth, vh = window.innerHeight, N = 70;
-        var ox = vw / 2, oy = -14, endY = vh + 50;       // origin just above the top edge
-        // (kept just off-screen so the burst shows on click — not after a long
-        // fall-in — yet there's no visible origin point)
-        var H = endY - oy;
+      // A confetti pop on success (before liftoff): orange pieces explode
+      // radially from the paper-plane button, then fall under real gravity — the
+      // trajectory is sampled from a projectile (initial burst velocity +
+      // constant gravity), so the motion is physically natural. Body-fixed at
+      // viewport coords, like the reading-ring confetti.
+      function confettiBurst(origin) {
+        if (reduce || typeof document.body.animate !== 'function' || !origin) return;
+        var vh = window.innerHeight, N = 70;
+        var r = origin.getBoundingClientRect();
+        var ox = r.left + r.width / 2, oy = r.top + r.height / 2;   // the paper-plane centre
+        var endY = vh + 50, H = endY - oy;
         var offs = [0, 0.12, 0.26, 0.42, 0.58, 0.74, 0.88, 1];
         for (var i = 0; i < N; i++) {
           var bit = document.createElement('i');
@@ -973,10 +972,10 @@
           bit.style.top = '0px';
           bit.style.filter = 'brightness(' + (0.85 + Math.random() * 0.4).toFixed(2) + ')';
           document.body.appendChild(bit);
-          var ang = (Math.random() - 0.5) * (120 * Math.PI / 180);   // ±60° from straight down
-          var speed = 70 + Math.random() * 210;          // initial blast speed (px/s)
-          var vx0 = Math.sin(ang) * speed;
-          var vy0 = Math.cos(ang) * speed;               // downward component
+          var ang = Math.random() * Math.PI * 2;         // full radial blast
+          var speed = 90 + Math.random() * 250;          // initial blast speed (px/s)
+          var vx0 = Math.cos(ang) * speed;
+          var vy0 = Math.sin(ang) * speed;               // up (neg) or down (pos)
           var g = 280 + Math.random() * 130;             // gravity (px/s²) — graceful
           var T = (-vy0 + Math.sqrt(vy0 * vy0 + 2 * g * H)) / g;   // time to reach endY (s)
           var swayAmp = 14 + Math.random() * 22, swayW = (1.5 + Math.random() * 1.5) * Math.PI, phase = Math.random() * 6.28;
@@ -1068,9 +1067,9 @@
           input.disabled = true;
           var card = section && section.querySelector('.newsletter-card');
           if (card) card.classList.add('is-subscribed');   // gradient border + colour flush
-          confettiBurst();                                  // celebrate: confetti rains down
           var btn = form.querySelector('.newsletter-submit');
           if (btn) btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
+          confettiBurst(btn);                               // celebrate: explode from the plane
           // Persist + broadcast so the header badge flips (and other cards retire).
           try { localStorage.setItem('newsletter-subscribed', '1'); } catch (e) {}
           document.dispatchEvent(new CustomEvent('newsletter:subscribed'));

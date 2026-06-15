@@ -2257,22 +2257,16 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-field:focus-within .newsletter-submit { color: var(--fg); }
 @media (hover: hover) {
   .newsletter-submit:hover { color: var(--accent); }   /* accent orange on hover */
-  /* …and a real fold: the plane's paths morph open into a creased sheet of
-     paper and fold back into the plane (CSS `d` morphing). */
-  .newsletter-submit:hover .ns-body { animation: ns-body-fold 0.95s cubic-bezier(0.5, 0, 0.3, 1); }
-  .newsletter-submit:hover .ns-keel { animation: ns-keel-fold 0.95s cubic-bezier(0.5, 0, 0.3, 1); }
+  /* …and the wings retract toward the keel and sweep back open (CSS `d`
+     morphing). The keel — the spine — stays put. */
+  .newsletter-submit:hover .ns-body { animation: ns-wings-retract 0.7s cubic-bezier(0.5, 0, 0.3, 1); }
 }
-@keyframes ns-body-fold {
-  0%, 100% { d: path("M22 2 15 22 11 13 2 9 22 2Z"); }   /* the paper plane */
-  42%, 58% { d: path("M18 3 18 21 6 21 6 3 18 3Z"); }    /* unfolded sheet */
-}
-@keyframes ns-keel-fold {
-  0%, 100% { d: path("M22 2 11 13"); }                   /* the keel */
-  42%, 58% { d: path("M12 3 12 21"); }                   /* the centre crease */
+@keyframes ns-wings-retract {
+  0%, 100% { d: path("M22 2 15 22 11 13 2 9 22 2Z"); }   /* wings open */
+  45%, 55% { d: path("M22 2 14 14 11 13 13 11 22 2Z"); } /* wings retracted to the keel */
 }
 @media (prefers-reduced-motion: reduce) {
-  .newsletter-submit:hover .ns-body,
-  .newsletter-submit:hover .ns-keel { animation: none; }
+  .newsletter-submit:hover .ns-body { animation: none; }
 }
 .newsletter-submit:active { transform: scale(0.9); }
 .newsletter-submit .ns-state {

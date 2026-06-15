@@ -1954,12 +1954,12 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .reading-progress.complete .progress-check {
   opacity: 1;
   transform: scale(1);
-  transition: opacity 0.15s ease 0.34s, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) 0.34s;
+  transition: opacity 0.15s ease 0.12s, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) 0.12s;
 }
 
 .reading-progress.complete .progress-check path {
   stroke-dashoffset: 0;
-  transition-delay: 0.42s;
+  transition-delay: 0.2s;
 }
 
 /* A glossy shine sweeps across the disc as it fills with the gradient. */

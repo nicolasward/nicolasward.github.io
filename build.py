@@ -176,6 +176,7 @@ def newsletter_section():
       </div>
       <p class="newsletter-msg" role="status" aria-live="polite"></p>
     </form>
+    <span class="newsletter-shine" aria-hidden="true"></span>
   </div>
 </section>'''
 

@@ -2189,6 +2189,31 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 .newsletter-card.is-subscribed .newsletter-field { border-color: transparent; }
 .newsletter-card.is-subscribed .newsletter-field::after { opacity: 1; }
+/* On success a glossy shine sweeps diagonally across the card — the same
+   glimmer as the completed reading-progress ring (reuses progress-shine-sweep). */
+.newsletter-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 3;
+}
+.newsletter-shine::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: 0;
+  width: 32%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  transform: translateX(-220%) rotate(18deg);
+}
+.newsletter-card.is-subscribed .newsletter-shine { opacity: 1; }
+.newsletter-card.is-subscribed .newsletter-shine::before {
+  animation: progress-shine-sweep 0.85s cubic-bezier(0.4, 0, 0.2, 1) 0.25s 1;
+}
 /* On focus, the bar and the card border both light up in the same dark grey. */
 .newsletter-field:focus-within { border-color: var(--fg); }
 .newsletter-card:focus-within { border-color: var(--fg); }
@@ -2265,6 +2290,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   .newsletter-field { transition: none; }
   .newsletter-form.is-done .ns-check,
   .newsletter-form.is-done .ns-check path,
+  .newsletter-card.is-subscribed .newsletter-shine::before,
   .newsletter-field.shake { animation: none; }
 }
 

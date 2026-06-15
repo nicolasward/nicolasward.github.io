@@ -2255,17 +2255,24 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   transition: transform 0.15s ease, color 0.2s ease;
 }
 .newsletter-field:focus-within .newsletter-submit { color: var(--fg); }
-.newsletter-submit .ns-send { transform-origin: 20% 58%; }   /* hinge near the left/keel for the fold */
 @media (hover: hover) {
   .newsletter-submit:hover { color: var(--accent); }   /* accent orange on hover */
-  /* …and the plane creases over on its hinge and unfolds (a paper fold). */
-  .newsletter-submit:hover .ns-send { animation: ns-plane-fold 0.7s cubic-bezier(0.55, 0, 0.25, 1); }
+  /* …and a real fold: the plane's paths morph open into a creased sheet of
+     paper and fold back into the plane (CSS `d` morphing). */
+  .newsletter-submit:hover .ns-body { animation: ns-body-fold 0.95s cubic-bezier(0.5, 0, 0.3, 1); }
+  .newsletter-submit:hover .ns-keel { animation: ns-keel-fold 0.95s cubic-bezier(0.5, 0, 0.3, 1); }
 }
-@keyframes ns-plane-fold {
-  0%   { transform: perspective(130px) rotateY(0deg); }
-  42%  { transform: perspective(130px) rotateY(85deg); }   /* crease over (edge-on) */
-  56%  { transform: perspective(130px) rotateY(85deg); }   /* hold the crease */
-  100% { transform: perspective(130px) rotateY(0deg); }    /* unfold flat again */
+@keyframes ns-body-fold {
+  0%, 100% { d: path("M22 2 15 22 11 13 2 9 22 2Z"); }   /* the paper plane */
+  42%, 58% { d: path("M18 3 18 21 6 21 6 3 18 3Z"); }    /* unfolded sheet */
+}
+@keyframes ns-keel-fold {
+  0%, 100% { d: path("M22 2 11 13"); }                   /* the keel */
+  42%, 58% { d: path("M12 3 12 21"); }                   /* the centre crease */
+}
+@media (prefers-reduced-motion: reduce) {
+  .newsletter-submit:hover .ns-body,
+  .newsletter-submit:hover .ns-keel { animation: none; }
 }
 .newsletter-submit:active { transform: scale(0.9); }
 .newsletter-submit .ns-state {

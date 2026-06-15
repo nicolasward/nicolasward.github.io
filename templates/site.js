@@ -761,15 +761,21 @@
       function clamp(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
       function draw() {
         var vh = window.innerHeight;
+        // Completion guarantee: in the last half-viewport of the page's scroll,
+        // ramp progress up to 1 — so the contour always finishes even when the
+        // content below the card (footer-only, on the home page) keeps it from
+        // climbing high. This blends smoothly with the geometry term below.
+        var sy = window.scrollY || window.pageYOffset || 0;
+        var maxScroll = document.documentElement.scrollHeight - vh;
+        var nearBottom = maxScroll > 0 ? clamp((sy - (maxScroll - vh * 0.5)) / (vh * 0.5)) : 1;
         cards.forEach(function (c) {
-          var r = c.card.getBoundingClientRect();
-          // Trace as the card rises into view: 0 when its top sits at the
-          // viewport bottom, 1 once it has (just about) fully entered. Spanning
-          // a touch more than the card's own height makes it gentle — not
-          // hyper-sensitive to scroll — while still always completing (the
-          // footer below stops the card before it climbs much higher) and
-          // untracing cleanly as you scroll back down.
-          var p  = clamp((vh - r.top) / (r.height * 1.1));
+          var top = c.card.getBoundingClientRect().top;
+          // Trace as the card rises through the lower-middle of the viewport:
+          // 0 when its top is near the bottom (~90% down), 1 once it reaches a
+          // touch above the middle (~45% down). Drawing over that band means
+          // it's still tracing as you bring the card into reading position —
+          // not finished beforehand — and untraces as you scroll back down.
+          var p  = Math.max(clamp((vh * 0.9 - top) / (vh * 0.45)), nearBottom);
           var cp = clamp(p / 0.6);                 // card outline over the first 60%
           var fp = clamp((p - 0.6) / 0.4);         // field contour over the last 40%
           c.co.style.strokeDashoffset = c.cl * (1 - cp);
@@ -1055,18 +1061,16 @@
 
       function showNote() { Toast.show('You’re subscribed!', btn); }
 
-      // --- Draw-in outlines: the shared dark sketch, traced over the card + the
-      // field pill, built once then re-sized on each open (it may reflow).
-      var cardOutline = null, fieldOutline = null;
+      // --- Draw-in outline: the shared dark sketch, traced over the card only
+      // (the input bar fades in with its own border). Built once, re-sized on
+      // each open (it may reflow).
+      var cardOutline = null;
       function prepDraw() {
         if (!overlay || reduce) return;
-        var card  = overlay.querySelector('.newsletter-card');
-        var field = overlay.querySelector('.newsletter-field');
-        if (!card || !field) return;
-        if (!cardOutline)  { cardOutline  = Outline.make('draw-card');  card.appendChild(cardOutline); }
-        if (!fieldOutline) { fieldOutline = Outline.make('draw-field'); field.appendChild(fieldOutline); }
+        var card = overlay.querySelector('.newsletter-card');
+        if (!card) return;
+        if (!cardOutline) { cardOutline = Outline.make('draw-card'); card.appendChild(cardOutline); }
         Outline.size(cardOutline, card, 20);                 // card radius
-        Outline.size(fieldOutline, field, field.offsetHeight / 2);   // capsule
       }
 
       var lastFocus = null, closing = false;
@@ -1082,9 +1086,9 @@
         overlay.classList.add('open');
         overlay.setAttribute('aria-hidden', 'false');
         document.documentElement.style.overflow = 'hidden';
-        // Focus the input only once it has settled (it's invisible before).
+        // Focus the input only once it has faded in (it's invisible before).
         var input = overlay.querySelector('.newsletter-input');
-        setTimeout(function () { if (input) input.focus(); }, reduce ? 60 : 1250);
+        setTimeout(function () { if (input) input.focus(); }, reduce ? 60 : 1500);
       }
       function closeOverlay() {
         if (!overlay || closing) return;

@@ -2325,6 +2325,15 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   animation: ns-badge-draw 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 @keyframes ns-badge-draw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+/* Tapping the subscribed badge does a playful coin-flip back into the check. */
+.nav-subscribe.tapped .ns-badge {
+  animation: ns-badge-flip 0.6s cubic-bezier(0.45, 0, 0.2, 1);
+}
+@keyframes ns-badge-flip {
+  0%   { transform: perspective(140px) rotateY(0deg) scale(1); }
+  50%  { transform: perspective(140px) rotateY(180deg) scale(1.18); }
+  100% { transform: perspective(140px) rotateY(360deg) scale(1); }
+}
 /* Pre-marked subscribed (head script): badge shown from first paint, no blink. */
 html.subscribed .nav-subscribe .ns-mailbox { opacity: 0; transform: scale(0.4); }
 html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
@@ -2372,15 +2381,15 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
 /* On subscribe the gradient ring takes over — fade the dark sketch away. */
 .newsletter-card.is-subscribed .draw-outline { opacity: 0; transition: opacity 0.4s ease; }
 
-/* Inline cards develop in: once the outer border has drawn, the dark grey
-   glimmers into the contents as a soft diagonal sweep (top-left → bottom-right)
-   that tracks scroll via --flush — stopping mid-scroll leaves part dark, part
-   muted. The un-swept part is held very muted. */
+/* Inline cards develop in: the contents stay fully hidden while the outer
+   border draws, then the dark grey glimmers in as a soft diagonal sweep
+   (top-left → bottom-right) tracking scroll via --flush — so you only ever see
+   the line draw first, then the content appear after it. */
 .newsletter-card.has-draw .newsletter-intro,
 .newsletter-card.has-draw .newsletter-form {
   --edge: calc(var(--flush, 0) * 150% - 25%);
-  -webkit-mask-image: linear-gradient(135deg, #000 var(--edge), rgba(0, 0, 0, 0.08) calc(var(--edge) + 26%));
-          mask-image: linear-gradient(135deg, #000 var(--edge), rgba(0, 0, 0, 0.08) calc(var(--edge) + 26%));
+  -webkit-mask-image: linear-gradient(135deg, #000 var(--edge), rgba(0, 0, 0, 0) calc(var(--edge) + 26%));
+          mask-image: linear-gradient(135deg, #000 var(--edge), rgba(0, 0, 0, 0) calc(var(--edge) + 26%));
   -webkit-mask-repeat: no-repeat;
           mask-repeat: no-repeat;
 }
@@ -2512,7 +2521,8 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
   .subscribe-overlay,
   .subscribe-modal,
   .toast-pill { transition: none; }
-  .nav-subscribe.just-subscribed .ns-badge path { animation: none; }
+  .nav-subscribe.just-subscribed .ns-badge path,
+  .nav-subscribe.tapped .ns-badge { animation: none; }
   /* Skip the draw-in: show the card straight away (keep the dark borders). */
   .draw-outline { display: none; }
   .subscribe-overlay .newsletter-card,

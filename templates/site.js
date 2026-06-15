@@ -1132,8 +1132,17 @@
       }
 
       btn.addEventListener('click', function () {
-        if (btn.classList.contains('is-subscribed')) { showNote(); return; }
+        if (btn.classList.contains('is-subscribed')) {
+          showNote();
+          btn.classList.remove('tapped');
+          void btn.offsetWidth;               // restart the flip on every tap
+          btn.classList.add('tapped');
+          return;
+        }
         openOverlay();
+      });
+      btn.addEventListener('animationend', function (e) {
+        if (e.animationName === 'ns-badge-flip') btn.classList.remove('tapped');
       });
       if (overlay) {
         overlay.addEventListener('click', function (e) { if (e.target === overlay) closeOverlay(); });

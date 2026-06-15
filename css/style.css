@@ -2259,20 +2259,26 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
 
 /* --- Sketch outline (shared) -------------------------------------------
    A 1px dark contour traced over the card + its input pill. The card keeps
-   its fill; the contour becomes the visible border (the real borders go
-   transparent). The overlay draws it on open (timed); the inline cards draw
-   it scrubbed to scroll (set from site.js). Geometry/lengths set in JS. */
+   its fill; the contour becomes the visible border. The real borders drop to
+   zero width (not just transparent) so the drawn line sits exactly on the box
+   edge — otherwise the contour, anchored to the padding box, reads as a second
+   outline ~1px inside the fill edge. The overlay draws it on open (timed); the
+   inline cards draw it scrubbed to scroll (set from site.js). */
 .subscribe-overlay .newsletter-card,
 .subscribe-overlay .newsletter-field,
 .newsletter-card.has-draw,
-.newsletter-card.has-draw .newsletter-field { border-color: transparent; }
+.newsletter-card.has-draw .newsletter-field { border-width: 0; }
 .subscribe-overlay .newsletter-field,
 .newsletter-card.has-draw .newsletter-field { position: relative; }
-/* On focus the field border lights up dark, overlapping the (dark) contour. */
-.subscribe-overlay .newsletter-field:focus-within,
-.newsletter-card.has-draw .newsletter-field:focus-within { border-color: var(--fg); }
 /* On subscribe the gradient ring takes over — fade the dark sketch away. */
 .newsletter-card.is-subscribed .draw-outline { opacity: 0; transition: opacity 0.4s ease; }
+
+/* Inline cards develop in: the contents flush from muted grey to full as the
+   contour traces (driven by --flush, set per-scroll in site.js). */
+.newsletter-card.has-draw .newsletter-intro,
+.newsletter-card.has-draw .newsletter-form {
+  opacity: calc(0.4 + 0.6 * var(--flush, 0));
+}
 
 .draw-outline {
   position: absolute;
@@ -2368,7 +2374,7 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
   /* Skip the draw-in: show the card straight away (keep the dark border). */
   .draw-outline { display: none; }
   .subscribe-overlay .newsletter-card,
-  .subscribe-overlay .newsletter-field { border-color: var(--fg); }
+  .subscribe-overlay .newsletter-field { border-width: 1px; border-color: var(--fg); }
   .subscribe-overlay .newsletter-intro,
   .subscribe-overlay .newsletter-form {
     opacity: 1;

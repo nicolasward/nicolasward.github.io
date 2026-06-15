@@ -669,9 +669,10 @@
         content.style.opacity = 1; return;
       }
 
-      // Body blocks + the footer sections.
+      // Body blocks + the footer sections. (The newsletter card is excluded —
+      // it reveals via its own scroll-scrubbed contour draw + content flush.)
       var items = Array.prototype.slice.call(content.children);
-      ['.post-share-section', '.linked-mentions', '.newsletter', '.related-posts'].forEach(function (sel) {
+      ['.post-share-section', '.linked-mentions', '.related-posts'].forEach(function (sel) {
         var s = document.querySelector('article ' + sel);
         if (s) items.push(s);
       });
@@ -729,25 +730,8 @@
       }
     })();
 
-    // Home page: the newsletter sits outside the article reveal above, so give it
-    // the same fade-up-on-scroll there.
-    (function () {
-      if (!document.body.classList.contains('home')) return;
-      var nl = document.querySelector('main .newsletter');   // the inline card, not the overlay
-      if (!nl) return;
-      if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      nl.classList.add('reveal-up');
-      if ('IntersectionObserver' in window) {
-        var obs = new IntersectionObserver(function (entries) {
-          entries.forEach(function (e) {
-            if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
-          });
-        }, { rootMargin: '0px 0px -12% 0px' });
-        obs.observe(nl);
-      } else {
-        nl.classList.add('in');
-      }
-    })();
+    // (The home-page newsletter card reveals via its own scroll-scrubbed
+    // contour draw + content flush — see the inline-cards block below.)
 
     // Inline newsletter cards: the dark contour traces itself as the card scrolls
     // into view, and untraces as you scroll back up (scroll-scrubbed, mirroring
@@ -779,15 +763,18 @@
         var vh = window.innerHeight;
         cards.forEach(function (c) {
           var r = c.card.getBoundingClientRect();
-          // Progress from when the card's bottom edge enters the viewport (p=0)
-          // to when it has risen ~22% up it (p=1) — so the contour completes
-          // whenever the card sits comfortably in view, even on short pages,
-          // and untraces cleanly as you scroll back down past it.
-          var p  = clamp((vh - r.bottom) / (vh * 0.22));
+          // Trace as the card rises into view: 0 when its top sits at the
+          // viewport bottom, 1 once it has (just about) fully entered. Spanning
+          // a touch more than the card's own height makes it gentle — not
+          // hyper-sensitive to scroll — while still always completing (the
+          // footer below stops the card before it climbs much higher) and
+          // untracing cleanly as you scroll back down.
+          var p  = clamp((vh - r.top) / (r.height * 1.1));
           var cp = clamp(p / 0.6);                 // card outline over the first 60%
           var fp = clamp((p - 0.6) / 0.4);         // field contour over the last 40%
           c.co.style.strokeDashoffset = c.cl * (1 - cp);
           c.fo.style.strokeDashoffset = c.fl * (1 - fp);
+          c.card.style.setProperty('--flush', p);  // contents flush from muted → full
         });
       }
       var ticking = false;
@@ -799,6 +786,7 @@
       measure(); draw();
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', function () { measure(); draw(); });
+      window.addEventListener('load', function () { measure(); draw(); });  // fonts/images settled
     })();
 
     // Copy-link share button: copy the current URL, flash the icon checkmark + a "Link copied" pill.

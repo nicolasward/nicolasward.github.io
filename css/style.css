@@ -2257,18 +2257,22 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
 }
 .subscribe-overlay .newsletter { margin: 0; }
 
-/* --- Draw-in entrance ---------------------------------------------------
-   On open the card sketches itself: a 1px outline traces the card, then the
-   field pill, then the interior content rises in and the send icon draws.
-   The card's own borders stay transparent until the outlines land, then a
-   crossfade hands back to the real borders so focus states keep working.
-   (Outline geometry + lengths are set per-open in site.js.) */
+/* --- Sketch outline (shared) -------------------------------------------
+   A 1px dark contour traced over the card + its input pill. The card keeps
+   its fill; the contour becomes the visible border (the real borders go
+   transparent). The overlay draws it on open (timed); the inline cards draw
+   it scrubbed to scroll (set from site.js). Geometry/lengths set in JS. */
 .subscribe-overlay .newsletter-card,
-.subscribe-overlay .newsletter-field { border-color: transparent; }
-.subscribe-overlay .newsletter-field { position: relative; }
-.subscribe-overlay.drawn .newsletter-card:not(.is-subscribed) { border-color: var(--border); }
-.subscribe-overlay.drawn .newsletter-field { border-color: var(--border); }
-.subscribe-overlay.drawn .newsletter-field:focus-within { border-color: var(--fg); }
+.subscribe-overlay .newsletter-field,
+.newsletter-card.has-draw,
+.newsletter-card.has-draw .newsletter-field { border-color: transparent; }
+.subscribe-overlay .newsletter-field,
+.newsletter-card.has-draw .newsletter-field { position: relative; }
+/* On focus the field border lights up dark, overlapping the (dark) contour. */
+.subscribe-overlay .newsletter-field:focus-within,
+.newsletter-card.has-draw .newsletter-field:focus-within { border-color: var(--fg); }
+/* On subscribe the gradient ring takes over — fade the dark sketch away. */
+.newsletter-card.is-subscribed .draw-outline { opacity: 0; transition: opacity 0.4s ease; }
 
 .draw-outline {
   position: absolute;
@@ -2287,18 +2291,16 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
   stroke-dasharray: var(--len, 1);
   stroke-dashoffset: var(--len, 1);
 }
-/* 1. The card outline traces itself first. */
+/* Overlay: 1. the card outline traces itself first. */
 .subscribe-overlay.open .draw-card rect {
   transition: stroke-dashoffset 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
   stroke-dashoffset: 0;
 }
-/* 2. Then the input-box contour. */
+/* Overlay: 2. then the input-box contour. */
 .subscribe-overlay.open .draw-field rect {
   transition: stroke-dashoffset 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.7s;
   stroke-dashoffset: 0;
 }
-/* The dark sketch hands off to the real (light) borders once drawn. */
-.subscribe-overlay.drawn .draw-outline { opacity: 0; transition: opacity 0.35s ease; }
 
 /* The field's contents (input placeholder) appear quietly with the contour. */
 .subscribe-overlay .newsletter-form { opacity: 0; }
@@ -2363,10 +2365,10 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
   .subscribe-modal,
   .toast-pill { transition: none; }
   .nav-subscribe.just-subscribed .ns-badge path { animation: none; }
-  /* Skip the draw-in: show the real card straight away. */
+  /* Skip the draw-in: show the card straight away (keep the dark border). */
   .draw-outline { display: none; }
   .subscribe-overlay .newsletter-card,
-  .subscribe-overlay .newsletter-field { border-color: var(--border); }
+  .subscribe-overlay .newsletter-field { border-color: var(--fg); }
   .subscribe-overlay .newsletter-intro,
   .subscribe-overlay .newsletter-form {
     opacity: 1;

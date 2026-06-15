@@ -81,6 +81,36 @@
       };
     })();
 
+    // Shared sketch-outline helper: a 1px dark <rect> traced over a rounded box
+    // (the newsletter card + its input pill). Used both by the subscribe overlay
+    // (timed draw on open) and the inline cards (scrubbed by scroll).
+    var Outline = {
+      make: function (cls) {
+        var NS = 'http://www.w3.org/2000/svg';
+        var svg = document.createElementNS(NS, 'svg');
+        svg.setAttribute('class', 'draw-outline ' + cls);
+        svg.setAttribute('aria-hidden', 'true');
+        svg.appendChild(document.createElementNS(NS, 'rect'));
+        return svg;
+      },
+      // Size the rect to the element's border-box and return the stroke length.
+      size: function (svg, el, rx) {
+        var w = el.offsetWidth, h = el.offsetHeight;
+        if (!w || !h) return 0;
+        svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+        var rect = svg.firstChild;
+        rect.setAttribute('x', 0.5);
+        rect.setAttribute('y', 0.5);
+        rect.setAttribute('width', w - 1);
+        rect.setAttribute('height', h - 1);
+        rect.setAttribute('rx', rx);
+        rect.setAttribute('ry', rx);
+        var len = rect.getTotalLength ? rect.getTotalLength() : 2 * (w + h);
+        rect.style.setProperty('--len', len);
+        return len;
+      }
+    };
+
     (function () {
       const overlay    = document.getElementById('search-overlay');
       const input      = document.getElementById('search-input');
@@ -719,6 +749,58 @@
       }
     })();
 
+    // Inline newsletter cards: the dark contour traces itself as the card scrolls
+    // into view, and untraces as you scroll back up (scroll-scrubbed, mirroring
+    // the overlay's drawn border). The card keeps its fill; only the border draws.
+    (function () {
+      if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var cards = [];
+      Array.prototype.forEach.call(document.querySelectorAll('.newsletter'), function (nl) {
+        if (nl.closest('.subscribe-overlay')) return;          // overlay draws its own
+        var card  = nl.querySelector('.newsletter-card');
+        var field = nl.querySelector('.newsletter-field');
+        if (!card || !field) return;
+        card.classList.add('has-draw');                        // CSS drops the real borders
+        var cardSvg  = Outline.make('draw-card');  card.appendChild(cardSvg);
+        var fieldSvg = Outline.make('draw-field'); field.appendChild(fieldSvg);
+        cards.push({ card: card, field: field, cardSvg: cardSvg, fieldSvg: fieldSvg,
+                     co: cardSvg.firstChild, fo: fieldSvg.firstChild, cl: 0, fl: 0 });
+      });
+      if (!cards.length) return;
+
+      function measure() {
+        cards.forEach(function (c) {
+          c.cl = Outline.size(c.cardSvg, c.card, 20);
+          c.fl = Outline.size(c.fieldSvg, c.field, c.field.offsetHeight / 2);
+        });
+      }
+      function clamp(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+      function draw() {
+        var vh = window.innerHeight;
+        cards.forEach(function (c) {
+          var r = c.card.getBoundingClientRect();
+          // Progress from when the card's bottom edge enters the viewport (p=0)
+          // to when it has risen ~22% up it (p=1) — so the contour completes
+          // whenever the card sits comfortably in view, even on short pages,
+          // and untraces cleanly as you scroll back down past it.
+          var p  = clamp((vh - r.bottom) / (vh * 0.22));
+          var cp = clamp(p / 0.6);                 // card outline over the first 60%
+          var fp = clamp((p - 0.6) / 0.4);         // field contour over the last 40%
+          c.co.style.strokeDashoffset = c.cl * (1 - cp);
+          c.fo.style.strokeDashoffset = c.fl * (1 - fp);
+        });
+      }
+      var ticking = false;
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () { draw(); ticking = false; });
+      }
+      measure(); draw();
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', function () { measure(); draw(); });
+    })();
+
     // Copy-link share button: copy the current URL, flash the icon checkmark + a "Link copied" pill.
     (function () {
       document.querySelectorAll('.share-copy').forEach(function (btn) {
@@ -985,49 +1067,26 @@
 
       function showNote() { Toast.show('You’re subscribed!', btn); }
 
-      // --- Draw-in outlines: a 1px <rect> traced over the card + the field pill,
-      // built once then re-sized on each open (the card may reflow with viewport).
+      // --- Draw-in outlines: the shared dark sketch, traced over the card + the
+      // field pill, built once then re-sized on each open (it may reflow).
       var cardOutline = null, fieldOutline = null;
-      function makeOutline(cls) {
-        var NS = 'http://www.w3.org/2000/svg';
-        var svg = document.createElementNS(NS, 'svg');
-        svg.setAttribute('class', 'draw-outline ' + cls);
-        svg.setAttribute('aria-hidden', 'true');
-        svg.appendChild(document.createElementNS(NS, 'rect'));
-        return svg;
-      }
-      function sizeOutline(svg, el, rx) {
-        var w = el.offsetWidth, h = el.offsetHeight;
-        if (!w || !h) return;
-        svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
-        var rect = svg.firstChild;
-        rect.setAttribute('x', 0.5);
-        rect.setAttribute('y', 0.5);
-        rect.setAttribute('width', w - 1);
-        rect.setAttribute('height', h - 1);
-        rect.setAttribute('rx', rx);
-        rect.setAttribute('ry', rx);
-        var len = rect.getTotalLength ? rect.getTotalLength() : 2 * (w + h);
-        rect.style.setProperty('--len', len);
-      }
       function prepDraw() {
         if (!overlay || reduce) return;
         var card  = overlay.querySelector('.newsletter-card');
         var field = overlay.querySelector('.newsletter-field');
         if (!card || !field) return;
-        if (!cardOutline)  { cardOutline  = makeOutline('draw-card');  card.appendChild(cardOutline); }
-        if (!fieldOutline) { fieldOutline = makeOutline('draw-field'); field.appendChild(fieldOutline); }
-        sizeOutline(cardOutline, card, 20);                 // card radius
-        sizeOutline(fieldOutline, field, field.offsetHeight / 2);   // capsule
+        if (!cardOutline)  { cardOutline  = Outline.make('draw-card');  card.appendChild(cardOutline); }
+        if (!fieldOutline) { fieldOutline = Outline.make('draw-field'); field.appendChild(fieldOutline); }
+        Outline.size(cardOutline, card, 20);                 // card radius
+        Outline.size(fieldOutline, field, field.offsetHeight / 2);   // capsule
       }
 
-      var lastFocus = null, closing = false, drawTimer = null;
+      var lastFocus = null, closing = false;
       function openOverlay() {
         if (!overlay) return;
         closing = false;
         lastFocus = document.activeElement;
         ToggleClose.engage(closeOverlay);   // toggle morphs into the ✕ close (like search)
-        overlay.classList.remove('drawn');
         prepDraw();                         // size + reset the outlines (hidden)
         // Flush the reset (dashoffset = full) before flipping to .open, so the
         // stroke-dashoffset transition actually animates from full → 0 (the trace).
@@ -1035,10 +1094,6 @@
         overlay.classList.add('open');
         overlay.setAttribute('aria-hidden', 'false');
         document.documentElement.style.overflow = 'hidden';
-        // Hand the dark sketch back to the real (light) borders once both
-        // contours have traced (card ~0.65s, field ~1.15s).
-        clearTimeout(drawTimer);
-        drawTimer = setTimeout(function () { overlay.classList.add('drawn'); }, reduce ? 0 : 1250);
         // Focus the input only once it has settled (it's invisible before).
         var input = overlay.querySelector('.newsletter-input');
         setTimeout(function () { if (input) input.focus(); }, reduce ? 60 : 1250);
@@ -1046,8 +1101,7 @@
       function closeOverlay() {
         if (!overlay || closing) return;
         closing = true;
-        clearTimeout(drawTimer);
-        overlay.classList.remove('open', 'drawn');
+        overlay.classList.remove('open');
         overlay.setAttribute('aria-hidden', 'true');
         document.documentElement.style.overflow = '';
         ToggleClose.startClose();           // morph the ✕ back to the toggle

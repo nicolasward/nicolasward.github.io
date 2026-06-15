@@ -2316,25 +2316,29 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .nav-subscribe .ns-badge { opacity: 0; }
-.nav-subscribe .ns-badge path { stroke-dasharray: 100; stroke-dashoffset: 0; }  /* drawn at rest */
+.nav-subscribe .ns-badge path:not(.ns-badge-shine) { stroke-dasharray: 100; stroke-dashoffset: 0; }  /* drawn at rest */
 /* Subscribed: the envelope fades to the gradient check badge. */
 .nav-subscribe.is-subscribed .ns-mailbox { opacity: 0; transform: scale(0.4); }
 .nav-subscribe.is-subscribed .ns-badge { opacity: 1; }
 /* Just subscribed (this session): the check draws itself in, rather than popping. */
-.nav-subscribe.just-subscribed .ns-badge path {
+.nav-subscribe.just-subscribed .ns-badge path:not(.ns-badge-shine) {
   animation: ns-badge-draw 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 @keyframes ns-badge-draw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
-/* Tapping the subscribed badge: it shrinks to a dot, then springs back into
-   the checkmark — a playful little micro-interaction. */
-.nav-subscribe.tapped .ns-badge {
-  animation: ns-badge-pop 0.62s both;
+/* Tapping the subscribed badge sends a glimmer travelling along the check
+   (a short bright dash sweeping from its left end to its right). */
+.ns-badge-shine {
+  stroke-dasharray: 16 220;
+  stroke-dashoffset: 16;     /* bright dash parked just off the path → invisible at rest */
+  opacity: 0;
 }
-@keyframes ns-badge-pop {
-  0%   { transform: scale(1);    animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0.1); }
-  34%  { transform: scale(0.1);  animation-timing-function: linear; }              /* a tiny dot */
-  47%  { transform: scale(0.1);  animation-timing-function: cubic-bezier(0.34, 1.7, 0.5, 1); }  /* hold, then spring */
-  100% { transform: scale(1); }
+.nav-subscribe.tapped .ns-badge-shine {
+  opacity: 1;
+  animation: ns-badge-glimmer 0.55s ease-in-out;
+}
+@keyframes ns-badge-glimmer {
+  from { stroke-dashoffset: 16; }
+  to   { stroke-dashoffset: -100; }
 }
 /* Pre-marked subscribed (head script): badge shown from first paint, no blink. */
 html.subscribed .nav-subscribe .ns-mailbox { opacity: 0; transform: scale(0.4); }
@@ -2524,7 +2528,7 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
   .subscribe-modal,
   .toast-pill { transition: none; }
   .nav-subscribe.just-subscribed .ns-badge path,
-  .nav-subscribe.tapped .ns-badge { animation: none; }
+  .nav-subscribe.tapped .ns-badge-shine { animation: none; }
   /* Skip the draw-in: show the card straight away (keep the dark borders). */
   .draw-outline { display: none; }
   .subscribe-overlay .newsletter-card,

@@ -9,7 +9,7 @@
   <meta name="theme-color" id="theme-color-meta" content="#f6f8fa">
   <title>100% user-supported — Nico Ward</title>
   <link rel="stylesheet" href="/blog/css/flexoki.css?v=64abfaf4">
-  <link rel="stylesheet" href="/blog/css/style.css?v=1eb75a58">
+  <link rel="stylesheet" href="/blog/css/style.css?v=6d7d07f6">
   <link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feed.xml">
   <script>
     // Apply the saved/system theme SYNCHRONOUSLY, before the body renders, so
@@ -155,12 +155,20 @@
 
 <div id="reading-progress" class="reading-progress" aria-hidden="true" title="Back to top">
   <svg class="progress-ring" viewBox="0 0 40 40">
+    <defs>
+      <linearGradient id="progress-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#7FE3D9"/>
+        <stop offset="0.5" stop-color="#FFA85C"/>
+        <stop offset="1" stop-color="#8C78EB"/>
+      </linearGradient>
+    </defs>
     <circle class="progress-disc" cx="20" cy="20" r="20"/>
     <circle class="progress-track" cx="20" cy="20" r="19" fill="none" stroke-width="1.54"/>
     <circle class="progress-fill" cx="20" cy="20" r="19" fill="none" stroke-width="1.54"
             stroke-dasharray="119.38" stroke-dashoffset="119.38"/>
   </svg>
   <span class="progress-percent">0%</span>
+  <span class="progress-shine" aria-hidden="true"></span>
   <svg class="progress-check" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
     <path d="M5 12.5l4.5 4.5L19 7.5" stroke-dasharray="22" stroke-dashoffset="22"/>
   </svg>
@@ -256,6 +264,6 @@
     </span>
   </div>
 
-  <script src="/blog/js/site.js?v=3514b834"></script>
+  <script src="/blog/js/site.js?v=7e7b2fd1"></script>
 </body>
 </html>

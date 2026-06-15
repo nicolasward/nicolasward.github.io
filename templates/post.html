@@ -34,12 +34,20 @@
 
 <div id="reading-progress" class="reading-progress" aria-hidden="true" title="Back to top">
   <svg class="progress-ring" viewBox="0 0 40 40">
+    <defs>
+      <linearGradient id="progress-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#7FE3D9"/>
+        <stop offset="0.5" stop-color="#FFA85C"/>
+        <stop offset="1" stop-color="#8C78EB"/>
+      </linearGradient>
+    </defs>
     <circle class="progress-disc" cx="20" cy="20" r="20"/>
     <circle class="progress-track" cx="20" cy="20" r="19" fill="none" stroke-width="1.54"/>
     <circle class="progress-fill" cx="20" cy="20" r="19" fill="none" stroke-width="1.54"
             stroke-dasharray="119.38" stroke-dashoffset="119.38"/>
   </svg>
   <span class="progress-percent">0%</span>
+  <span class="progress-shine" aria-hidden="true"></span>
   <svg class="progress-check" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
     <path d="M5 12.5l4.5 4.5L19 7.5" stroke-dasharray="22" stroke-dashoffset="22"/>
   </svg>

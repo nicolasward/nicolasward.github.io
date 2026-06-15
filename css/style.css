@@ -1899,13 +1899,13 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   transition: stroke-dashoffset 0.15s ease, stroke 0.35s ease;
 }
 
-/* Completed disc fills with the dark (body text) colour */
+/* Completed disc fills with the signature multi-colour gradient */
 .progress-disc {
-  fill: var(--fg);
+  fill: url(#progress-grad);
   transform: scale(0);
   transform-origin: 20px 20px;
   transform-box: fill-box;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.42s cubic-bezier(0.34, 1.4, 0.5, 1);
 }
 
 .progress-percent {
@@ -1954,29 +1954,43 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .reading-progress.complete .progress-check {
   opacity: 1;
   transform: scale(1);
-  transition: opacity 0.15s ease 0.08s, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) 0.08s;
+  transition: opacity 0.15s ease 0.34s, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) 0.34s;
 }
 
 .reading-progress.complete .progress-check path {
   stroke-dashoffset: 0;
+  transition-delay: 0.42s;
 }
 
-/* Confetti burst when the reading-progress circle completes. Pieces are
-   created in JS at the circle's centre; each gets random --tx/--ty/--rot/
-   --size/--b/--dur custom properties. Colour is tied to the accent. */
-.confetti-piece {
-  position: fixed;
-  z-index: 99;            /* just behind the widget (100) — pops out from it */
-  width: var(--size, 8px);
-  height: calc(var(--size, 8px) * 0.42);
-  background: var(--accent);
-  filter: brightness(var(--b, 1));
-  border-radius: 1px;
+/* A glossy shine sweeps across the disc as it fills with the gradient. */
+.progress-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
   pointer-events: none;
-  will-change: transform, opacity;
-  animation: confetti-fly var(--dur, 800ms) cubic-bezier(0.15, 0.65, 0.35, 1) forwards;
+  opacity: 0;
+}
+.progress-shine::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: 0;
+  width: 45%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+  transform: translateX(-180%) rotate(18deg);
+}
+.reading-progress.complete .progress-shine { opacity: 1; }
+.reading-progress.complete .progress-shine::before {
+  animation: progress-shine-sweep 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.12s 1;
+}
+@keyframes progress-shine-sweep {
+  from { transform: translateX(-180%) rotate(18deg); }
+  to   { transform: translateX(400%) rotate(18deg); }
 }
 
+/* Newsletter success confetti (see .confetti-bit) reuses this fly-out. */
 @keyframes confetti-fly {
   0% {
     transform: translate(-50%, -50%) rotate(0deg);
@@ -1989,8 +2003,8 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .confetti-piece,
   .confetti-bit { display: none; }
+  .progress-shine::before { animation: none; }
 }
 
 @media (max-width: 600px) {

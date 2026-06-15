@@ -709,22 +709,43 @@
     // (The home-page newsletter card reveals via its own scroll-scrubbed
     // contour draw + content flush — see the inline-cards block below.)
 
-    // Inline newsletter cards: only the outer card border draws (scroll-scrubbed,
-    // untracing as you scroll back). Once it finishes drawing, the contents —
-    // the input box (which carries a dark-grey border) and the text — flush from
-    // muted grey to full dark grey over the rest of the scroll.
+    // Inline newsletter cards. On touch: the outer card border draws
+    // (scroll-scrubbed, untracing as you scroll back), then the contents flush
+    // from muted grey to full dark grey. On desktop: no draw — the card simply
+    // fades up like the rest of the content.
     (function () {
       if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      var cards = [];
+      var sections = [];
       Array.prototype.forEach.call(document.querySelectorAll('.newsletter'), function (nl) {
         if (nl.closest('.subscribe-overlay')) return;          // overlay draws its own
-        var card  = nl.querySelector('.newsletter-card');
-        if (!card) return;
+        if (nl.querySelector('.newsletter-card')) sections.push(nl);
+      });
+      if (!sections.length) return;
+
+      // Desktop: fade the card up into place (no contour draw).
+      if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        sections.forEach(function (nl) { nl.classList.add('reveal-up'); });
+        if ('IntersectionObserver' in window) {
+          var obs = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+              if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+            });
+          }, { rootMargin: '0px 0px -12% 0px' });
+          sections.forEach(function (nl) { obs.observe(nl); });
+        } else {
+          sections.forEach(function (nl) { nl.classList.add('in'); });
+        }
+        return;
+      }
+
+      // Touch: scroll-scrubbed contour draw.
+      var cards = [];
+      sections.forEach(function (nl) {
+        var card = nl.querySelector('.newsletter-card');
         card.classList.add('has-draw');                        // CSS drops the card's real border
         var cardSvg = Outline.make('draw-card'); card.appendChild(cardSvg);
         cards.push({ card: card, cardSvg: cardSvg, co: cardSvg.firstChild, cl: 0 });
       });
-      if (!cards.length) return;
 
       function measure() {
         cards.forEach(function (c) {

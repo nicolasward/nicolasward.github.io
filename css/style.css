@@ -2249,24 +2249,26 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   padding: 0;
   border: none;
   background: none;
-  color: var(--fg);
+  color: var(--fg-faint);            /* muted until the field is focused / it's hovered */
   cursor: pointer;
   transition: transform 0.15s ease, color 0.2s ease;
 }
-@media (hover: hover) { .newsletter-submit:hover { color: var(--accent); } }
+.newsletter-field:focus-within .newsletter-submit { color: var(--fg); }
+@media (hover: hover) {
+  .newsletter-submit:hover { color: var(--accent); }   /* accent orange on hover */
+  /* …and the plane folds in on itself (origami) and unfolds. */
+  .newsletter-submit:hover .ns-send { animation: ns-plane-fold 0.6s cubic-bezier(0.45, 0, 0.3, 1); }
+}
+@keyframes ns-plane-fold {
+  0%, 100% { transform: scaleX(1); }
+  50%      { transform: scaleX(0.07); }
+}
 .newsletter-submit:active { transform: scale(0.9); }
 .newsletter-submit .ns-state {
   grid-area: 1 / 1;                   /* stack plane + check */
   width: 1.3rem;
   height: 1.3rem;
   transition: opacity 0.12s ease;    /* quick swap */
-}
-/* The paper plane lifts off — a gentle climbing hop up-and-away — on hover. */
-.newsletter-submit .ns-send {
-  transition: opacity 0.12s ease, transform 0.45s cubic-bezier(0.34, 1.5, 0.5, 1);
-}
-@media (hover: hover) {
-  .newsletter-submit:hover .ns-send { transform: translate(2px, -3px) rotate(-7deg); }
 }
 .newsletter-submit .ns-check { opacity: 0; transform-origin: center; }
 .ns-check path { stroke-dasharray: 1; stroke-dashoffset: 1; }
@@ -2443,15 +2445,15 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
 }
 /* On desktop the card + input-box borders sit muted, going full dark grey only
    on hover / focus. (Touch devices keep the dark border — no hover to reveal.) */
+/* On desktop the inline newsletter card doesn't draw its contour (it fades up
+   like the rest, see site.js); its real border sits muted, going full dark grey
+   only on hover / focus. The popup keeps its drawn dark contour at all times. */
 @media (hover: hover) {
-  .draw-outline rect { stroke: var(--fg-faint); }
-  .newsletter-card:hover .draw-card rect { stroke: var(--fg); }
-  .newsletter-field:hover .draw-field rect,
-  .newsletter-field:focus-within .draw-field rect { stroke: var(--fg); }
-
-  .newsletter-card.has-draw .newsletter-field { border-color: var(--fg-faint); }
-  .newsletter-card.has-draw .newsletter-field:hover,
-  .newsletter-card.has-draw .newsletter-field:focus-within { border-color: var(--fg); }
+  main .newsletter-card { border-color: var(--fg-faint); }
+  main .newsletter-card:hover { border-color: var(--fg); }
+  main .newsletter-field { border-color: var(--fg-faint); }
+  main .newsletter-field:hover,
+  main .newsletter-field:focus-within { border-color: var(--fg); }
 }
 /* Overlay entrance (Apple-like cascade): the card contour draws (a touch
    slow), then the tagline enters, then the dek, then the input bar rises in

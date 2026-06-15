@@ -2457,16 +2457,15 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
 }
 /* On desktop the card + input-box borders sit muted, going full dark grey only
    on hover / focus. (Touch devices keep the dark border — no hover to reveal.) */
-/* On desktop the inline newsletter card doesn't draw its contour (it fades up
-   like the rest, see site.js); its real border sits muted, going full dark grey
-   only on hover / focus. The popup keeps its drawn dark contour at all times. */
+/* The inline newsletter card is a clean borderless white card (its soft shadow
+   defines it) and just fades up into view — see site.js. The input bar keeps a
+   muted border, going dark on focus (and on card hover on desktop). The popup
+   keeps its drawn dark contour at all times. */
+main .newsletter-card,
+main .newsletter-card:focus-within { border-color: transparent; }
+main .newsletter-field { border-color: var(--fg-faint); }
 @media (hover: hover) {
-  /* The card itself is borderless on desktop — just white + its soft shadow. */
-  main .newsletter-card { border-color: transparent; }
-  /* The input bar keeps a muted border, going dark on (card) hover / focus. */
-  main .newsletter-field { border-color: var(--fg-faint); }
-  main .newsletter-card:not(.is-subscribed):hover .newsletter-field,
-  main .newsletter-card:not(.is-subscribed) .newsletter-field:focus-within { border-color: var(--fg); }
+  main .newsletter-card:not(.is-subscribed):hover .newsletter-field { border-color: var(--fg); }
 }
 /* Overlay entrance (Apple-like cascade): the card contour draws (a touch
    slow), then the tagline enters, then the dek, then the input bar rises in

@@ -709,10 +709,9 @@
     // (The home-page newsletter card reveals via its own scroll-scrubbed
     // contour draw + content flush — see the inline-cards block below.)
 
-    // Inline newsletter cards. On touch: the outer card border draws
-    // (scroll-scrubbed, untracing as you scroll back), then the contents flush
-    // from muted grey to full dark grey. On desktop: no draw — the card simply
-    // fades up like the rest of the content.
+    // Inline newsletter cards: a clean borderless white card that simply fades
+    // up into place as it scrolls into view (no contour draw — that lives in the
+    // popup only now).
     (function () {
       if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       var sections = [];
@@ -722,80 +721,16 @@
       });
       if (!sections.length) return;
 
-      // Desktop: fade the card up into place (no contour draw).
-      if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
-        sections.forEach(function (nl) { nl.classList.add('reveal-up'); });
-        if ('IntersectionObserver' in window) {
-          var obs = new IntersectionObserver(function (entries) {
-            entries.forEach(function (e) {
-              if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
-            });
-          }, { rootMargin: '0px 0px -12% 0px' });
-          sections.forEach(function (nl) { obs.observe(nl); });
-        } else {
-          sections.forEach(function (nl) { nl.classList.add('in'); });
-        }
-        return;
-      }
-
-      // Touch: scroll-scrubbed contour draw.
-      var cards = [];
-      sections.forEach(function (nl) {
-        var card = nl.querySelector('.newsletter-card');
-        card.classList.add('has-draw');                        // CSS drops the card's real border
-        var cardSvg = Outline.make('draw-card'); card.appendChild(cardSvg);
-        cards.push({ card: card, cardSvg: cardSvg, co: cardSvg.firstChild, cl: 0 });
-      });
-
-      function measure() {
-        cards.forEach(function (c) {
-          c.cl = Outline.size(c.cardSvg, c.card, 24);
-        });
-      }
-      function clamp(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
-      function draw() {
-        var vh = window.innerHeight;
-        // Completion guarantee: in the last half-viewport of the page's scroll,
-        // ramp progress up to 1 — so the contour always finishes even when the
-        // content below the card (footer-only, on the home page) keeps it from
-        // climbing high. This blends smoothly with the geometry term below.
-        var sy = window.scrollY || window.pageYOffset || 0;
-        var maxScroll = document.documentElement.scrollHeight - vh;
-        var nearBottom = maxScroll > 0 ? clamp((sy - (maxScroll - vh * 0.5)) / (vh * 0.5)) : 1;
-        cards.forEach(function (c) {
-          var top = c.card.getBoundingClientRect().top;
-          // Trace as the card rises through the middle of the viewport: it
-          // only begins once the card's top has climbed to ~70% down (the card
-          // is already a third into view, not just peeking), and completes near
-          // the upper third (~30% down). Drawing over that band means it's
-          // still tracing as you bring the card into reading position — not
-          // started while it's still at the bottom — and untraces on the way back.
-          var p  = Math.max(clamp((vh * 0.7 - top) / (vh * 0.4)), nearBottom);
-          // The outer border draws over the first ~55% of the band; once it has
-          // finished, the contents flush from muted grey to full over the rest.
-          var cp = clamp(p / 0.55);
-          var flush = clamp((p - 0.55) / 0.45);
-          c.co.style.strokeDashoffset = c.cl * (1 - cp);
-          c.card.style.setProperty('--flush', flush);
-          c.card.style.opacity = clamp(cp / 0.08);   // invisible until the trace begins, then fades in
-        });
-      }
-      var ticking = false;
-      function onScroll() {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(function () { draw(); ticking = false; });
-      }
-      measure(); draw();
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', function () { measure(); draw(); });
-      window.addEventListener('load', function () { measure(); draw(); });  // fonts/images settled
-      // Re-fit the contour whenever the card itself changes size — e.g. an error
-      // message appears below the field, or the layout reflows — otherwise the
-      // fixed-viewBox outline stretches to the new height and distorts.
-      if (window.ResizeObserver) {
-        var ro = new ResizeObserver(function () { measure(); draw(); });
-        cards.forEach(function (c) { ro.observe(c.card); });
+      sections.forEach(function (nl) { nl.classList.add('reveal-up'); });
+      if ('IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+          });
+        }, { rootMargin: '0px 0px -12% 0px' });
+        sections.forEach(function (nl) { obs.observe(nl); });
+      } else {
+        sections.forEach(function (nl) { nl.classList.add('in'); });
       }
     })();
 

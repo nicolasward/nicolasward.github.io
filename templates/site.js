@@ -1035,12 +1035,13 @@
         overlay.classList.add('open');
         overlay.setAttribute('aria-hidden', 'false');
         document.documentElement.style.overflow = 'hidden';
-        // Hand the drawn outlines back to the real borders once the trace lands.
+        // Hand the dark sketch back to the real (light) borders once both
+        // contours have traced (card ~0.65s, field ~1.15s).
         clearTimeout(drawTimer);
-        drawTimer = setTimeout(function () { overlay.classList.add('drawn'); }, reduce ? 0 : 1500);
-        // Focus the input only after the content has risen in (it's invisible before).
+        drawTimer = setTimeout(function () { overlay.classList.add('drawn'); }, reduce ? 0 : 1250);
+        // Focus the input only once it has settled (it's invisible before).
         var input = overlay.querySelector('.newsletter-input');
-        setTimeout(function () { if (input) input.focus(); }, reduce ? 60 : 1000);
+        setTimeout(function () { if (input) input.focus(); }, reduce ? 60 : 1250);
       }
       function closeOverlay() {
         if (!overlay || closing) return;

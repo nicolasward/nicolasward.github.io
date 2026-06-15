@@ -2281,44 +2281,46 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
 }
 .draw-outline rect {
   fill: none;
-  stroke: var(--border);
+  stroke: var(--fg);                 /* dark-grey sketch line */
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
   stroke-dasharray: var(--len, 1);
   stroke-dashoffset: var(--len, 1);
 }
+/* 1. The card outline traces itself first. */
 .subscribe-overlay.open .draw-card rect {
-  transition: stroke-dashoffset 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: stroke-dashoffset 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
   stroke-dashoffset: 0;
 }
+/* 2. Then the input-box contour. */
 .subscribe-overlay.open .draw-field rect {
-  transition: stroke-dashoffset 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.45s;
+  transition: stroke-dashoffset 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.7s;
   stroke-dashoffset: 0;
 }
-/* The drawn outlines fade out as the real borders fade in (seamless crossfade). */
-.subscribe-overlay.drawn .draw-outline { opacity: 0; transition: opacity 0.3s ease; }
+/* The dark sketch hands off to the real (light) borders once drawn. */
+.subscribe-overlay.drawn .draw-outline { opacity: 0; transition: opacity 0.35s ease; }
 
-/* Interior content rises in just after the outline starts tracing. */
-.subscribe-overlay .newsletter-intro,
-.subscribe-overlay .newsletter-form {
+/* The field's contents (input placeholder) appear quietly with the contour. */
+.subscribe-overlay .newsletter-form { opacity: 0; }
+.subscribe-overlay.open .newsletter-form {
+  opacity: 1;
+  transition: opacity 0.35s ease 0.85s;
+}
+/* 3. The airplane draws itself in. */
+.subscribe-overlay .ns-send path { stroke-dasharray: 100; stroke-dashoffset: 100; }
+.subscribe-overlay.open .ns-send path {
+  transition: stroke-dashoffset 0.4s cubic-bezier(0.22, 1, 0.36, 1) 1.2s;
+  stroke-dashoffset: 0;
+}
+/* 4. Finally the heading + dek fade in with a subtle upward motion. */
+.subscribe-overlay .newsletter-intro {
   opacity: 0;
-  transform: translateY(9px);
+  transform: translateY(10px);
 }
 .subscribe-overlay.open .newsletter-intro {
   opacity: 1;
   transform: none;
-  transition: opacity 0.5s ease 0.55s, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.55s;
-}
-.subscribe-overlay.open .newsletter-form {
-  opacity: 1;
-  transform: none;
-  transition: opacity 0.5s ease 0.72s, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.72s;
-}
-/* The send icon draws itself in last, once the field pill has landed. */
-.subscribe-overlay .ns-send path { stroke-dasharray: 100; stroke-dashoffset: 100; }
-.subscribe-overlay.open .ns-send path {
-  transition: stroke-dashoffset 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.95s;
-  stroke-dashoffset: 0;
+  transition: opacity 0.5s ease 1.75s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 1.75s;
 }
 .subscribe-close {
   position: absolute;

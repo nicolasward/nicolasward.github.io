@@ -1314,6 +1314,11 @@ h3:hover .heading-anchor {
 
 /* ===== Footer ===== */
 .site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;   /* "Designed with love" left, shortcuts right */
+  gap: 0.6rem 1.5rem;
   margin-top: 3.5rem;
   padding-top: 3.5rem;
   border-top: 1px solid var(--border);
@@ -1345,7 +1350,7 @@ h3:hover .heading-anchor {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem 1.1rem;
-  margin-top: 1.1rem;
+  margin: 0;                  /* inline with the credit line, pushed to the right */
   color: var(--fg-muted);
   font-size: 0.8rem;
 }
@@ -2256,6 +2261,13 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   height: 1.3rem;
   transition: opacity 0.12s ease;    /* quick swap */
 }
+/* The paper plane lifts off — a gentle climbing hop up-and-away — on hover. */
+.newsletter-submit .ns-send {
+  transition: opacity 0.12s ease, transform 0.45s cubic-bezier(0.34, 1.5, 0.5, 1);
+}
+@media (hover: hover) {
+  .newsletter-submit:hover .ns-send { transform: translate(2px, -3px) rotate(-7deg); }
+}
 .newsletter-submit .ns-check { opacity: 0; transform-origin: center; }
 .ns-check path { stroke-dasharray: 1; stroke-dashoffset: 1; }
 /* Punchy: the plane vanishes fast, the check springs in and snaps its stroke. */
@@ -2427,6 +2439,19 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
   vector-effect: non-scaling-stroke;
   stroke-dasharray: var(--len, 1);
   stroke-dashoffset: var(--len, 1);
+  transition: stroke 0.25s ease;     /* muted → dark on hover (desktop, below) */
+}
+/* On desktop the card + input-box borders sit muted, going full dark grey only
+   on hover / focus. (Touch devices keep the dark border — no hover to reveal.) */
+@media (hover: hover) {
+  .draw-outline rect { stroke: var(--fg-muted); }
+  .newsletter-card:hover .draw-card rect { stroke: var(--fg); }
+  .newsletter-field:hover .draw-field rect,
+  .newsletter-field:focus-within .draw-field rect { stroke: var(--fg); }
+
+  .newsletter-card.has-draw .newsletter-field { border-color: var(--fg-muted); }
+  .newsletter-card.has-draw .newsletter-field:hover,
+  .newsletter-card.has-draw .newsletter-field:focus-within { border-color: var(--fg); }
 }
 /* Overlay entrance (Apple-like cascade): the card contour draws (a touch
    slow), then the tagline enters, then the dek, then the input bar rises in

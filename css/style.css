@@ -2079,7 +2079,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   border: 1px solid var(--border);
   border-radius: 24px;
   background: var(--field);          /* cool white base (matches the page field) */
-  box-shadow: 0 14px 34px -24px rgba(20, 25, 40, 0.45);
+  box-shadow: 0 1px 2px rgba(20, 25, 40, 0.04), 0 16px 40px -16px rgba(20, 25, 40, 0.16);
   transition: border-color 0.35s ease;   /* liftoff itself is the ns-liftoff keyframes */
 }
 /* On subscribe the 1px border becomes a gradient ring matching the colour flush:
@@ -2104,7 +2104,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-card.is-subscribed { border-color: transparent; }   /* the gradient ring takes over */
 [data-theme="dark"] .newsletter-card {
   background: var(--surface);        /* subtly above the near-black canvas */
-  box-shadow: 0 14px 34px -22px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 16px 40px -16px rgba(0, 0, 0, 0.5);
 }
 /* Soft gradient aurora behind the content — a nod to the landing page's blobs
    (teal / sunset / plum). Greyscale at rest (monochrome, like the rest of the
@@ -2131,6 +2131,18 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
     radial-gradient(72% 120% at 99% 2%,   rgba(255, 168, 92, 0.16),  transparent 56%),
     radial-gradient(95% 140% at 60% 114%, rgba(140, 120, 235, 0.24), transparent 60%);
 }
+/* Accent-orange icon at the top-left, and the highlighted phrase in the heading. */
+.newsletter-icon {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 1.7rem;
+  height: 1.7rem;
+  margin: 0 0 0.95rem;
+  color: var(--accent);
+}
+.newsletter-icon svg { width: 100%; height: 100%; display: block; }
+.ns-accent { color: var(--accent); }
 /* Keep the content above the aurora layer. */
 .newsletter-intro,
 .newsletter-form { position: relative; z-index: 1; }

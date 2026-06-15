@@ -159,8 +159,9 @@ def newsletter_section():
     on the form via data-endpoint — see the newsletter handler in site.js."""
     return '''<section class="newsletter" aria-labelledby="newsletter-heading">
   <div class="newsletter-card">
+    <span class="newsletter-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3.6 7.2 L12 12.6 L20.4 7.2"/></svg></span>
     <div class="newsletter-intro">
-      <h2 class="newsletter-heading" id="newsletter-heading" data-text="Get new essays in your inbox">Get new essays in your inbox</h2>
+      <h2 class="newsletter-heading" id="newsletter-heading">Get <span class="ns-accent">new essays</span> in your inbox</h2>
       <p class="newsletter-dek">Occasional writings on AI, design, and the human mind.</p>
     </div>
     <form class="newsletter-form" data-endpoint="" novalidate>

@@ -879,6 +879,21 @@
       if (!header) return;
       var rect = header.querySelector('.pill-outline rect');
       var svg = header.querySelector('.pill-outline');
+      // Nudge the frosted backdrop so iOS re-renders it: a closing overlay with
+      // its own backdrop-filter can leave the sticky header showing a stale,
+      // ghosted snapshot until something forces a repaint. Briefly perturbing the
+      // blur value (imperceptibly) flushes a fresh one. Listened-for so overlays
+      // can ask for it as they fade out.
+      function refresh() {
+        if (!header.classList.contains('scrolled')) return;
+        header.style.webkitBackdropFilter = 'blur(8.4px)';
+        header.style.backdropFilter = 'blur(8.4px)';
+        requestAnimationFrame(function () {
+          header.style.webkitBackdropFilter = '';
+          header.style.backdropFilter = '';
+        });
+      }
+      window.addEventListener('header:refresh', refresh);
       function measure() {
         if (!rect) return;
         // Don't remeasure while an overlay has borrowed the toggle: submitting
@@ -1110,6 +1125,12 @@
         document.documentElement.style.overflow = '';
         ToggleClose.startClose();           // morph the ✕ back to the toggle
         if (lastFocus && lastFocus.focus) lastFocus.focus();
+        // Force the sticky header's frosted backdrop to re-render as we fade out
+        // (this overlay has its own backdrop-filter; on iOS it can otherwise leave
+        // the header showing a stale, ghosted snapshot). Repeat across the fade.
+        [60, 260, 460, 720, 980].forEach(function (t) {
+          setTimeout(function () { window.dispatchEvent(new Event('header:refresh')); }, t);
+        });
         var finish = function () {
           overlay.classList.remove('open', 'closing');
           overlay.setAttribute('aria-hidden', 'true');

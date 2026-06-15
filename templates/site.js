@@ -950,36 +950,38 @@
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      // A celebratory confetti rain on success (before liftoff): lots of orange
-      // pieces pop out near the top of the page, then sway, spin, and fade as
-      // they fall. Body-fixed at viewport coords, like the reading-ring confetti.
+      // A confetti bomb on success (before liftoff): one synchronised pop near
+      // the top of the page — all the orange pieces explode outward from a
+      // single point, then gravity carries them down, swaying, spinning and
+      // fading. Body-fixed at viewport coords, like the reading-ring confetti.
       function confettiBurst() {
         if (reduce || typeof document.body.animate !== 'function') return;
-        var vw = window.innerWidth, vh = window.innerHeight, N = 64;
+        var vw = window.innerWidth, vh = window.innerHeight, N = 70;
+        var ox = vw / 2, oy = vh * 0.1;                  // bomb origin: near top centre
         for (var i = 0; i < N; i++) {
           var bit = document.createElement('i');
           bit.className = 'confetti-bit';
           var size = 6 + Math.random() * 5;
           bit.style.width = size.toFixed(1) + 'px';
           bit.style.height = (size * 0.42).toFixed(1) + 'px';
-          bit.style.left = (Math.random() * vw).toFixed(1) + 'px';
-          bit.style.top = '0px';
+          bit.style.left = ox.toFixed(1) + 'px';
+          bit.style.top = oy.toFixed(1) + 'px';
           bit.style.filter = 'brightness(' + (0.85 + Math.random() * 0.4).toFixed(2) + ')';
           document.body.appendChild(bit);
-          var startY = -10 + Math.random() * 50;         // near the top edge
-          var popUp = 30 + Math.random() * 45;           // the upward pop
-          var popX = (Math.random() - 0.5) * 110;        // outward pop
-          var sway = popX * 0.6 + (Math.random() - 0.5) * 80;
-          var endY = vh + 60;                            // past the bottom
-          var midY = startY + (endY - startY) * 0.62;
+          var ang = Math.random() * Math.PI * 2;         // radial blast
+          var burst = 90 + Math.random() * 290;          // explosion radius (the pop)
+          var bx = Math.cos(ang) * burst;
+          var by = Math.sin(ang) * burst;
+          var sway = (Math.random() - 0.5) * 130;        // drift as it falls
+          var fall = vh * 0.7 + Math.random() * vh * 0.5;// gravity carries it past the bottom
           var rot = Math.round(Math.random() * 1080 - 540);
           var dur = 2600 + Math.random() * 2200;         // slow, graceful fall
-          var delay = Math.random() * 800;               // keep it raining, not all at once
+          var delay = Math.random() * 70;                // ~one synchronised pop
           bit.animate([
-            { transform: 'translate(-50%, ' + startY.toFixed(0) + 'px) scale(0.2) rotate(0deg)', opacity: 1, offset: 0, easing: 'cubic-bezier(0.12, 0.9, 0.25, 1)' },
-            { transform: 'translate(calc(-50% + ' + popX.toFixed(0) + 'px), ' + (startY - popUp).toFixed(0) + 'px) scale(1.12) rotate(' + Math.round(rot * 0.12) + 'deg)', opacity: 1, offset: 0.09, easing: 'cubic-bezier(0.4, 0, 0.65, 1)' },
-            { transform: 'translate(calc(-50% + ' + sway.toFixed(0) + 'px), ' + midY.toFixed(0) + 'px) scale(1) rotate(' + Math.round(rot * 0.6) + 'deg)', opacity: 1, offset: 0.7, easing: 'cubic-bezier(0.4, 0, 0.65, 1)' },
-            { transform: 'translate(calc(-50% + ' + (sway * 0.5).toFixed(0) + 'px), ' + endY.toFixed(0) + 'px) scale(1) rotate(' + rot + 'deg)', opacity: 0, offset: 1 }
+            { transform: 'translate(-50%,-50%) rotate(0deg)', opacity: 1, offset: 0, easing: 'cubic-bezier(0.1, 0.75, 0.3, 1)' },   // explode out fast
+            { transform: 'translate(calc(-50% + ' + bx.toFixed(0) + 'px), calc(-50% + ' + by.toFixed(0) + 'px)) rotate(' + Math.round(rot * 0.3) + 'deg)', opacity: 1, offset: 0.2, easing: 'cubic-bezier(0.4, 0, 0.65, 1)' },  // burst peak
+            { transform: 'translate(calc(-50% + ' + (bx + sway * 0.6).toFixed(0) + 'px), calc(-50% + ' + (by + fall * 0.6).toFixed(0) + 'px)) rotate(' + Math.round(rot * 0.6) + 'deg)', opacity: 1, offset: 0.72, easing: 'cubic-bezier(0.4, 0, 0.65, 1)' },
+            { transform: 'translate(calc(-50% + ' + (bx + sway).toFixed(0) + 'px), calc(-50% + ' + (by + fall).toFixed(0) + 'px)) rotate(' + rot + 'deg)', opacity: 0, offset: 1 }
           ], { duration: dur, delay: delay, fill: 'both' });
           (function (b, total) { setTimeout(function () { if (b.parentNode) b.parentNode.removeChild(b); }, total + 80); })(bit, dur + delay);
         }

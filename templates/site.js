@@ -1168,14 +1168,24 @@
       // Animations API so it reliably restarts on every tap (and cleans up after
       // itself) regardless of class/animation state.
       function glimmer() {
+        if (reduce) return;
         var shine = btn.querySelector('.ns-badge-shine');
-        if (reduce || !shine || !shine.animate) return;
-        shine.animate([
-          { strokeDashoffset: 16,   opacity: 0, offset: 0 },
-          { opacity: 1, offset: 0.12 },
-          { opacity: 1, offset: 0.88 },
-          { strokeDashoffset: -100, opacity: 0, offset: 1 }
-        ], { duration: 600, easing: 'ease-in-out' });
+        var badge = btn.querySelector('.ns-badge');
+        if (shine && shine.animate) {
+          shine.animate([
+            { strokeDashoffset: 20,   opacity: 0, offset: 0 },
+            { opacity: 1, offset: 0.12 },
+            { opacity: 1, offset: 0.85 },
+            { strokeDashoffset: -100, opacity: 0, offset: 1 }
+          ], { duration: 650, easing: 'ease-in-out' });
+        }
+        if (badge && badge.animate) {       // a little throb so there's clear motion too
+          badge.animate([
+            { transform: 'scale(1)' },
+            { transform: 'scale(1.22)', offset: 0.4 },
+            { transform: 'scale(1)' }
+          ], { duration: 520, easing: 'cubic-bezier(0.34, 1.6, 0.5, 1)' });
+        }
       }
       if (overlay) {
         overlay.addEventListener('click', function (e) { if (e.target === overlay) closeOverlay(); });

@@ -2325,15 +2325,17 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   animation: ns-badge-draw 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 @keyframes ns-badge-draw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
-/* Tapping the subscribed badge sends a glimmer travelling along the check — a
-   short, brighter + more-saturated pulse of the check's own gradient (rather
-   than white, which would vanish against a light background). Driven in
-   site.js via the Web Animations API. */
+/* Tapping the subscribed badge sends a bright spark travelling along the check
+   (white core + a warm accent glow so it stays visible on light backgrounds),
+   paired with a little scale-pulse. Driven in site.js via the Web Animations
+   API. The badge shows its glow outside the viewBox. */
+.ns-badge { overflow: visible; }
 .ns-badge-shine {
-  stroke-width: 2.7;
-  filter: brightness(1.6) saturate(1.9);
-  stroke-dasharray: 16 220;
-  stroke-dashoffset: 16;     /* bright dash parked just off the path → invisible at rest */
+  stroke: #fff;
+  stroke-width: 2.8;
+  filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 2.5px var(--accent));
+  stroke-dasharray: 20 220;
+  stroke-dashoffset: 20;     /* bright dash parked just off the path → invisible at rest */
   opacity: 0;
 }
 /* Pre-marked subscribed (head script): badge shown from first paint, no blink. */

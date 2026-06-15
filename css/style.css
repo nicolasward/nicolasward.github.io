@@ -2119,7 +2119,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   background:
     radial-gradient(80% 120% at 6% -12%,  rgba(127, 227, 217, 0.34), transparent 56%),   /* teal */
     radial-gradient(72% 120% at 99% 2%,   rgba(255, 121, 27, 0.30),  transparent 56%),    /* orange */
-    radial-gradient(95% 140% at 60% 114%, rgba(255, 108, 166, 0.30), transparent 60%);    /* pink */
+    radial-gradient(95% 140% at 60% 114%, rgba(124, 107, 234, 0.28), transparent 60%);    /* purple */
   filter: grayscale(1);              /* drained of colour until success */
   transition: filter 0.7s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -2129,7 +2129,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   background:
     radial-gradient(80% 120% at 6% -12%,  rgba(127, 227, 217, 0.18), transparent 56%),   /* teal */
     radial-gradient(72% 120% at 99% 2%,   rgba(255, 121, 27, 0.16),  transparent 56%),    /* orange */
-    radial-gradient(95% 140% at 60% 114%, rgba(255, 108, 166, 0.24), transparent 60%);    /* pink */
+    radial-gradient(95% 140% at 60% 114%, rgba(124, 107, 234, 0.24), transparent 60%);    /* purple */
 }
 /* Keep the content above the aurora layer. */
 .newsletter-intro,

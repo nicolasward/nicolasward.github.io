@@ -2263,14 +2263,17 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
    transparent) so the drawn line sits exactly on the box edge — otherwise the
    contour, anchored to the padding box, reads as a second outline ~1px inside
    the fill edge. The overlay draws the card then the input bar (each with its
-   contour); the inline cards draw both the card + field pill, scrubbed to
-   scroll (set from site.js). */
+   contour); the inline cards draw only the outer card border, scrubbed to
+   scroll (set from site.js) — their input box keeps a dark border that flushes
+   in with the contents. */
 .subscribe-overlay .newsletter-card,
 .subscribe-overlay .newsletter-field,
-.newsletter-card.has-draw,
-.newsletter-card.has-draw .newsletter-field { border-width: 0; }
+.newsletter-card.has-draw { border-width: 0; }
 .subscribe-overlay .newsletter-field,
 .newsletter-card.has-draw .newsletter-field { position: relative; }
+/* Inline input box: no contour draw — it carries a dark-grey border that
+   flushes in from muted with the rest of the contents (via the form opacity). */
+.newsletter-card.has-draw .newsletter-field { border-color: var(--fg); }
 /* On subscribe the gradient ring takes over — fade the dark sketch away. */
 .newsletter-card.is-subscribed .draw-outline { opacity: 0; transition: opacity 0.4s ease; }
 

@@ -733,29 +733,26 @@
     // (The home-page newsletter card reveals via its own scroll-scrubbed
     // contour draw + content flush — see the inline-cards block below.)
 
-    // Inline newsletter cards: the dark contour traces itself as the card scrolls
-    // into view, and untraces as you scroll back up (scroll-scrubbed, mirroring
-    // the overlay's drawn border). The card keeps its fill; only the border draws.
+    // Inline newsletter cards: only the outer card border draws (scroll-scrubbed,
+    // untracing as you scroll back). Once it finishes drawing, the contents —
+    // the input box (which carries a dark-grey border) and the text — flush from
+    // muted grey to full dark grey over the rest of the scroll.
     (function () {
       if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       var cards = [];
       Array.prototype.forEach.call(document.querySelectorAll('.newsletter'), function (nl) {
         if (nl.closest('.subscribe-overlay')) return;          // overlay draws its own
         var card  = nl.querySelector('.newsletter-card');
-        var field = nl.querySelector('.newsletter-field');
-        if (!card || !field) return;
-        card.classList.add('has-draw');                        // CSS drops the real borders
-        var cardSvg  = Outline.make('draw-card');  card.appendChild(cardSvg);
-        var fieldSvg = Outline.make('draw-field'); field.appendChild(fieldSvg);
-        cards.push({ card: card, field: field, cardSvg: cardSvg, fieldSvg: fieldSvg,
-                     co: cardSvg.firstChild, fo: fieldSvg.firstChild, cl: 0, fl: 0 });
+        if (!card) return;
+        card.classList.add('has-draw');                        // CSS drops the card's real border
+        var cardSvg = Outline.make('draw-card'); card.appendChild(cardSvg);
+        cards.push({ card: card, cardSvg: cardSvg, co: cardSvg.firstChild, cl: 0 });
       });
       if (!cards.length) return;
 
       function measure() {
         cards.forEach(function (c) {
           c.cl = Outline.size(c.cardSvg, c.card, 20);
-          c.fl = Outline.size(c.fieldSvg, c.field, c.field.offsetHeight / 2);
         });
       }
       function clamp(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
@@ -777,11 +774,12 @@
           // still tracing as you bring the card into reading position — not
           // started while it's still at the bottom — and untraces on the way back.
           var p  = Math.max(clamp((vh * 0.7 - top) / (vh * 0.4)), nearBottom);
-          var cp = clamp(p / 0.6);                 // card outline over the first 60%
-          var fp = clamp((p - 0.6) / 0.4);         // field contour over the last 40%
+          // The outer border draws over the first ~55% of the band; once it has
+          // finished, the contents flush from muted grey to full over the rest.
+          var cp = clamp(p / 0.55);
+          var flush = clamp((p - 0.55) / 0.45);
           c.co.style.strokeDashoffset = c.cl * (1 - cp);
-          c.fo.style.strokeDashoffset = c.fl * (1 - fp);
-          c.card.style.setProperty('--flush', p);  // contents flush from muted → full
+          c.card.style.setProperty('--flush', flush);
         });
       }
       var ticking = false;

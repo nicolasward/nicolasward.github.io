@@ -186,7 +186,7 @@ def newsletter_section():
     <div class="newsletter-separator" aria-hidden="true">''' + pixel_separator() + '''</div>
     <div class="newsletter-intro">
       <h2 class="newsletter-heading" id="newsletter-heading">New essays in your inbox.</h2>
-      <p class="newsletter-dek">Human-typed content about AI, high performance, and design to supercharge your thinking.</p>
+      <p class="newsletter-dek">Human-typed essays about AI, high performance, and design to supercharge your thinking.</p>
     </div>
     <form class="newsletter-form" data-endpoint="" novalidate>
       <div class="newsletter-field">

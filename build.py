@@ -154,12 +154,15 @@ def format_date_list(date_str):
 # Build
 # ---------------------------------------------------------------------------
 
-def pixel_separator():
-    """A blocky, glitchy pixel-waveform rule drawn above the inline newsletter —
-    two rows of unit cells (top / bottom track) merged into runs so there are no
-    seams. Inherits its colour from `currentColor`."""
-    top = "11101010001111000011111111110000"
-    bot = "00010101110000111100000000001111"
+def pixel_separator(message="read"):
+    """A blocky, glitchy pixel rule above the inline newsletter — and a hidden
+    message. Each column is one bit of the message in 8-bit ASCII, read left to
+    right: a TOP cell means 1, a BOTTOM cell means 0. (It currently spells
+    "read".) Same-bit columns merge into runs so the band reads as a clean glitch
+    waveform. Inherits its colour from `currentColor`."""
+    bits = "".join(format(ord(c), "08b") for c in message)
+    top = bits                                        # 1 → top track
+    bot = "".join("0" if b == "1" else "1" for b in bits)  # 0 → bottom track
     def runs(bits, y):
         out, i, n = [], 0, len(bits)
         while i < n:
@@ -186,7 +189,7 @@ def newsletter_section():
     <div class="newsletter-separator" aria-hidden="true">''' + pixel_separator() + '''</div>
     <div class="newsletter-intro">
       <h2 class="newsletter-heading" id="newsletter-heading">New essays in your inbox.</h2>
-      <p class="newsletter-dek">Human-typed essays about AI, high performance, and design to supercharge your thinking.</p>
+      <p class="newsletter-dek">Human-typed essays about AI, learning, and design to supercharge your thinking.</p>
     </div>
     <form class="newsletter-form" data-endpoint="" novalidate>
       <div class="newsletter-field">

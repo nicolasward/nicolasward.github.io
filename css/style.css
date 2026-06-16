@@ -2217,8 +2217,8 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-submit:active { transform: scale(0.9); }
 .newsletter-submit .ns-state {
   grid-area: 1 / 1;
-  width: 1.35rem;
-  height: 1.35rem;
+  width: 1.55rem;
+  height: 1.55rem;
 }
 /* Chevron → checkmark: the glyph is a single two-segment path whose `d` is
    tweened in JS on submit (the › unfolds into the ✓), so it morphs identically

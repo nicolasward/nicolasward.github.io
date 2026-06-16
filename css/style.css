@@ -2268,19 +2268,11 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   width: 1.15rem;
   height: 1.15rem;
 }
-/* Chevron → checkmark: a single two-segment path whose `d` morphs, so the glyph
-   smoothly unfolds from the › into the ✓ on submit (Chrome/Safari morph `d`;
-   elsewhere it snaps — still correct). */
-.ns-mark-path {
-  d: path("M9 6 L15 12 L9 18");
-  transition: d 0.42s cubic-bezier(0.65, 0, 0.35, 1);
-}
+/* Chevron → checkmark: the glyph is a single two-segment path whose `d` is
+   tweened in JS on submit (the › unfolds into the ✓), so it morphs identically
+   across browsers — CSS `d` animation is unreliable on iOS Safari. */
 .newsletter-form.is-done .ns-mark-path {
-  d: path("M5 12.5 L9.5 17 L19 7.5");
   stroke: url(#ns-check-grad);       /* warms into the teal→sunset→plum tick */
-}
-@media (prefers-reduced-motion: reduce) {
-  .ns-mark-path { transition: none; }
 }
 /* Inline message */
 .newsletter-msg {

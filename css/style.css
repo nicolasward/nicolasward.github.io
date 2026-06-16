@@ -20,7 +20,7 @@
 
   /* Ink, surfaces & lines (semantic aliases over the Flexoki grey ramp) */
   --bg:        var(--flexoki-paper);   /* base surface (cards, ring stroke)  */
-  --fg:        var(--flexoki-black);   /* primary text                       */
+  --fg:        #1D1D1F;                /* primary text (Apple near-black)     */
   --fg-muted:  var(--flexoki-600);     /* secondary text: meta, labels, captions */
   --fg-faint:  var(--flexoki-300);     /* tertiary text / faint accents      */
   --surface:   var(--flexoki-50);      /* raised fills: code, blockquote     */
@@ -252,7 +252,7 @@ html.vt-toggling[data-theme="dark"] .site-header.scrolled {
 }
 
 .site-title .nav-name {
-  color: var(--flexoki-black);
+  color: var(--fg);
 }
 
 [data-theme="dark"] .site-title .nav-name {

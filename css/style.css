@@ -1996,20 +1996,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   to   { transform: translateX(400%) rotate(18deg); }
 }
 
-/* Newsletter success confetti (see .confetti-bit) reuses this fly-out. */
-@keyframes confetti-fly {
-  0% {
-    transform: translate(-50%, -50%) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--rot));
-    opacity: 0;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .confetti-bit { display: none; }
   .progress-shine::before { animation: none; }
 }
 
@@ -2134,23 +2121,6 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 /* Keep the content above the aurora layer. */
 .newsletter-intro,
 .newsletter-form { position: relative; z-index: 1; }
-/* Confetti burst on success (spawned in site.js): the exact reading-ring pop
-   (radial fly-out + fade via @keyframes confetti-fly), but anchored to the
-   paper-plane button (left/top 50% of it) so it tracks the plane's position. */
-.confetti-bit {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 50;
-  width: var(--size, 8px);
-  height: calc(var(--size, 8px) * 0.42);
-  background: var(--accent);
-  filter: brightness(var(--b, 1));
-  border-radius: 1px;
-  pointer-events: none;
-  will-change: transform, opacity;
-  animation: confetti-fly var(--dur, 800ms) cubic-bezier(0.15, 0.65, 0.35, 1) forwards;
-}
 .newsletter-heading {
   margin: 0 0 0.45rem;
   font-size: 1.32rem;
@@ -2171,7 +2141,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.35rem 0.35rem 0.35rem 1.1rem;
+  padding: 0.35rem 0.55rem 0.35rem 1.1rem;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--canvas);         /* cool recessed field against the white card */
@@ -2265,15 +2235,13 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-submit:active { transform: scale(0.9); }
 .newsletter-submit .ns-state {
   grid-area: 1 / 1;
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.35rem;
+  height: 1.35rem;
 }
 /* Chevron → checkmark: the glyph is a single two-segment path whose `d` is
    tweened in JS on submit (the › unfolds into the ✓), so it morphs identically
-   across browsers — CSS `d` animation is unreliable on iOS Safari. */
-.newsletter-form.is-done .ns-mark-path {
-  stroke: url(#ns-check-grad);       /* warms into the teal→sunset→plum tick */
-}
+   across browsers — CSS `d` animation is unreliable on iOS Safari. It keeps the
+   button's own colour throughout (no gradient). */
 /* Inline message */
 .newsletter-msg {
   margin: 0.7rem 0 0 0.2rem;

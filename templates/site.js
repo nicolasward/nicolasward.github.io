@@ -919,28 +919,6 @@
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      // A confetti pop on success (before liftoff): the exact reading-ring burst
-      // (radial fly-out + fade, see .confetti-bit / @keyframes confetti-fly), but
-      // parented to the paper-plane button so it stays aligned with the plane
-      // regardless of keyboard/scroll/layout shifts.
-      function confettiBurst(origin) {
-        if (reduce || !origin) return;
-        for (var i = 0; i < 50; i++) {
-          var piece = document.createElement('div');
-          piece.className = 'confetti-bit';
-          var angle = Math.random() * Math.PI * 2;
-          var dist = 55 + Math.random() * 90;
-          piece.style.setProperty('--tx', (Math.cos(angle) * dist).toFixed(1) + 'px');
-          piece.style.setProperty('--ty', (Math.sin(angle) * dist).toFixed(1) + 'px');
-          piece.style.setProperty('--rot', Math.round(Math.random() * 720 - 360) + 'deg');
-          piece.style.setProperty('--size', (6 + Math.random() * 5).toFixed(1) + 'px');
-          piece.style.setProperty('--b', (0.85 + Math.random() * 0.4).toFixed(2));
-          piece.style.setProperty('--dur', Math.round(650 + Math.random() * 450) + 'ms');
-          piece.addEventListener('animationend', function () { this.remove(); });
-          origin.appendChild(piece);
-        }
-      }
-
       // Once subscribed (from any touchpoint, this visit or a prior one), the
       // inline cards across the site retire — the header badge stands in for them.
       function retireInlineCards() {
@@ -1040,7 +1018,6 @@
           if (card) card.classList.add('is-subscribed');   // gradient border + colour flush
           var btn = form.querySelector('.newsletter-submit');
           if (btn) btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
-          confettiBurst(btn);                               // celebrate: explode from the plane
           // Persist + broadcast so the header badge flips (and other cards retire).
           try { localStorage.setItem('newsletter-subscribed', '1'); } catch (e) {}
           document.dispatchEvent(new CustomEvent('newsletter:subscribed'));

@@ -2088,8 +2088,21 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-card.is-subscribed::after { opacity: 1; }
 /* On success the border lights up in the accent, alongside the orange check. */
 .newsletter-card.is-subscribed { border-color: transparent; }   /* the gradient ring takes over */
-[data-theme="dark"] .newsletter-card {
-  background: var(--surface);        /* subtly above the near-black canvas */
+[data-theme="dark"] .subscribe-overlay .newsletter-card {
+  background: var(--surface);        /* the overlay card stays dark-on-dark */
+}
+/* The inline card stays white in dark mode: re-bind the palette tokens to their
+   light-mode values for the whole subtree (bg, ink, field, borders, disc). */
+[data-theme="dark"] main .newsletter-card {
+  --canvas:    #f6f8fa;
+  --field:     #ffffff;
+  --fg:        #1D1D1F;
+  --fg-muted:  var(--flexoki-600);
+  --fg-faint:  var(--flexoki-300);
+  --border:    #E1E4E8;
+  --ghost:     #D4D4D4;
+  color: var(--fg);
+  background: var(--field);
 }
 /* Soft gradient aurora behind the content — a nod to the landing page's blobs
    (teal / sunset / plum). Greyscale at rest (monochrome, like the rest of the
@@ -2111,7 +2124,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 /* The colour floods in on subscribe. */
 .newsletter-card.is-subscribed::before { opacity: 1; }
-[data-theme="dark"] .newsletter-card::before {
+[data-theme="dark"] .subscribe-overlay .newsletter-card::before {
   background:
     radial-gradient(80% 120% at 6% -12%,  rgba(127, 227, 217, 0.18), transparent 56%),
     radial-gradient(72% 120% at 99% 2%,   rgba(255, 168, 92, 0.16),  transparent 56%),

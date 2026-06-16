@@ -2273,20 +2273,27 @@ main .newsletter-msg { margin: 0.8rem auto 0; text-align: center; }
   main .newsletter-card:not(.is-subscribed):hover .newsletter-field { border-color: var(--fg); }
 }
 /* Subscribed (inline): the section stays put and eases into a calm, confirmed
-   state — the surrounding content recedes to a muted grey while the submit disc
-   warms to accent (carrying the drawn check) and a thank-you reads crisp. */
+   state — the WHOLE block recedes to a very light muted grey (heading, dek, the
+   binary rule, the pill + its disc and check), leaving only the accent-orange
+   "you're subscribed" line to carry the signal. */
 main .newsletter-card.is-subscribed .newsletter-heading,
-main .newsletter-card.is-subscribed .newsletter-dek {
-  color: var(--fg-faint);
-  transition: color 0.7s ease;
-}
+main .newsletter-card.is-subscribed .newsletter-dek,
 main .newsletter-card.is-subscribed .ns-pixels {
   color: var(--ghost);
   transition: color 0.7s ease;
 }
 main .newsletter-card.is-subscribed .newsletter-field {
-  border-color: var(--fg-faint);
+  border-color: var(--ghost);
   transition: border-color 0.7s ease;
+}
+main .newsletter-card.is-subscribed .newsletter-input:disabled {
+  color: var(--ghost);
+  -webkit-text-fill-color: var(--ghost);
+}
+main .newsletter-form.is-done .newsletter-submit {
+  background: var(--ghost);                /* light-grey disc */
+  color: var(--fg-muted);                  /* a readable muted-grey tick, not white */
+  transition: background-color 0.7s ease, color 0.7s ease;
 }
 main .newsletter-msg.is-success { color: var(--accent); font-weight: 500; }
 

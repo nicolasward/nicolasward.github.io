@@ -9,7 +9,7 @@
   <meta name="theme-color" id="theme-color-meta" content="#f6f8fa">
   <title>If you're remote, ramble — Nico Ward</title>
   <link rel="stylesheet" href="/blog/css/flexoki.css?v=64abfaf4">
-  <link rel="stylesheet" href="/blog/css/style.css?v=4af9e664">
+  <link rel="stylesheet" href="/blog/css/style.css?v=5ca7a7b2">
   <link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feed.xml">
   <script>
     // Apply the saved/system theme SYNCHRONOUSLY, before the body renders, so
@@ -27,12 +27,6 @@
         if (tcm) tcm.setAttribute('content', '#100F0F');
       }
     } catch (e) {}
-    // Already subscribed? Mark it before paint so the header check badge shows
-    // from the first frame (no morph-in blink on every navigation).
-    try {
-      if (localStorage.getItem('newsletter-subscribed') === '1')
-        document.documentElement.classList.add('subscribed');
-    } catch (e) {}
     // Mark that JS is available, so CSS can hide the homepage rows before
     // they roll in (no-JS users keep them visible).
     document.documentElement.classList.add('js');
@@ -48,9 +42,6 @@
   </script>
 </head>
 <body class="article">
-  <!-- Shared gradient for the success checkmarks (referenced by all cards + the
-       header badge), defined once to avoid duplicate IDs across instances. -->
-  <svg aria-hidden="true" style="position:absolute;left:-9999px;top:0;width:0;height:0;overflow:hidden"><defs><linearGradient id="ns-check-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7FE3D9"/><stop offset="0.5" stop-color="#FFA85C"/><stop offset="1" stop-color="#8C78EB"/></linearGradient><linearGradient id="ns-badge-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFA64D"/><stop offset="0.5" stop-color="#FF791B"/><stop offset="1" stop-color="#FF5E3A"/></linearGradient></defs></svg>
   <div class="container">
     <header class="site-header">
       <svg class="pill-outline" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="18" ry="18"/></svg>
@@ -58,10 +49,6 @@
         <a href="/" class="site-title"><span class="nav-name">Nico Ward</span></a><a href="/blog" class="nav-section-link"><span class="nav-slash">/</span> <span class="nav-label">Writing</span></a>
         <span class="nav-spacer"></span>
         <a href="/blog/about">About</a>
-        <button class="nav-subscribe" id="nav-subscribe" type="button" aria-label="Subscribe to the newsletter" title="Subscribe">
-          <svg class="ns-mailbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8.5A6 6 0 0 0 6 8.5c0 6.5-2.8 8.5-2.8 8.5h17.6s-2.8-2-2.8-8.5" pathLength="100"/><path d="M13.7 20.5a2 2 0 0 1-3.4 0" pathLength="100"/></svg>
-          <svg class="ns-badge" viewBox="0 0 24 24" fill="none" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="url(#ns-badge-grad)" pathLength="100"/><path class="ns-badge-shine" d="M5 12.5l4.5 4.5L19 7.5" stroke="#fff" pathLength="100"/></svg>
-        </button>
         <button class="nav-search" id="nav-search" type="button" aria-label="Search" title="Press S to search">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
             <path class="search-glass" pathLength="100" d="M12.39 12.39 A5.5 5.5 0 0 1 4.61 4.61 A5.5 5.5 0 0 1 12.39 12.39 L17.5 17.5"/>
@@ -112,8 +99,8 @@
   <div class="newsletter-card">
     <div class="newsletter-separator" aria-hidden="true"><svg class="ns-pixels" viewBox="0 0 32 2" fill="currentColor" shape-rendering="crispEdges" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="0" y="0" width="3" height="1"/><rect x="4" y="0" width="1" height="1"/><rect x="6" y="0" width="1" height="1"/><rect x="10" y="0" width="4" height="1"/><rect x="18" y="0" width="10" height="1"/><rect x="3" y="1" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="7" y="1" width="3" height="1"/><rect x="14" y="1" width="4" height="1"/><rect x="28" y="1" width="4" height="1"/></svg></div>
     <div class="newsletter-intro">
-      <h2 class="newsletter-heading" id="newsletter-heading">Get new essays in your inbox</h2>
-      <p class="newsletter-dek">Occasional writings on AI, design, and the human mind.</p>
+      <h2 class="newsletter-heading" id="newsletter-heading">New essays in your inbox.</h2>
+      <p class="newsletter-dek">Human-typed, artisanal content to supercharge your thinking.</p>
     </div>
     <form class="newsletter-form" data-endpoint="" novalidate>
       <div class="newsletter-field">
@@ -218,33 +205,6 @@
     </div>
   </div>
 
-  <div class="subscribe-overlay" id="subscribe-overlay" aria-hidden="true">
-    <div class="subscribe-modal" role="dialog" aria-label="Subscribe to the newsletter">
-      <section class="newsletter" aria-labelledby="newsletter-heading">
-  <div class="newsletter-card">
-    <div class="newsletter-separator" aria-hidden="true"><svg class="ns-pixels" viewBox="0 0 32 2" fill="currentColor" shape-rendering="crispEdges" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="0" y="0" width="3" height="1"/><rect x="4" y="0" width="1" height="1"/><rect x="6" y="0" width="1" height="1"/><rect x="10" y="0" width="4" height="1"/><rect x="18" y="0" width="10" height="1"/><rect x="3" y="1" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="7" y="1" width="3" height="1"/><rect x="14" y="1" width="4" height="1"/><rect x="28" y="1" width="4" height="1"/></svg></div>
-    <div class="newsletter-intro">
-      <h2 class="newsletter-heading" id="newsletter-heading">Get new essays in your inbox</h2>
-      <p class="newsletter-dek">Occasional writings on AI, design, and the human mind.</p>
-    </div>
-    <form class="newsletter-form" data-endpoint="" novalidate>
-      <div class="newsletter-field">
-        <input class="newsletter-input" type="email" name="email" inputmode="email"
-               autocomplete="email" spellcheck="false" placeholder="you@example.com"
-               aria-label="Email address" required>
-        <input class="newsletter-gotcha" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <button class="newsletter-submit" type="submit" aria-label="Subscribe">
-          <svg class="ns-state ns-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="ns-mark-path" d="M9 6 L15 12 L9 18" pathLength="100"/></svg>
-        </button>
-      </div>
-      <p class="newsletter-msg" role="status" aria-live="polite"></p>
-    </form>
-    <span class="newsletter-shine" aria-hidden="true"></span>
-  </div>
-</section>
-    </div>
-  </div>
-
   <!-- Mobile swipe-between-articles edge hints (filled + shown by JS). -->
   <div class="swipe-edge swipe-edge--left" aria-hidden="true">
     <span class="swipe-chevron">
@@ -259,6 +219,6 @@
     </span>
   </div>
 
-  <script src="/blog/js/site.js?v=d87a5199"></script>
+  <script src="/blog/js/site.js?v=fe689f42"></script>
 </body>
 </html>

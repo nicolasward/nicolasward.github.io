@@ -185,8 +185,8 @@ def newsletter_section():
   <div class="newsletter-card">
     <div class="newsletter-separator" aria-hidden="true">''' + pixel_separator() + '''</div>
     <div class="newsletter-intro">
-      <h2 class="newsletter-heading" id="newsletter-heading">Get new essays in your inbox</h2>
-      <p class="newsletter-dek">Occasional writings on AI, design, and the human mind.</p>
+      <h2 class="newsletter-heading" id="newsletter-heading">New essays in your inbox.</h2>
+      <p class="newsletter-dek">Human-typed, artisanal content to supercharge your thinking.</p>
     </div>
     <form class="newsletter-form" data-endpoint="" novalidate>
       <div class="newsletter-field">
@@ -204,15 +204,6 @@ def newsletter_section():
   </div>
 </section>'''
 
-
-def subscribe_overlay():
-    """A centered modal that drops the same signup card — opened from the header
-    envelope, so people can convert from anywhere (see site.js)."""
-    return f'''<div class="subscribe-overlay" id="subscribe-overlay" aria-hidden="true">
-    <div class="subscribe-modal" role="dialog" aria-label="Subscribe to the newsletter">
-      {newsletter_section()}
-    </div>
-  </div>'''
 
 
 def build():
@@ -408,7 +399,6 @@ def build():
             content=post_html,
             nav_section=writing_nav,
             body_class="article",
-            subscribe_overlay=subscribe_overlay(),
         )
 
         post_dir = BLOG_DIR / post["slug"]
@@ -458,7 +448,7 @@ def build():
     topic_links = ", ".join(f'<a href="#" data-search="{tag}">{tag}</a>' for tag in all_tags)
 
     home_html = render(home_tpl, post_items=post_items, topic_links=topic_links, latest_section=latest_section, newsletter=newsletter_section())
-    index_html = render(base_tpl, base=BASE_PATH, title=SITE_TITLE, content=home_html, nav_section=writing_nav, body_class="home", subscribe_overlay=subscribe_overlay())
+    index_html = render(base_tpl, base=BASE_PATH, title=SITE_TITLE, content=home_html, nav_section=writing_nav, body_class="home")
     (BLOG_DIR / "index.html").write_text(index_html)
 
     # --- Build static pages ---
@@ -474,7 +464,7 @@ def build():
             title = meta.get("title", filepath.stem.replace("-", " ").title())
 
             pg_html = render(page_tpl, title=title, content=prefix_internal_links(html_content, slug_set, BASE_PATH))
-            full_html = render(base_tpl, base=BASE_PATH, title=f'{title} — {SITE_TITLE}', content=pg_html, nav_section=writing_nav, body_class="page", subscribe_overlay=subscribe_overlay())
+            full_html = render(base_tpl, base=BASE_PATH, title=f'{title} — {SITE_TITLE}', content=pg_html, nav_section=writing_nav, body_class="page")
 
             pg_dir = BLOG_DIR / slug
             pg_dir.mkdir(parents=True, exist_ok=True)

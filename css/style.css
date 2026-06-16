@@ -497,19 +497,10 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 .js body.home .theme-toggle .toggle-knob {
   animation: nav-knob-in 0.35s ease 1.3s backwards;
 }
-/* The subscribe icon (mailbox, or the check badge if already subscribed) draws
-   in too — just before the magnifier, following the left-to-right order. */
-.js body.home .nav-subscribe:not(.is-subscribed) .ns-mailbox > *,
-.js body.home .nav-subscribe.is-subscribed .ns-badge path {
-  stroke-dasharray: 100;
-  animation: nav-stroke-draw 0.4s cubic-bezier(0.65, 0, 0.35, 1) 0.2s backwards;
-}
 @media (prefers-reduced-motion: reduce) {
   .js body.home .site-nav > a,
   .js body.home .head-in,
   .js body.home .nav-search .search-glass,
-  .js body.home .nav-subscribe .ns-mailbox > *,
-  .js body.home .nav-subscribe .ns-badge path,
   .js body.home .theme-toggle .ts-pill,
   .js body.home .theme-toggle .toggle-knob { animation: none; opacity: 1; }
 }
@@ -2088,9 +2079,6 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-card.is-subscribed::after { opacity: 1; }
 /* On success the border lights up in the accent, alongside the orange check. */
 .newsletter-card.is-subscribed { border-color: transparent; }   /* the gradient ring takes over */
-[data-theme="dark"] .subscribe-overlay .newsletter-card {
-  background: var(--surface);        /* the overlay card stays dark-on-dark */
-}
 /* Soft gradient aurora behind the content — a nod to the landing page's blobs
    (teal / sunset / plum). Greyscale at rest (monochrome, like the rest of the
    page); on subscribe it flushes to full colour. */
@@ -2111,12 +2099,6 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 /* The colour floods in on subscribe. */
 .newsletter-card.is-subscribed::before { opacity: 1; }
-[data-theme="dark"] .subscribe-overlay .newsletter-card::before {
-  background:
-    radial-gradient(80% 120% at 6% -12%,  rgba(127, 227, 217, 0.18), transparent 56%),
-    radial-gradient(72% 120% at 99% 2%,   rgba(255, 168, 92, 0.16),  transparent 56%),
-    radial-gradient(95% 140% at 60% 114%, rgba(140, 120, 235, 0.24), transparent 60%);
-}
 .ns-accent { color: var(--accent); }
 /* Keep the content above the aurora layer. */
 .newsletter-intro,
@@ -2267,143 +2249,6 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   .newsletter-field.shake { animation: none; }
 }
 
-/* ===== Header subscribe button + overlay ===== */
-.nav-subscribe {
-  display: inline-grid;              /* stack envelope + check badge */
-  place-items: center;
-  width: 19px;
-  height: 19px;
-  padding: 0;
-  margin: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--fg-muted);
-  transition: color 0.15s ease;
-}
-@media (hover: hover) { .nav-subscribe:not(.is-subscribed):hover { color: var(--accent); } }
-.nav-subscribe svg {
-  grid-area: 1 / 1;
-  width: 19px;
-  height: 19px;
-  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.nav-subscribe .ns-badge { opacity: 0; }
-.nav-subscribe .ns-badge path:not(.ns-badge-shine) { stroke-dasharray: 100; stroke-dashoffset: 0; }  /* drawn at rest */
-/* Subscribed: the envelope fades to the gradient check badge. */
-.nav-subscribe.is-subscribed .ns-mailbox { opacity: 0; transform: scale(0.4); }
-.nav-subscribe.is-subscribed .ns-badge { opacity: 1; }
-/* Just subscribed (this session): the check draws itself in, rather than popping. */
-.nav-subscribe.just-subscribed .ns-badge path:not(.ns-badge-shine) {
-  animation: ns-badge-draw 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
-}
-@keyframes ns-badge-draw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
-/* Tapping the subscribed badge sends a bright spark travelling along the check
-   (white core + a warm accent glow so it stays visible on light backgrounds),
-   paired with a little scale-pulse. Driven in site.js via the Web Animations
-   API. The badge shows its glow outside the viewBox. */
-.ns-badge { overflow: visible; }
-.ns-badge-shine {
-  stroke: #fff;
-  stroke-width: 2.8;
-  filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 2.5px var(--accent));
-  stroke-dasharray: 20 220;
-  stroke-dashoffset: 20;     /* bright dash parked just off the path → invisible at rest */
-  opacity: 0;
-}
-/* Pre-marked subscribed (head script): badge shown from first paint, no blink. */
-html.subscribed .nav-subscribe .ns-mailbox { opacity: 0; transform: scale(0.4); }
-html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
-.nav-subscribe.is-subscribed { cursor: default; }
-
-/* Centered modal that drops the signup card. */
-.subscribe-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: grid;
-  place-items: center;
-  padding: 1.5rem;
-  background: var(--overlay-bg);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s ease;
-}
-/* Only blur while it's actually shown — leaving backdrop-filter applied on the
-   closed (opacity:0) overlay keeps iOS blurring the page behind it, which
-   ghosts the sticky header. */
-.subscribe-overlay.open,
-.subscribe-overlay.closing {
-  -webkit-backdrop-filter: blur(16px);
-          backdrop-filter: blur(16px);
-}
-.subscribe-overlay.open { opacity: 1; pointer-events: auto; }
-.subscribe-modal {
-  width: 100%;
-  max-width: 460px;
-}
-.subscribe-overlay .newsletter { margin: 0; }
-
-/* --- Sketch outline (shared) -------------------------------------------
-   A 1px dark contour traced over a box. The card keeps its fill; the contour
-   becomes the visible border. The real border drops to zero width (not just
-   transparent) so the drawn line sits exactly on the box edge — otherwise the
-   contour, anchored to the padding box, reads as a second outline ~1px inside
-   the fill edge. The overlay draws the card then the input bar (each with its
-   contour); the inline cards draw only the outer card border, scrubbed to
-   scroll (set from site.js) — their input box keeps a dark border that flushes
-   in with the contents. */
-.subscribe-overlay .newsletter-card,
-.subscribe-overlay .newsletter-field,
-.newsletter-card.has-draw { border-width: 0; }
-.subscribe-overlay .newsletter-field,
-.newsletter-card.has-draw .newsletter-field { position: relative; }
-/* Inline input box: no contour draw — it carries a dark-grey border that
-   flushes in from muted with the rest of the contents (via the form opacity). */
-.newsletter-card.has-draw .newsletter-field { border-color: var(--fg); }
-/* On subscribe the gradient ring takes over — fade the dark sketch away. */
-.newsletter-card.is-subscribed .draw-outline { opacity: 0; transition: opacity 0.4s ease; }
-
-/* Inline cards develop in: the contents stay fully hidden while the outer
-   border draws, then the dark grey glimmers in as a soft diagonal sweep
-   (top-left → bottom-right) tracking scroll via --flush — so you only ever see
-   the line draw first, then the content appear after it. */
-.newsletter-card.has-draw .newsletter-intro,
-.newsletter-card.has-draw .newsletter-form {
-  --edge: calc(var(--flush, 0) * 150% - 25%);
-  -webkit-mask-image: linear-gradient(135deg, #000 var(--edge), rgba(0, 0, 0, 0) calc(var(--edge) + 26%));
-          mask-image: linear-gradient(135deg, #000 var(--edge), rgba(0, 0, 0, 0) calc(var(--edge) + 26%));
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
-}
-/* On success the whole card is revealed (no partial wipe) for the colour flush. */
-.newsletter-card.has-draw.is-subscribed .newsletter-intro,
-.newsletter-card.has-draw.is-subscribed .newsletter-form {
-  -webkit-mask-image: none;
-          mask-image: none;
-}
-
-.draw-outline {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  pointer-events: none;
-  z-index: 2;
-}
-.draw-outline rect {
-  fill: none;
-  stroke: var(--fg);                 /* dark-grey sketch line */
-  stroke-width: 1;
-  stroke-linecap: round;             /* rounded ends on the drawing line */
-  vector-effect: non-scaling-stroke;
-  stroke-dasharray: var(--len, 1);
-  stroke-dashoffset: var(--len, 1);
-  transition: stroke 0.25s ease;     /* muted → dark on hover (desktop, below) */
-}
-/* On desktop the card + input-box borders sit muted, going full dark grey only
-   on hover / focus. (Touch devices keep the dark border — no hover to reveal.) */
 /* Inline newsletter: NO card chrome — a borderless, centered "sign up" block
    that sits straight on the page. A pixel-waveform rule up top, a big monochrome
    heading, then a wide pill. Everything is the one ink (var(--fg)); the only
@@ -2429,7 +2274,6 @@ main .newsletter-field::after { display: none; }   /* no gradient ring on the pi
   margin: 0 auto 2.2rem;
   color: var(--fg);
 }
-.subscribe-overlay .newsletter-separator { display: none; }   /* inline only */
 main .newsletter-heading {        /* match the article-title scale */
   font-size: 32.4px;
   font-weight: 500;
@@ -2458,85 +2302,6 @@ main .newsletter-msg { margin: 0.8rem auto 0; text-align: center; }
 @media (hover: hover) {
   main .newsletter-card:not(.is-subscribed):hover .newsletter-field { border-color: var(--fg); }
 }
-/* Overlay entrance (Apple-like cascade): the card contour draws (a touch
-   slow), then the tagline enters, then the dek, then the input bar rises in
-   with its own contour drawing alongside it (and the plane fading) — our
-   signature upward motion throughout. */
-.subscribe-overlay.open .draw-card rect {
-  transition: stroke-dashoffset 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
-  stroke-dashoffset: 0;
-}
-.subscribe-overlay .newsletter-heading,
-.subscribe-overlay .newsletter-dek,
-.subscribe-overlay .newsletter-form {
-  opacity: 0;
-  transform: translateY(14px);
-}
-.subscribe-overlay.open .newsletter-heading {
-  opacity: 1;
-  transform: none;
-  transition: opacity 0.55s ease 0.5s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.5s;
-}
-.subscribe-overlay.open .newsletter-dek {
-  opacity: 1;
-  transform: none;
-  transition: opacity 0.55s ease 0.65s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.65s;
-}
-/* The input bar rises in and its contour draws together — appears as one
-   crisp unit (directly, not a belated fade). */
-.subscribe-overlay.open .newsletter-form {
-  opacity: 1;
-  transform: none;
-  transition: opacity 0.5s ease 0.8s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.8s;
-}
-.subscribe-overlay.open .draw-field rect {
-  transition: stroke-dashoffset 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.8s;
-  stroke-dashoffset: 0;
-}
-
-/* Outro when dismissed without subscribing — the intro in reverse: the input
-   bar undraws + sinks away first, then the dek, then the tagline (bottom to
-   top), and finally the card border undraws. (These come after the .open rules
-   so they win while both classes are present.) */
-.subscribe-overlay.closing .newsletter-form {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.35s ease 0s, transform 0.4s cubic-bezier(0.4, 0, 0.7, 0.2) 0s;
-}
-.subscribe-overlay.closing .draw-field rect {
-  transition: stroke-dashoffset 0.4s cubic-bezier(0.6, 0, 0.4, 1) 0s;
-  stroke-dashoffset: var(--len, 1);
-}
-.subscribe-overlay.closing .newsletter-dek {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.35s ease 0.12s, transform 0.4s cubic-bezier(0.4, 0, 0.7, 0.2) 0.12s;
-}
-.subscribe-overlay.closing .newsletter-heading {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.35s ease 0.24s, transform 0.4s cubic-bezier(0.4, 0, 0.7, 0.2) 0.24s;
-}
-.subscribe-overlay.closing .draw-card rect {
-  transition: stroke-dashoffset 0.45s cubic-bezier(0.6, 0, 0.4, 1) 0.36s;
-  stroke-dashoffset: var(--len, 1);
-}
-.subscribe-close {
-  position: absolute;
-  top: 1.4rem;
-  right: 1.4rem;
-  display: grid;
-  place-items: center;
-  width: 2.4rem;
-  height: 2.4rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--fg-muted);
-  transition: color 0.15s ease;
-}
-.subscribe-close svg { width: 1.4rem; height: 1.4rem; }
-@media (hover: hover) { .subscribe-close:hover { color: var(--fg); } }
 
 /* Small pill toast (positioned in JS): "You're subscribed!", "Link copied", … */
 .toast-pill {
@@ -2557,22 +2322,7 @@ main .newsletter-msg { margin: 0.8rem auto 0; text-align: center; }
 .toast-pill.show { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .nav-subscribe svg,
-  .subscribe-overlay,
-  .subscribe-modal,
   .toast-pill { transition: none; }
-  .nav-subscribe.just-subscribed .ns-badge path { animation: none; }
-  /* Skip the draw-in: show the card straight away (keep the dark borders). */
-  .draw-outline { display: none; }
-  .subscribe-overlay .newsletter-card,
-  .subscribe-overlay .newsletter-field { border-width: 1px; border-color: var(--fg); }
-  .subscribe-overlay .newsletter-heading,
-  .subscribe-overlay .newsletter-dek,
-  .subscribe-overlay .newsletter-form {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
 }
 
 /* ===== Responsive ===== */

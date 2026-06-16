@@ -81,39 +81,6 @@
       };
     })();
 
-    // Shared sketch-outline helper: a 1px dark <rect> traced over a rounded box
-    // (the newsletter card + its input pill). Used both by the subscribe overlay
-    // (timed draw on open) and the inline cards (scrubbed by scroll).
-    var Outline = {
-      make: function (cls) {
-        var NS = 'http://www.w3.org/2000/svg';
-        var svg = document.createElementNS(NS, 'svg');
-        svg.setAttribute('class', 'draw-outline ' + cls);
-        svg.setAttribute('aria-hidden', 'true');
-        svg.appendChild(document.createElementNS(NS, 'rect'));
-        return svg;
-      },
-      // Size the rect to the element's border-box and return the stroke length.
-      size: function (svg, el, rx) {
-        var w = el.offsetWidth, h = el.offsetHeight;
-        if (!w || !h) return 0;
-        svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
-        var rect = svg.firstChild;
-        rect.setAttribute('x', 0.5);
-        rect.setAttribute('y', 0.5);
-        rect.setAttribute('width', w - 1);
-        rect.setAttribute('height', h - 1);
-        rect.setAttribute('rx', rx);
-        rect.setAttribute('ry', rx);
-        // Pad the dash length so the stroke overlaps itself where it meets,
-        // closing the loop cleanly (getTotalLength can fall a hair short of the
-        // true perimeter, otherwise leaving a gap at the seam).
-        var len = (rect.getTotalLength ? rect.getTotalLength() : 2 * (w + h)) + 6;
-        rect.style.setProperty('--len', len);
-        return len;
-      }
-    };
-
     (function () {
       const overlay    = document.getElementById('search-overlay');
       const input      = document.getElementById('search-input');
@@ -842,24 +809,6 @@
       if (!header) return;
       var rect = header.querySelector('.pill-outline rect');
       var svg = header.querySelector('.pill-outline');
-      // Nudge the frosted backdrop so iOS re-renders it: a closing overlay with
-      // its own backdrop-filter can leave the sticky header showing a stale,
-      // ghosted snapshot until something forces a repaint. Briefly perturbing the
-      // blur value (imperceptibly) flushes a fresh one. Listened-for so overlays
-      // can ask for it as they fade out.
-      // A full-screen overlay (subscribe) with its own backdrop-filter covers the
-      // header; on iOS that leaves the header's frosted backdrop showing a stale,
-      // ghosted snapshot when the overlay closes. While covered, turn the header's
-      // own backdrop off (nothing to go stale, and it's hidden anyway); restore it
-      // on close for a clean, fresh render — no flicker.
-      window.addEventListener('header:freeze', function () {
-        header.style.webkitBackdropFilter = 'none';
-        header.style.backdropFilter = 'none';
-      });
-      window.addEventListener('header:refresh', function () {
-        header.style.webkitBackdropFilter = '';
-        header.style.backdropFilter = '';
-      });
       function measure() {
         if (!rect) return;
         // Don't remeasure while an overlay has borrowed the toggle: submitting
@@ -918,19 +867,6 @@
       if (!forms.length) return;
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-      // Once subscribed (from any touchpoint, this visit or a prior one), the
-      // inline cards across the site retire — the header badge stands in for them.
-      function retireInlineCards() {
-        Array.prototype.forEach.call(document.querySelectorAll('.newsletter'), function (nl) {
-          if (nl.closest('.subscribe-overlay')) return;            // keep the overlay card
-          var f = nl.querySelector('.newsletter-form');
-          if (f && f.classList.contains('is-done')) return;        // the submitted one animates itself out
-          nl.style.display = 'none';
-        });
-      }
-      try { if (localStorage.getItem('newsletter-subscribed') === '1') retireInlineCards(); } catch (e) {}
-      document.addEventListener('newsletter:subscribed', function () { setTimeout(retireInlineCards, 50); });
 
       Array.prototype.forEach.call(forms, function (form) {
         var input  = form.querySelector('.newsletter-input');
@@ -1018,10 +954,7 @@
           if (card) card.classList.add('is-subscribed');   // gradient border + colour flush
           var btn = form.querySelector('.newsletter-submit');
           if (btn) btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
-          // Persist + broadcast so the header badge flips (and other cards retire).
-          try { localStorage.setItem('newsletter-subscribed', '1'); } catch (e) {}
-          document.dispatchEvent(new CustomEvent('newsletter:subscribed'));
-          // Hold while the confetti pops + the colour flush lands, then lift off.
+          // Hold while the colour flush lands, then lift off.
           setTimeout(dismiss, reduce ? 1500 : 1400);
         }
 
@@ -1072,141 +1005,5 @@
         input.addEventListener('blur', function () { paused = !!input.value.length; });
         input.addEventListener('input', function () { if (input.value.length) paused = true; });
         timer = setTimeout(tick, 700);
-      });
-    })();
-
-    // Header subscribe button: opens the signup card in an overlay so people can
-    // convert from anywhere. Once subscribed (persisted), it becomes a gradient
-    // check badge that shows a quiet "You're subscribed" note on tap.
-    (function () {
-      var btn = document.getElementById('nav-subscribe');
-      if (!btn) return;
-      var overlay  = document.getElementById('subscribe-overlay');
-      var closeBtn = document.getElementById('subscribe-close');
-      var reduce   = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      try { if (localStorage.getItem('newsletter-subscribed') === '1') btn.classList.add('is-subscribed'); } catch (e) {}
-
-      function showNote() { Toast.show('You’re subscribed!', btn); }
-
-      // --- Draw-in outlines: the shared dark sketch, traced over the card and
-      // the input bar (so the bar appears with its own contour). Built once,
-      // re-sized on each open (it may reflow).
-      var cardOutline = null, fieldOutline = null;
-      function prepDraw() {
-        if (!overlay || reduce) return;
-        var card  = overlay.querySelector('.newsletter-card');
-        var field = overlay.querySelector('.newsletter-field');
-        if (!card || !field) return;
-        if (!cardOutline)  { cardOutline  = Outline.make('draw-card');  card.appendChild(cardOutline); }
-        if (!fieldOutline) { fieldOutline = Outline.make('draw-field'); field.appendChild(fieldOutline); }
-        Outline.size(cardOutline, card, 24);                       // card radius
-        Outline.size(fieldOutline, field, field.offsetHeight / 2); // capsule
-      }
-      // Re-fit the overlay contour if the card changes size while open (e.g. an
-      // error message appears) so the fixed-viewBox outline doesn't distort.
-      if (window.ResizeObserver && overlay) {
-        var ovCard = overlay.querySelector('.newsletter-card');
-        if (ovCard) new ResizeObserver(function () {
-          if (overlay.classList.contains('open')) prepDraw();
-        }).observe(ovCard);
-      }
-
-      var lastFocus = null, closing = false;
-      function openOverlay() {
-        if (!overlay) return;
-        closing = false;
-        lastFocus = document.activeElement;
-        ToggleClose.engage(closeOverlay);   // toggle morphs into the ✕ close (like search)
-        window.dispatchEvent(new Event('header:freeze'));  // park the header's backdrop while covered
-        overlay.classList.remove('closing');
-        prepDraw();                         // size + reset the outlines (hidden)
-        // Flush the reset (dashoffset = full) before flipping to .open, so the
-        // stroke-dashoffset transition actually animates from full → 0 (the trace).
-        void overlay.offsetWidth;
-        overlay.classList.add('open');
-        overlay.setAttribute('aria-hidden', 'false');
-        document.documentElement.style.overflow = 'hidden';
-        // Focus the input only once it has faded in (it's invisible before).
-        var input = overlay.querySelector('.newsletter-input');
-        setTimeout(function () { if (input) input.focus(); }, reduce ? 60 : 1500);
-      }
-      function closeOverlay(skipOutro) {
-        if (!overlay || closing) return;
-        closing = true;
-        document.documentElement.style.overflow = '';
-        ToggleClose.startClose();           // morph the ✕ back to the toggle
-        if (lastFocus && lastFocus.focus) lastFocus.focus();
-        // Restore the header's own backdrop as the overlay's blur clears (it was
-        // parked while covered) — a clean, fresh render with no stale ghost.
-        var refreshHeader = function () {
-          requestAnimationFrame(function () { window.dispatchEvent(new Event('header:refresh')); });
-        };
-        var finish = function () {
-          overlay.classList.remove('open', 'closing');
-          overlay.setAttribute('aria-hidden', 'true');
-          ToggleClose.finishClose();        // re-home the toggle once the morph completes
-          closing = false;
-        };
-        // Subscribed: the card already whooshed off — just fade the backdrop.
-        if (skipOutro === true || reduce) {
-          overlay.classList.remove('open');   // blur drops immediately (gated on .open)
-          overlay.setAttribute('aria-hidden', 'true');
-          refreshHeader();                    // header refrosts behind the fading tint
-          setTimeout(finish, 800);
-          return;
-        }
-        // Dismissed without subscribing: play the intro in reverse (input bar
-        // undraws + sinks, then dek, then tagline, then the card border undraws),
-        // and fade the backdrop once the content is on its way out.
-        overlay.classList.add('closing');
-        setTimeout(function () { overlay.classList.remove('open'); refreshHeader(); }, 500);
-        setTimeout(finish, 950);
-      }
-
-      btn.addEventListener('click', function () {
-        if (btn.classList.contains('is-subscribed')) {
-          showNote();
-          glimmer();
-          return;
-        }
-        openOverlay();
-      });
-      // Send a bright dash travelling along the check — driven via the Web
-      // Animations API so it reliably restarts on every tap (and cleans up after
-      // itself) regardless of class/animation state.
-      function glimmer() {
-        if (reduce) return;
-        var shine = btn.querySelector('.ns-badge-shine');
-        var badge = btn.querySelector('.ns-badge');
-        if (shine && shine.animate) {
-          shine.animate([
-            { strokeDashoffset: 20,   opacity: 0, offset: 0 },
-            { opacity: 1, offset: 0.12 },
-            { opacity: 1, offset: 0.85 },
-            { strokeDashoffset: -100, opacity: 0, offset: 1 }
-          ], { duration: 650, easing: 'ease-in-out' });
-        }
-        if (badge && badge.animate) {       // a little throb so there's clear motion too
-          badge.animate([
-            { transform: 'scale(1)' },
-            { transform: 'scale(1.22)', offset: 0.4 },
-            { transform: 'scale(1)' }
-          ], { duration: 520, easing: 'cubic-bezier(0.34, 1.6, 0.5, 1)' });
-        }
-      }
-      if (overlay) {
-        overlay.addEventListener('click', function (e) { if (e.target === overlay) closeOverlay(); });
-        if (closeBtn) closeBtn.addEventListener('click', closeOverlay);
-        document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape' && overlay.classList.contains('open')) closeOverlay();
-        });
-      }
-
-      // Only flip the badge once the card has actually lifted off (and the modal
-      // closes), and draw the check in rather than popping it.
-      document.addEventListener('newsletter:lifted', function () {
-        btn.classList.add('is-subscribed', 'just-subscribed');
-        if (overlay && overlay.classList.contains('open')) closeOverlay(true);  // skip outro — card already lifted
       });
     })();

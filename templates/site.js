@@ -1042,6 +1042,39 @@
       });
     })();
 
+    // Typewriter placeholder for the inline newsletter input: types then erases a
+    // rotation of playful addresses. Pauses while the field is focused; honours
+    // reduced-motion (falls back to a static placeholder).
+    (function () {
+      var inputs = document.querySelectorAll('main .newsletter-input');
+      if (!inputs.length) return;
+      var emails = ['steve@apple.com', 'claude@shannon.me', 'rich@feynman.io', 'alan@turing.xyz'];
+      var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      Array.prototype.forEach.call(inputs, function (input) {
+        if (reduce) { input.setAttribute('placeholder', emails[0]); return; }
+        var idx = 0, ch = 0, typing = true, paused = false, timer;
+        function set(text) { input.setAttribute('placeholder', text); }
+        function tick() {
+          if (paused) { timer = setTimeout(tick, 400); return; }
+          var word = emails[idx];
+          if (typing) {
+            set(word.slice(0, ++ch));
+            if (ch >= word.length) { typing = false; timer = setTimeout(tick, 1500); }
+            else timer = setTimeout(tick, 80 + Math.random() * 70);
+          } else {
+            set(word.slice(0, --ch));
+            if (ch <= 0) { typing = true; idx = (idx + 1) % emails.length; timer = setTimeout(tick, 380); }
+            else timer = setTimeout(tick, 42);
+          }
+        }
+        // Don't shuffle the placeholder out from under someone mid-interaction.
+        input.addEventListener('focus', function () { paused = true; });
+        input.addEventListener('blur', function () { paused = !!input.value.length; });
+        input.addEventListener('input', function () { if (input.value.length) paused = true; });
+        timer = setTimeout(tick, 700);
+      });
+    })();
+
     // Header subscribe button: opens the signup card in an overlay so people can
     // convert from anywhere. Once subscribed (persisted), it becomes a gradient
     // check badge that shows a quiet "You're subscribed" note on tap.

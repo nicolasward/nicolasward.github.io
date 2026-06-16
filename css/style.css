@@ -2430,11 +2430,11 @@ main .newsletter-field::after { display: none; }   /* no gradient ring on the pi
   color: var(--fg);
 }
 .subscribe-overlay .newsletter-separator { display: none; }   /* inline only */
-main .newsletter-heading {
-  font-size: clamp(1.9rem, 5.5vw, 2.7rem);
-  font-weight: 700;
-  line-height: 1.04;
-  letter-spacing: -0.03em;
+main .newsletter-heading {        /* match the article-title scale */
+  font-size: 32.4px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
   color: var(--fg);
 }
 main .newsletter-dek {

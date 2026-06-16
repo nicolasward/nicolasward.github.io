@@ -2023,41 +2023,13 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 
 /* ===== Newsletter ===== */
 .newsletter { margin: 3rem 0 0; }
-/* Dismissal (see dismiss() in site.js): on subscribe the card whooshes up and
-   away — the Apple Mail "sent" effect. It first dips down a touch (gathering
-   momentum), then launches high and fast, fading + blurring only once it has
-   travelled, then collapses. */
-.newsletter-card.is-dismissing {
-  animation: ns-liftoff 0.9s forwards;
-  pointer-events: none;
-}
-@keyframes ns-liftoff {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-    filter: blur(0);
-    animation-timing-function: cubic-bezier(0.34, 0, 0.5, 1);   /* settle into the dip */
-  }
-  22% {
-    transform: translateY(16px) scale(0.99);                    /* anticipation: pull back */
-    opacity: 1;
-    filter: blur(0);
-    animation-timing-function: cubic-bezier(0.55, 0, 0.78, 0);  /* then hard launch */
-  }
-  60% { opacity: 1; }                                           /* stay solid through the launch */
-  100% {
-    transform: translateY(-185px) scale(0.88);                  /* flies out high */
-    opacity: 0;
-    filter: blur(5px);
-  }
-}
 .newsletter-card {
   position: relative;
   padding: 1.6rem 1.8rem;
   border: 1px solid var(--border);
   border-radius: 24px;
   background: var(--field);          /* cool white base (matches the page field) */
-  transition: border-color 0.35s ease;   /* liftoff itself is the ns-liftoff keyframes */
+  transition: border-color 0.35s ease;
 }
 /* On subscribe the 1px border becomes a gradient ring matching the colour flush:
    a masked pseudo (gradient minus its inner content-box = just the ring) that
@@ -2300,6 +2272,28 @@ main .newsletter-msg { margin: 0.8rem auto 0; text-align: center; }
 @media (hover: hover) {
   main .newsletter-card:not(.is-subscribed):hover .newsletter-field { border-color: var(--fg); }
 }
+/* Subscribed (inline): the section stays put and eases into a calm, confirmed
+   state — the surrounding content recedes to a muted grey while the submit disc
+   warms to accent (carrying the drawn check) and a thank-you reads crisp. */
+main .newsletter-card.is-subscribed .newsletter-heading,
+main .newsletter-card.is-subscribed .newsletter-dek {
+  color: var(--fg-muted);
+  transition: color 0.7s ease;
+}
+main .newsletter-card.is-subscribed .ns-pixels {
+  color: var(--fg-faint);
+  transition: color 0.7s ease;
+}
+main .newsletter-card.is-subscribed .newsletter-field {
+  border-color: var(--fg-faint);
+  transition: border-color 0.7s ease;
+}
+main .newsletter-form.is-done .newsletter-submit {
+  background: var(--accent);          /* the one colour pop — success */
+  color: #fff;
+  opacity: 1;
+}
+main .newsletter-msg.is-success { color: var(--fg); font-weight: 500; }
 
 /* Small pill toast (positioned in JS): "You're subscribed!", "Link copied", … */
 .toast-pill {

@@ -888,38 +888,6 @@
           field.classList.add('shake');
           input.focus();
         }
-        // Collapse the emptied section to nothing.
-        function collapse() {
-          section.style.height = section.offsetHeight + 'px';
-          section.style.overflow = 'hidden';
-          void section.offsetHeight;
-          section.style.transition = 'height 0.5s cubic-bezier(0.22, 1, 0.36, 1), ' +
-            'margin-top 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
-          requestAnimationFrame(function () {
-            section.style.height = '0px';
-            section.style.marginTop = '0px';
-          });
-        }
-        // Draw the card out: content + fill fade while an outline traced over the
-        // Soft scale-down + blur + fade (keeping the orange border), then collapse.
-        var inOverlay = !!form.closest('.subscribe-overlay');
-        function lifted() { document.dispatchEvent(new CustomEvent('newsletter:lifted')); }
-        function dismiss() {
-          var card = section && section.querySelector('.newsletter-card');
-          if (reduce || !card) {
-            lifted();                                  // the card is "gone" — flip the badge
-            if (!inOverlay && section) section.style.display = 'none';
-            return;
-          }
-          section.style.pointerEvents = 'none';
-          card.classList.add('is-dismissing');
-          card.addEventListener('animationend', function te(ev) {
-            if (ev.animationName !== 'ns-liftoff') return;   // the liftoff keyframes
-            card.removeEventListener('animationend', te);
-            lifted();                                  // liftoff done (overlay + inline alike)
-            if (!inOverlay) collapse();                // inline: also close the gap
-          });
-        }
         // On success the chevron gives way to a checkmark that draws itself in
         // (rather than morphing): swap the path to the check shape, hidden, then
         // run the stroke from full offset → 0. The path carries pathLength="100",
@@ -941,11 +909,11 @@
           drawCheck();
           input.disabled = true;
           var card = section && section.querySelector('.newsletter-card');
-          if (card) card.classList.add('is-subscribed');   // gradient border + colour flush
+          if (card) card.classList.add('is-subscribed');   // settle into the muted confirmed state
           var btn = form.querySelector('.newsletter-submit');
           if (btn) btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
-          // Hold while the colour flush lands, then lift off.
-          setTimeout(dismiss, reduce ? 1500 : 1400);
+          // The section stays put — a calm, confirmed-in-place state.
+          setMsg('You’re subscribed. Welcome aboard.', 'success');
         }
 
         form.addEventListener('submit', function (e) {

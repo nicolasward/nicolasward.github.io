@@ -2277,11 +2277,11 @@ main .newsletter-msg { margin: 0.8rem auto 0; text-align: center; }
    warms to accent (carrying the drawn check) and a thank-you reads crisp. */
 main .newsletter-card.is-subscribed .newsletter-heading,
 main .newsletter-card.is-subscribed .newsletter-dek {
-  color: var(--fg-muted);
+  color: var(--fg-faint);
   transition: color 0.7s ease;
 }
 main .newsletter-card.is-subscribed .ns-pixels {
-  color: var(--fg-faint);
+  color: var(--ghost);
   transition: color 0.7s ease;
 }
 main .newsletter-card.is-subscribed .newsletter-field {
@@ -2293,7 +2293,7 @@ main .newsletter-form.is-done .newsletter-submit {
   color: #fff;
   opacity: 1;
 }
-main .newsletter-msg.is-success { color: var(--fg); font-weight: 500; }
+main .newsletter-msg.is-success { color: var(--accent); font-weight: 500; }
 
 /* Small pill toast (positioned in JS): "You're subscribed!", "Link copied", … */
 .toast-pill {

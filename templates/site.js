@@ -913,7 +913,7 @@
           var btn = form.querySelector('.newsletter-submit');
           if (btn) btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
           // The section stays put — a calm, confirmed-in-place state.
-          setMsg('You’re subscribed. Welcome aboard.', 'success');
+          setMsg('You’re subscribed — welcome aboard!', 'success');
         }
 
         form.addEventListener('submit', function (e) {

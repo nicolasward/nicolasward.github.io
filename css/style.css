@@ -2243,8 +2243,6 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 @media (prefers-reduced-motion: reduce) {
   .newsletter-submit .ns-state,
   .newsletter-field { transition: none; }
-  .newsletter-form.is-done .ns-check,
-  .newsletter-form.is-done .ns-check path,
   .newsletter-card.is-subscribed .newsletter-shine::before,
   .newsletter-field.shake { animation: none; }
 }

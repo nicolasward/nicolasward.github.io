@@ -920,35 +920,25 @@
             if (!inOverlay) collapse();                // inline: also close the gap
           });
         }
-        // Tween the submit glyph's `d` from the chevron to the checkmark (both
-        // are three-point polylines, so we lerp the points). Driven in JS rather
-        // than via the CSS `d` property, which doesn't animate on iOS Safari.
-        function morphMark() {
+        // On success the chevron gives way to a checkmark that draws itself in
+        // (rather than morphing): swap the path to the check shape, hidden, then
+        // run the stroke from full offset → 0. The path carries pathLength="100",
+        // so the dash units are percentages.
+        function drawCheck() {
           var p = form.querySelector('.ns-mark-path');
           if (!p) return;
-          var from = [[9, 6], [15, 12], [9, 18]];         // chevron ›
-          var to   = [[5, 12.5], [9.5, 17], [19, 7.5]];   // checkmark ✓
-          function dOf(pts) {
-            return 'M' + pts[0][0] + ' ' + pts[0][1] +
-                   ' L' + pts[1][0] + ' ' + pts[1][1] +
-                   ' L' + pts[2][0] + ' ' + pts[2][1];
-          }
-          if (reduce) { p.setAttribute('d', dOf(to)); return; }
-          var dur = 420, t0 = null;
-          function ease(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
-          function frame(ts) {
-            if (t0 === null) t0 = ts;
-            var k = Math.min(1, (ts - t0) / dur), e = ease(k);
-            p.setAttribute('d', dOf(from.map(function (f, i) {
-              return [f[0] + (to[i][0] - f[0]) * e, f[1] + (to[i][1] - f[1]) * e];
-            })));
-            if (k < 1) requestAnimationFrame(frame);
-          }
-          requestAnimationFrame(frame);
+          p.setAttribute('d', 'M5 12.5 L9.5 17 L19 7.5');   // checkmark ✓
+          if (reduce) { p.style.strokeDashoffset = '0'; return; }
+          p.style.transition = 'none';
+          p.style.strokeDasharray = '100';
+          p.style.strokeDashoffset = '100';                 // hidden
+          void p.getBoundingClientRect();                   // flush before animating
+          p.style.transition = 'stroke-dashoffset 0.45s cubic-bezier(0.65, 0, 0.35, 1)';
+          p.style.strokeDashoffset = '0';                   // draw it on
         }
         function succeed() {
-          form.classList.add('is-done');         // chevron morphs to the check
-          morphMark();
+          form.classList.add('is-done');         // chevron → drawn checkmark
+          drawCheck();
           input.disabled = true;
           var card = section && section.querySelector('.newsletter-card');
           if (card) card.classList.add('is-subscribed');   // gradient border + colour flush

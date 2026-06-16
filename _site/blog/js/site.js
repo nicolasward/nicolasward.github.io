@@ -56,12 +56,9 @@ function collapse(){section.style.height=section.offsetHeight+'px';section.style
 var inOverlay=!!form.closest('.subscribe-overlay');function lifted(){document.dispatchEvent(new CustomEvent('newsletter:lifted'));}
 function dismiss(){var card=section&&section.querySelector('.newsletter-card');if(reduce||!card){lifted();if(!inOverlay&&section)section.style.display='none';return;}
 section.style.pointerEvents='none';card.classList.add('is-dismissing');card.addEventListener('animationend',function te(ev){if(ev.animationName!=='ns-liftoff')return;card.removeEventListener('animationend',te);lifted();if(!inOverlay)collapse();});}
-function morphMark(){var p=form.querySelector('.ns-mark-path');if(!p)return;var from=[[9,6],[15,12],[9,18]];var to=[[5,12.5],[9.5,17],[19,7.5]];function dOf(pts){return'M'+pts[0][0]+' '+pts[0][1]+' L'+pts[1][0]+' '+pts[1][1]+' L'+pts[2][0]+' '+pts[2][1];}
-if(reduce){p.setAttribute('d',dOf(to));return;}
-var dur=420,t0=null;function ease(x){return x<0.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;}
-function frame(ts){if(t0===null)t0=ts;var k=Math.min(1,(ts-t0)/dur),e=ease(k);p.setAttribute('d',dOf(from.map(function(f,i){return[f[0]+(to[i][0]-f[0])*e,f[1]+(to[i][1]-f[1])*e];})));if(k<1)requestAnimationFrame(frame);}
-requestAnimationFrame(frame);}
-function succeed(){form.classList.add('is-done');morphMark();input.disabled=true;var card=section&&section.querySelector('.newsletter-card');if(card)card.classList.add('is-subscribed');var btn=form.querySelector('.newsletter-submit');if(btn)btn.setAttribute('aria-label','Subscribed');setTimeout(dismiss,reduce?1500:1400);}
+function drawCheck(){var p=form.querySelector('.ns-mark-path');if(!p)return;p.setAttribute('d','M5 12.5 L9.5 17 L19 7.5');if(reduce){p.style.strokeDashoffset='0';return;}
+p.style.transition='none';p.style.strokeDasharray='100';p.style.strokeDashoffset='100';void p.getBoundingClientRect();p.style.transition='stroke-dashoffset 0.45s cubic-bezier(0.65, 0, 0.35, 1)';p.style.strokeDashoffset='0';}
+function succeed(){form.classList.add('is-done');drawCheck();input.disabled=true;var card=section&&section.querySelector('.newsletter-card');if(card)card.classList.add('is-subscribed');var btn=form.querySelector('.newsletter-submit');if(btn)btn.setAttribute('aria-label','Subscribed');setTimeout(dismiss,reduce?1500:1400);}
 form.addEventListener('submit',function(e){e.preventDefault();if(form.classList.contains('is-done'))return;if(gotcha&&gotcha.value)return;var email=(input.value||'').trim();if(!EMAIL_RE.test(email)){fail('Please enter a valid email address.');return;}
 if(endpoint){var body=new FormData();body.append('email',email);try{fetch(endpoint,{method:'POST',body:body,mode:'no-cors'});}catch(err){}}
 succeed();});});})();(function(){var inputs=document.querySelectorAll('main .newsletter-input');if(!inputs.length)return;var emails=['steve@apple.com','claude@shannon.me','rich@feynman.io','alan@turing.xyz'];var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;Array.prototype.forEach.call(inputs,function(input){if(reduce){input.setAttribute('placeholder',emails[0]);return;}

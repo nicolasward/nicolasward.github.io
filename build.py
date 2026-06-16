@@ -154,11 +154,11 @@ def format_date_list(date_str):
 # Build
 # ---------------------------------------------------------------------------
 
-def pixel_separator(message="read"):
+def pixel_separator(message="think"):
     """A blocky, glitchy pixel rule above the inline newsletter — and a hidden
     message. Each column is one bit of the message in 8-bit ASCII, read left to
     right: a TOP cell means 1, a BOTTOM cell means 0. (It currently spells
-    "read".) Same-bit columns merge into runs so the band reads as a clean glitch
+    "think".) Same-bit columns merge into runs so the band reads as a clean glitch
     waveform. Inherits its colour from `currentColor`."""
     bits = "".join(format(ord(c), "08b") for c in message)
     top = bits                                        # 1 → top track

@@ -2091,19 +2091,6 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 [data-theme="dark"] .subscribe-overlay .newsletter-card {
   background: var(--surface);        /* the overlay card stays dark-on-dark */
 }
-/* The inline card stays white in dark mode: re-bind the palette tokens to their
-   light-mode values for the whole subtree (bg, ink, field, borders, disc). */
-[data-theme="dark"] main .newsletter-card {
-  --canvas:    #f6f8fa;
-  --field:     #ffffff;
-  --fg:        #1D1D1F;
-  --fg-muted:  var(--flexoki-600);
-  --fg-faint:  var(--flexoki-300);
-  --border:    #E1E4E8;
-  --ghost:     #D4D4D4;
-  color: var(--fg);
-  background: var(--field);
-}
 /* Soft gradient aurora behind the content — a nod to the landing page's blobs
    (teal / sunset / plum). Greyscale at rest (monochrome, like the rest of the
    page); on subscribe it flushes to full colour. */
@@ -2417,13 +2404,57 @@ html.subscribed .nav-subscribe .ns-badge { opacity: 1; }
 }
 /* On desktop the card + input-box borders sit muted, going full dark grey only
    on hover / focus. (Touch devices keep the dark border — no hover to reveal.) */
-/* The inline newsletter card is a clean borderless white card (its soft shadow
-   defines it) and just fades up into view — see site.js. The input bar keeps a
-   muted border, going dark on focus (and on card hover on desktop). The popup
-   keeps its drawn dark contour at all times. */
-main .newsletter-card,
+/* Inline newsletter: NO card chrome — a borderless, centered "sign up" block
+   that sits straight on the page. A pixel-waveform rule up top, a big monochrome
+   heading, then a wide pill. Everything is the one ink (var(--fg)); the only
+   colour pop is the submit disc warming to accent on hover. The popup keeps its
+   own bordered, drawn-contour card (rules above), untouched by these. */
+main .newsletter-card {
+  padding: 0.5rem 0 0;
+  border: none;
+  background: none;
+  border-radius: 0;
+  text-align: center;
+}
+main .newsletter-card::before,        /* no aurora */
+main .newsletter-card::after,         /* no gradient ring */
+main .newsletter-shine,               /* no glossy sweep */
+main .newsletter-field::after { display: none; }   /* no gradient ring on the pill */
+/* Pixel separator — a thin glitch band, centered above the heading. */
+.newsletter-separator { line-height: 0; }
+.ns-pixels {
+  display: block;
+  width: clamp(168px, 42%, 300px);
+  height: auto;
+  margin: 0 auto 2.2rem;
+  color: var(--fg);
+}
+.subscribe-overlay .newsletter-separator { display: none; }   /* inline only */
+main .newsletter-heading {
+  font-size: clamp(1.9rem, 5.5vw, 2.7rem);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--fg);
+}
+main .newsletter-dek {
+  margin: 0.7rem auto 1.7rem;
+  max-width: 42ch;
+  font-size: 1.05rem;
+}
+/* Wide, airy pill, centered, transparent so the page shows through. */
+main .newsletter-field {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 0.5rem 0.5rem 0.5rem 1.45rem;
+  background: none;
+  border-color: var(--fg-faint);
+  text-align: left;
+}
 main .newsletter-card:focus-within { border-color: transparent; }
-main .newsletter-field { border-color: var(--fg-faint); }
+main .newsletter-input { font-size: 1.05rem; }
+main .newsletter-submit { width: 2.4rem; height: 2.4rem; }
+main .newsletter-msg { margin: 0.8rem auto 0; text-align: center; }
 @media (hover: hover) {
   main .newsletter-card:not(.is-subscribed):hover .newsletter-field { border-color: var(--fg); }
 }

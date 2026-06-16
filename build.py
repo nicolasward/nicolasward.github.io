@@ -154,13 +154,38 @@ def format_date_list(date_str):
 # Build
 # ---------------------------------------------------------------------------
 
+def pixel_separator():
+    """A blocky, glitchy pixel-waveform rule drawn above the inline newsletter —
+    two rows of unit cells (top / bottom track) merged into runs so there are no
+    seams. Inherits its colour from `currentColor`."""
+    top = "11101010001111000011111111110000"
+    bot = "00010101110000111100000000001111"
+    def runs(bits, y):
+        out, i, n = [], 0, len(bits)
+        while i < n:
+            if bits[i] == "1":
+                j = i
+                while j < n and bits[j] == "1":
+                    j += 1
+                out.append(f'<rect x="{i}" y="{y}" width="{j - i}" height="1"/>')
+                i = j
+            else:
+                i += 1
+        return out
+    rects = "".join(runs(top, 0) + runs(bot, 1))
+    return (f'<svg class="ns-pixels" viewBox="0 0 {len(top)} 2" fill="currentColor" '
+            f'shape-rendering="crispEdges" preserveAspectRatio="xMidYMid meet" '
+            f'aria-hidden="true">{rects}</svg>')
+
+
 def newsletter_section():
     """Email signup block (custom UI). Runs in demo mode until an endpoint is set
     on the form via data-endpoint — see the newsletter handler in site.js."""
     return '''<section class="newsletter" aria-labelledby="newsletter-heading">
   <div class="newsletter-card">
+    <div class="newsletter-separator" aria-hidden="true">''' + pixel_separator() + '''</div>
     <div class="newsletter-intro">
-      <h2 class="newsletter-heading" id="newsletter-heading">Get <span class="ns-accent">new essays</span> in your inbox</h2>
+      <h2 class="newsletter-heading" id="newsletter-heading">Get new essays in your inbox</h2>
       <p class="newsletter-dek">Occasional writings on AI, design, and the human mind.</p>
     </div>
     <form class="newsletter-form" data-endpoint="" novalidate>

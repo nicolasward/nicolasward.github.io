@@ -2079,7 +2079,6 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   border: 1px solid var(--border);
   border-radius: 24px;
   background: var(--field);          /* cool white base (matches the page field) */
-  box-shadow: 0 1px 2px rgba(20, 25, 40, 0.04), 0 16px 40px -16px rgba(20, 25, 40, 0.16);
   transition: border-color 0.35s ease;   /* liftoff itself is the ns-liftoff keyframes */
 }
 /* On subscribe the 1px border becomes a gradient ring matching the colour flush:
@@ -2104,7 +2103,6 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-card.is-subscribed { border-color: transparent; }   /* the gradient ring takes over */
 [data-theme="dark"] .newsletter-card {
   background: var(--surface);        /* subtly above the near-black canvas */
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 16px 40px -16px rgba(0, 0, 0, 0.5);
 }
 /* Soft gradient aurora behind the content — a nod to the landing page's blobs
    (teal / sunset / plum). Greyscale at rest (monochrome, like the rest of the
@@ -2243,10 +2241,10 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-input:disabled { opacity: 1; -webkit-text-fill-color: var(--fg-muted); color: var(--fg-muted); }
 .newsletter-gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 /* Submit: a solid circular button (the inverse of the white card — dark in
-   light mode, light in dark), à la the Apple "+" affordance. Its plane icon
+   light mode, light in dark), à la the Apple "+" affordance. Its chevron
    morphs into a checkmark on success. */
 .newsletter-submit {
-  position: relative;                /* anchors the success confetti to the plane */
+  position: relative;                /* anchors the success confetti to the glyph */
   flex: 0 0 auto;
   display: inline-grid;
   place-items: center;
@@ -2256,44 +2254,34 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   border: none;
   border-radius: 50%;
   background: var(--fg);             /* solid, inverted against the card */
-  color: var(--field);              /* white plane on the dark disc */
+  color: var(--field);              /* white chevron on the dark disc */
   cursor: pointer;
   transition: transform 0.15s ease, background-color 0.2s ease;
 }
-/* On hover the disc warms to the accent orange (with a white icon for contrast)
-   and the plane barrel-rolls around its own keel axis — a quick fighter-jet
-   dodge. */
+/* On hover the disc simply warms to the accent orange (white glyph for contrast). */
 @media (hover: hover) {
   .newsletter-submit:hover { background: var(--accent); color: #fff; }
-  .newsletter-submit:hover .ns-send { animation: ns-plane-roll 0.65s cubic-bezier(0.45, 0, 0.55, 1); }
-}
-@keyframes ns-plane-roll {
-  from { transform: perspective(160px) rotate3d(-0.7, 0.7, 0, 0deg); }
-  to   { transform: perspective(160px) rotate3d(-0.7, 0.7, 0, 360deg); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .newsletter-submit:hover .ns-send { animation: none; }
 }
 .newsletter-submit:active { transform: scale(0.9); }
 .newsletter-submit .ns-state {
-  grid-area: 1 / 1;                   /* stack plane + check */
+  grid-area: 1 / 1;
   width: 1.15rem;
   height: 1.15rem;
-  transition: opacity 0.12s ease;    /* quick swap */
 }
-.newsletter-submit .ns-check { opacity: 0; transform-origin: center; }
-.ns-check path { stroke-dasharray: 1; stroke-dashoffset: 1; }
-/* Punchy: the plane vanishes fast, the check springs in and snaps its stroke. */
-.newsletter-form.is-done .ns-send { opacity: 0; }
-.newsletter-form.is-done .ns-check {
-  opacity: 1;                        /* stroke is a teal→sunset→plum gradient (see markup) */
-  animation: ns-check-pop 0.32s cubic-bezier(0.34, 1.8, 0.5, 1) forwards;
+/* Chevron → checkmark: a single two-segment path whose `d` morphs, so the glyph
+   smoothly unfolds from the › into the ✓ on submit (Chrome/Safari morph `d`;
+   elsewhere it snaps — still correct). */
+.ns-mark-path {
+  d: path("M9 6 L15 12 L9 18");
+  transition: d 0.42s cubic-bezier(0.65, 0, 0.35, 1);
 }
-.newsletter-form.is-done .ns-check path {
-  animation: ns-check-draw 0.24s cubic-bezier(0.6, 0, 0.25, 1) 0.04s forwards;
+.newsletter-form.is-done .ns-mark-path {
+  d: path("M5 12.5 L9.5 17 L19 7.5");
+  stroke: url(#ns-check-grad);       /* warms into the teal→sunset→plum tick */
 }
-@keyframes ns-check-pop { from { transform: scale(0.3); } to { transform: scale(1); } }
-@keyframes ns-check-draw { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .ns-mark-path { transition: none; }
+}
 /* Inline message */
 .newsletter-msg {
   margin: 0.7rem 0 0 0.2rem;

@@ -2233,11 +2233,14 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-form.is-done .ns-mark { opacity: 0; }
 .newsletter-form.is-loading .ns-spinner,
 .newsletter-form.is-done .ns-spinner { opacity: 1; }
-/* Only the loading phase spins; the success slide drives rotation from JS. */
+/* Only the loading phase spins; the success slide drives rotation from JS.
+   Counter-clockwise so the head's motion at the seam continues DOWN into the
+   checkmark (a clockwise spin would move up there → the head would have to
+   reverse, reading as a retreat). */
 .newsletter-form.is-loading .ns-spinner { animation: ns-spin 0.7s linear infinite; }
 @keyframes ns-spin {
   from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  to   { transform: rotate(-360deg); }
 }
 /* Grey confetti pop from the glyph — the exact radial fly-out + fade the
    reading-progress ring used on complete. Spawned in site.js, anchored to the

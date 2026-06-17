@@ -2207,10 +2207,11 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   cursor: pointer;
   transition: transform 0.15s ease, color 0.2s ease;
 }
-/* Darkens with the pill on focus; warms to accent on hover. */
+/* Darkens with the pill — on focus, and on hovering the card (the same trigger
+   the input border uses). Never accent. */
 .newsletter-field:focus-within .newsletter-submit { color: var(--fg); }
 @media (hover: hover) {
-  .newsletter-submit:hover { color: var(--accent); }
+  main .newsletter-card:not(.is-subscribed):hover .newsletter-submit { color: var(--fg); }
 }
 .newsletter-submit:active { transform: scale(0.9); }
 .newsletter-submit .ns-state {

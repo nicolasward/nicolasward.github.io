@@ -58,9 +58,11 @@ function succeed(){form.classList.add('is-done');drawCheck();input.disabled=true
 form.addEventListener('submit',function(e){e.preventDefault();if(form.classList.contains('is-done'))return;if(gotcha&&gotcha.value)return;var email=(input.value||'').trim();if(!EMAIL_RE.test(email)){fail('Please enter a valid email address.');return;}
 if(endpoint){var body=new FormData();body.append('email',email);try{fetch(endpoint,{method:'POST',body:body,mode:'no-cors'});}catch(err){}}
 succeed();});});})();(function(){var inputs=document.querySelectorAll('main .newsletter-input');if(!inputs.length)return;var emails=['steve@apple.com','claude@shannon.me','rich@feynman.io','alan@turing.xyz'];var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;Array.prototype.forEach.call(inputs,function(input){if(reduce){input.setAttribute('placeholder',emails[0]);return;}
-var idx=0,ch=0,typing=true,paused=false,timer;function set(text){input.setAttribute('placeholder',text);}
-function tick(){if(paused){timer=setTimeout(tick,400);return;}
-var word=emails[idx];if(typing){set(word.slice(0,++ch));if(ch>=word.length){typing=false;timer=setTimeout(tick,1500);}
-else timer=setTimeout(tick,80+Math.random()*70);}else{set(word.slice(0,--ch));if(ch<=0){typing=true;idx=(idx+1)%emails.length;timer=setTimeout(tick,380);}
-else timer=setTimeout(tick,42);}}
-input.addEventListener('focus',function(){paused=true;});input.addEventListener('blur',function(){paused=!!input.value.length;});input.addEventListener('input',function(){if(input.value.length)paused=true;});timer=setTimeout(tick,700);});})();
+var idx=0,ch=0,typing=true,focused=false,timer;function set(text){input.setAttribute('placeholder',text);}
+function schedule(ms){clearTimeout(timer);timer=setTimeout(tick,ms);}
+function tick(){var word=emails[idx];if(focused||input.value.length){if(ch>0){set(word.slice(0,--ch));schedule(28);}
+return;}
+if(typing){set(word.slice(0,++ch));if(ch>=word.length){typing=false;schedule(1500);}
+else schedule(80+Math.random()*70);}else{set(word.slice(0,--ch));if(ch<=0){typing=true;idx=(idx+1)%emails.length;schedule(380);}
+else schedule(42);}}
+input.addEventListener('focus',function(){focused=true;typing=false;schedule(0);});input.addEventListener('blur',function(){focused=false;if(!input.value.length){typing=true;schedule(280);}});schedule(700);});})();

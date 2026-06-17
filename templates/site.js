@@ -943,25 +943,32 @@
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       Array.prototype.forEach.call(inputs, function (input) {
         if (reduce) { input.setAttribute('placeholder', emails[0]); return; }
-        var idx = 0, ch = 0, typing = true, paused = false, timer;
+        var idx = 0, ch = 0, typing = true, focused = false, timer;
         function set(text) { input.setAttribute('placeholder', text); }
+        function schedule(ms) { clearTimeout(timer); timer = setTimeout(tick, ms); }
         function tick() {
-          if (paused) { timer = setTimeout(tick, 400); return; }
           var word = emails[idx];
+          // Focused (or the user has typed): gracefully retract the demo to empty
+          // and idle there — a clean field, never a frozen half-word.
+          if (focused || input.value.length) {
+            if (ch > 0) { set(word.slice(0, --ch)); schedule(28); }
+            return;
+          }
           if (typing) {
             set(word.slice(0, ++ch));
-            if (ch >= word.length) { typing = false; timer = setTimeout(tick, 1500); }
-            else timer = setTimeout(tick, 80 + Math.random() * 70);
+            if (ch >= word.length) { typing = false; schedule(1500); }
+            else schedule(80 + Math.random() * 70);
           } else {
             set(word.slice(0, --ch));
-            if (ch <= 0) { typing = true; idx = (idx + 1) % emails.length; timer = setTimeout(tick, 380); }
-            else timer = setTimeout(tick, 42);
+            if (ch <= 0) { typing = true; idx = (idx + 1) % emails.length; schedule(380); }
+            else schedule(42);
           }
         }
-        // Don't shuffle the placeholder out from under someone mid-interaction.
-        input.addEventListener('focus', function () { paused = true; });
-        input.addEventListener('blur', function () { paused = !!input.value.length; });
-        input.addEventListener('input', function () { if (input.value.length) paused = true; });
-        timer = setTimeout(tick, 700);
+        input.addEventListener('focus', function () { focused = true; typing = false; schedule(0); });
+        input.addEventListener('blur', function () {
+          focused = false;
+          if (!input.value.length) { typing = true; schedule(280); }   // resume the demo
+        });
+        schedule(700);
       });
     })();

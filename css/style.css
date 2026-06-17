@@ -2272,7 +2272,9 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   color: var(--fg-muted);
 }
 .newsletter-msg:empty { margin: 0; }
-.newsletter-msg.is-error { color: var(--flexoki-red-500); }
+/* Errors stay on-brand: calm muted ink, not a saturated red — the field's shake
+   carries the "try again" signal. */
+.newsletter-msg.is-error { color: var(--fg-muted); }
 .newsletter-msg.is-success { color: var(--fg); }
 /* Invalid-email shake */
 .newsletter-field.shake { animation: ns-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97); }

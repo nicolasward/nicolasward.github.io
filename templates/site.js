@@ -1109,7 +1109,7 @@
           if (form.classList.contains('is-loading') || form.classList.contains('is-done')) return;
           if (gotcha && gotcha.value) return;    // bot trap: ignore silently
           var email = (input.value || '').trim();
-          if (!EMAIL_RE.test(email)) { fail('Please enter a valid email address.'); return; }
+          if (!EMAIL_RE.test(email)) { fail('Hmm, that doesn’t look like an email.'); return; }
           // Fire-and-forget — nothing to wait on.
           if (endpoint) {
             var body = new FormData();

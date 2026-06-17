@@ -10,7 +10,7 @@
    outside it. Call sites reference these tokens — never raw hex. */
 :root {
   /* Brand accent — the one highlight colour (hover, active, focus, caret). */
-  --accent: #FF791B;
+  --accent: #027bfc;
 
   /* Background field — intentionally COOL (not Flexoki's warm paper), near-white.
      canvas paints the root + iOS safe-area; field / field-mid are gradient stops. */
@@ -2252,7 +2252,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   z-index: 50;
   width: var(--size, 8px);
   height: calc(var(--size, 8px) * 0.42);
-  background: var(--fg-muted);
+  background: var(--accent);
   filter: brightness(var(--b, 1));
   border-radius: 1px;
   pointer-events: none;

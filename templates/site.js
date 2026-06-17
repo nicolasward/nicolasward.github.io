@@ -960,9 +960,9 @@
           var ang = spinAngle(svg);
           if (svg) svg.style.transform = 'rotate(' + ang + 'deg)';   // freeze the live angle…
           form.classList.remove('is-loading');                       // …then stop the CSS spin (no snap)
-          var target = Math.ceil(ang / 360) * 360;                   // decelerate forward to the next whole turn (upright)
-          var dur = 480, t0 = null;
-          function ease(x) { return 1 - Math.pow(1 - x, 3); }        // ease-out
+          var target = Math.round(ang / 360) * 360;                  // settle to the NEAREST upright — minimal spin so the morph leads
+          var dur = 650, t0 = null;
+          function ease(x) { return x * x * x * (x * (x * 6 - 15) + 10); }   // smootherstep — a smooth glide
           function frame(ts) {
             if (t0 === null) t0 = ts;
             var k = Math.min(1, (ts - t0) / dur), e = ease(k);

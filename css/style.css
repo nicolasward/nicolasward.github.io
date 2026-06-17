@@ -2291,9 +2291,9 @@ main .newsletter-card.is-subscribed .newsletter-input:disabled {
   -webkit-text-fill-color: var(--ghost);
 }
 main .newsletter-form.is-done .newsletter-submit {
-  background: var(--border);               /* very faint disc, recedes with the rest */
-  color: var(--fg-faint);                  /* soft, low-contrast tick */
-  transition: background-color 0.7s ease, color 0.7s ease;
+  background: transparent;                 /* the circle dissolves as the check draws */
+  color: var(--fg-faint);                  /* soft grey tick, left standing on its own */
+  transition: background-color 0.45s ease;
 }
 main .newsletter-msg.is-success { color: var(--fg); font-weight: 500; }
 

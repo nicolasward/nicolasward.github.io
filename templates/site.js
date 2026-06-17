@@ -1040,6 +1040,20 @@
         var again = form.querySelector('.newsletter-again');
         if (again) again.addEventListener('click', reset);
 
+        // Easter egg: once subscribed, tapping the muted checkmark gives it a
+        // quick celebratory twirl and another confetti pop.
+        var submitBtn = form.querySelector('.newsletter-submit');
+        if (submitBtn) submitBtn.addEventListener('click', function (e) {
+          if (!form.classList.contains('is-done')) return;   // only in the subscribed state
+          e.preventDefault();
+          var svg = form.querySelector('.ns-spinner');
+          if (svg && svg.animate && !reduce) {
+            svg.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }],
+              { duration: 540, easing: 'cubic-bezier(0.34, 1.2, 0.5, 1)' });
+          }
+          confettiBurst(submitBtn);
+        });
+
         // Submit → the arrow gives way to a loading ring for a beat, which then
         // morphs into the checkmark. (Cosmetic — the request is fire-and-forget.)
         function startLoading() {

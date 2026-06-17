@@ -951,12 +951,11 @@
           if (svg) svg.style.transform = 'rotate(' + ang + 'deg)';   // freeze the live angle…
           form.classList.remove('is-loading');                       // …then stop the CSS spin (no snap)
           var target = Math.round(ang / 360) * 360;                  // settle to the nearest upright
-          // One continuous motion: the spin eases out (front-loaded) while the
-          // snake's head glides off the ring and traces the check (smootherstep,
-          // so it leads out as the spin settles) — no held pause, no kink.
-          var dur = 760, t0 = null;
-          function easeRot(x) { return 1 - Math.pow(1 - x, 3); }                // ease-out — spin decelerates early
-          function easeSlide(x) { return x * x * x * (x * (x * 6 - 15) + 10); }  // smootherstep — gentle in/out
+          // One continuous motion, crisp: the spin eases out while the snake's
+          // head darts off the ring and traces the check (snappy ease-out).
+          var dur = 440, t0 = null;
+          function easeRot(x) { return 1 - Math.pow(1 - x, 3); }    // ease-out — spin decelerates
+          function easeSlide(x) { return 1 - Math.pow(1 - x, 4); }  // crisper ease-out — head darts out
           function frame(ts) {
             if (t0 === null) t0 = ts;
             var k = Math.min(1, (ts - t0) / dur);

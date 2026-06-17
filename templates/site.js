@@ -962,8 +962,11 @@
           if (card) card.classList.add('is-subscribed');   // settle into the muted confirmed state
           var btn = form.querySelector('.newsletter-submit');
           if (btn) btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
-          // The section stays put — a calm, confirmed-in-place state.
-          setMsg('You’re subscribed — welcome aboard!', 'success');
+          // Let the checkmark finish drawing before the confirmation reads in —
+          // a beat of breathing room so it doesn't all land at once.
+          setTimeout(function () {
+            setMsg('You’re subscribed — welcome aboard!', 'success');
+          }, reduce ? 0 : 600);
         }
         // "Subscribe another email": unwind the confirmed state back to a fresh,
         // editable form (the arrow returns, the muting lifts) and focus the field.

@@ -2241,6 +2241,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   .newsletter-submit .ns-state,
   .newsletter-field { transition: none; }
   .newsletter-card.is-subscribed .newsletter-shine::before,
+  main .newsletter-msg.is-success,
   .newsletter-field.shake { animation: none; }
 }
 
@@ -2319,7 +2320,15 @@ main .newsletter-form.is-done .newsletter-submit {
   color: var(--fg-faint);                  /* the chevron draws into a soft grey tick */
   transition: color 0.45s ease;
 }
-main .newsletter-msg.is-success { color: var(--fg); font-weight: 500; }
+main .newsletter-msg.is-success {
+  color: var(--fg);
+  font-weight: 500;
+  animation: ns-msg-in 0.5s cubic-bezier(0.22, 1, 0.36, 1);   /* reads in after the check */
+}
+@keyframes ns-msg-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
 /* "Subscribe another email": a quiet reset link, shown only once subscribed. */
 .newsletter-again {
   display: none;

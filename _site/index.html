@@ -141,7 +141,7 @@ html.js .js-reveal { opacity: 0; }
   to   { opacity: 1; }
 }
 @keyframes word-in {
-  from { opacity: 0; transform: translate(-4px, 11px); }
+  from { opacity: 0; transform: translateY(11px); }   /* rise straight up, not from the left */
   to   { opacity: 1; transform: none; }
 }
 
@@ -236,24 +236,31 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   color: var(--fg);
   text-decoration: none;
 }
-/* Hover: an underline that opens from left to right (a 0-width gradient line at
-   the baseline that grows to full width). */
+/* Hover: a rounded underline that opens from left to right under the word (a
+   pseudo-element line whose width grows from 0 → full, anchored at the left). */
 .write-link,
 .design-link,
-.text-link {
-  background-image: linear-gradient(currentColor, currentColor);
-  background-position: 0 100%;
-  background-repeat: no-repeat;
-  background-size: 0 1.5px;
-  transition: background-size 0.32s cubic-bezier(0.65, 0, 0.35, 1);
+.text-link { position: relative; }
+.write-link::after,
+.design-link::after,
+.text-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -0.06em;
+  width: 0;
+  height: 2px;
+  background: currentColor;
+  border-radius: 999px;          /* rounded ends */
+  transition: width 0.32s cubic-bezier(0.65, 0, 0.35, 1);
 }
 @media (hover: hover) {
-  .write-link:hover,
-  .design-link:hover,
-  .text-link:hover { background-size: 100% 1.5px; }
+  .write-link:hover::after,
+  .design-link:hover::after,
+  .text-link:hover::after { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .write-link, .design-link, .text-link { transition: none; }
+  .write-link::after, .design-link::after, .text-link::after { transition: none; }
 }
 @keyframes cta-shimmer {
   0%     { background-position: 100% 0; }   /* glow parked off-screen (right) */

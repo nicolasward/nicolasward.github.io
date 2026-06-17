@@ -1734,11 +1734,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 
 .search-input::placeholder {
-  color: var(--ghost);
-}
-
-[data-theme="dark"] .search-input::placeholder {
-  color: var(--ghost);
+  color: var(--fg-muted);   /* readable in both themes (was the faint --ghost) */
 }
 
 .search-results {

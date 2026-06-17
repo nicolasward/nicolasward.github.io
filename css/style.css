@@ -1931,7 +1931,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   transition: transform 0.42s cubic-bezier(0.34, 1.4, 0.5, 1);
 }
 #progress-grad .pg-from { stop-color: var(--accent); }
-#progress-grad .pg-to   { stop-color: #005c8a; }
+#progress-grad .pg-to   { stop-color: #00B56D; }
 
 .progress-percent {
   position: absolute;

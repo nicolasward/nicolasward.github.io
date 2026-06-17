@@ -888,25 +888,37 @@
           field.classList.add('shake');
           input.focus();
         }
-        // On success the chevron gives way to a checkmark that draws itself in
-        // (rather than morphing): swap the path to the check shape, hidden, then
-        // run the stroke from full offset → 0. The path carries pathLength="100",
-        // so the dash units are percentages.
-        function drawCheck() {
+        // On success the arrow morphs smoothly into a checkmark: both are drawn
+        // with the same point structure (a 2-point shaft + a 3-point head), so we
+        // lerp each point. The shaft slides onto the check's long up-stroke and the
+        // head reshapes into the tick — no redraw, just a bend. Driven in JS since
+        // the CSS `d` property doesn't animate on iOS Safari.
+        function morphToCheck() {
           var p = form.querySelector('.ns-mark-path');
           if (!p) return;
-          p.setAttribute('d', 'M5 12.5 L9.5 17 L19 7.5');   // checkmark ✓
-          if (reduce) { p.style.strokeDashoffset = '0'; return; }
-          p.style.transition = 'none';
-          p.style.strokeDasharray = '100';
-          p.style.strokeDashoffset = '100';                 // hidden
-          void p.getBoundingClientRect();                   // flush before animating
-          p.style.transition = 'stroke-dashoffset 0.45s cubic-bezier(0.65, 0, 0.35, 1)';
-          p.style.strokeDashoffset = '0';                   // draw it on
+          var from = [[4, 12], [19, 12], [12.5, 5.5], [19, 12], [12.5, 18.5]];   // arrow →
+          var to   = [[9.5, 17], [19, 7.5], [5, 12.5], [9.5, 17], [19, 7.5]];    // checkmark ✓
+          function dOf(q) {
+            return 'M' + q[0][0] + ' ' + q[0][1] + ' L' + q[1][0] + ' ' + q[1][1] +
+                   ' M' + q[2][0] + ' ' + q[2][1] + ' L' + q[3][0] + ' ' + q[3][1] +
+                   ' L' + q[4][0] + ' ' + q[4][1];
+          }
+          if (reduce) { p.setAttribute('d', dOf(to)); return; }
+          var dur = 460, t0 = null;
+          function ease(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+          function frame(ts) {
+            if (t0 === null) t0 = ts;
+            var k = Math.min(1, (ts - t0) / dur), e = ease(k);
+            p.setAttribute('d', dOf(from.map(function (f, i) {
+              return [f[0] + (to[i][0] - f[0]) * e, f[1] + (to[i][1] - f[1]) * e];
+            })));
+            if (k < 1) requestAnimationFrame(frame);
+          }
+          requestAnimationFrame(frame);
         }
         function succeed() {
-          form.classList.add('is-done');         // chevron → drawn checkmark
-          drawCheck();
+          form.classList.add('is-done');         // arrow → checkmark (morph)
+          morphToCheck();
           input.disabled = true;
           var card = section && section.querySelector('.newsletter-card');
           if (card) card.classList.add('is-subscribed');   // settle into the muted confirmed state

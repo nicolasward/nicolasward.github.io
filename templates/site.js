@@ -976,6 +976,7 @@
         // turn — landing the arrow upright. (.ns-mark takes over from the spinner's
         // check, which fades out; both are the same tick, so the handoff is unseen.)
         var ARROW_PTS = [[4, 12], [19, 12], [12.5, 5.5], [19, 12], [12.5, 18.5]];
+        var ARROW_ROT = [[20, 12], [5, 12], [11.5, 18.5], [5, 12], [11.5, 5.5]];   // arrow pre-rotated 180°
         var CHECK_PTS = [[9.5, 17], [19, 7.5], [5, 12.5], [9.5, 17], [19, 7.5]];
         function dPoly(q) {
           return 'M' + q[0][0] + ' ' + q[0][1] + ' L' + q[1][0] + ' ' + q[1][1] +
@@ -988,17 +989,18 @@
           p.style.strokeDasharray = ''; p.style.strokeDashoffset = '';   // no leftover draw-dash
           if (reduce) { p.setAttribute('d', dPoly(ARROW_PTS)); if (svg) svg.style.transform = ''; return; }
           p.setAttribute('d', dPoly(CHECK_PTS));                         // start as the check
-          var dur = 560, t0 = null;
+          var dur = 520, t0 = null;
           function ease(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
           function frame(ts) {
             if (t0 === null) t0 = ts;
             var k = Math.min(1, (ts - t0) / dur), e = ease(k);
+            // Morph toward the pre-rotated arrow; the −180° spin renders it upright.
             p.setAttribute('d', dPoly(CHECK_PTS.map(function (c, i) {
-              return [c[0] + (ARROW_PTS[i][0] - c[0]) * e, c[1] + (ARROW_PTS[i][1] - c[1]) * e];
+              return [c[0] + (ARROW_ROT[i][0] - c[0]) * e, c[1] + (ARROW_ROT[i][1] - c[1]) * e];
             })));
-            if (svg) svg.style.transform = 'rotate(' + (-360 * e).toFixed(2) + 'deg)';   // a full turn → upright
+            if (svg) svg.style.transform = 'rotate(' + (-180 * e).toFixed(2) + 'deg)';   // half turn
             if (k < 1) requestAnimationFrame(frame);
-            else if (svg) svg.style.transform = '';
+            else { p.setAttribute('d', dPoly(ARROW_PTS)); if (svg) svg.style.transform = ''; }  // settle to the clean upright arrow
           }
           requestAnimationFrame(frame);
         }

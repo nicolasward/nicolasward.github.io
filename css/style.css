@@ -21,7 +21,7 @@
   /* Ink, surfaces & lines (semantic aliases over the Flexoki grey ramp) */
   --bg:        var(--flexoki-paper);   /* base surface (cards, ring stroke)  */
   --fg:        #1D1D1F;                /* primary text (Apple near-black)     */
-  --fg-muted:  var(--flexoki-600);     /* secondary text: meta, labels, captions */
+  --fg-muted:  #6e6e73;                /* secondary text: meta, labels, captions */
   --fg-faint:  var(--flexoki-300);     /* tertiary text / faint accents      */
   --surface:   var(--flexoki-50);      /* raised fills: code, blockquote     */
   --border:    #E1E4E8;                /* cool hairline dividers — matches the cool field (Flexoki's grey ramp is warm) */

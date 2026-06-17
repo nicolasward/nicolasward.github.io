@@ -966,12 +966,13 @@
           // a beat of breathing room so it doesn't all land at once.
           setTimeout(function () {
             setMsg('You’re subscribed — welcome aboard!', 'success');
+            form.classList.add('is-confirmed');   // reveals the "subscribe another" link, after
           }, reduce ? 0 : 600);
         }
         // "Subscribe another email": unwind the confirmed state back to a fresh,
         // editable form (the arrow returns, the muting lifts) and focus the field.
         function reset() {
-          form.classList.remove('is-done');
+          form.classList.remove('is-done', 'is-confirmed');
           var card = section && section.querySelector('.newsletter-card');
           if (card) card.classList.remove('is-subscribed');
           input.disabled = false;

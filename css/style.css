@@ -2242,6 +2242,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   .newsletter-field { transition: none; }
   .newsletter-card.is-subscribed .newsletter-shine::before,
   main .newsletter-msg.is-success,
+  main .newsletter-form.is-confirmed .newsletter-again,
   .newsletter-field.shake { animation: none; }
 }
 
@@ -2344,7 +2345,10 @@ main .newsletter-msg.is-success {
   cursor: pointer;
   transition: color 0.2s ease;
 }
-main .newsletter-form.is-done .newsletter-again { display: block; }
+main .newsletter-form.is-confirmed .newsletter-again {
+  display: block;
+  animation: ns-msg-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;   /* after the message */
+}
 @media (hover: hover) { .newsletter-again:hover { color: var(--fg-muted); } }
 
 /* Small pill toast (positioned in JS): "You're subscribed!", "Link copied", … */

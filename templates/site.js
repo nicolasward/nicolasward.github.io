@@ -986,6 +986,28 @@
           }
           requestAnimationFrame(frame);
         }
+        // Easter egg replay: redraw the checkmark stroke from its start to its end
+        // (the tail of the success animation), without the ring or spin. Grows a
+        // dash window over just the check portion (path 69→100).
+        function redrawCheck() {
+          var path = form.querySelector('.ns-spinner-path');
+          if (!path || reduce) return;
+          form.classList.add('is-settling');   // dark through the redraw, then settles back to muted
+          var dur = 440, t0 = null;
+          function ease(x) { return 1 - Math.pow(1 - x, 4); }   // crisp ease-out
+          function frame(ts) {
+            if (t0 === null) t0 = ts;
+            var k = Math.min(1, (ts - t0) / dur), L = 31 * ease(k);
+            path.style.strokeDasharray = L + ' ' + (100 - L);
+            path.style.strokeDashoffset = SNAKE_DONE;          // dash window anchored at the check's start
+            if (k < 1) requestAnimationFrame(frame);
+            else {
+              path.style.strokeDasharray = '31 69';            // back to the resting snake-on-check
+              form.classList.remove('is-settling');
+            }
+          }
+          requestAnimationFrame(frame);
+        }
         // A radial confetti pop from the glyph — the exact fly-out + fade the
         // reading-progress ring used on complete, in muted grey.
         function confettiBurst(origin) {
@@ -1040,17 +1062,13 @@
         var again = form.querySelector('.newsletter-again');
         if (again) again.addEventListener('click', reset);
 
-        // Easter egg: once subscribed, tapping the muted checkmark gives it a
-        // quick celebratory twirl and another confetti pop.
+        // Easter egg: once subscribed, tapping the muted checkmark redraws it
+        // (the tail of the success animation) and pops another confetti burst.
         var submitBtn = form.querySelector('.newsletter-submit');
         if (submitBtn) submitBtn.addEventListener('click', function (e) {
           if (!form.classList.contains('is-done')) return;   // only in the subscribed state
           e.preventDefault();
-          var svg = form.querySelector('.ns-spinner');
-          if (svg && svg.animate && !reduce) {
-            svg.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }],
-              { duration: 540, easing: 'cubic-bezier(0.34, 1.2, 0.5, 1)' });
-          }
+          redrawCheck();
           confettiBurst(submitBtn);
         });
 

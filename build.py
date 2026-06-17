@@ -202,6 +202,7 @@ def newsletter_section():
         </button>
       </div>
       <p class="newsletter-msg" role="status" aria-live="polite"></p>
+      <button class="newsletter-again" type="button">Subscribe another email</button>
     </form>
     <span class="newsletter-shine" aria-hidden="true"></span>
   </div>

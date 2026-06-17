@@ -965,6 +965,23 @@
           // The section stays put — a calm, confirmed-in-place state.
           setMsg('You’re subscribed — welcome aboard!', 'success');
         }
+        // "Subscribe another email": unwind the confirmed state back to a fresh,
+        // editable form (the arrow returns, the muting lifts) and focus the field.
+        function reset() {
+          form.classList.remove('is-done');
+          var card = section && section.querySelector('.newsletter-card');
+          if (card) card.classList.remove('is-subscribed');
+          input.disabled = false;
+          input.value = '';
+          setMsg('');
+          var p = form.querySelector('.ns-mark-path');
+          if (p) p.setAttribute('d', 'M4 12 L19 12 M12.5 5.5 L19 12 L12.5 18.5');   // back to the arrow
+          var btn = form.querySelector('.newsletter-submit');
+          if (btn) btn.setAttribute('aria-label', 'Subscribe');
+          input.focus();
+        }
+        var again = form.querySelector('.newsletter-again');
+        if (again) again.addEventListener('click', reset);
 
         form.addEventListener('submit', function (e) {
           e.preventDefault();

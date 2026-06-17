@@ -2320,6 +2320,23 @@ main .newsletter-form.is-done .newsletter-submit {
   transition: color 0.45s ease;
 }
 main .newsletter-msg.is-success { color: var(--fg); font-weight: 500; }
+/* "Subscribe another email": a quiet reset link, shown only once subscribed. */
+.newsletter-again {
+  display: none;
+  margin: 0.5rem auto 0;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--fg-faint);
+  font: inherit;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+main .newsletter-form.is-done .newsletter-again { display: block; }
+@media (hover: hover) { .newsletter-again:hover { color: var(--fg-muted); } }
 
 /* Small pill toast (positioned in JS): "You're subscribed!", "Link copied", … */
 .toast-pill {

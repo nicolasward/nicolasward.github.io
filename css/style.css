@@ -2226,15 +2226,19 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .ns-mark { transition: opacity 0.22s ease; }
 .ns-spinner {
   opacity: 0;
-  transform: scale(0.6);
-  transition: opacity 0.22s ease, transform 0.22s ease;
+  transition: opacity 0.22s ease;
 }
 .newsletter-form.is-loading .ns-mark { opacity: 0; }
 .newsletter-form.is-loading .ns-spinner {
   opacity: 1;
-  animation: ns-spin 0.7s linear infinite;   /* (overrides the scale → renders at 1) */
+  animation: ns-spin 0.7s linear infinite;
 }
-@keyframes ns-spin { to { transform: rotate(360deg); } }
+/* Explicit from/to so it's a pure, continuous rotation (no base transform leaks
+   into the implicit 0% frame). */
+@keyframes ns-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
 /* Arrow ⇄ checkmark: both the path morph and the half-turn spin are driven in JS
    (site.js, via an inline transform) so the motion is fully reversible — the
    checkmark spins back into the arrow on "Subscribe another email". A grey

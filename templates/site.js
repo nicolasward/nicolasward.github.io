@@ -926,24 +926,14 @@
           field.classList.add('shake');
           input.focus();
         }
-        // The glyph: a static arrow (.ns-mark) at rest, and a morphing spinner
-        // path (.ns-spinner-path) for the submit cycle. The spinner is a 270° arc
-        // and the checkmark, both drawn as M + 3 cubic béziers, so the spinner
-        // reshapes straight into the check in one motion (point-lerp of every
-        // anchor/control). Done in JS since CSS `d` doesn't animate on iOS Safari.
-        var SPIN_ARC = [[6.7, 6.7], [3.77, 9.63], [3.77, 14.37], [6.7, 17.3], [9.63, 20.23], [14.37, 20.23], [17.3, 17.3], [20.23, 14.37], [20.23, 9.63], [17.3, 6.7]];
-        var SPIN_CHK = [[5, 12.5], [6.5, 14], [8, 15.5], [9.5, 17], [11.08, 15.42], [12.67, 13.83], [14.25, 12.25], [15.83, 10.67], [17.42, 9.08], [19, 7.5]];
-        function dCubic(q) {
-          function pt(p) { return p[0] + ' ' + p[1]; }
-          return 'M' + pt(q[0]) + ' C' + pt(q[1]) + ' ' + pt(q[2]) + ' ' + pt(q[3]) +
-                 ' C' + pt(q[4]) + ' ' + pt(q[5]) + ' ' + pt(q[6]) +
-                 ' C' + pt(q[7]) + ' ' + pt(q[8]) + ' ' + pt(q[9]);
-        }
-        function lerpPath(from, to, e) {
-          return dCubic(from.map(function (f, i) {
-            return [f[0] + (to[i][0] - f[0]) * e, f[1] + (to[i][1] - f[1]) * e];
-          }));
-        }
+        // The glyph: a static arrow (.ns-mark) at rest, and the spinner path for
+        // the submit cycle. The spinner's circle and the checkmark are ONE path
+        // (pathLength 100): circle = first ~69 units, check = last ~31. A "snake"
+        // — a dash the length of the check — rides the circle (spun by CSS) while
+        // loading; on success its head leads off the circle and onto the check,
+        // the body following, via a stroke-dashoffset slide.
+        var SNAKE_LOAD = -38;   // snake parked on the circle, head at the seam (5,12.5)
+        var SNAKE_DONE = -69;   // snake fully on the checkmark
         function spinAngle(svg) {
           var cs = svg && getComputedStyle(svg).transform;
           var m = cs && cs.indexOf('matrix') === 0 ? cs.match(/matrix\(([^)]+)\)/) : null;
@@ -951,39 +941,40 @@
           var v = m[1].split(',');
           return Math.atan2(parseFloat(v[1]), parseFloat(v[0])) * 180 / Math.PI;
         }
-        // Spinner → checkmark: settle the spin to upright (continue forward to the
-        // next whole turn) while the arc reshapes into the tick — one motion.
+        // Spinner → checkmark: the spin settles to upright while the snake's head
+        // leads off the ring and traces the tick (body following) — one motion.
         function spinnerToCheck() {
           var svg = form.querySelector('.ns-spinner'), path = form.querySelector('.ns-spinner-path');
           if (!path) return;
-          if (reduce) { form.classList.remove('is-loading'); path.setAttribute('d', dCubic(SPIN_CHK)); if (svg) svg.style.transform = ''; return; }
+          if (reduce) { form.classList.remove('is-loading'); path.style.strokeDashoffset = SNAKE_DONE; if (svg) svg.style.transform = ''; return; }
           var ang = spinAngle(svg);
           if (svg) svg.style.transform = 'rotate(' + ang + 'deg)';   // freeze the live angle…
           form.classList.remove('is-loading');                       // …then stop the CSS spin (no snap)
-          var target = Math.round(ang / 360) * 360;                  // settle to the NEAREST upright — minimal spin so the morph leads
-          var dur = 650, t0 = null;
-          function ease(x) { return x * x * x * (x * (x * 6 - 15) + 10); }   // smootherstep — a smooth glide
+          var target = Math.round(ang / 360) * 360;                  // settle to the nearest upright (minimal residual spin)
+          var dur = 720, t0 = null;
+          function easeRot(x) { return 1 - Math.pow(1 - x, 3); }              // ease-out — spin decelerates early
+          function easeSlide(x) { return x * x * x * (x * (x * 6 - 15) + 10); } // smootherstep — the snake leads out after
           function frame(ts) {
             if (t0 === null) t0 = ts;
-            var k = Math.min(1, (ts - t0) / dur), e = ease(k);
-            path.setAttribute('d', lerpPath(SPIN_ARC, SPIN_CHK, e));
-            if (svg) svg.style.transform = 'rotate(' + (ang + (target - ang) * e).toFixed(2) + 'deg)';
+            var k = Math.min(1, (ts - t0) / dur);
+            path.style.strokeDashoffset = SNAKE_LOAD + (SNAKE_DONE - SNAKE_LOAD) * easeSlide(k);
+            if (svg) svg.style.transform = 'rotate(' + (ang + (target - ang) * easeRot(k)).toFixed(2) + 'deg)';
             if (k < 1) requestAnimationFrame(frame);
             else if (svg) svg.style.transform = '';                  // target is a whole turn ⇒ upright
           }
           requestAnimationFrame(frame);
         }
-        // On reset: the check loosens back toward the arc as the spinner fades out.
+        // On reset: the snake retreats off the check back onto the ring as it fades.
         function spinnerToArc() {
           var path = form.querySelector('.ns-spinner-path'), svg = form.querySelector('.ns-spinner');
           if (!path) return;
-          if (reduce) { path.setAttribute('d', dCubic(SPIN_ARC)); return; }
-          var dur = 280, t0 = null;
+          if (reduce) { path.style.strokeDashoffset = SNAKE_LOAD; if (svg) svg.style.transform = ''; return; }
+          var dur = 300, t0 = null;
           function ease(x) { return 1 - Math.pow(1 - x, 3); }
           function frame(ts) {
             if (t0 === null) t0 = ts;
             var k = Math.min(1, (ts - t0) / dur), e = ease(k);
-            path.setAttribute('d', lerpPath(SPIN_CHK, SPIN_ARC, e));
+            path.style.strokeDashoffset = SNAKE_DONE + (SNAKE_LOAD - SNAKE_DONE) * e;
             if (k < 1) requestAnimationFrame(frame);
             else if (svg) svg.style.transform = '';
           }

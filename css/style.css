@@ -2361,8 +2361,14 @@ main .newsletter-card.is-subscribed .newsletter-input:disabled {
   -webkit-text-fill-color: var(--ghost);
 }
 main .newsletter-form.is-done .newsletter-submit {
-  color: var(--fg-faint);                  /* the chevron draws into a soft grey tick */
+  color: var(--fg-faint);                  /* the check settles into a soft grey tick */
   transition: color 0.45s ease;
+}
+/* …but keep the loader + forming checkmark full dark-grey through the whole
+   animation, regardless of hover/focus; it mutes only once it settles. */
+main .newsletter-form.is-loading .newsletter-submit,
+main .newsletter-form.is-settling .newsletter-submit {
+  color: var(--fg);
 }
 main .newsletter-msg.is-success {
   color: var(--fg);

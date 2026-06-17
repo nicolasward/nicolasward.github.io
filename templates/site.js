@@ -947,6 +947,7 @@
           var svg = form.querySelector('.ns-spinner'), path = form.querySelector('.ns-spinner-path');
           if (!path) return;
           if (reduce) { form.classList.remove('is-loading'); path.style.strokeDashoffset = SNAKE_DONE; if (svg) svg.style.transform = ''; return; }
+          form.classList.add('is-settling');                         // hold the glyph dark through the animation
           var ang = spinAngle(svg);
           if (svg) svg.style.transform = 'rotate(' + ang + 'deg)';   // freeze the live angle…
           form.classList.remove('is-loading');                       // …then stop the CSS spin (no snap)
@@ -962,7 +963,10 @@
             if (svg) svg.style.transform = 'rotate(' + (ang + (target - ang) * easeRot(k)).toFixed(2) + 'deg)';
             path.style.strokeDashoffset = SNAKE_LOAD + (SNAKE_DONE - SNAKE_LOAD) * easeSlide(k);
             if (k < 1) requestAnimationFrame(frame);
-            else if (svg) svg.style.transform = '';                  // target is a whole turn ⇒ upright
+            else {
+              if (svg) svg.style.transform = '';                    // target is a whole turn ⇒ upright
+              form.classList.remove('is-settling');                 // now let the check settle to muted grey
+            }
           }
           requestAnimationFrame(frame);
         }
@@ -1022,7 +1026,7 @@
         // "Subscribe another email": unwind back to a fresh, editable form — the
         // check loosens back to the arc as the spinner fades and the arrow returns.
         function reset() {
-          form.classList.remove('is-done', 'is-confirmed');
+          form.classList.remove('is-done', 'is-confirmed', 'is-settling', 'is-loading');
           var card = section && section.querySelector('.newsletter-card');
           if (card) card.classList.remove('is-subscribed');
           input.disabled = false;

@@ -861,9 +861,6 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
    dropcap (.draw) are settled in JS; everything else is forced here. */
 html.skip-intro body.home .site-nav > a,
 html.skip-intro body.home .head-in,
-html.skip-intro body.home .nav-search .search-glass,
-html.skip-intro body.home .theme-toggle .ts-pill,
-html.skip-intro body.home .theme-toggle .toggle-knob,
 html.skip-intro body.home .section-label,
 html.skip-intro body.home .latest-card,
 html.skip-intro body.home .section-divider,
@@ -877,6 +874,15 @@ html.skip-intro body.page .post-content {
   opacity: 1 !important;
   transform: none !important;
   transition: none !important;
+}
+/* The nav-icon draws + the theme toggle only need their animation cancelled —
+   leave transform/transition intact so the knob keeps its position and the
+   toggle still animates on theme switch. */
+html.skip-intro body.home .nav-search .search-glass,
+html.skip-intro body.home .theme-toggle .ts-pill,
+html.skip-intro body.home .theme-toggle .toggle-knob {
+  animation: none !important;
+  opacity: 1 !important;
 }
 
 /* ===== Mobile: swipe between articles ===== */

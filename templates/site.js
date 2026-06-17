@@ -970,21 +970,24 @@
           }
           requestAnimationFrame(frame);
         }
-        // On reset: the snake retreats off the check back onto the ring as it fades.
-        function spinnerToArc() {
+        // On reset the arrow draws itself back in (a clear, deliberate motion)
+        // while the check fades out; then the spinner is re-armed to its ring for
+        // the next submit (once it's faded, so the reshape isn't seen).
+        function drawArrowIn() {
+          var p = form.querySelector('.ns-mark-path');
+          if (!p) return;
+          if (reduce) { p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; return; }
+          p.style.transition = 'none';
+          p.style.strokeDasharray = '100';
+          p.style.strokeDashoffset = '100';                    // start undrawn
+          void p.getBoundingClientRect();
+          p.style.transition = 'stroke-dashoffset 0.5s cubic-bezier(0.65, 0, 0.35, 1)';
+          p.style.strokeDashoffset = '0';                      // draw it on (shaft, then head)
+        }
+        function rearmSpinner() {
           var path = form.querySelector('.ns-spinner-path'), svg = form.querySelector('.ns-spinner');
-          if (!path) return;
-          if (reduce) { path.style.strokeDashoffset = SNAKE_LOAD; if (svg) svg.style.transform = ''; return; }
-          var dur = 300, t0 = null;
-          function ease(x) { return 1 - Math.pow(1 - x, 3); }
-          function frame(ts) {
-            if (t0 === null) t0 = ts;
-            var k = Math.min(1, (ts - t0) / dur), e = ease(k);
-            path.style.strokeDashoffset = SNAKE_DONE + (SNAKE_LOAD - SNAKE_DONE) * e;
-            if (k < 1) requestAnimationFrame(frame);
-            else if (svg) svg.style.transform = '';
-          }
-          requestAnimationFrame(frame);
+          if (path) { path.style.strokeDasharray = '31 69'; path.style.strokeDashoffset = SNAKE_LOAD; }
+          if (svg) svg.style.transform = '';
         }
         // Easter egg replay: redraw the checkmark stroke from its start to its end
         // (the tail of the success animation), without the ring or spin. Grows a
@@ -1046,7 +1049,7 @@
           }, reduce ? 0 : 1100);
         }
         // "Subscribe another email": unwind back to a fresh, editable form — the
-        // check loosens back to the arc as the spinner fades and the arrow returns.
+        // check fades out while the arrow draws itself back in.
         function reset() {
           form.classList.remove('is-done', 'is-confirmed', 'is-settling', 'is-loading');
           var card = section && section.querySelector('.newsletter-card');
@@ -1056,7 +1059,8 @@
           setMsg('');
           var btn = form.querySelector('.newsletter-submit');
           if (btn) btn.setAttribute('aria-label', 'Subscribe');
-          spinnerToArc();                         // ready the spinner path for next time
+          drawArrowIn();                          // arrow strokes itself back in
+          setTimeout(rearmSpinner, 350);          // re-arm the ring once the check has faded
           input.focus();
         }
         var again = form.querySelector('.newsletter-again');

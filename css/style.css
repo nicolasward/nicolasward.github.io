@@ -2324,7 +2324,7 @@ main .newsletter-form.is-done .newsletter-submit {
 main .newsletter-msg.is-success {
   color: var(--fg);
   font-weight: 500;
-  animation: ns-msg-in 0.5s cubic-bezier(0.22, 1, 0.36, 1);   /* reads in after the check */
+  animation: ns-msg-in 1s cubic-bezier(0.22, 1, 0.36, 1);   /* reads in after the check */
 }
 @keyframes ns-msg-in {
   from { opacity: 0; transform: translateY(4px); }

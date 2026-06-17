@@ -2218,11 +2218,18 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   grid-area: 1 / 1;
   width: 1.55rem;
   height: 1.55rem;
+  transform-origin: 50% 50%;
 }
-/* Chevron → checkmark: the glyph is a single two-segment path whose `d` is
-   tweened in JS on submit (the › unfolds into the ✓), so it morphs identically
-   across browsers — CSS `d` animation is unreliable on iOS Safari. It keeps the
-   button's own colour throughout (no gradient). */
+/* Arrow → checkmark: the path is point-morphed in JS (works on iOS, unlike the
+   CSS `d` property). For a playful flourish the whole glyph spins a full turn —
+   with a little overshoot bounce — as it reshapes. */
+.newsletter-form.is-done .ns-mark {
+  animation: ns-mark-spin 0.62s cubic-bezier(0.34, 1.45, 0.5, 1);
+}
+@keyframes ns-mark-spin {
+  from { transform: rotate(0deg) scale(0.8); }
+  to   { transform: rotate(360deg) scale(1); }
+}
 /* Inline message */
 .newsletter-msg {
   margin: 0.7rem 0 0 0.2rem;
@@ -2245,6 +2252,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   .newsletter-card.is-subscribed .newsletter-shine::before,
   main .newsletter-msg.is-success,
   main .newsletter-form.is-confirmed .newsletter-again,
+  .newsletter-form.is-done .ns-mark,
   .newsletter-field.shake { animation: none; }
 }
 

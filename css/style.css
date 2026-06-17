@@ -2291,11 +2291,11 @@ main .newsletter-card.is-subscribed .newsletter-input:disabled {
   -webkit-text-fill-color: var(--ghost);
 }
 main .newsletter-form.is-done .newsletter-submit {
-  background: var(--ghost);                /* light-grey disc */
-  color: var(--fg-muted);                  /* a readable muted-grey tick, not white */
+  background: var(--border);               /* very faint disc, recedes with the rest */
+  color: var(--fg-faint);                  /* soft, low-contrast tick */
   transition: background-color 0.7s ease, color 0.7s ease;
 }
-main .newsletter-msg.is-success { color: var(--accent); font-weight: 500; }
+main .newsletter-msg.is-success { color: var(--fg); font-weight: 500; }
 
 /* Small pill toast (positioned in JS): "You're subscribed!", "Link copied", … */
 .toast-pill {

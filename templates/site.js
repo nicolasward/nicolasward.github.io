@@ -967,7 +967,7 @@
           setTimeout(function () {
             setMsg('You’re subscribed — welcome aboard!', 'success');
             form.classList.add('is-confirmed');   // reveals the "subscribe another" link, after
-          }, reduce ? 0 : 600);
+          }, reduce ? 0 : 1100);
         }
         // "Subscribe another email": unwind the confirmed state back to a fresh,
         // editable form (the arrow returns, the muting lifts) and focus the field.

@@ -948,7 +948,7 @@
           // The CSS spins the glyph 180°, so morph toward the check pre-rotated
           // 180° about centre (24-x, 24-y) — it lands upright.
           var to = [[14.5, 7], [5, 16.5], [19, 11.5], [14.5, 7], [5, 16.5]];
-          var dur = 400, t0 = null;
+          var dur = 300, t0 = null;
           function ease(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
           function frame(ts) {
             if (t0 === null) t0 = ts;

@@ -2225,7 +2225,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
    it reshapes — the morph target is the check pre-rotated 180°, so it lands
    upright (forwards holds it there). A grey confetti pop fires alongside. */
 .newsletter-form.is-done .ns-mark {
-  animation: ns-mark-spin 0.4s cubic-bezier(0.33, 0, 0.2, 1) forwards;
+  animation: ns-mark-spin 0.3s cubic-bezier(0.33, 0, 0.2, 1) forwards;
 }
 @keyframes ns-mark-spin {
   from { transform: rotate(0deg); }

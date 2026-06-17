@@ -128,7 +128,7 @@
         const pages = items.filter(p => p.type === 'page');
         items = posts.concat(pages);
         if (!items.length) {
-          results.innerHTML = '<li class="search-empty">No result found. Do <a href="mailto:ward.nicolas@outlook.com">reach out</a> if you want to chat about a topic not mentioned here!</li>';
+          results.innerHTML = '<li class="search-empty"><a href="mailto:ward.nicolas@outlook.com">Reach out to me</a> if you’d like to chat about a topic not covered here.</li>';
           return;
         }
         const n = items.length;

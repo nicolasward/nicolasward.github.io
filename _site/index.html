@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>nw</title>
 <script>document.documentElement.classList.add('js');</script>
+<!-- Preload the grain so it dithers the gradient at first paint (avoids the
+     faint banding flash on a cold hard refresh). -->
+<link rel="preload" as="image" href="/grain.png" type="image/png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

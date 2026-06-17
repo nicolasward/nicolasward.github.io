@@ -8,6 +8,10 @@
        to match the page field. Updated live by the theme toggle below. -->
   <meta name="theme-color" id="theme-color-meta" content="#f6f8fa">
   <title>Use the saw, fear the saw — Nico Ward</title>
+  <!-- The grain texture dithers the near-white background gradient; preload it so
+       it's present at first paint. Otherwise, on a hard refresh (cold cache) the
+       grain arrives a frame late and the raw gradient shows faint colour banding. -->
+  <link rel="preload" as="image" href="/grain.png" type="image/png">
   <link rel="stylesheet" href="/blog/css/flexoki.css?v=64abfaf4">
   <link rel="stylesheet" href="/blog/css/style.css?v=799fe2c5">
   <link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feed.xml">

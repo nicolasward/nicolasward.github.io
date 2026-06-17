@@ -926,53 +926,71 @@
           field.classList.add('shake');
           input.focus();
         }
-        // The submit glyph animates between an arrow and a checkmark by lerping a
-        // shared 5-point path (2-pt shaft + 3-pt head) AND spinning the SVG a half
-        // turn — both driven here so the motion is fully reversible. Because the
-        // check is asymmetric, the half-turn target is the check pre-rotated 180°
-        // (24-x, 24-y), so a spin to 180° lands it upright. Done in JS since the
-        // CSS `d` property doesn't animate on iOS Safari.
-        var ARROW    = [[4, 12], [19, 12], [12.5, 5.5], [19, 12], [12.5, 18.5]];
-        var CHECK    = [[14.5, 7], [5, 16.5], [19, 11.5], [14.5, 7], [5, 16.5]];   // pre-rotated 180°
-        var CHECK_UP = [[9.5, 17], [19, 7.5], [5, 12.5], [9.5, 17], [19, 7.5]];    // upright (no-spin)
-        function dOf(q) {
-          return 'M' + q[0][0] + ' ' + q[0][1] + ' L' + q[1][0] + ' ' + q[1][1] +
-                 ' M' + q[2][0] + ' ' + q[2][1] + ' L' + q[3][0] + ' ' + q[3][1] +
-                 ' L' + q[4][0] + ' ' + q[4][1];
+        // The glyph: a static arrow (.ns-mark) at rest, and a morphing spinner
+        // path (.ns-spinner-path) for the submit cycle. The spinner is a 270° arc
+        // and the checkmark, both drawn as M + 3 cubic béziers, so the spinner
+        // reshapes straight into the check in one motion (point-lerp of every
+        // anchor/control). Done in JS since CSS `d` doesn't animate on iOS Safari.
+        var SPIN_ARC = [[6.7, 6.7], [3.77, 9.63], [3.77, 14.37], [6.7, 17.3], [9.63, 20.23], [14.37, 20.23], [17.3, 17.3], [20.23, 14.37], [20.23, 9.63], [17.3, 6.7]];
+        var SPIN_CHK = [[5, 12.5], [6.5, 14], [8, 15.5], [9.5, 17], [11.08, 15.42], [12.67, 13.83], [14.25, 12.25], [15.83, 10.67], [17.42, 9.08], [19, 7.5]];
+        function dCubic(q) {
+          function pt(p) { return p[0] + ' ' + p[1]; }
+          return 'M' + pt(q[0]) + ' C' + pt(q[1]) + ' ' + pt(q[2]) + ' ' + pt(q[3]) +
+                 ' C' + pt(q[4]) + ' ' + pt(q[5]) + ' ' + pt(q[6]) +
+                 ' C' + pt(q[7]) + ' ' + pt(q[8]) + ' ' + pt(q[9]);
         }
-        function easeMark(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
-        // Tween path fromPts→toPts and rotation fromDeg→toDeg over `dur` ms.
-        function animateGlyph(fromPts, toPts, fromDeg, toDeg, dur, done) {
-          var p = form.querySelector('.ns-mark-path');
-          var svg = form.querySelector('.ns-mark');
-          if (!p || !svg) return;
-          var t0 = null;
+        function lerpPath(from, to, e) {
+          return dCubic(from.map(function (f, i) {
+            return [f[0] + (to[i][0] - f[0]) * e, f[1] + (to[i][1] - f[1]) * e];
+          }));
+        }
+        function spinAngle(svg) {
+          var cs = svg && getComputedStyle(svg).transform;
+          var m = cs && cs.indexOf('matrix') === 0 ? cs.match(/matrix\(([^)]+)\)/) : null;
+          if (!m) return 0;
+          var v = m[1].split(',');
+          return Math.atan2(parseFloat(v[1]), parseFloat(v[0])) * 180 / Math.PI;
+        }
+        // Spinner → checkmark: settle the spin to upright (continue forward to the
+        // next whole turn) while the arc reshapes into the tick — one motion.
+        function spinnerToCheck() {
+          var svg = form.querySelector('.ns-spinner'), path = form.querySelector('.ns-spinner-path');
+          if (!path) return;
+          if (reduce) { form.classList.remove('is-loading'); path.setAttribute('d', dCubic(SPIN_CHK)); if (svg) svg.style.transform = ''; return; }
+          var ang = spinAngle(svg);
+          if (svg) svg.style.transform = 'rotate(' + ang + 'deg)';   // freeze the live angle…
+          form.classList.remove('is-loading');                       // …then stop the CSS spin (no snap)
+          var target = Math.ceil(ang / 360) * 360;                   // decelerate forward to the next whole turn (upright)
+          var dur = 480, t0 = null;
+          function ease(x) { return 1 - Math.pow(1 - x, 3); }        // ease-out
           function frame(ts) {
             if (t0 === null) t0 = ts;
-            var k = Math.min(1, (ts - t0) / dur), e = easeMark(k);
-            p.setAttribute('d', dOf(fromPts.map(function (f, i) {
-              return [f[0] + (toPts[i][0] - f[0]) * e, f[1] + (toPts[i][1] - f[1]) * e];
-            })));
-            svg.style.transform = 'rotate(' + (fromDeg + (toDeg - fromDeg) * e).toFixed(2) + 'deg)';
+            var k = Math.min(1, (ts - t0) / dur), e = ease(k);
+            path.setAttribute('d', lerpPath(SPIN_ARC, SPIN_CHK, e));
+            if (svg) svg.style.transform = 'rotate(' + (ang + (target - ang) * e).toFixed(2) + 'deg)';
             if (k < 1) requestAnimationFrame(frame);
-            else if (done) done();
+            else if (svg) svg.style.transform = '';                  // target is a whole turn ⇒ upright
           }
           requestAnimationFrame(frame);
         }
-        function morphToCheck() {
-          var p = form.querySelector('.ns-mark-path');
-          if (!p) return;
-          if (reduce) { p.setAttribute('d', dOf(CHECK_UP)); return; }   // no spin
-          animateGlyph(ARROW, CHECK, 0, 180, 300);
+        // On reset: the check loosens back toward the arc as the spinner fades out.
+        function spinnerToArc() {
+          var path = form.querySelector('.ns-spinner-path'), svg = form.querySelector('.ns-spinner');
+          if (!path) return;
+          if (reduce) { path.setAttribute('d', dCubic(SPIN_ARC)); return; }
+          var dur = 280, t0 = null;
+          function ease(x) { return 1 - Math.pow(1 - x, 3); }
+          function frame(ts) {
+            if (t0 === null) t0 = ts;
+            var k = Math.min(1, (ts - t0) / dur), e = ease(k);
+            path.setAttribute('d', lerpPath(SPIN_CHK, SPIN_ARC, e));
+            if (k < 1) requestAnimationFrame(frame);
+            else if (svg) svg.style.transform = '';
+          }
+          requestAnimationFrame(frame);
         }
-        function morphToArrow() {
-          var p = form.querySelector('.ns-mark-path'), svg = form.querySelector('.ns-mark');
-          if (!p) return;
-          if (reduce) { p.setAttribute('d', dOf(ARROW)); if (svg) svg.style.transform = ''; return; }
-          animateGlyph(CHECK, ARROW, 180, 0, 300, function () { if (svg) svg.style.transform = ''; });
-        }
-        // A radial confetti pop from the submit glyph — the exact fly-out + fade
-        // the reading-progress ring used on complete, in muted grey.
+        // A radial confetti pop from the glyph — the exact fly-out + fade the
+        // reading-progress ring used on complete, in muted grey.
         function confettiBurst(origin) {
           if (reduce || !origin) return;
           for (var i = 0; i < 50; i++) {
@@ -991,26 +1009,25 @@
           }
         }
         function succeed() {
-          form.classList.add('is-done');         // arrow → checkmark (spin + morph)
-          morphToCheck();
+          form.classList.add('is-done');         // keep the spinner shown as is-loading drops
+          spinnerToCheck();                      // spinner morphs into the checkmark
           input.disabled = true;
           var card = section && section.querySelector('.newsletter-card');
           if (card) card.classList.add('is-subscribed');   // settle into the muted confirmed state
           var btn = form.querySelector('.newsletter-submit');
           if (btn) {
             btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
-            confettiBurst(btn);                              // grey pop from the spinning glyph
+            confettiBurst(btn);                              // grey pop as the check forms
           }
-          // Let the checkmark finish drawing before the confirmation reads in —
-          // a beat of breathing room so it doesn't all land at once.
+          // Let the checkmark settle before the confirmation reads in — a beat of
+          // breathing room so it doesn't all land at once.
           setTimeout(function () {
             setMsg('You’re subscribed — welcome aboard!', 'success');
             form.classList.add('is-confirmed');   // reveals the "subscribe another" link, after
           }, reduce ? 0 : 1100);
         }
-        // "Subscribe another email": unwind the confirmed state back to a fresh,
-        // editable form — the checkmark spins back into the arrow (the reverse of
-        // the success animation), the muting lifts, and the field takes focus.
+        // "Subscribe another email": unwind back to a fresh, editable form — the
+        // check loosens back to the arc as the spinner fades and the arrow returns.
         function reset() {
           form.classList.remove('is-done', 'is-confirmed');
           var card = section && section.querySelector('.newsletter-card');
@@ -1020,22 +1037,19 @@
           setMsg('');
           var btn = form.querySelector('.newsletter-submit');
           if (btn) btn.setAttribute('aria-label', 'Subscribe');
-          morphToArrow();                         // check spins back into the arrow
+          spinnerToArc();                         // ready the spinner path for next time
           input.focus();
         }
         var again = form.querySelector('.newsletter-again');
         if (again) again.addEventListener('click', reset);
 
-        // Submit → the arrow spins as a loading ring for a beat, then resolves to
-        // the checkmark. (Cosmetic — the request is fire-and-forget.)
+        // Submit → the arrow gives way to a loading ring for a beat, which then
+        // morphs into the checkmark. (Cosmetic — the request is fire-and-forget.)
         function startLoading() {
           if (reduce) { succeed(); return; }
           form.classList.add('is-loading');
           input.disabled = true;
-          setTimeout(function () {
-            form.classList.remove('is-loading');
-            succeed();
-          }, 1400);
+          setTimeout(succeed, 1400);
         }
         form.addEventListener('submit', function (e) {
           e.preventDefault();

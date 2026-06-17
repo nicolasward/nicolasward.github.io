@@ -199,7 +199,7 @@ def newsletter_section():
         <input class="newsletter-gotcha" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
         <button class="newsletter-submit" type="submit" aria-label="Subscribe">
           <svg class="ns-state ns-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="ns-mark-path" d="M4 12 L19 12 M12.5 5.5 L19 12 L12.5 18.5" pathLength="100"/></svg>
-          <svg class="ns-state ns-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8" pathLength="100" stroke-dasharray="72 28"/></svg>
+          <svg class="ns-state ns-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="ns-spinner-path" d="M6.7 6.7 C3.77 9.63 3.77 14.37 6.7 17.3 C9.63 20.23 14.37 20.23 17.3 17.3 C20.23 14.37 20.23 9.63 17.3 6.7"/></svg>
         </button>
       </div>
       <p class="newsletter-msg" role="status" aria-live="polite"></p>

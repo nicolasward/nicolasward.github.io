@@ -2220,32 +2220,24 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   height: 1.55rem;
   transform-origin: 50% 50%;
 }
-/* On submit the arrow crossfades into a spinning ring; after a beat it crossfades
-   back to the (morphing) checkmark. The mark fades only (its spin is an inline
-   JS transform); the spinner fades + spins on its own. */
-.ns-mark { transition: opacity 0.22s ease; }
-.ns-spinner {
-  opacity: 0;
-  transition: opacity 0.22s ease;
-}
-.newsletter-form.is-loading .ns-mark { opacity: 0; }
-.newsletter-form.is-loading .ns-spinner {
-  opacity: 1;
-  animation: ns-spin 0.7s linear infinite;
-}
-/* Explicit from/to so it's a pure, continuous rotation (no base transform leaks
-   into the implicit 0% frame). */
+/* On submit the arrow crossfades to a spinning ring; the ring then morphs (in JS)
+   straight into the checkmark, so the spinner is visible across BOTH the loading
+   and success states (the arrow is hidden in both). On reset it crossfades back. */
+.ns-mark, .ns-spinner { transition: opacity 0.22s ease; }
+.ns-spinner { opacity: 0; }
+.newsletter-form.is-loading .ns-mark,
+.newsletter-form.is-done .ns-mark { opacity: 0; }
+.newsletter-form.is-loading .ns-spinner,
+.newsletter-form.is-done .ns-spinner { opacity: 1; }
+/* Only the loading phase spins; the success morph drives rotation from JS. */
+.newsletter-form.is-loading .ns-spinner { animation: ns-spin 0.7s linear infinite; }
 @keyframes ns-spin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
-/* Arrow ⇄ checkmark: both the path morph and the half-turn spin are driven in JS
-   (site.js, via an inline transform) so the motion is fully reversible — the
-   checkmark spins back into the arrow on "Subscribe another email". A grey
-   confetti pop fires alongside the forward spin. */
 /* Grey confetti pop from the glyph — the exact radial fly-out + fade the
    reading-progress ring used on complete. Spawned in site.js, anchored to the
-   submit button (left/top 50% of it) so it bursts from the spinning glyph. */
+   submit button (left/top 50% of it) so it bursts from the glyph. */
 .confetti-bit {
   position: absolute;
   left: 50%;

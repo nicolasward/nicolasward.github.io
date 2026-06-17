@@ -56,8 +56,9 @@ measure();});update();})();(function(){var forms=document.querySelectorAll('.new
 function fail(text){setMsg(text,'error');field.classList.remove('shake');void field.offsetWidth;field.classList.add('shake');input.focus();}
 var SNAKE_LOAD=-38;var SNAKE_DONE=-69;function spinAngle(svg){var cs=svg&&getComputedStyle(svg).transform;var m=cs&&cs.indexOf('matrix')===0?cs.match(/matrix\(([^)]+)\)/):null;if(!m)return 0;var v=m[1].split(',');return Math.atan2(parseFloat(v[1]),parseFloat(v[0]))*180/Math.PI;}
 function spinnerToCheck(){var svg=form.querySelector('.ns-spinner'),path=form.querySelector('.ns-spinner-path');if(!path)return;if(reduce){form.classList.remove('is-loading');path.style.strokeDashoffset=SNAKE_DONE;if(svg)svg.style.transform='';return;}
-var ang=spinAngle(svg);if(svg)svg.style.transform='rotate('+ang+'deg)';form.classList.remove('is-loading');var target=Math.round(ang/360)*360;var SETTLE=0.32,dur=780,t0=null;function easeOut(x){return 1-Math.pow(1-x,3);}
-function frame(ts){if(t0===null)t0=ts;var k=Math.min(1,(ts-t0)/dur);var rk=Math.min(1,k/SETTLE);var sk=Math.max(0,(k-SETTLE)/(1-SETTLE));if(svg)svg.style.transform='rotate('+(ang+(target-ang)*easeOut(rk)).toFixed(2)+'deg)';path.style.strokeDashoffset=SNAKE_LOAD+(SNAKE_DONE-SNAKE_LOAD)*easeOut(sk);if(k<1)requestAnimationFrame(frame);else if(svg)svg.style.transform='';}
+var ang=spinAngle(svg);if(svg)svg.style.transform='rotate('+ang+'deg)';form.classList.remove('is-loading');var target=Math.round(ang/360)*360;var dur=760,t0=null;function easeRot(x){return 1-Math.pow(1-x,3);}
+function easeSlide(x){return x*x*x*(x*(x*6-15)+10);}
+function frame(ts){if(t0===null)t0=ts;var k=Math.min(1,(ts-t0)/dur);if(svg)svg.style.transform='rotate('+(ang+(target-ang)*easeRot(k)).toFixed(2)+'deg)';path.style.strokeDashoffset=SNAKE_LOAD+(SNAKE_DONE-SNAKE_LOAD)*easeSlide(k);if(k<1)requestAnimationFrame(frame);else if(svg)svg.style.transform='';}
 requestAnimationFrame(frame);}
 function spinnerToArc(){var path=form.querySelector('.ns-spinner-path'),svg=form.querySelector('.ns-spinner');if(!path)return;if(reduce){path.style.strokeDashoffset=SNAKE_LOAD;if(svg)svg.style.transform='';return;}
 var dur=300,t0=null;function ease(x){return 1-Math.pow(1-x,3);}

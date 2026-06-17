@@ -951,17 +951,17 @@
           if (svg) svg.style.transform = 'rotate(' + ang + 'deg)';   // freeze the live angle…
           form.classList.remove('is-loading');                       // …then stop the CSS spin (no snap)
           var target = Math.round(ang / 360) * 360;                  // settle to the nearest upright
-          // Two phases so the spin never fights the slide: first the ring eases to
-          // upright, THEN the snake's head leads off the ring and traces the check.
-          var SETTLE = 0.32, dur = 780, t0 = null;
-          function easeOut(x) { return 1 - Math.pow(1 - x, 3); }
+          // One continuous motion: the spin eases out (front-loaded) while the
+          // snake's head glides off the ring and traces the check (smootherstep,
+          // so it leads out as the spin settles) — no held pause, no kink.
+          var dur = 760, t0 = null;
+          function easeRot(x) { return 1 - Math.pow(1 - x, 3); }                // ease-out — spin decelerates early
+          function easeSlide(x) { return x * x * x * (x * (x * 6 - 15) + 10); }  // smootherstep — gentle in/out
           function frame(ts) {
             if (t0 === null) t0 = ts;
             var k = Math.min(1, (ts - t0) / dur);
-            var rk = Math.min(1, k / SETTLE);                        // rotation: first phase
-            var sk = Math.max(0, (k - SETTLE) / (1 - SETTLE));       // slide: second phase
-            if (svg) svg.style.transform = 'rotate(' + (ang + (target - ang) * easeOut(rk)).toFixed(2) + 'deg)';
-            path.style.strokeDashoffset = SNAKE_LOAD + (SNAKE_DONE - SNAKE_LOAD) * easeOut(sk);
+            if (svg) svg.style.transform = 'rotate(' + (ang + (target - ang) * easeRot(k)).toFixed(2) + 'deg)';
+            path.style.strokeDashoffset = SNAKE_LOAD + (SNAKE_DONE - SNAKE_LOAD) * easeSlide(k);
             if (k < 1) requestAnimationFrame(frame);
             else if (svg) svg.style.transform = '';                  // target is a whole turn ⇒ upright
           }

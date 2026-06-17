@@ -2203,11 +2203,12 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   padding: 0;
   border: none;
   background: none;                  /* no circle — just the glyph */
-  color: var(--fg);                  /* dark chevron on the page */
+  color: var(--fg-faint);            /* muted at rest — matches the pill border */
   cursor: pointer;
   transition: transform 0.15s ease, color 0.2s ease;
 }
-/* On hover the chevron simply warms to the accent orange. */
+/* Darkens with the pill on focus; warms to accent on hover. */
+.newsletter-field:focus-within .newsletter-submit { color: var(--fg); }
 @media (hover: hover) {
   .newsletter-submit:hover { color: var(--accent); }
 }

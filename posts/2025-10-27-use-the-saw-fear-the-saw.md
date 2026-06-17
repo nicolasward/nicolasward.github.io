@@ -5,62 +5,22 @@ slug: use-the-saw-fear-the-saw
 tags: tools, ideas, design
 ---
 
-A sharp tool rewards respect and punishes carelessness.
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-1. What did you do this year that you’d never done before?
-2. Did you keep your new year’s resolutions?
-3. Did anyone close to you give birth?
-4. Did anyone close to you die?
-5. What cities/states/countries did you visit?
-6. What would you like to have next year that you lacked this year?
-7. What date(s) from this year will remain etched upon your memory, and why?
-8. What was your biggest achievement of the year?
-9. What was your biggest failure?
-10. What other hardships did you face?
-11. Did you suffer illness or injury?
-12. What was the best thing you bought?
-13. Whose behavior merited celebration?
-14. Whose behavior made you appalled?
-15. Where did most of your money go?
-16. What did you get really, really, really excited about?
-17. What song will always remind you of this year?
-18. Compared to this time last year, are you: happier or sadder?
-19. What do you wish you’d done more of?
-20. What do you wish you’d done less of?
-21. How are you spending the holidays?
-22. Did you fall in love this year?ç
-23. Do you hate anyone now that you didn’t hate this time last year?
-24. What was your favorite show?
-25. What was the best book you read?
-26. What was your greatest musical discovery of the year?
-27. What was your favorite film?
-28. What was your favorite meal?
-29. What did you want and get?
-30. What did you want and not get?
-31. What did you do on your birthday?
-32. What one thing would have made your year immeasurably more satisfying?
-33. How would you describe your personal fashion this year?
-34. What kept you sane?
-35. Which celebrity/public figure did you admire the most?
-36. What political issue stirred you the most?
-37. Who did you miss?
-38. Who was the best new person you met?
-39. What valuable life lesson did you learn this year?
-40. What is a quote that sums up your year?
+Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
 
-## Building good habits
+## Quis autem vel
 
-The best safety comes not from rules you have to remember, but from habits you've internalized:
+Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.
 
-- Always check before you cut
-- Keep your workspace clean
-- Never rush the important parts
-- Know your tools intimately
+Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.
 
-When good habits become second nature, you can focus on the creative work rather than constantly monitoring for danger.
+- Lorem ipsum dolor sit amet, consectetur adipiscing elit
+- Sed do eiusmod tempor incididunt ut labore et dolore
+- Ut enim ad minim veniam quis nostrud exercitation
 
-## The paradox of mastery
+## De finibus bonorum
 
-Masters of a craft often appear casual, even reckless to beginners. But what looks like casualness is actually deep familiarity. They've internalized the safety practices so thoroughly that they can focus entirely on the work.
+At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.
 
-This is the goal: not to eliminate fear, but to transform it into respect. Use the saw. Fear the saw. Build something beautiful. And when you find tools made by people who understand this — [quality software deserves your money](/quality-software-deserves-your-money).
+Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.

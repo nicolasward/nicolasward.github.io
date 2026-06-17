@@ -5,32 +5,22 @@ slug: quality-software-deserves-your-money
 tags: tools, money, design
 ---
 
-Good things cost money, and they should. Quality software from independent makers is like quality food from the farmer's market. A jar of handmade organic jam is not the same as mass-produced corn syrup-laden jam from the supermarket.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
-Industrial fruit jam is filled with cheap ingredients and shelf stabilizers. Industrial software is filled with privacy-invasive trackers and proprietary formats.
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-Google, Apple, and Microsoft make industrial software. Like industrial jam, industrial software has its benefits — it's cheap, fairly reliable, widely available, and often gets the job done.
+## Lorem ipsum dolor
 
-Big tech companies earn hundreds of billions of dollars and employ hundreds of thousands of people. When they make a new app, they can market it to their billions of customers easily. They have unbeatable leverage over the cost of developing and maintaining their apps.
+Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
 
-Independent software makers are small teams that don't have those economies of scale. They can try to compete on price by compromising their craft, or they can charge a fair price knowing this will drive a large number of people to choose big tech instead. Either way, big tech wins because they take a 20–30% cut of the app store money earned by most independent makers. A cost that the big tech companies do not incur.
+Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.
 
-Big tech companies have the ability to make their software cheap by subsidizing costs in a variety of ways:
+- Lorem ipsum dolor sit amet, consectetur adipiscing elit
+- Sed do eiusmod tempor incididunt ut labore et dolore
+- Ut enim ad minim veniam quis nostrud exercitation
 
-* Google sells highly profitable advertising and makes its apps free, but you are subjected to ads and privacy-invasive tracking.
-* Apple sells highly profitable devices and makes its apps free, but locks you into a proprietary ecosystem.
-* Microsoft sells highly profitable enterprise contracts using a bundling strategy, and makes its apps cheap, also locking you into a proprietary ecosystem.
+## Sed quia consequuntur
 
-Some tech companies raise hundreds of millions of dollars from __venture capital investors__, and use this money to subsidize pricing — until the money runs out, and the quality soon declines.
+Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.
 
-I'm not saying these companies are evil. But their subsidies create the illusion that all software should be cheap or free.
-
-Industrial software has become so incredibly cheap that most of us have lost the sense for how much value a quality piece of software can provide. We have become numb to the taste of good software and hypnotized by the idea of "free".
-
-I'm not sure why, but we seem more willing to spend money on good fruit jam than on good software. I notice that I spend less on personal software than I do on groceries and many basic things. Yet software is one of the few things I pay for that truly gives me leverage. Consider its __cost per use__.
-
-Independent makers of quality software go out of their way to make apps that are better for you. They take a principled approach to making tools that don't compromise your privacy, and __don't lock you in__.
-
-Independent software makers are people you can talk to. Like quality jam from the farmer's market, you might become friends with the person who made it — they'll listen to your suggestions and your complaints.
-
-If you want to live in a world with more than a handful of software makers, then spend a bit more on quality independent software. It deserves your hard-earned cash.
+At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.

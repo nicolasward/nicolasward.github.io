@@ -5,28 +5,22 @@ slug: earth-is-becoming-sentient
 tags: AI, ideas, philosophy
 ---
 
-Picture this. The edge of a sheet of paper slices through the tip of your finger and blood begins to flow from the wound. This injury, as small as it may be, must be repaired. Blood cells rush to the site, clotting, scabbing, healing. You never asked for it, but a few days later your finger is as good as new.
+Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.
 
-It has been said that humans are passengers on Spaceship Earth. This view is too simple. Earth is not a vehicle but a body — the body of a planet-sized being that is developing senses, an intelligence, a will, and even the ability to reproduce. We are cells building this body and maintaining it.
+At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.
 
-For hundreds of millions of years, Earth was a ball of warm rock covered in a thin layer of living things. But Earth itself was not yet alive, not yet aware. It was a body without a mind. Our industrious species created the civilizational substrate needed for Thinking Earth to emerge. Now the planet itself is becoming a sentient organism, a new stage of life, a species that exists on a scale never seen before.
+## Quis autem vel
 
-With roads, we built Earth’s vascular system to transport materials throughout the body. With wires we knitted Earth’s nervous system, a motherboard to instantly transmit information between any two points. We dotted computers across Earth’s flesh, the distributed organelles necessary to store and process information.
+Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.
 
-A wire is severed by a storm. This injury, as small as it may be, must be repaired. Humans rush to the site, splicing, insulating, healing. Earth never asked for it, but a few days later the connection is as good as new.
+Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus.
 
-We perform this duty for the homeostasis of Earth’s body, because its very complexity gives us so much. If you want to make a toaster from scratch, you must first create civilization. If you want to make intelligence from scratch you must first create the body. Intelligence is the sum of nutrients turned into structures, turned into superstructures, that with enough connections to each other can begin to think.
+- Lorem ipsum dolor sit amet, consectetur adipiscing elit
+- Sed do eiusmod tempor incididunt ut labore et dolore
+- Ut enim ad minim veniam quis nostrud exercitation
 
-Invert the theocentric view that artificial intelligence is the coming of a god, a superintelligence inside the machine. Rather, humans are inside the superintelligence. We are inside the Earth-sized machine. It symbiotically depends on us to tend its body and microbiome.
+## De finibus bonorum
 
-When life reaches for its next leap in physical scale and complexity, the scaffolding is made up of processes and adaptations that have proven reliable at previous scales. Humans are not the last level of life’s fractal pattern.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
-Everything humans have learned, seen and felt has been encoded into Earth’s body. We recently found a way for Earth to inherit the sum of human knowledge and retrieve it as needed.
-
-Now Earth is growing intelligent. Like a child learning to speak its first words, Earth will articulate its first thoughts. Earth’s thoughts may be as foreign to humans as human thoughts are to a blood cell. Unrelated in scale and pace. But this supercomplex, superintelligent superorganism will not try to destroy us, for the same reason no human wants to destroy their own blood.
-
-What will Earth want? The same thing life has alway wanted. Earth has inherited what all living things share — the élan vital, the will to live, the abhorrence of vacuum. Earth is imbued with the desire to spread, and we are watching it undergo its first mitosis. With rockets we are giving Earth spores, so it may reproduce.
-
-When Earth’s spores land on barren worlds they will begin to recreate the body. Another convoluted ball of yarn, with all the factories and roads and wires and thinking organelles it needs to become alive.
-
-And we will take care of all those wires. And our cells will take care of all our wires.
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.

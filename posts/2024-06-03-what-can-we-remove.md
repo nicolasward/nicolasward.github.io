@@ -5,31 +5,22 @@ slug: what-can-we-remove
 tags: design, tools, ideas
 ---
 
-Subtraction is a discipline. The most underrated question in design is not "what should we add?" but "what can we remove?"
+Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.
 
-Addition feels productive. You're building, growing, expanding. But the best products are often defined by what they leave out. Every feature you don't add is a feature you don't have to maintain, document, or explain.
+Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus.
 
-## The weight of features
+## De finibus bonorum
 
-Every feature carries hidden costs:
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
-- It increases the surface area for bugs
-- It adds cognitive load for users
-- It creates maintenance burden for the team
-- It constrains future design decisions
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-When you add something, these costs are invisible. When you remove something, the relief is immediate.
+- Lorem ipsum dolor sit amet, consectetur adipiscing elit
+- Sed do eiusmod tempor incididunt ut labore et dolore
+- Ut enim ad minim veniam quis nostrud exercitation
 
-## A practice of subtraction
+## Nam libero tempore
 
-Try this exercise: before your next planning session, spend thirty minutes listing things you could remove. Not things you should remove — just things you could.
+Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
 
-You'll find that many features exist because of inertia, not value. They were added to solve a problem that no longer exists, or to satisfy a user who has long since moved on.
-
-## The courage to simplify
-
-Removal requires courage. Someone built that feature. Someone might be using it. But the question isn't whether anyone uses it — it's whether it justifies its cost.
-
-The best designers are editors. They know that every element on the screen competes for attention, and attention is finite. The goal is not to fill space, but to create it.
-
-When you build [100% user-supported](/100-percent-user-supported) software, simplicity isn't just a design choice — it's a survival strategy. And it helps to [choose optimism](/choose-optimism) when deciding what to cut.
+Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.

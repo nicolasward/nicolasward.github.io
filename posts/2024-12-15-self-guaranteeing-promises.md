@@ -5,24 +5,22 @@ slug: self-guaranteeing-promises
 tags: ideas, design, philosophy
 ---
 
-Trust can be built into a system. Some promises are self-guaranteeing. The act of making the promise creates the conditions for keeping it.
+Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus.
 
-When a company says "we will never sell your data," the promise itself creates internal alignment. Engineers design systems that don't collect unnecessary data. Product managers stop asking for features that would require selling data. The promise constrains the design space in healthy ways.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
-## Constraint as liberation
+## Sed quia consequuntur
 
-This might sound limiting, but constraints are liberating. When certain options are off the table, you stop wasting energy considering them. You focus on the paths that remain open.
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-The best constraints are the ones you choose for yourself. They reflect your values and make future decisions easier. Every self-guaranteeing promise is a decision you only have to make once.
+Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
 
-## Examples in practice
+- Lorem ipsum dolor sit amet, consectetur adipiscing elit
+- Sed do eiusmod tempor incididunt ut labore et dolore
+- Ut enim ad minim veniam quis nostrud exercitation
 
-- **Open source licenses** are self-guaranteeing. Once you release code under an open license, you've committed to a path.
-- **Public commitments** create social accountability that reinforces the behavior.
-- **Architectural decisions** in software can make certain bad outcomes structurally impossible.
+## Quis autem vel
 
-## The compound effect
+Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.
 
-Self-guaranteeing promises compound over time. Each constraint you add makes the remaining design space more coherent. What starts as a collection of individual promises becomes a clear identity.
-
-People trust you not because of any single promise, but because the promises form a pattern. The pattern is the brand.
+Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.

@@ -5,28 +5,22 @@ slug: 100-percent-user-supported
 tags: money, design, tools
 ---
 
-Money changes a relationship, usually for the better. There's a business model that doesn't get enough credit: charging users money for a product they love.
+Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.
 
-No ads. No data harvesting. No venture capital treadmill. Just people paying for something valuable. It's the oldest business model in the world, and it still works. As I wrote in [Quality software deserves your hard-earned cash](/quality-software-deserves-your-money), independent makers create tools that respect your privacy and don't lock you in.
+Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.
 
-## The alignment advantage
+## Nam libero tempore
 
-When your only customers are your users, your incentives are perfectly aligned. You make money by making the product better. That's it. There's no hidden agenda, no growth hacking, no dark patterns.
+At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.
 
-This alignment shows up in every decision:
+Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.
 
-- Features are built because users want them, not because advertisers need them
-- Privacy is the default because there's no one to sell data to
-- The product can be opinionated because you don't need to be everything to everyone
+- Lorem ipsum dolor sit amet, consectetur adipiscing elit
+- Sed do eiusmod tempor incididunt ut labore et dolore
+- Ut enim ad minim veniam quis nostrud exercitation
 
-## Why this model is underrated
+## Lorem ipsum dolor
 
-The tech industry has spent two decades training people to expect software for free. This has created a strange dynamic: users resent paying five dollars for an app they use daily, while spending five dollars on coffee they consume in minutes.
+Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus.
 
-But the tide is turning. People are beginning to understand that free software comes at a cost — their attention, their data, their autonomy.
-
-## Building for sustainability
-
-A user-supported business doesn't need to grow exponentially. It needs to grow sustainably. It needs to earn the trust of its users and keep earning it, year after year.
-
-This is a slower path. But it leads somewhere good.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.

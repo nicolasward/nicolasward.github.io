@@ -5,29 +5,22 @@ slug: if-youre-remote-ramble
 tags: advice, writing, tools
 ---
 
-Over-communicate on purpose. When you work remotely, the casual hallway conversations disappear. The serendipitous exchanges that happen when you bump into someone at the coffee machine — gone. You have to create those moments deliberately.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
-One of the best ways to do this is to ramble. Write longer messages than you think you need to. Share context that seems obvious. Explain your reasoning even when nobody asked.
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-## Why over-communication works
+## Nam libero tempore
 
-In an office, body language carries half the conversation. Tone of voice carries another quarter. The actual words are just the remaining fraction. When you're remote, words are all you have.
+Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
 
-This means your written communication needs to do the work that presence used to do. It needs to convey not just information, but mood, context, and intention.
+Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.
 
-## The art of the ramble
+- Lorem ipsum dolor sit amet, consectetur adipiscing elit
+- Sed do eiusmod tempor incididunt ut labore et dolore
+- Ut enim ad minim veniam quis nostrud exercitation
 
-A good ramble isn't random. It's structured loosely enough to feel natural but contains real substance:
+## Lorem ipsum dolor
 
-- Start with what you're thinking about
-- Explain why it matters to you
-- Connect it to something the team cares about
-- Leave room for others to respond
+Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.
 
-The ramble creates surface area for connection. When you share more of your thinking, people find unexpected points of overlap. Ideas collide in productive ways.
-
-## Write like you talk
-
-The best remote communication sounds like a person talking, not a corporate memo. Use contractions. Start sentences with "and" or "but." Let your personality come through.
-
-Your team doesn't need another status update. They need to hear your voice.
+At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.

@@ -5,30 +5,22 @@ slug: pain-is-information
 tags: ideas, learning, philosophy
 ---
 
-Listen before you flinch. Pain — physical or emotional — is the body's most honest signal. It doesn't lie, it doesn't exaggerate for effect, and it doesn't have an agenda. It simply tells you that something needs attention.
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-The instinct is to avoid pain, to numb it, to push through it. But the wiser response is to listen to it.
+Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
 
-## Pain as a teacher
+## De finibus bonorum
 
-Think about the last time you touched a hot stove. The pain wasn't the problem — it was the message. Without it, you'd keep your hand there and suffer real damage.
+Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.
 
-Emotional pain works the same way:
+Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.
 
-- Frustration at work might signal a misalignment between your values and your role
-- Discomfort in a conversation might reveal an unspoken truth
-- Burnout might mean you've been ignoring your limits
+- Lorem ipsum dolor sit amet, consectetur adipiscing elit
+- Sed do eiusmod tempor incididunt ut labore et dolore
+- Ut enim ad minim veniam quis nostrud exercitation
 
-## The danger of numbing
+## Nam libero tempore
 
-Modern life offers countless ways to numb pain: scrolling, shopping, binging, working excessively. These strategies have something in common — they silence the signal without addressing the source.
+At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.
 
-The signal doesn't go away. It just gets louder.
-
-## Listening well
-
-Listening to pain doesn't mean dwelling on it. It means pausing long enough to understand what it's telling you, and then acting on that information.
-
-This is hard. The information pain carries is often inconvenient. It might mean you need to change something you'd rather not change. But the alternative — ignoring the signal — always costs more in the long run.
-
-Pain is information. Don't waste it.
+Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.

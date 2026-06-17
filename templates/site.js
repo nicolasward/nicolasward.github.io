@@ -1026,19 +1026,30 @@
         var again = form.querySelector('.newsletter-again');
         if (again) again.addEventListener('click', reset);
 
+        // Submit → the arrow spins as a loading ring for a beat, then resolves to
+        // the checkmark. (Cosmetic — the request is fire-and-forget.)
+        function startLoading() {
+          if (reduce) { succeed(); return; }
+          form.classList.add('is-loading');
+          input.disabled = true;
+          setTimeout(function () {
+            form.classList.remove('is-loading');
+            succeed();
+          }, 1400);
+        }
         form.addEventListener('submit', function (e) {
           e.preventDefault();
-          if (form.classList.contains('is-done')) return;
+          if (form.classList.contains('is-loading') || form.classList.contains('is-done')) return;
           if (gotcha && gotcha.value) return;    // bot trap: ignore silently
           var email = (input.value || '').trim();
           if (!EMAIL_RE.test(email)) { fail('Please enter a valid email address.'); return; }
-          // Fire-and-forget — nothing to wait on, so confirm immediately.
+          // Fire-and-forget — nothing to wait on.
           if (endpoint) {
             var body = new FormData();
             body.append('email', email);
             try { fetch(endpoint, { method: 'POST', body: body, mode: 'no-cors' }); } catch (err) {}
           }
-          succeed();
+          startLoading();
         });
       });
     })();

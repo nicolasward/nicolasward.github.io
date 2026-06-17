@@ -935,14 +935,20 @@
           var p = form.querySelector('.ns-mark-path');
           if (!p) return;
           var from = [[4, 12], [19, 12], [12.5, 5.5], [19, 12], [12.5, 18.5]];   // arrow →
-          var to   = [[9.5, 17], [19, 7.5], [5, 12.5], [9.5, 17], [19, 7.5]];    // checkmark ✓
           function dOf(q) {
             return 'M' + q[0][0] + ' ' + q[0][1] + ' L' + q[1][0] + ' ' + q[1][1] +
                    ' M' + q[2][0] + ' ' + q[2][1] + ' L' + q[3][0] + ' ' + q[3][1] +
                    ' L' + q[4][0] + ' ' + q[4][1];
           }
-          if (reduce) { p.setAttribute('d', dOf(to)); return; }
-          var dur = 460, t0 = null;
+          // No spin under reduced motion → use the upright check directly.
+          if (reduce) {
+            p.setAttribute('d', dOf([[9.5, 17], [19, 7.5], [5, 12.5], [9.5, 17], [19, 7.5]]));
+            return;
+          }
+          // The CSS spins the glyph 180°, so morph toward the check pre-rotated
+          // 180° about centre (24-x, 24-y) — it lands upright.
+          var to = [[14.5, 7], [5, 16.5], [19, 11.5], [14.5, 7], [5, 16.5]];
+          var dur = 550, t0 = null;
           function ease(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
           function frame(ts) {
             if (t0 === null) t0 = ts;
@@ -954,14 +960,36 @@
           }
           requestAnimationFrame(frame);
         }
+        // A radial confetti pop from the submit glyph — the exact fly-out + fade
+        // the reading-progress ring used on complete, in muted grey.
+        function confettiBurst(origin) {
+          if (reduce || !origin) return;
+          for (var i = 0; i < 50; i++) {
+            var piece = document.createElement('div');
+            piece.className = 'confetti-bit';
+            var angle = Math.random() * Math.PI * 2;
+            var dist = 50 + Math.random() * 80;
+            piece.style.setProperty('--tx', (Math.cos(angle) * dist).toFixed(1) + 'px');
+            piece.style.setProperty('--ty', (Math.sin(angle) * dist).toFixed(1) + 'px');
+            piece.style.setProperty('--rot', Math.round(Math.random() * 720 - 360) + 'deg');
+            piece.style.setProperty('--size', (5 + Math.random() * 5).toFixed(1) + 'px');
+            piece.style.setProperty('--b', (0.8 + Math.random() * 0.5).toFixed(2));
+            piece.style.setProperty('--dur', Math.round(650 + Math.random() * 450) + 'ms');
+            piece.addEventListener('animationend', function () { this.remove(); });
+            origin.appendChild(piece);
+          }
+        }
         function succeed() {
-          form.classList.add('is-done');         // arrow → checkmark (morph)
+          form.classList.add('is-done');         // arrow → checkmark (spin + morph)
           morphToCheck();
           input.disabled = true;
           var card = section && section.querySelector('.newsletter-card');
           if (card) card.classList.add('is-subscribed');   // settle into the muted confirmed state
           var btn = form.querySelector('.newsletter-submit');
-          if (btn) btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
+          if (btn) {
+            btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
+            confettiBurst(btn);                              // grey pop from the spinning glyph
+          }
           // Let the checkmark finish drawing before the confirmation reads in —
           // a beat of breathing room so it doesn't all land at once.
           setTimeout(function () {

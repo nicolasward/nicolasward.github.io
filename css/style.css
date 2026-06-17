@@ -2221,14 +2221,36 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   transform-origin: 50% 50%;
 }
 /* Arrow → checkmark: the path is point-morphed in JS (works on iOS, unlike the
-   CSS `d` property). For a playful flourish the whole glyph spins a full turn —
-   with a little overshoot bounce — as it reshapes. */
+   CSS `d` property). For a playful flourish the glyph spins a clean half-turn as
+   it reshapes — the morph target is the check pre-rotated 180°, so it lands
+   upright (forwards holds it there). A grey confetti pop fires alongside. */
 .newsletter-form.is-done .ns-mark {
-  animation: ns-mark-spin 0.6s cubic-bezier(0.33, 0, 0.2, 1);   /* one clean turn, no bounce */
+  animation: ns-mark-spin 0.55s cubic-bezier(0.33, 0, 0.2, 1) forwards;
 }
 @keyframes ns-mark-spin {
   from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  to   { transform: rotate(180deg); }
+}
+/* Grey confetti pop from the glyph — the exact radial fly-out + fade the
+   reading-progress ring used on complete. Spawned in site.js, anchored to the
+   submit button (left/top 50% of it) so it bursts from the spinning glyph. */
+.confetti-bit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 50;
+  width: var(--size, 8px);
+  height: calc(var(--size, 8px) * 0.42);
+  background: var(--fg-muted);
+  filter: brightness(var(--b, 1));
+  border-radius: 1px;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: confetti-fly var(--dur, 800ms) cubic-bezier(0.15, 0.65, 0.35, 1) forwards;
+}
+@keyframes confetti-fly {
+  0%   { transform: translate(-50%, -50%) rotate(0deg); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--rot)); opacity: 0; }
 }
 /* Inline message */
 .newsletter-msg {

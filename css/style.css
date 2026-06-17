@@ -1924,12 +1924,14 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 
 /* Completed disc fills with a quick solid accent orange */
 .progress-disc {
-  fill: var(--accent);
+  fill: url(#progress-grad);          /* accent → deep-teal gradient on complete */
   transform: scale(0);
   transform-origin: 20px 20px;
   transform-box: fill-box;
   transition: transform 0.42s cubic-bezier(0.34, 1.4, 0.5, 1);
 }
+#progress-grad .pg-from { stop-color: var(--accent); }
+#progress-grad .pg-to   { stop-color: #005c8a; }
 
 .progress-percent {
   position: absolute;

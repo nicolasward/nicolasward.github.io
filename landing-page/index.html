@@ -74,10 +74,10 @@ body {
 /* ---------------- Blobs ---------------- */
 .blob {
   position: absolute;
-  width: 38vmax; height: 38vmax;
+  width: 36vmax; height: 36vmax;
   border-radius: 50%;
-  filter: blur(130px);          /* softer, more diffuse — a quiet ambient wash */
-  opacity: .2;
+  filter: blur(100px);
+  opacity: .35;
   will-change: transform;
 }
 .blob--teal   { background: radial-gradient(circle at 35% 35%, #7FE3D9 0%, #008080 38%, #86B3FF 72%, rgba(0,0,0,0) 74%); }
@@ -154,7 +154,7 @@ html.js .js-reveal { opacity: 0; }
 html.js .fast-forward {
   position: fixed;
   top: 0;                                  /* JS aligns this to the greeting line */
-  right: clamp(2rem, 5vw, 7rem);           /* mirrors the container's left margin */
+  right: calc((100vw - min(52rem, 88vw)) / 2);   /* sit at the hero's right edge, not the viewport's */
   z-index: 5;
   display: grid;
   place-items: center;
@@ -235,6 +235,25 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
 .text-link {
   color: var(--fg);
   text-decoration: none;
+}
+/* Hover: an underline that opens from left to right (a 0-width gradient line at
+   the baseline that grows to full width). */
+.write-link,
+.design-link,
+.text-link {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0 1.5px;
+  transition: background-size 0.32s cubic-bezier(0.65, 0, 0.35, 1);
+}
+@media (hover: hover) {
+  .write-link:hover,
+  .design-link:hover,
+  .text-link:hover { background-size: 100% 1.5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .write-link, .design-link, .text-link { transition: none; }
 }
 @keyframes cta-shimmer {
   0%     { background-position: 100% 0; }   /* glow parked off-screen (right) */
@@ -501,6 +520,8 @@ document.querySelectorAll('.blob').forEach(blob => {
     if (!ff || !greeting) return;
     const r = greeting.getBoundingClientRect();
     ff.style.top = (r.top + r.height / 2 - ff.offsetHeight / 2) + 'px';
+    const hero = greeting.closest('.hero');
+    if (hero) ff.style.right = Math.max(0, window.innerWidth - hero.getBoundingClientRect().right) + 'px';
   }
   placeFF();
   window.addEventListener('resize', placeFF);

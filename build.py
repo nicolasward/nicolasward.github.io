@@ -186,9 +186,7 @@ def newsletter_section():
     on the form via data-endpoint — see the newsletter handler in site.js."""
     return '''<section class="newsletter" aria-labelledby="newsletter-heading">
   <div class="newsletter-card">
-    <div class="newsletter-separator" aria-hidden="true">''' + "".join(
-        pixel_separator(w) for w in ["think", "craft", "cogito", "helloworld", "renaissance"]
-    ) + '''</div>
+    <div class="newsletter-separator" aria-hidden="true">''' + pixel_separator("think") + '''</div>
     <div class="newsletter-intro">
       <h2 class="newsletter-heading" id="newsletter-heading">New essays in your inbox.</h2>
       <p class="newsletter-dek">Human-typed essays about AI, learning, and design to supercharge your thinking.</p>

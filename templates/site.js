@@ -970,19 +970,37 @@
           }
           requestAnimationFrame(frame);
         }
-        // On reset the arrow draws itself back in (a clear, deliberate motion)
-        // while the check fades out; then the spinner is re-armed to its ring for
-        // the next submit (once it's faded, so the reshape isn't seen).
-        function drawArrowIn() {
-          var p = form.querySelector('.ns-mark-path');
+        // On reset the checkmark spins and morphs back into the arrow (the reverse
+        // of the spinner→check feel). The arrow and check share a 5-point path
+        // (2-pt shaft + 3-pt head), so we lerp every point while spinning a full
+        // turn — landing the arrow upright. (.ns-mark takes over from the spinner's
+        // check, which fades out; both are the same tick, so the handoff is unseen.)
+        var ARROW_PTS = [[4, 12], [19, 12], [12.5, 5.5], [19, 12], [12.5, 18.5]];
+        var CHECK_PTS = [[9.5, 17], [19, 7.5], [5, 12.5], [9.5, 17], [19, 7.5]];
+        function dPoly(q) {
+          return 'M' + q[0][0] + ' ' + q[0][1] + ' L' + q[1][0] + ' ' + q[1][1] +
+                 ' M' + q[2][0] + ' ' + q[2][1] + ' L' + q[3][0] + ' ' + q[3][1] +
+                 ' L' + q[4][0] + ' ' + q[4][1];
+        }
+        function morphCheckToArrow() {
+          var p = form.querySelector('.ns-mark-path'), svg = form.querySelector('.ns-mark');
           if (!p) return;
-          if (reduce) { p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; return; }
-          p.style.transition = 'none';
-          p.style.strokeDasharray = '100';
-          p.style.strokeDashoffset = '100';                    // start undrawn
-          void p.getBoundingClientRect();
-          p.style.transition = 'stroke-dashoffset 0.5s cubic-bezier(0.65, 0, 0.35, 1)';
-          p.style.strokeDashoffset = '0';                      // draw it on (shaft, then head)
+          p.style.strokeDasharray = ''; p.style.strokeDashoffset = '';   // no leftover draw-dash
+          if (reduce) { p.setAttribute('d', dPoly(ARROW_PTS)); if (svg) svg.style.transform = ''; return; }
+          p.setAttribute('d', dPoly(CHECK_PTS));                         // start as the check
+          var dur = 560, t0 = null;
+          function ease(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+          function frame(ts) {
+            if (t0 === null) t0 = ts;
+            var k = Math.min(1, (ts - t0) / dur), e = ease(k);
+            p.setAttribute('d', dPoly(CHECK_PTS.map(function (c, i) {
+              return [c[0] + (ARROW_PTS[i][0] - c[0]) * e, c[1] + (ARROW_PTS[i][1] - c[1]) * e];
+            })));
+            if (svg) svg.style.transform = 'rotate(' + (-360 * e).toFixed(2) + 'deg)';   // a full turn → upright
+            if (k < 1) requestAnimationFrame(frame);
+            else if (svg) svg.style.transform = '';
+          }
+          requestAnimationFrame(frame);
         }
         function rearmSpinner() {
           var path = form.querySelector('.ns-spinner-path'), svg = form.querySelector('.ns-spinner');
@@ -1049,7 +1067,7 @@
           }, reduce ? 0 : 1100);
         }
         // "Subscribe another email": unwind back to a fresh, editable form — the
-        // check fades out while the arrow draws itself back in.
+        // check spins and morphs back into the arrow.
         function reset() {
           form.classList.remove('is-done', 'is-confirmed', 'is-settling', 'is-loading');
           var card = section && section.querySelector('.newsletter-card');
@@ -1059,7 +1077,7 @@
           setMsg('');
           var btn = form.querySelector('.newsletter-submit');
           if (btn) btn.setAttribute('aria-label', 'Subscribe');
-          drawArrowIn();                          // arrow strokes itself back in
+          morphCheckToArrow();                    // check spins + morphs back into the arrow
           setTimeout(rearmSpinner, 350);          // re-arm the ring once the check has faded
           input.focus();
         }

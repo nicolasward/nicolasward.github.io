@@ -2220,17 +2220,10 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   height: 1.55rem;
   transform-origin: 50% 50%;
 }
-/* Arrow → checkmark: the path is point-morphed in JS (works on iOS, unlike the
-   CSS `d` property). For a playful flourish the glyph spins a clean half-turn as
-   it reshapes — the morph target is the check pre-rotated 180°, so it lands
-   upright (forwards holds it there). A grey confetti pop fires alongside. */
-.newsletter-form.is-done .ns-mark {
-  animation: ns-mark-spin 0.3s cubic-bezier(0.33, 0, 0.2, 1) forwards;
-}
-@keyframes ns-mark-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(180deg); }
-}
+/* Arrow ⇄ checkmark: both the path morph and the half-turn spin are driven in JS
+   (site.js, via an inline transform) so the motion is fully reversible — the
+   checkmark spins back into the arrow on "Subscribe another email". A grey
+   confetti pop fires alongside the forward spin. */
 /* Grey confetti pop from the glyph — the exact radial fly-out + fade the
    reading-progress ring used on complete. Spawned in site.js, anchored to the
    submit button (left/top 50% of it) so it bursts from the spinning glyph. */
@@ -2274,7 +2267,6 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   .newsletter-card.is-subscribed .newsletter-shine::before,
   main .newsletter-msg.is-success,
   main .newsletter-form.is-confirmed .newsletter-again,
-  .newsletter-form.is-done .ns-mark,
   .newsletter-field.shake { animation: none; }
 }
 

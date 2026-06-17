@@ -926,39 +926,50 @@
           field.classList.add('shake');
           input.focus();
         }
-        // On success the arrow morphs smoothly into a checkmark: both are drawn
-        // with the same point structure (a 2-point shaft + a 3-point head), so we
-        // lerp each point. The shaft slides onto the check's long up-stroke and the
-        // head reshapes into the tick — no redraw, just a bend. Driven in JS since
-        // the CSS `d` property doesn't animate on iOS Safari.
+        // The submit glyph animates between an arrow and a checkmark by lerping a
+        // shared 5-point path (2-pt shaft + 3-pt head) AND spinning the SVG a half
+        // turn — both driven here so the motion is fully reversible. Because the
+        // check is asymmetric, the half-turn target is the check pre-rotated 180°
+        // (24-x, 24-y), so a spin to 180° lands it upright. Done in JS since the
+        // CSS `d` property doesn't animate on iOS Safari.
+        var ARROW    = [[4, 12], [19, 12], [12.5, 5.5], [19, 12], [12.5, 18.5]];
+        var CHECK    = [[14.5, 7], [5, 16.5], [19, 11.5], [14.5, 7], [5, 16.5]];   // pre-rotated 180°
+        var CHECK_UP = [[9.5, 17], [19, 7.5], [5, 12.5], [9.5, 17], [19, 7.5]];    // upright (no-spin)
+        function dOf(q) {
+          return 'M' + q[0][0] + ' ' + q[0][1] + ' L' + q[1][0] + ' ' + q[1][1] +
+                 ' M' + q[2][0] + ' ' + q[2][1] + ' L' + q[3][0] + ' ' + q[3][1] +
+                 ' L' + q[4][0] + ' ' + q[4][1];
+        }
+        function easeMark(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+        // Tween path fromPts→toPts and rotation fromDeg→toDeg over `dur` ms.
+        function animateGlyph(fromPts, toPts, fromDeg, toDeg, dur, done) {
+          var p = form.querySelector('.ns-mark-path');
+          var svg = form.querySelector('.ns-mark');
+          if (!p || !svg) return;
+          var t0 = null;
+          function frame(ts) {
+            if (t0 === null) t0 = ts;
+            var k = Math.min(1, (ts - t0) / dur), e = easeMark(k);
+            p.setAttribute('d', dOf(fromPts.map(function (f, i) {
+              return [f[0] + (toPts[i][0] - f[0]) * e, f[1] + (toPts[i][1] - f[1]) * e];
+            })));
+            svg.style.transform = 'rotate(' + (fromDeg + (toDeg - fromDeg) * e).toFixed(2) + 'deg)';
+            if (k < 1) requestAnimationFrame(frame);
+            else if (done) done();
+          }
+          requestAnimationFrame(frame);
+        }
         function morphToCheck() {
           var p = form.querySelector('.ns-mark-path');
           if (!p) return;
-          var from = [[4, 12], [19, 12], [12.5, 5.5], [19, 12], [12.5, 18.5]];   // arrow →
-          function dOf(q) {
-            return 'M' + q[0][0] + ' ' + q[0][1] + ' L' + q[1][0] + ' ' + q[1][1] +
-                   ' M' + q[2][0] + ' ' + q[2][1] + ' L' + q[3][0] + ' ' + q[3][1] +
-                   ' L' + q[4][0] + ' ' + q[4][1];
-          }
-          // No spin under reduced motion → use the upright check directly.
-          if (reduce) {
-            p.setAttribute('d', dOf([[9.5, 17], [19, 7.5], [5, 12.5], [9.5, 17], [19, 7.5]]));
-            return;
-          }
-          // The CSS spins the glyph 180°, so morph toward the check pre-rotated
-          // 180° about centre (24-x, 24-y) — it lands upright.
-          var to = [[14.5, 7], [5, 16.5], [19, 11.5], [14.5, 7], [5, 16.5]];
-          var dur = 300, t0 = null;
-          function ease(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
-          function frame(ts) {
-            if (t0 === null) t0 = ts;
-            var k = Math.min(1, (ts - t0) / dur), e = ease(k);
-            p.setAttribute('d', dOf(from.map(function (f, i) {
-              return [f[0] + (to[i][0] - f[0]) * e, f[1] + (to[i][1] - f[1]) * e];
-            })));
-            if (k < 1) requestAnimationFrame(frame);
-          }
-          requestAnimationFrame(frame);
+          if (reduce) { p.setAttribute('d', dOf(CHECK_UP)); return; }   // no spin
+          animateGlyph(ARROW, CHECK, 0, 180, 300);
+        }
+        function morphToArrow() {
+          var p = form.querySelector('.ns-mark-path'), svg = form.querySelector('.ns-mark');
+          if (!p) return;
+          if (reduce) { p.setAttribute('d', dOf(ARROW)); if (svg) svg.style.transform = ''; return; }
+          animateGlyph(CHECK, ARROW, 180, 0, 300, function () { if (svg) svg.style.transform = ''; });
         }
         // A radial confetti pop from the submit glyph — the exact fly-out + fade
         // the reading-progress ring used on complete, in muted grey.
@@ -998,7 +1009,8 @@
           }, reduce ? 0 : 1100);
         }
         // "Subscribe another email": unwind the confirmed state back to a fresh,
-        // editable form (the arrow returns, the muting lifts) and focus the field.
+        // editable form — the checkmark spins back into the arrow (the reverse of
+        // the success animation), the muting lifts, and the field takes focus.
         function reset() {
           form.classList.remove('is-done', 'is-confirmed');
           var card = section && section.querySelector('.newsletter-card');
@@ -1006,10 +1018,9 @@
           input.disabled = false;
           input.value = '';
           setMsg('');
-          var p = form.querySelector('.ns-mark-path');
-          if (p) p.setAttribute('d', 'M4 12 L19 12 M12.5 5.5 L19 12 L12.5 18.5');   // back to the arrow
           var btn = form.querySelector('.newsletter-submit');
           if (btn) btn.setAttribute('aria-label', 'Subscribe');
+          morphToArrow();                         // check spins back into the arrow
           input.focus();
         }
         var again = form.querySelector('.newsletter-again');

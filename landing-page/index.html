@@ -46,6 +46,9 @@ body {
   background: var(--field); /* plain white — gradient lives on .stage */
   color: var(--fg);
 }
+/* Leaving for an internal page: fade out so the colourful background doesn't
+   "blink" to white before the next page paints (see the link handler in JS). */
+html.leaving body { opacity: 0; transition: opacity 0.16s ease; }
 
 /* The entire background stack (gradient + blobs + noise) lives inside this
    fixed, self-isolating layer so it always fills the viewport and the noise's
@@ -184,11 +187,12 @@ html.js .fast-forward svg {
   display: block;
 }
 html.js .fast-forward .ff-skip path {
-  stroke-linecap: butt;                    /* a round cap renders a stray dot at the
-                                              path start while undrawn; butt caps
-                                              show nothing at a zero-length dash */
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;                    /* undrawn by default */
+  stroke-linecap: round;
+  /* A gap (1 2) wider than the dash, with the undrawn offset set so the round cap
+     of the off-path dash clears the path start — round ends, no stray dot, and no
+     cap-swap "expand" once drawn. */
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 1.12;                 /* undrawn by default */
 }
 /* Entrance: a clear beat after the background settles, each chevron strokes
    itself in, the second a beat after the first. */
@@ -201,8 +205,6 @@ html.js .fast-forward.draw .ff-skip path:last-child {
 @keyframes ff-draw {
   to { stroke-dashoffset: 0; }
 }
-/* Once drawn, the stray-dot risk is gone — round the chevron ends. */
-html.js .fast-forward.chevrons-drawn .ff-skip path { stroke-linecap: round; }
 
 /* Once the intro has fully played, the skip control transforms into a replay
    control: the chevrons spin out as the circular replay arrow spins in. The
@@ -539,21 +541,28 @@ document.querySelectorAll('.blob').forEach(blob => {
   window.addEventListener('resize', placeFF);
 
   // Draw the chevrons in once (stroke-dashoffset entrance), then play the intro.
-  // Once drawn, swap their butt caps (which avoid a stray dot while undrawn) for
-  // round caps to match the rest of the icon.
-  function startIntro() {
-    if (ff) {
-      ff.classList.add('draw');
-      const lastChevron = ff.querySelector('.ff-skip path:last-child');
-      if (lastChevron) lastChevron.addEventListener('animationend',
-        () => ff.classList.add('chevrons-drawn'), { once: true });
-    }
-    playIntro();
-  }
+  function startIntro() { if (ff) ff.classList.add('draw'); playIntro(); }
 
   // Wait for the web font so the layout is settled before revealing.
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { placeFF(); startIntro(); });
   else startIntro();
+
+  // Smooth the cross-page navigation: internal links fade the page out first, so
+  // the colourful background doesn't blink to white before the blog paints.
+  // (Modified clicks, new-tab, external and mailto links keep native behaviour.)
+  document.querySelectorAll('a[href^="/"]').forEach((a) => {
+    a.addEventListener('click', (e) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      if (a.target && a.target !== '' && a.target !== '_self') return;
+      const href = a.getAttribute('href');
+      if (!href) return;
+      e.preventDefault();
+      document.documentElement.classList.add('leaving');
+      setTimeout(() => { window.location.href = href; }, 180);
+    });
+  });
+  // Restore visibility if the page is shown again from the back/forward cache.
+  window.addEventListener('pageshow', () => document.documentElement.classList.remove('leaving'));
 })();
 </script>
 </body>

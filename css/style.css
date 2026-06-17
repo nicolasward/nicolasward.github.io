@@ -2165,10 +2165,10 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 .newsletter-input:disabled { opacity: 1; -webkit-text-fill-color: var(--fg-muted); color: var(--fg-muted); }
 .newsletter-gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 /* Submit: a solid circular button (the inverse of the white card — dark in
-   light mode, light in dark), à la the Apple "+" affordance. Its chevron
-   morphs into a checkmark on success. */
+   light mode, light in dark). Bare chevron — no enclosing circle — that morphs
+   into a checkmark on success. */
 .newsletter-submit {
-  position: relative;                /* anchors the success confetti to the glyph */
+  position: relative;
   flex: 0 0 auto;
   display: inline-grid;
   place-items: center;
@@ -2176,15 +2176,14 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   height: 2.1rem;
   padding: 0;
   border: none;
-  border-radius: 50%;
-  background: var(--fg);             /* solid, inverted against the card */
-  color: var(--field);              /* white chevron on the dark disc */
+  background: none;                  /* no circle — just the glyph */
+  color: var(--fg);                  /* dark chevron on the page */
   cursor: pointer;
-  transition: transform 0.15s ease, background-color 0.2s ease;
+  transition: transform 0.15s ease, color 0.2s ease;
 }
-/* On hover the disc simply warms to the accent orange (white glyph for contrast). */
+/* On hover the chevron simply warms to the accent orange. */
 @media (hover: hover) {
-  .newsletter-submit:hover { background: var(--accent); color: #fff; }
+  .newsletter-submit:hover { color: var(--accent); }
 }
 .newsletter-submit:active { transform: scale(0.9); }
 .newsletter-submit .ns-state {
@@ -2291,9 +2290,8 @@ main .newsletter-card.is-subscribed .newsletter-input:disabled {
   -webkit-text-fill-color: var(--ghost);
 }
 main .newsletter-form.is-done .newsletter-submit {
-  background: transparent;                 /* the circle dissolves as the check draws */
-  color: var(--fg-faint);                  /* soft grey tick, left standing on its own */
-  transition: background-color 0.45s ease;
+  color: var(--fg-faint);                  /* the chevron draws into a soft grey tick */
+  transition: color 0.45s ease;
 }
 main .newsletter-msg.is-success { color: var(--fg); font-weight: 500; }
 

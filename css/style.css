@@ -2224,11 +2224,11 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
    CSS `d` property). For a playful flourish the whole glyph spins a full turn —
    with a little overshoot bounce — as it reshapes. */
 .newsletter-form.is-done .ns-mark {
-  animation: ns-mark-spin 0.62s cubic-bezier(0.34, 1.45, 0.5, 1);
+  animation: ns-mark-spin 0.6s cubic-bezier(0.33, 0, 0.2, 1);   /* one clean turn, no bounce */
 }
 @keyframes ns-mark-spin {
-  from { transform: rotate(0deg) scale(0.8); }
-  to   { transform: rotate(360deg) scale(1); }
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 /* Inline message */
 .newsletter-msg {

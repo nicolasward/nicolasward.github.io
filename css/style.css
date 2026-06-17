@@ -855,6 +855,30 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
   .js body.home .reveal-up { opacity: 1; transform: none; transition: none; }
 }
 
+/* "Skip intro": pressing Enter on desktop (see site.js) jumps every entrance
+   straight to its finished, fully-visible state — the same end-states the
+   reduced-motion path uses. The article opening-fold (Web Animations) and the
+   dropcap (.draw) are settled in JS; everything else is forced here. */
+html.skip-intro body.home .site-nav > a,
+html.skip-intro body.home .head-in,
+html.skip-intro body.home .nav-search .search-glass,
+html.skip-intro body.home .theme-toggle .ts-pill,
+html.skip-intro body.home .theme-toggle .toggle-knob,
+html.skip-intro body.home .section-label,
+html.skip-intro body.home .latest-card,
+html.skip-intro body.home .section-divider,
+html.skip-intro body.home .post-list li,
+html.skip-intro body.home .topics-inline,
+html.skip-intro .roll-in,
+html.skip-intro .reveal-up,
+html.skip-intro body.article .post-content,
+html.skip-intro body.page .post-content {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
 /* ===== Mobile: swipe between articles ===== */
 /* The sibling data lives in a hidden <nav>; JS drives the edge hints. */
 .post-siblings { display: none; }

@@ -543,6 +543,44 @@
       }
     })();
 
+    // Skip-intro: on desktop, pressing Enter jumps every entrance animation
+    // straight to its finished state — the whole page revealed at once. The CSS
+    // (html.skip-intro …) forces the resting state for the class-driven entrances;
+    // here we settle the two JS-driven ones: the article opening-fold (Web
+    // Animations) and the dropcap (.draw). Mirrors the reduced-motion behaviour.
+    (function () {
+      if (!(window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches)) return;
+      var html = document.documentElement;
+      function skip() {
+        if (html.classList.contains('skip-intro')) return;
+        html.classList.add('skip-intro');
+        // Cancel the opening-fold fade-ups (Web Animations, not CSS) so the blocks
+        // rest at their natural visible state. Leave CSS animations to the CSS.
+        if (document.getAnimations) {
+          document.getAnimations().forEach(function (a) {
+            var isCss = (typeof CSSAnimation !== 'undefined' && a instanceof CSSAnimation) ||
+                        (typeof CSSTransition !== 'undefined' && a instanceof CSSTransition);
+            if (!isCss) { try { a.cancel(); } catch (e) {} }
+          });
+        }
+        Array.prototype.forEach.call(document.querySelectorAll('.reveal-up'), function (el) {
+          el.classList.add('in');
+        });
+        var dc = document.querySelector('.dropcap.draw');
+        if (dc) dc.classList.remove('draw');           // revert to the finished tile
+        var pc = document.querySelector('.post-content');
+        if (pc) pc.style.opacity = 1;
+      }
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' || e.metaKey || e.ctrlKey || e.altKey) return;
+        if (html.classList.contains('searching')) return;     // search overlay owns Enter
+        var el = document.activeElement;
+        if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ||
+                   el.tagName === 'BUTTON' || el.tagName === 'A' || el.isContentEditable)) return;
+        skip();
+      });
+    })();
+
     // Drop cap: wrap the first letter of the opening paragraph in a layered
     // span.dropcap (outline + fill + letter) so CSS can render it as a fixed-
     // size tile AND animate an entrance: the square outline draws itself, the

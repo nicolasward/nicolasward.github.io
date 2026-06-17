@@ -201,6 +201,8 @@ html.js .fast-forward.draw .ff-skip path:last-child {
 @keyframes ff-draw {
   to { stroke-dashoffset: 0; }
 }
+/* Once drawn, the stray-dot risk is gone — round the chevron ends. */
+html.js .fast-forward.chevrons-drawn .ff-skip path { stroke-linecap: round; }
 
 /* Once the intro has fully played, the skip control transforms into a replay
    control: the chevrons spin out as the circular replay arrow spins in. The
@@ -537,7 +539,17 @@ document.querySelectorAll('.blob').forEach(blob => {
   window.addEventListener('resize', placeFF);
 
   // Draw the chevrons in once (stroke-dashoffset entrance), then play the intro.
-  function startIntro() { if (ff) ff.classList.add('draw'); playIntro(); }
+  // Once drawn, swap their butt caps (which avoid a stray dot while undrawn) for
+  // round caps to match the rest of the icon.
+  function startIntro() {
+    if (ff) {
+      ff.classList.add('draw');
+      const lastChevron = ff.querySelector('.ff-skip path:last-child');
+      if (lastChevron) lastChevron.addEventListener('animationend',
+        () => ff.classList.add('chevrons-drawn'), { once: true });
+    }
+    playIntro();
+  }
 
   // Wait for the web font so the layout is settled before revealing.
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { placeFF(); startIntro(); });

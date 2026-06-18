@@ -2069,20 +2069,20 @@ sup[id^="fnref"] { line-height: 0; }   /* keep the raised numeral from inflating
 .footnote .eyebrow { margin-bottom: 1rem; }
 .footnote ol { list-style: none; margin: 0; padding: 0; }
 .footnote ol > li {
-  position: relative;
-  padding-left: 1.7rem;       /* room for the hanging number */
+  display: flex;
+  align-items: baseline;      /* number sits on the note's first-line baseline */
+  gap: 0.55rem;
   text-indent: 0;
   line-height: 1.65;
 }
 .footnote ol > li + li { margin-top: 0.7rem; }
 .footnote ol > li::before { content: none; }   /* drop the body-list counter */
-.footnote p { margin: 0; }
+.footnote p { margin: 0; flex: 1; min-width: 0; }
 .footnote a:not(.footnote-num) { color: var(--accent); }   /* links within a note keep accent */
 
 .footnote-num {
-  position: absolute;
-  left: 0;
-  top: 0;
+  flex: none;
+  min-width: 0.9rem;          /* keeps the numbers in a tidy column */
   color: var(--accent);
   font-weight: 600;
   font-size: 0.85em;

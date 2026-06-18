@@ -121,8 +121,17 @@ def slugify(title):
     return slug
 
 
+def strip_footnote_md(text):
+    """Remove footnote definition lines and inline [^id] references so they
+    never leak into plain-text excerpts or the search index."""
+    text = re.sub(r'(?m)^\[\^[^\]]+\]:.*$', ' ', text)   # definition lines
+    text = re.sub(r'\[\^[^\]]+\]', '', text)             # inline references
+    return text
+
+
 def strip_markdown(text):
     """Reduce markdown body to plain searchable text."""
+    text = strip_footnote_md(text)
     text = re.sub(r'```[\s\S]*?```', ' ', text)          # code blocks
     text = re.sub(r'`[^`]*`', ' ', text)                  # inline code
     text = re.sub(r'!\[[^\]]*\]\([^)]+\)', ' ', text)     # images
@@ -385,7 +394,7 @@ def build():
             raw_text = fp.read_text()
             m, b = parse_frontmatter(raw_text)
             if m.get("slug", fp.stem) == post_slug:
-                plain = re.sub(r'[#*_\[\]()]', '', b).strip()
+                plain = re.sub(r'[#*_\[\]()]', '', strip_footnote_md(b)).strip()
                 sentences = re.split(r'(?<=[.!?])\s', plain)
                 return sentences[0] if sentences else ""
         return ""
@@ -468,7 +477,7 @@ def build():
                     break
         _, latest_body = parse_frontmatter(raw_latest)
         # Extract first sentence from plain text
-        plain = re.sub(r'[#*_\[\]()]', '', latest_body).strip()
+        plain = re.sub(r'[#*_\[\]()]', '', strip_footnote_md(latest_body)).strip()
         first_sentence = re.split(r'(?<=[.!?])\s', plain)[0] if plain else ""
 
         latest_section = f'''<div class="home-section">

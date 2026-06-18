@@ -64,16 +64,14 @@ def share_row(url, title):
 
 
 def reply_section(url, title):
-    """A quiet mailto affordance at the foot of each article — readers reply to me
-    privately (subject pre-filled "Re: …", the article URL carried in the body).
-    The envelope's flap lifts open on hover."""
+    """A compact mailto affordance, sat on the 'Share this article' row — readers
+    reply to me privately (subject pre-filled "Re: …", the article URL carried in
+    the body). The envelope's flap lifts open on hover."""
     subject = quote(f"Re: {title}", safe="")
     body = quote(f"\n\n—\nIn reply to “{title}”\n{url}", safe="")
     href = f"mailto:ward.nicolas@outlook.com?subject={subject}&body={body}"
     return (
-        '<section class="reply" aria-label="Reply to the author">'
-        '<p class="reply-dek">Got a reaction to this? I read every reply.</p>'
-        f'<a class="reply-link" href="{href}">'
+        f'<a class="reply-link" href="{href}" title="Reply to me — I read every one">'
         '<svg class="reply-env" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
         'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
         '<rect x="3" y="7" width="18" height="12" rx="2"/>'
@@ -81,7 +79,6 @@ def reply_section(url, title):
         '</svg>'
         '<span>Reply</span>'
         '</a>'
-        '</section>'
     )
 
 # ---------------------------------------------------------------------------

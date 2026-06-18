@@ -153,6 +153,17 @@ def add_heading_anchors(html):
     return re.sub(r'<(h[23])>(.*?)</\1>', replacer, html)
 
 
+def style_footnotes(html):
+    """Dress Python-Markdown's footnote block in the house style: swap its
+    default <hr> rule for a 'Notes' eyebrow heading, matching the other
+    end-of-article section labels."""
+    return re.sub(
+        r'<div class="footnote">\s*<hr\s*/?>',
+        '<div class="footnote"><h2 class="eyebrow">Notes</h2>',
+        html,
+    )
+
+
 def render(template_str, **kwargs):
     result = template_str
     for key, val in kwargs.items():
@@ -315,6 +326,7 @@ def build():
         md.reset()
         html_content = md.convert(body)
         html_content = add_heading_anchors(html_content)
+        html_content = style_footnotes(html_content)
 
         slug = meta.get("slug", filepath.stem)
         title = meta.get("title", filepath.stem.replace("-", " ").title())
@@ -485,6 +497,7 @@ def build():
             meta, body = parse_frontmatter(raw)
             md.reset()
             html_content = md.convert(body)
+            html_content = style_footnotes(html_content)
 
             slug = meta.get("slug", filepath.stem)
             title = meta.get("title", filepath.stem.replace("-", " ").title())

@@ -784,6 +784,30 @@
       }
     })();
 
+    // Footnotes: jumping to a note (or back up) glides instead of teleporting,
+    // and the target flashes briefly so you don't lose your place. No-JS falls
+    // back to native anchor jumps (the :target highlight is handled in CSS).
+    (function () {
+      var links = document.querySelectorAll('.footnote-ref, .footnote-backref');
+      if (!links.length) return;
+      var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      Array.prototype.forEach.call(links, function (link) {
+        link.addEventListener('click', function (e) {
+          var id = (link.getAttribute('href') || '').replace(/^#/, '');
+          var target = id && document.getElementById(id);
+          if (!target) return;
+          e.preventDefault();
+          target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+          if (history.replaceState) history.replaceState(null, '', '#' + id);
+          if (!reduce) {
+            target.classList.remove('fn-flash');
+            void target.offsetWidth;            // restart the animation if re-clicked
+            target.classList.add('fn-flash');
+          }
+        });
+      });
+    })();
+
     // Copy-link share button: copy the current URL, flash the icon checkmark + a "Link copied" pill.
     (function () {
       document.querySelectorAll('.share-copy').forEach(function (btn) {

@@ -947,7 +947,7 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
   font-size: 19.275px;
   line-height: 1.5;
 }
-.post-content > :last-child { margin-bottom: 0; }   /* no trailing margin → even gap to the reply pill */
+.post-content > :last-child { margin-block-end: 0; }   /* no trailing margin → clean gap to the reply pill */
 
 .post-content p {
   display: block;
@@ -2053,9 +2053,11 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
    separator), inviting a private reply. Warms to accent on hover; the reply
    arrow nudges back a touch. Opens a pre-filled mailto. */
 .reply-cta {
-  margin: 3.5rem 0 0;                 /* matches the share section's gap below → even spacing */
+  margin: 0;
+  padding: 3.5rem 0;                  /* same gap above and below (padding can't collapse) */
   text-align: center;
 }
+.reply-cta + .post-share-section { margin-top: 0; }   /* the reply block's padding owns the gap to the separator */
 .reply-pill {
   display: inline-flex;
   align-items: center;

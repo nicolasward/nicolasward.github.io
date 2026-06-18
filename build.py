@@ -73,10 +73,11 @@ def reply_section(url, title):
     return (
         '<div class="reply-cta">'
         f'<a class="reply-pill" href="{href}" title="Reply to me — I read every one">'
+        '<svg class="reply-outline" aria-hidden="true"><rect/></svg>'
         '<svg class="reply-arrow" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">'
         '<path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/>'
         '</svg>'
-        '<span>Reply to me</span>'
+        '<span class="reply-text">Reply to me</span>'
         '</a>'
         '</div>'
     )

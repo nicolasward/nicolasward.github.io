@@ -739,6 +739,51 @@
       }
     })();
 
+    // Reply pill: an entrance worth the wait. We size an SVG <rect> to the pill's
+    // exact box so its stroke can *draw* the rounded outline (the CSS border goes
+    // transparent under JS — the drawn rect becomes the visible contour). Once the
+    // pill scrolls into view: the contour draws, the reply arrow wipes in left→
+    // right, then the label fades up. Reduced motion / no-JS show it whole at once.
+    (function () {
+      var pill = document.querySelector('.reply-pill');
+      if (!pill) return;
+      var svg = pill.querySelector('.reply-outline');
+      var rect = svg && svg.querySelector('rect');
+      if (!svg || !rect) return;
+
+      var size = function () {
+        var w = pill.clientWidth, h = pill.clientHeight;   // padding box (border is transparent under JS)
+        if (!w || !h) return;
+        svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+        rect.setAttribute('x', 0.5);
+        rect.setAttribute('y', 0.5);
+        rect.setAttribute('width', w - 1);
+        rect.setAttribute('height', h - 1);
+        var r = (h - 1) / 2;
+        rect.setAttribute('rx', r);
+        rect.setAttribute('ry', r);
+        var len = rect.getTotalLength ? rect.getTotalLength() : 2 * (w + h);
+        pill.style.setProperty('--len', len.toFixed(1));
+      };
+      size();
+      window.addEventListener('resize', size);
+
+      if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        pill.classList.add('in');
+        return;
+      }
+      if ('IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) { pill.classList.add('in'); obs.unobserve(e.target); }
+          });
+        }, { rootMargin: '0px 0px -12% 0px' });
+        obs.observe(pill);
+      } else {
+        pill.classList.add('in');
+      }
+    })();
+
     // Copy-link share button: copy the current URL, flash the icon checkmark + a "Link copied" pill.
     (function () {
       document.querySelectorAll('.share-copy').forEach(function (btn) {

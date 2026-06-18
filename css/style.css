@@ -2059,6 +2059,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 .reply-cta + .post-share-section { margin-top: 0; }   /* the reply block's padding owns the gap to the separator */
 .reply-pill {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -2087,8 +2088,55 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   .reply-pill:hover .reply-arrow { transform: translateX(-2px); }   /* a small "reply" recoil */
 }
 .reply-pill:active { transform: scale(0.97); }
+
+/* ----- Entrance (JS only) -----
+   The pill draws itself into being as it scrolls into view: the rounded
+   contour strokes on (an SVG <rect> sized to the box by JS), the arrow wipes
+   in left→right, then the label fades up. Under JS the CSS border is handed
+   off to the drawn rect, so it goes transparent. No-JS keeps the plain border. */
+.reply-outline { display: none; }
+html.js .reply-pill { border-color: transparent; }
+html.js .reply-outline {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.reply-outline rect {
+  fill: none;
+  stroke: var(--fg-faint);
+  stroke-width: 1;
+  stroke-dasharray: var(--len);
+  stroke-dashoffset: var(--len);   /* undrawn until .in */
+}
+/* Start state: contour undrawn, arrow clipped away, label sunk + faded */
+html.js .reply-pill .reply-arrow { clip-path: inset(0 100% 0 0); }
+html.js .reply-pill .reply-text { opacity: 0; transform: translateY(6px); }
+/* Played: stagger the three beats */
+html.js .reply-pill.in .reply-outline rect {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.65s ease;
+}
+html.js .reply-pill.in .reply-arrow {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.45s ease 0.32s;
+}
+html.js .reply-pill.in .reply-text {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.5s ease 0.5s, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.5s;
+}
+@media (hover: hover) {
+  html.js .reply-pill:hover .reply-outline rect { stroke: var(--fg); transition: stroke 0.2s ease; }
+}
 @media (prefers-reduced-motion: reduce) {
   .reply-arrow { transition: none; }
+  html.js .reply-outline rect { stroke-dashoffset: 0; }
+  html.js .reply-pill .reply-arrow { clip-path: none; }
+  html.js .reply-pill .reply-text { opacity: 1; transform: none; }
 }
 
 /* ===== Newsletter ===== */

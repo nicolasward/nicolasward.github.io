@@ -64,21 +64,23 @@ def share_row(url, title):
 
 
 def reply_section(url, title):
-    """A compact mailto affordance, sat on the 'Share this article' row — readers
-    reply to me privately (subject pre-filled "Re: …", the article URL carried in
-    the body). The envelope's flap lifts open on hover."""
+    """A centered 'Reply to this article' pill at the foot of the article body
+    (before the share separator). Opens a pre-filled mailto to me — subject
+    "Re: …", the article URL carried in the body."""
     subject = quote(f"Re: {title}", safe="")
     body = quote(f"\n\n—\nIn reply to “{title}”\n{url}", safe="")
     href = f"mailto:ward.nicolas@outlook.com?subject={subject}&body={body}"
     return (
-        f'<a class="reply-link" href="{href}" title="Reply to me — I read every one">'
-        '<svg class="reply-env" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+        '<div class="reply-cta">'
+        f'<a class="reply-pill" href="{href}" title="Reply to me — I read every one">'
+        '<svg class="reply-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
         'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
-        '<rect x="3" y="7" width="18" height="12" rx="2"/>'
-        '<path class="reply-flap" d="M3 7 L12 13 L21 7"/>'
+        '<path d="M11 6 L5 12 L11 18"/>'
+        '<path d="M5 12 H13 a6 6 0 0 1 6 6 V20"/>'
         '</svg>'
-        '<span>Reply</span>'
+        '<span>Reply to this article</span>'
         '</a>'
+        '</div>'
     )
 
 # ---------------------------------------------------------------------------

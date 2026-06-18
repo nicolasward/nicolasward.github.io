@@ -2048,45 +2048,39 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 
 /* ===== Reply (mailto) ===== */
-/* A compact action that shares the "Share this article" row: an envelope whose
-   flap lifts open on hover, ink warming to accent. Opens a pre-filled mailto. */
-.share-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;            /* the space the eyebrow used to hold before the icons */
+/* A centered dark pill at the foot of the article body (before the share
+   separator), inviting a private reply. Warms to accent on hover; the reply
+   arrow nudges back a touch. Opens a pre-filled mailto. */
+.reply-cta {
+  margin: 3.25rem 0 0;
+  text-align: center;
 }
-.share-head .eyebrow { margin-bottom: 0; }
-.reply-link {
+.reply-pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  color: var(--fg);
-  font-size: 0.9rem;
+  gap: 0.5rem;
+  padding: 0.62rem 1.25rem;
+  border-radius: 999px;
+  background: var(--fg);
+  color: var(--field);
+  font-size: 0.95rem;
   font-weight: 500;
   letter-spacing: -0.01em;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
-.reply-env {
+.reply-arrow {
   width: 1.1rem;
   height: 1.1rem;
-  overflow: visible;
-  transition: transform 0.2s ease;
-}
-.reply-flap {
-  transform-box: fill-box;
-  transform-origin: 50% 0%;            /* hinge at the flap's top edge */
-  transition: transform 0.34s cubic-bezier(0.34, 1.5, 0.5, 1);
+  transition: transform 0.2s cubic-bezier(0.34, 1.5, 0.5, 1);
 }
 @media (hover: hover) {
-  .reply-link:hover { color: var(--accent); }
-  .reply-link:hover .reply-env { transform: translateY(-1px); }
-  .reply-link:hover .reply-flap { transform: scaleY(-1); }   /* flap lifts open */
+  .reply-pill:hover { background: var(--accent); color: #fff; }
+  .reply-pill:hover .reply-arrow { transform: translateX(-2px); }   /* a small "reply" recoil */
 }
+.reply-pill:active { transform: scale(0.97); }
 @media (prefers-reduced-motion: reduce) {
-  .reply-env, .reply-flap { transition: none; }
+  .reply-arrow { transition: none; }
 }
 
 /* ===== Newsletter ===== */

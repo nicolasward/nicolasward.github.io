@@ -2061,13 +2061,14 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   gap: 0.5rem;
   padding: 0.62rem 1.25rem;
   border-radius: 999px;
-  background: var(--fg);
-  color: var(--field);
+  background: transparent;            /* outlined at rest */
+  color: var(--fg);
+  border: 1px solid var(--fg-faint);
   font-size: 0.95rem;
   font-weight: 500;
   letter-spacing: -0.01em;
   text-decoration: none;
-  transition: background-color 0.2s ease, transform 0.15s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
 }
 .reply-arrow {
   width: 1.1rem;
@@ -2075,7 +2076,11 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   transition: transform 0.2s cubic-bezier(0.34, 1.5, 0.5, 1);
 }
 @media (hover: hover) {
-  .reply-pill:hover { background: var(--accent); color: #fff; }
+  .reply-pill:hover {                 /* fills dark grey on hover */
+    background: var(--fg);
+    color: var(--field);
+    border-color: var(--fg);
+  }
   .reply-pill:hover .reply-arrow { transform: translateX(-2px); }   /* a small "reply" recoil */
 }
 .reply-pill:active { transform: scale(0.97); }

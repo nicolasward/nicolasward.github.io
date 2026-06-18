@@ -62,6 +62,28 @@ def share_row(url, title):
         '</div>'
     )
 
+
+def reply_section(url, title):
+    """A quiet mailto affordance at the foot of each article — readers reply to me
+    privately (subject pre-filled "Re: …", the article URL carried in the body).
+    The envelope's flap lifts open on hover."""
+    subject = quote(f"Re: {title}", safe="")
+    body = quote(f"\n\n—\nIn reply to “{title}”\n{url}", safe="")
+    href = f"mailto:ward.nicolas@outlook.com?subject={subject}&body={body}"
+    return (
+        '<section class="reply" aria-label="Reply to the author">'
+        '<p class="reply-dek">Got a reaction to this? I read every reply.</p>'
+        f'<a class="reply-link" href="{href}">'
+        '<svg class="reply-env" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+        'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        '<rect x="3" y="7" width="18" height="12" rx="2"/>'
+        '<path class="reply-flap" d="M3 7 L12 13 L21 7"/>'
+        '</svg>'
+        '<span>Reply</span>'
+        '</a>'
+        '</section>'
+    )
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -389,6 +411,7 @@ def build():
             content=prefix_internal_links(post["html"], slug_set, BASE_PATH),
             related_posts=related_html,
             linked_mentions=linked_mentions_html,
+            reply=reply_section(f"{SITE_URL}{BASE_PATH}/{post['slug']}", post["title"]),
             newsletter=newsletter_section(),
             share=share_row(f"{SITE_URL}{BASE_PATH}/{post['slug']}", post["title"]),
             newer_url=(f"{BASE_PATH}/{newer['slug']}" if newer else ""),

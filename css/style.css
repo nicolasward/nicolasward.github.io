@@ -2047,6 +2047,48 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   }
 }
 
+/* ===== Reply (mailto) ===== */
+/* A quiet, personal affordance at the foot of each article: an envelope whose
+   flap lifts open on hover, ink warming to accent. Opens a pre-filled mailto. */
+.reply {
+  margin: 3rem 0 0;
+  text-align: center;
+}
+.reply-dek {
+  margin: 0 0 0.65rem;
+  color: var(--fg-muted);
+  font-size: 0.95rem;
+}
+.reply-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--fg);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.reply-env {
+  width: 1.25rem;
+  height: 1.25rem;
+  overflow: visible;
+  transition: transform 0.2s ease;
+}
+.reply-flap {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;            /* hinge at the flap's top edge */
+  transition: transform 0.34s cubic-bezier(0.34, 1.5, 0.5, 1);
+}
+@media (hover: hover) {
+  .reply-link:hover { color: var(--accent); }
+  .reply-link:hover .reply-env { transform: translateY(-1px); }
+  .reply-link:hover .reply-flap { transform: scaleY(-1); }   /* flap lifts open */
+}
+@media (prefers-reduced-motion: reduce) {
+  .reply-env, .reply-flap { transition: none; }
+}
+
 /* ===== Newsletter ===== */
 .newsletter { margin: 3rem 0 0; }
 .newsletter-card {

@@ -155,13 +155,21 @@ def add_heading_anchors(html):
 
 def style_footnotes(html):
     """Dress Python-Markdown's footnote block in the house style: swap its
-    default <hr> rule for a 'Notes' eyebrow heading, matching the other
-    end-of-article section labels."""
-    return re.sub(
+    default <hr> rule for a 'Notes' eyebrow heading, drop the emoji-prone
+    return-arrow, and turn each note's number into a quiet accent link back to
+    its in-text reference (the number is the way back, no glyph)."""
+    html = re.sub(
         r'<div class="footnote">\s*<hr\s*/?>',
         '<div class="footnote"><h2 class="eyebrow">Notes</h2>',
         html,
     )
+    html = re.sub(r'\s*<a class="footnote-backref"[^>]*>.*?</a>', '', html)
+    html = re.sub(
+        r'<li id="fn:([^"]+)">',
+        lambda m: f'<li id="fn:{m.group(1)}"><a class="footnote-num" href="#fnref:{m.group(1)}">{m.group(1)}</a>',
+        html,
+    )
+    return html
 
 
 def render(template_str, **kwargs):

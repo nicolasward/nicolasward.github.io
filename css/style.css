@@ -2049,17 +2049,16 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 
 /* ===== Footnotes ===== */
-/* Inline marker: a small accent superscript numeral — quietly signals it's a
-   link, on-brand with body links. The notes themselves collect at the foot of
-   the article under a 'Notes' eyebrow, set smaller and muted. Clicking a marker
-   (or the back-arrow) glides there and flashes the target so you keep your place. */
-.footnote-ref {
+/* Inline marker: a small accent superscript numeral, no underline — quietly on
+   brand with links. Notes collect at the foot of the article under a 'Notes'
+   eyebrow, smaller and muted; each note's number is itself a quiet accent link
+   back to the text (the reference is bidirectional — no return-arrow glyph).
+   Jumping either way glides and flashes the target so you keep your place. */
+.post-content .footnote-ref {
   color: var(--accent);
   font-weight: 600;
   text-decoration: none;
-  padding: 0 0.12em;            /* a touch more tap area without disturbing the line */
 }
-.footnote-ref:hover { text-decoration: underline; }
 sup[id^="fnref"] { line-height: 0; }   /* keep the raised numeral from inflating the line */
 
 .footnote {
@@ -2068,25 +2067,29 @@ sup[id^="fnref"] { line-height: 0; }   /* keep the raised numeral from inflating
   color: var(--fg-muted);
 }
 .footnote .eyebrow { margin-bottom: 1rem; }
-.footnote ol {
-  margin: 0;
-  padding-left: 1.3rem;
-  display: grid;
-  gap: 0.6rem;
+.footnote ol { list-style: none; margin: 0; padding: 0; }
+.footnote ol > li {
+  position: relative;
+  padding-left: 1.7rem;       /* room for the hanging number */
+  text-indent: 0;
+  line-height: 1.65;
 }
-.footnote li { padding-left: 0.3rem; line-height: 1.65; }
-.footnote li::marker { color: var(--fg-faint); }
+.footnote ol > li + li { margin-top: 0.7rem; }
+.footnote ol > li::before { content: none; }   /* drop the body-list counter */
 .footnote p { margin: 0; }
-.footnote a:not(.footnote-backref) { color: var(--accent); }   /* links within a note keep accent */
+.footnote a:not(.footnote-num) { color: var(--accent); }   /* links within a note keep accent */
 
-.footnote-backref {
-  display: inline-block;
-  margin-left: 0.4em;
-  color: var(--fg-faint);
+.footnote-num {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.85em;
+  font-variant-numeric: tabular-nums;
   text-decoration: none;
-  transition: color 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.5, 0.5, 1);
 }
-.footnote-backref:hover { color: var(--fg); transform: translateX(-2px); }   /* nudges back up the page */
+.footnote-num:hover { text-decoration: underline; }
 
 /* Land softly: account for the header, and flash on arrival. */
 .footnote li, sup[id^="fnref"] { scroll-margin-top: 5rem; }
@@ -2099,7 +2102,6 @@ html:not(.js) .footnote li:target,
 html:not(.js) sup[id^="fnref"]:target { animation: fn-flash 1.5s ease; border-radius: 4px; }
 @media (prefers-reduced-motion: reduce) {
   .fn-flash, html:not(.js) .footnote li:target, html:not(.js) sup[id^="fnref"]:target { animation: none; }
-  .footnote-backref { transition: color 0.2s ease; }
 }
 
 /* ===== Reply (mailto) ===== */

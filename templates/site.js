@@ -788,7 +788,7 @@
     // and the target flashes briefly so you don't lose your place. No-JS falls
     // back to native anchor jumps (the :target highlight is handled in CSS).
     (function () {
-      var links = document.querySelectorAll('.footnote-ref, .footnote-backref');
+      var links = document.querySelectorAll('.footnote-ref, .footnote-num');
       if (!links.length) return;
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       Array.prototype.forEach.call(links, function (link) {

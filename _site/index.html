@@ -130,7 +130,7 @@ html.leaving body { opacity: 0; transition: opacity 0.16s ease; }
 }
 .lede {
   margin: 0;
-  color: rgba(128, 128, 128, 0.45);   /* light grey body (coloured words keep their hue) */
+  color: rgba(29, 29, 31, 0.37);   /* light grey body (coloured words keep their hue) */
 }
 
 /* Word-by-word entrance: JS wraps each word so it can fade in sliding from the
@@ -241,9 +241,9 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   text-decoration: none;
 }
 /* Hover: a highlighter sweeps over the word from left to right — a translucent
-   orange stroke behind the text that grows from 0 → full width (anchored left).
-   The link gets its own stacking context so the highlight sits behind the glyphs
-   but above the page. */
+   stroke behind the text that grows from 0 → full width (anchored left). Each
+   link gets its own marker colour (Google-ish palette). The link gets its own
+   stacking context so the highlight sits behind the glyphs but above the page. */
 .write-link,
 .design-link,
 .text-link { position: relative; z-index: 0; }
@@ -257,10 +257,13 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   bottom: 0.04em;
   width: 0;
   height: 0.72em;
-  background: rgba(255, 121, 27, 0.6);    /* the old accent orange, marker-translucent */
   border-radius: 0.12em;
   transition: width 0.34s cubic-bezier(0.22, 1, 0.36, 1);
 }
+.write-link::before                 { background: rgba(52, 168, 83, 0.6); }   /* green */
+.design-link::before                { background: rgba(255, 121, 27, 0.6); }  /* orange */
+.text-link[href^="https"]::before   { background: rgba(0, 114, 177, 0.6); }   /* LinkedIn blue */
+.text-link[href^="mailto"]::before  { background: rgba(251, 188, 5, 0.6); }   /* email yellow */
 @media (hover: hover) {
   .write-link:hover::before,
   .design-link:hover::before,

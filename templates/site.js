@@ -72,9 +72,15 @@
           if (!el) { el = document.createElement('div'); el.className = 'toast-pill'; document.body.appendChild(el); }
           el.textContent = text;
           el.classList.add('show');
+          // Position in *document* space so the pill stays tethered to the anchor
+          // (the share icon) and rides with it as the page scrolls, rather than
+          // floating loose in the viewport.
           var r = anchor.getBoundingClientRect();
-          el.style.top = (r.bottom + 10) + 'px';
-          el.style.left = Math.max(8, Math.min(r.left + r.width / 2 - el.offsetWidth / 2, window.innerWidth - 8 - el.offsetWidth)) + 'px';
+          var sx = window.pageXOffset || document.documentElement.scrollLeft || 0;
+          var sy = window.pageYOffset || document.documentElement.scrollTop || 0;
+          var leftVp = Math.max(8, Math.min(r.left + r.width / 2 - el.offsetWidth / 2, window.innerWidth - 8 - el.offsetWidth));
+          el.style.top = (r.bottom + sy + 10) + 'px';
+          el.style.left = (leftVp + sx) + 'px';
           clearTimeout(t);
           t = setTimeout(function () { el.classList.remove('show'); }, 2000);
         }

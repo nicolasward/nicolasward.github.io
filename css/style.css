@@ -2552,7 +2552,7 @@ main .newsletter-form.is-confirmed .newsletter-again {
 
 /* Small pill toast (positioned in JS): "You're subscribed!", "Link copied", … */
 .toast-pill {
-  position: fixed;
+  position: absolute;
   z-index: 1001;
   padding: 0.45rem 0.8rem;
   border-radius: 999px;

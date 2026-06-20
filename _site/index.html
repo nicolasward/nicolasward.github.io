@@ -356,6 +356,24 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
 <script>
 const rand = (min, max) => Math.random() * (max - min) + min;
 function randomPos(pad = 6) { return { x: rand(pad, 100 - pad), y: rand(pad, 100 - pad) }; }
+// Pick n start positions that are spread apart, so the very first frame is never
+// an ugly pile-up of all three blobs. Rejection-sample for a point at least
+// minDist from those already placed; if none turns up, keep the farthest tried.
+function spreadStarts(n, pad = 12, minDist = 40, tries = 80) {
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    let best = null, bestD = -1;
+    for (let t = 0; t < tries; t++) {
+      const p = randomPos(pad);
+      let d = Infinity;
+      for (const q of pts) d = Math.min(d, Math.hypot(p.x - q.x, p.y - q.y));
+      if (!pts.length || d >= minDist) { best = p; break; }
+      if (d > bestD) { bestD = d; best = p; }
+    }
+    pts.push(best);
+  }
+  return pts;
+}
 function drift(blob, prev) {
   const next = randomPos();
   // Slow, independently-varying segments so the blobs drift organically rather
@@ -373,8 +391,10 @@ function drift(blob, prev) {
   );
   anim.onfinish = () => drift(blob, next);
 }
-document.querySelectorAll('.blob').forEach(blob => {
-  const start = randomPos();
+const blobs = document.querySelectorAll('.blob');
+const starts = spreadStarts(blobs.length);
+blobs.forEach((blob, i) => {
+  const start = starts[i];
   blob.style.transform = `translate(${start.x}vw, ${start.y}vh) translate(-50%, -50%)`;
   drift(blob, start);
 });

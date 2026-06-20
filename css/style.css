@@ -1359,13 +1359,14 @@ h3:hover .heading-anchor {
   left: 50%;
   bottom: 0;                              /* sits flush to the page bottom — no overflow below */
   transform: translateX(-50%);
-  width: min(96vw, 1500px);
-  height: min(48vw, 750px);          /* exactly half the width → a true half-circle */
-  /* A real circle centred on the page's bottom-centre — its radius equals both
-     the half-width and the height, so it fades transparent right at every edge
-     (no elongation, no border), and the blur melts it into the page. */
-  background: radial-gradient(circle farthest-side at 50% 100%, var(--footer-glow, #FF8FB4) 0%, transparent 80%);
-  filter: blur(90px);
+  width: min(98vw, 1500px);
+  height: min(90vw, 1100px);
+  /* A big circle centred on the page's bottom-centre — large enough that its
+     sides run past the screen edges (a dome of light rising from the bottom).
+     Radius = the box height; the top fades transparent before the box top, and a
+     heavy blur melts it into the page. */
+  background: radial-gradient(circle farthest-side at 50% 100%, var(--footer-glow, #FF8FB4) 0%, transparent 84%);
+  filter: blur(100px);
   opacity: 0.5;
   pointer-events: none;
   z-index: -1;
@@ -1381,17 +1382,17 @@ h3:hover .heading-anchor {
   left: 50%;
   bottom: 0;
   transform: translateX(-50%);
-  width: min(96vw, 1500px);
-  height: min(48vw, 750px);
+  width: min(98vw, 1500px);
+  height: min(90vw, 1100px);
   z-index: -1;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 160px 160px;
   background-repeat: repeat;
-  /* Match the glow's circle so the grain follows it (fully transparent by the
-     box edge — the layer isn't blurred, so any residual would show a hard line). */
-  -webkit-mask-image: radial-gradient(circle farthest-side at 50% 100%, #000 0%, #000 25%, transparent 80%);
-          mask-image: radial-gradient(circle farthest-side at 50% 100%, #000 0%, #000 25%, transparent 80%);
+  /* Concentric with the glow but fading transparent BEFORE the box sides — the
+     grain isn't blurred, so unlike the (bleeding) glow it must not reach an edge. */
+  -webkit-mask-image: radial-gradient(circle farthest-side at 50% 100%, #000 0%, #000 18%, transparent 50%);
+          mask-image: radial-gradient(circle farthest-side at 50% 100%, #000 0%, #000 18%, transparent 50%);
   opacity: 0.6;
   mix-blend-mode: overlay;
 }

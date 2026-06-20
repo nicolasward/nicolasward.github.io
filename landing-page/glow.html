@@ -25,10 +25,10 @@
   --field:      #ffffff;
   --field-mid:  #f8fafc;
 
-  /* Deep "stage" palette for the glow experiment. */
-  --deep-top:   #05060d;   /* near-black at the top */
-  --deep-mid:   #0a1633;   /* deep navy */
-  --deep-low:   #14306e;   /* richer blue rising from the bottom */
+  /* Deep "stage" palette for the glow experiment (lightened blue). */
+  --deep-top:   #0a1024;   /* dark blue-black at the top */
+  --deep-mid:   #173061;   /* mid blue */
+  --deep-low:   #2b57b8;   /* brighter blue rising from the bottom */
 }
 
 /* ---------------- Base ---------------- */
@@ -71,23 +71,25 @@ html.leaving body { opacity: 0; transition: opacity 0.16s ease; }
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: url("/grain.png");
-  background-size: var(--noise-size) var(--noise-size);
+  /* feTurbulence noise (renders visibly on a dark field, unlike the dark-fleck
+     grain.png) — overlaid for a filmic grain over the deep blue. */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 170px 170px;
   background-repeat: repeat;
-  opacity: .5;
-  mix-blend-mode: soft-light;   /* a filmic grain over the deep field */
+  opacity: .42;
+  mix-blend-mode: overlay;
 }
 
-/* ---------------- Glows ----------------
-   Big, soft white pools that drift behind the text. Screen-blended so they
-   only ever brighten the deep field — the moving light the text reads against. */
+/* ---------------- Glow ----------------
+   One big, soft white pool that drifts behind the text. Screen-blended so it
+   only ever brightens the deep field — the moving light the text reads against. */
 .blob {
   position: absolute;
-  width: 62vmax; height: 62vmax;
+  width: 66vmax; height: 66vmax;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.85) 0%, rgba(202,224,255,0.34) 32%, rgba(255,255,255,0) 68%);
-  filter: blur(72px);
-  opacity: .45;
+  background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(210,228,255,0.5) 32%, rgba(255,255,255,0) 68%);
+  filter: blur(70px);
+  opacity: .72;
   mix-blend-mode: screen;
   will-change: transform;
 }
@@ -346,8 +348,6 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   </button>
 
   <div class="stage" aria-hidden="true">
-    <div class="blob"></div>
-    <div class="blob"></div>
     <div class="blob"></div>
   </div>
 

@@ -159,11 +159,22 @@ html[data-theme="dark"] .stage::after {
 .theme-switch.ready { opacity: 0.65; }
 .theme-switch:hover { opacity: 1; }
 .theme-switch:active { transform: scale(0.9); }
-.theme-switch svg { width: 1.35rem; height: 1.35rem; display: block; }
-.theme-switch .ts-sun { display: none; }
-html[data-theme="dark"] .theme-switch .ts-sun { display: block; }
-html[data-theme="dark"] .theme-switch .ts-moon { display: none; }
-@media (prefers-reduced-motion: reduce) { .theme-switch { transition: transform 0.15s ease; } }
+/* The sun and moon overlap in the same grid cell and morph into each other —
+   the outgoing one rotates + shrinks away as the incoming one rotates + grows in. */
+.theme-switch svg {
+  grid-area: 1 / 1;
+  width: 1.35rem; height: 1.35rem;
+  display: block;
+  transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+.theme-switch .ts-moon { opacity: 1; transform: none; }
+.theme-switch .ts-sun  { opacity: 0; transform: rotate(-90deg) scale(0.35); }
+html[data-theme="dark"] .theme-switch .ts-moon { opacity: 0; transform: rotate(90deg) scale(0.35); }
+html[data-theme="dark"] .theme-switch .ts-sun  { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .theme-switch { transition: transform 0.15s ease; }
+  .theme-switch svg { transition: none; }
+}
 
 /* ---------------- Content ---------------- */
 .container {
@@ -272,13 +283,14 @@ html.js .fast-forward .ff-skip path {
   stroke-dasharray: 1 2;
   stroke-dashoffset: 1.12;                 /* undrawn by default */
 }
-/* Entrance: a clear beat after the background settles, each chevron strokes
-   itself in, the second a beat after the first. */
+/* Entrance: JS adds .draw once "Hi, I'm Nico." has landed (drawing it before the
+   line it sits beside looks unnatural). Each chevron then strokes itself in, the
+   second a beat after the first. */
 html.js .fast-forward.draw .ff-skip path {
-  animation: ff-draw 0.55s cubic-bezier(0.65, 0, 0.35, 1) 0.75s forwards;
+  animation: ff-draw 0.55s cubic-bezier(0.65, 0, 0.35, 1) 0.12s forwards;
 }
 html.js .fast-forward.draw .ff-skip path:last-child {
-  animation-delay: 0.92s;
+  animation-delay: 0.32s;
 }
 @keyframes ff-draw {
   to { stroke-dashoffset: 0; }
@@ -563,6 +575,13 @@ blobs.forEach((blob, i) => {
         const d = G_DELAYS[i] != null ? G_DELAYS[i] : 1.6 + (i - 2) * 0.3;
         w.style.animation = 'word-fade 0.85s ease ' + d + 's both';
       });
+      // Draw the skip control in only once the greeting has finished landing —
+      // it looks unnatural appearing before the line it sits beside.
+      const lastG = gws[gws.length - 1];
+      if (lastG && ff) {
+        const onGreetEnd = () => { lastG.removeEventListener('animationend', onGreetEnd); ff.classList.add('draw'); };
+        lastG.addEventListener('animationend', onGreetEnd);
+      }
     }
     if (lede) {
       lede.style.opacity = 1;
@@ -650,8 +669,9 @@ blobs.forEach((blob, i) => {
   placeControls();
   window.addEventListener('resize', placeControls);
 
-  // Draw the chevrons in once (stroke-dashoffset entrance), then play the intro.
-  function startIntro() { if (ff) ff.classList.add('draw'); playIntro(); }
+  // Play the intro (the skip control draws itself in once the greeting lands —
+  // see playIntro).
+  function startIntro() { playIntro(); }
 
   // Wait for the web font so the layout is settled before revealing.
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { placeControls(); startIntro(); });

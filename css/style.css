@@ -1361,20 +1361,21 @@ h3:hover .heading-anchor {
   transform: translateX(-50%);
   width: min(98vw, 1500px);
   height: min(90vw, 1100px);
-  /* An ethereal, asymmetric wash rather than a disc: several soft light-pools of
-     the same hue gathered near the bottom at different sizes and offsets, their
-     cores just below the edge, melted together by a heavy blur into a drifting-
-     aurora glow. */
+  /* Reproduce the landing page's aurora: three distinct, overlapping hued blobs
+     (iris / rose / aqua) using the same multi-stop ramps, clustered near the
+     bottom at varied sizes/offsets. A moderate blur lets the *different hues*
+     blend at their edges — that interplay is what reads as ethereal, where a
+     single hue just greyed into a disc. */
   background:
-    radial-gradient(36% 78% at 27% 106%, var(--footer-glow, #FF8FB4) 0%, transparent 60%),
-    radial-gradient(46% 104% at 53% 117%, var(--footer-glow, #FF8FB4) 0%, transparent 58%),
-    radial-gradient(32% 66% at 78% 102%, var(--footer-glow, #FF8FB4) 0%, transparent 60%);
-  filter: blur(120px);
-  opacity: 0.5;
+    radial-gradient(46% 60% at 21% 113%, #C7CEFF 0%, #6E7BF2 34%, #A98CF0 58%, transparent 78%),
+    radial-gradient(54% 72% at 51% 123%, #FFC9DA 0%, #FF8FB4 36%, #FFB39B 60%, transparent 80%),
+    radial-gradient(42% 56% at 81% 110%, #BDF3EA 0%, #5FD0D9 34%, #8FC4FF 58%, transparent 78%);
+  filter: blur(85px);
+  opacity: 0.45;
   pointer-events: none;
   z-index: -1;
 }
-[data-theme="dark"] .footer-glow { opacity: 0.42; z-index: -2; }
+[data-theme="dark"] .footer-glow { opacity: 0.5; z-index: -2; }
 /* Grain ONLY the footer glow. A noise layer positioned to the blob's exact box
    and masked with the SAME radial as the glow, so the grain fades out with the
    glow — the flat dark reading area stays clean. Sits above the blob (z-index:-1

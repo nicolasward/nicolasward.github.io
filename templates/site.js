@@ -814,16 +814,6 @@
       });
     })();
 
-    // Footer sunset: tint the page's bottom glow with a random hue pulled from
-    // the landing-page aurora, so each visit gets its own sunset. (The blob sits
-    // below the fold, so setting this on load is invisible — no flash.)
-    (function () {
-      var el = document.querySelector('.footer-glow');
-      if (!el) return;
-      var hues = ['#6E7BF2', '#FF8FB4', '#5FD0D9'];   // iris · rose · aqua
-      el.style.setProperty('--footer-glow', hues[Math.floor(Math.random() * hues.length)]);
-    })();
-
     // Copy-link share button: copy the current URL, flash the icon checkmark + a "Link copied" pill.
     (function () {
       document.querySelectorAll('.share-copy').forEach(function (btn) {

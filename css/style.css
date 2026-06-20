@@ -1361,13 +1361,16 @@ h3:hover .heading-anchor {
   transform: translateX(-50%);
   width: min(98vw, 1500px);
   height: min(90vw, 1100px);
-  /* A big circle centred on the page's bottom-centre — large enough that its
-     sides run past the screen edges (a dome of light rising from the bottom).
-     The colour fades across the whole radius (gradient transparent only at the
-     box top) and a heavy blur dissolves any remaining boundary into the page. */
-  background: radial-gradient(circle farthest-side at 50% 100%, var(--footer-glow, #FF8FB4) 0%, var(--footer-glow, #FF8FB4) 8%, transparent 100%);
-  filter: blur(140px);
-  opacity: 0.55;
+  /* An ethereal, asymmetric wash rather than a disc: several soft light-pools of
+     the same hue gathered near the bottom at different sizes and offsets, their
+     cores just below the edge, melted together by a heavy blur into a drifting-
+     aurora glow. */
+  background:
+    radial-gradient(36% 78% at 27% 106%, var(--footer-glow, #FF8FB4) 0%, transparent 60%),
+    radial-gradient(46% 104% at 53% 117%, var(--footer-glow, #FF8FB4) 0%, transparent 58%),
+    radial-gradient(32% 66% at 78% 102%, var(--footer-glow, #FF8FB4) 0%, transparent 60%);
+  filter: blur(120px);
+  opacity: 0.5;
   pointer-events: none;
   z-index: -1;
 }
@@ -1389,10 +1392,10 @@ h3:hover .heading-anchor {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 160px 160px;
   background-repeat: repeat;
-  /* Concentric with the glow but fading transparent BEFORE the box sides — the
+  /* A broad ellipse over the wash, fading transparent BEFORE the box edges — the
      grain isn't blurred, so unlike the (bleeding) glow it must not reach an edge. */
-  -webkit-mask-image: radial-gradient(circle farthest-side at 50% 100%, #000 0%, #000 18%, transparent 50%);
-          mask-image: radial-gradient(circle farthest-side at 50% 100%, #000 0%, #000 18%, transparent 50%);
+  -webkit-mask-image: radial-gradient(64% 88% at 50% 100%, #000 0%, #000 18%, transparent 72%);
+          mask-image: radial-gradient(64% 88% at 50% 100%, #000 0%, #000 18%, transparent 72%);
   opacity: 0.6;
   mix-blend-mode: overlay;
 }

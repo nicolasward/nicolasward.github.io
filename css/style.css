@@ -1371,20 +1371,21 @@ h3:hover .heading-anchor {
 }
 [data-theme="dark"] .footer-glow { opacity: 0.34; z-index: -2; }
 /* Dark mode drops the paper grain, so the footer blob would be smooth (and prone
-   to banding). Re-introduce a film grain over just the bottom band — an image-
-   free CSS noise layered above the blob (z-index:-1 > the blob's -2) but behind
-   the footer text — matching the landing's graininess and dithering the blob. */
+   to banding). Re-introduce a film grain — an image-free CSS noise covering the
+   whole page uniformly (no band, so no hard edge), layered above the blob
+   (z-index:-1 > the blob's -2) but behind the text. Overlay-blended and faint,
+   it stays invisible over the flat dark reading area and only really reads over
+   the footer blob, dithering it. */
 [data-theme="dark"] .container::after {
   content: "";
   position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: min(56vw, 640px);
+  inset: 0;
   z-index: -1;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 160px 160px;
   background-repeat: repeat;
-  opacity: 0.5;
+  opacity: 0.4;
   mix-blend-mode: overlay;
 }
 

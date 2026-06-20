@@ -25,10 +25,11 @@
   --field:      #ffffff;
   --field-mid:  #f8fafc;
 
-  /* Deep "stage" palette for the glow experiment (lightened blue). */
-  --deep-top:   #0a1024;   /* dark blue-black at the top */
-  --deep-mid:   #173061;   /* mid blue */
-  --deep-low:   #2b57b8;   /* brighter blue rising from the bottom */
+  /* Stage palette — sampled from the reference photo. The field is a vivid
+     cornflower blue (#2e6be5); the white glow lifts its region toward #6c9bed. */
+  --deep-low:   #3b78ef;   /* slightly brighter base, toward the centre */
+  --deep-mid:   #2e6be5;   /* the dominant sampled blue */
+  --deep-top:   #2257cf;   /* a touch deeper at the edges */
 }
 
 /* ---------------- Base ---------------- */
@@ -87,9 +88,9 @@ html.leaving body { opacity: 0; transition: opacity 0.16s ease; }
   position: absolute;
   width: 66vmax; height: 66vmax;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(210,228,255,0.5) 32%, rgba(255,255,255,0) 68%);
+  background: radial-gradient(circle, rgba(255,255,255,0.85) 0%, rgba(210,228,255,0.45) 30%, rgba(255,255,255,0) 66%);
   filter: blur(70px);
-  opacity: .72;
+  opacity: .4;
   mix-blend-mode: screen;
   will-change: transform;
 }
@@ -137,7 +138,7 @@ html.leaving body { opacity: 0; transition: opacity 0.16s ease; }
 }
 .lede {
   margin: 0;
-  color: rgba(255, 255, 255, 0.34);   /* faint body — the moving light reveals it */
+  color: rgba(255, 255, 255, 0.42);   /* faint body — the moving light reveals it */
 }
 
 /* Word-by-word entrance: JS wraps each word so it can fade in sliding from the

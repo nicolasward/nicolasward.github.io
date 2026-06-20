@@ -4,7 +4,22 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>nw</title>
-<script>document.documentElement.classList.add('js');</script>
+<meta name="theme-color" content="#ffffff" id="theme-color-meta">
+<script>
+  document.documentElement.classList.add('js');
+  // Apply the saved/system theme before first paint (no flash). Shares the blog's
+  // 'theme-choice' key so the preference carries across the whole site.
+  (function () {
+    try {
+      var c = localStorage.getItem('theme-choice');
+      var dark = c ? c === 'dark' : (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+      if (dark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        var m = document.getElementById('theme-color-meta'); if (m) m.setAttribute('content', '#0C0E14');
+      }
+    } catch (e) {}
+  })();
+</script>
 <!-- Preload the grain so it dithers the gradient at first paint (avoids the
      faint banding flash on a cold hard refresh). -->
 <link rel="preload" as="image" href="/grain.png" type="image/png">
@@ -24,6 +39,16 @@
   --fg:         #1D1D1F;   /* ink (Apple near-black) — matches the blog */
   --field:      #ffffff;   /* gradient field (white stops) */
   --field-mid:  #f8fafc;   /* gradient midpoint (cool near-white) */
+}
+
+/* Dark theme: a deep field with near-white ink. The gradients, greeting and
+   skip control all read from these tokens, so they flip for free; the few
+   things that need more than a colour swap (body text, blobs, grain) are
+   overridden below. */
+html[data-theme="dark"] {
+  --fg:         #F5F5F7;
+  --field:      #0C0E14;
+  --field-mid:  #141826;
 }
 
 /* ---------------- Base ---------------- */
@@ -89,6 +114,55 @@ html.leaving body { opacity: 0; transition: opacity 0.16s ease; }
 .blob--teal   { background: radial-gradient(circle at 35% 35%, #C7CEFF 0%, #6E7BF2 42%, #A98CF0 72%, rgba(0,0,0,0) 74%); }  /* iris (periwinkle → violet) */
 .blob--sunset { background: radial-gradient(circle at 65% 40%, #FFC9DA 0%, #FF8FB4 44%, #FFB39B 74%, rgba(0,0,0,0) 76%); }  /* rose (coral-pink) */
 .blob--plum   { background: radial-gradient(circle at 30% 60%, #BDF3EA 0%, #5FD0D9 42%, #8FC4FF 74%, rgba(0,0,0,0) 76%); }  /* aqua (cyan → sky) */
+
+/* Dark theme overrides. The light page is a 3-blob aurora; the dark page is a
+   single, larger iris blob that *glows* (screen-blended) on the deep field, with
+   the other two hidden. Body ink flips to a muted light, and the grain becomes a
+   CSS noise (the dark-fleck grain.png is invisible on dark). */
+html[data-theme="dark"] .lede { color: rgba(255, 255, 255, 0.4); }
+html[data-theme="dark"] .blob { opacity: .6; mix-blend-mode: screen; }
+html[data-theme="dark"] .blob--teal { width: 46vmax; height: 46vmax; }   /* the lone iris, a touch larger */
+html[data-theme="dark"] .blob--sunset,
+html[data-theme="dark"] .blob--plum { display: none; }
+html[data-theme="dark"] .stage::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  opacity: 0.6;
+  mix-blend-mode: overlay;
+}
+
+/* ---------------- Theme toggle ----------------
+   A quiet sun/moon in the bottom-left corner (the fast-forward owns the top-
+   right). Hidden until JS fades it in after the intro settles, so it never
+   competes with the entrance; safe-area-aware so it clears the home indicator.
+   Moon shows in light mode (→ go dark); sun shows in dark (→ go light). */
+.theme-switch {
+  position: fixed;
+  left: calc(1.5rem + env(safe-area-inset-left));
+  bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 2.1rem; height: 2.1rem;
+  padding: 0; margin: 0;
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+  opacity: 0;                              /* revealed by JS (.ready) — stays hidden with no JS */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none; user-select: none;
+  transition: opacity 0.6s ease, transform 0.15s ease, color 0.3s ease;
+}
+.theme-switch.ready { opacity: 0.65; }
+.theme-switch:hover { opacity: 1; }
+.theme-switch:active { transform: scale(0.9); }
+.theme-switch svg { width: 1.35rem; height: 1.35rem; display: block; }
+.theme-switch .ts-sun { display: none; }
+html[data-theme="dark"] .theme-switch .ts-sun { display: block; }
+html[data-theme="dark"] .theme-switch .ts-moon { display: none; }
+@media (prefers-reduced-motion: reduce) { .theme-switch { transition: transform 0.15s ease; } }
 
 /* ---------------- Content ---------------- */
 .container {
@@ -348,6 +422,19 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
     </svg>
   </button>
 
+  <button class="theme-switch" id="theme-switch" type="button" aria-label="Toggle dark mode" title="Toggle theme">
+    <svg class="ts-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+    <svg class="ts-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.2"/>
+      <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
+      <line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/>
+      <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
+      <line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/>
+    </svg>
+  </button>
+
   <div class="stage" aria-hidden="true">
     <div class="blob blob--teal"></div>
     <div class="blob blob--sunset"></div>
@@ -601,6 +688,26 @@ blobs.forEach((blob, i) => {
   });
   // Restore visibility if the page is shown again from the back/forward cache.
   window.addEventListener('pageshow', () => document.documentElement.classList.remove('leaving'));
+})();
+
+// Theme toggle (bottom-left). Flips data-theme, persists to the blog's shared
+// 'theme-choice' key, and updates the mobile status-bar tint. It fades in only
+// after the intro has had a beat to settle (immediately under reduced motion).
+(function () {
+  var html = document.documentElement;
+  var btn = document.getElementById('theme-switch');
+  if (!btn) return;
+  var meta = document.getElementById('theme-color-meta');
+  var FIELD = { light: '#ffffff', dark: '#0C0E14' };
+  btn.addEventListener('click', function () {
+    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    if (next === 'dark') html.setAttribute('data-theme', 'dark');
+    else html.removeAttribute('data-theme');
+    if (meta) meta.setAttribute('content', FIELD[next]);
+    try { localStorage.setItem('theme-choice', next); } catch (e) {}
+  });
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  setTimeout(function () { btn.classList.add('ready'); }, reduce ? 200 : 2400);
 })();
 </script>
 </body>

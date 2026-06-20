@@ -83,9 +83,12 @@ html.leaving body { opacity: 0; transition: opacity 0.16s ease; }
   opacity: .35;
   will-change: transform;
 }
-.blob--teal   { background: radial-gradient(circle at 35% 35%, #7FE3D9 0%, #008080 38%, #86B3FF 72%, rgba(0,0,0,0) 74%); }
-.blob--sunset { background: radial-gradient(circle at 65% 40%, #FFC6A0 0%, #FF791B 42%, #FFB066 74%, rgba(0,0,0,0) 76%); }
-.blob--plum   { background: radial-gradient(circle at 30% 60%, #CBB7FF 0%, #7C6BEA 40%, #B9F7E8 74%, rgba(0,0,0,0) 76%); }
+/* An iridescent "Apple Intelligence" aurora: an analogous iris → rose → aqua
+   sweep — luminous jewel-pastels that melt into one soft light rather than three
+   competing dots. Warm rose anchors the centre; cool iris + aqua flank it. */
+.blob--teal   { background: radial-gradient(circle at 35% 35%, #C7CEFF 0%, #6E7BF2 42%, #A98CF0 72%, rgba(0,0,0,0) 74%); }  /* iris (periwinkle → violet) */
+.blob--sunset { background: radial-gradient(circle at 65% 40%, #FFC9DA 0%, #FF8FB4 44%, #FFB39B 74%, rgba(0,0,0,0) 76%); }  /* rose (coral-pink) */
+.blob--plum   { background: radial-gradient(circle at 30% 60%, #BDF3EA 0%, #5FD0D9 42%, #8FC4FF 74%, rgba(0,0,0,0) 76%); }  /* aqua (cyan → sky) */
 
 /* ---------------- Content ---------------- */
 .container {

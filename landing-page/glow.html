@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>nw</title>
 <script>document.documentElement.classList.add('js');</script>
-<!-- Preload the grain so it dithers the gradient at first paint (avoids the
-     faint banding flash on a cold hard refresh). -->
-<link rel="preload" as="image" href="/grain.png" type="image/png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,23 +18,19 @@
   --noise-size: 130px;
   --noise-opacity: .4;
 
-  --fg:         #1D1D1F;   /* ink (unused on the dark variant, kept for parity) */
-  --field:      #ffffff;
-  --field-mid:  #f8fafc;
-
-  /* Deep "stage" palette — the original deep blue. */
-  --deep-low:   #14306e;   /* richer blue rising from the bottom */
-  --deep-mid:   #0a1633;   /* deep navy */
-  --deep-top:   #05060d;   /* near-black at the top/edges */
+  --fg:         #1D1D1F;   /* ink (Apple near-black) — matches the blog */
+  --field:      #ffffff;   /* gradient field (white stops) */
+  --field-mid:  #f8fafc;   /* gradient midpoint (cool near-white) */
 }
 
 /* ---------------- Base ---------------- */
 html {
   height: 100%;
   margin: 0;
-  /* Deep gradient on the ROOT so overscroll + the area behind the status bar
-     stays dark (the fixed .stage repaints the same field, glows + noise on top). */
-  background: radial-gradient(125% 120% at 50% 60%, var(--deep-low) 0%, var(--deep-mid) 45%, var(--deep-top) 100%);
+  /* Gradient on the ROOT element so CSS propagates it to the whole canvas
+     (overscroll + behind the status bar), guaranteeing full-screen coverage.
+     The fixed .stage repaints the same gradient (plus blobs + noise) on top. */
+  background: radial-gradient(120% 120% at 50% 100%, var(--field) 0%, var(--field-mid) 60%, var(--field) 100%);
 }
 
 body {
@@ -47,8 +40,8 @@ body {
   font-family: "Figtree", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: var(--deep-top); /* deep — gradient + glows live on .stage */
-  color: #fff;
+  background: var(--field); /* plain white — gradient lives on .stage */
+  color: var(--fg);
 }
 /* Leaving for an internal page: fade out so the colourful background doesn't
    "blink" to white before the next page paints (see the link handler in JS). */
@@ -61,38 +54,39 @@ html.leaving body { opacity: 0; transition: opacity 0.16s ease; }
   position: fixed;
   inset: 0;
   z-index: 0;
-  overflow: hidden;        /* clip the drifting glows to the viewport */
+  overflow: hidden;        /* clip the drifting blobs to the viewport */
   isolation: isolate;      /* give mix-blend a self-contained context */
-  background: radial-gradient(125% 120% at 50% 60%, var(--deep-low) 0%, var(--deep-mid) 45%, var(--deep-top) 100%);
+  background: radial-gradient(120% 120% at 50% 100%, var(--field) 0%, var(--field-mid) 60%, var(--field) 100%);
 }
 
+/* Film grain + dithering in one cheap, image-free layer: an inline SVG
+   fractal-noise tile (desaturated to grey), tiled and blended soft-light at low
+   opacity. Subtle enough to read as grain, strong enough to break up any 8-bit
+   banding in the blurred aurora. No network image; rasterised once, composited. */
 .stage::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  /* feTurbulence noise (renders visibly on a dark field, unlike the dark-fleck
-     grain.png) — overlaid for a filmic grain over the deep blue. */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  background-size: 170px 170px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
   background-repeat: repeat;
-  opacity: .42;
-  mix-blend-mode: overlay;
+  opacity: 0.28;
+  mix-blend-mode: soft-light;
 }
 
-/* ---------------- Glow ----------------
-   One big, soft white pool that drifts behind the text. Screen-blended so it
-   only ever brightens the deep field — the moving light the text reads against. */
+/* ---------------- Blobs ---------------- */
 .blob {
   position: absolute;
-  width: 66vmax; height: 66vmax;
+  width: 36vmax; height: 36vmax;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(210,228,255,0.45) 30%, rgba(255,255,255,0) 66%);
-  filter: blur(70px);
-  opacity: .5;
-  mix-blend-mode: screen;
+  filter: blur(100px);
+  opacity: .35;
   will-change: transform;
 }
+.blob--teal   { background: radial-gradient(circle at 35% 35%, #7FE3D9 0%, #008080 38%, #86B3FF 72%, rgba(0,0,0,0) 74%); }
+.blob--sunset { background: radial-gradient(circle at 65% 40%, #FFC6A0 0%, #FF791B 42%, #FFB066 74%, rgba(0,0,0,0) 76%); }
+.blob--plum   { background: radial-gradient(circle at 30% 60%, #CBB7FF 0%, #7C6BEA 40%, #B9F7E8 74%, rgba(0,0,0,0) 76%); }
 
 /* ---------------- Content ---------------- */
 .container {
@@ -117,27 +111,34 @@ html.leaving body { opacity: 0; transition: opacity 0.16s ease; }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Hero — a centred narrative: a muted greeting leading into a fuller-ink lede,
-   all one size, at an elegant reading measure with generous whitespace. */
+/* Hero — a centred narrative at an elegant reading measure. The black name
+   anchors a slightly smaller grey body, on a small deliberate type scale. */
 .hero {
   max-width: min(64rem, 90vw);   /* an elegant measure — balanced, not crammed */
 }
 
+/* A small, intentional type scale: the name (anchor) sits a major-second
+   (≈1.125) above the body. The single-line heading takes tight leading +
+   tracking; the multi-line body gets more leading and gentler tracking so it
+   stays readable. */
 .greeting,
 .lede {
-  font-size: clamp(1.7rem, 3.3vw, 3.4rem);
   font-weight: 600;
-  line-height: 1.3;
-  letter-spacing: -0.018em;
   text-rendering: optimizeLegibility;
 }
 .greeting {
-  margin: 0 0 0.35em 0;
-  color: rgba(255, 255, 255, 0.72);   /* tone-on-tone — luminous where a glow drifts behind */
+  margin: 0 0 0.3em 0;
+  font-size: clamp(1.85rem, 3.55vw, 3.6rem);
+  line-height: 1.15;
+  letter-spacing: -0.022em;
+  color: var(--fg);                /* black anchor — carries the page */
 }
 .lede {
   margin: 0;
-  color: rgba(255, 255, 255, 0.42);   /* faint body — the moving light reveals it */
+  font-size: clamp(1.7rem, 3.15vw, 3.2rem);
+  line-height: 1.34;
+  letter-spacing: -0.014em;
+  color: rgba(29, 29, 31, 0.34);   /* darker grey body — legible across the gradient's lighter patches */
 }
 
 /* Word-by-word entrance: JS wraps each word so it can fade in sliding from the
@@ -168,13 +169,13 @@ html.js .fast-forward {
   z-index: 5;
   display: grid;
   place-items: center;
-  width: clamp(1.9rem, 3.3vw, 3.4rem);     /* tracks the (now larger) greeting cap height */
-  height: clamp(1.9rem, 3.3vw, 3.4rem);
+  width: clamp(1.95rem, 3.55vw, 3.6rem);   /* tracks the greeting cap height */
+  height: clamp(1.95rem, 3.55vw, 3.6rem);
   padding: 0;
   margin: 0;
   border: none;
   background: transparent;
-  color: rgba(255, 255, 255, 0.8);         /* same light as the first line */
+  color: var(--fg);                        /* same ink as the first line */
   cursor: pointer;
   touch-action: manipulation;              /* kill the ~300ms mobile tap delay */
   -webkit-user-select: none;
@@ -237,16 +238,20 @@ html.js .fast-forward.done .ff-replay {
 html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .fast-forward { display: none !important; } }
 
-/* "Atelier" — a coloured accent in the prose (Google-blue, vibrant on light). */
-/* All inline links share the dark-grey ink of the greeting — no colour, no
-   underline; the darker weight against the light-grey body is the affordance. */
+/* "Atelier" stays the dark-grey ink of the greeting (it's not a link). Each
+   actual link wears the colour of its own highlighter — the marker hue, now the
+   resting ink — so the four read as a quiet Google-ish palette. No underline. */
 .atelier,
 .write-link,
 .design-link,
 .text-link {
-  color: rgba(255, 255, 255, 0.92);   /* brighter than the body — the named things stand out */
+  color: var(--fg);
   text-decoration: none;
 }
+.write-link                { color: rgb(52, 168, 83); }    /* green */
+.design-link               { color: rgb(255, 121, 27); }   /* orange */
+.text-link[href^="https"]  { color: rgb(0, 114, 177); }    /* LinkedIn blue */
+.text-link[href^="mailto"] { color: rgb(251, 188, 5); }    /* email yellow */
 /* Hover: a highlighter sweeps over the word from left to right — a translucent
    stroke behind the text that grows from 0 → full width (anchored left). Each
    link gets its own marker colour (Google-ish palette). The link gets its own
@@ -348,13 +353,15 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   </button>
 
   <div class="stage" aria-hidden="true">
-    <div class="blob"></div>
+    <div class="blob blob--teal"></div>
+    <div class="blob blob--sunset"></div>
+    <div class="blob blob--plum"></div>
   </div>
 
   <div class="container">
     <div class="hero">
       <p class="greeting js-reveal"><span class="gw">Hi</span><span class="gw">, I&#8217;m</span> <span class="gw">Nico.</span></p>
-      <h1 class="lede js-reveal">I&#8217;m an AI engineer and designer with an obsession for technology that amplifies human potential.<br>I&#8217;m the founder of <span class="atelier">Atelier</span>, an applied AI studio building new tools for thinking.<br>I also enjoy <a class="write-link" href="/blog">writing</a> - about tech, <a class="design-link" href="/blog/design-and-delight">design</a>, and philosophy. You can reach me on <a class="text-link" href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" rel="noopener">LinkedIn</a> or via <a class="text-link" href="mailto:ward.nicolas@outlook.com">email</a>.</h1>
+      <h1 class="lede js-reveal">I&#8217;m an AI engineer and designer with an obsession for technology that amplifies human potential.<br>I&#8217;m the founder of <span class="atelier">Atelier</span>, an applied AI studio building new tools for thinking.<br>I also enjoy <a class="write-link" href="/blog">writing</a> &#8212; about tech, <a class="design-link" href="/blog/design-and-delight">design</a>, and philosophy. You can reach me on <a class="text-link" href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" rel="noopener">LinkedIn</a> or via <a class="text-link" href="mailto:ward.nicolas@outlook.com">email</a>.</h1>
     </div>
   </div>
 

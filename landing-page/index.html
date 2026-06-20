@@ -284,27 +284,8 @@ html.js .fast-forward.draw .ff-skip path:last-child {
   to { stroke-dashoffset: 0; }
 }
 
-/* Once the intro has fully played, the skip control transforms into a replay
-   control: the chevrons spin out as the circular replay arrow spins in. The
-   two icon states overlay each other in the same SVG and cross-fade on .done. */
-html.js .fast-forward .ff-skip,
-html.js .fast-forward .ff-replay {
-  transform-box: fill-box;
-  transform-origin: 50% 50%;
-  transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-}
-html.js .fast-forward .ff-replay {
-  opacity: 0;
-  transform: rotate(-150deg) scale(0.55);
-}
-html.js .fast-forward.done .ff-skip {
-  opacity: 0;
-  transform: rotate(150deg) scale(0.55);
-}
-html.js .fast-forward.done .ff-replay {
-  opacity: 1;
-  transform: none;
-}
+/* Once the intro has played (or been skipped), the control simply fades away —
+   no replay. */
 html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .fast-forward { display: none !important; } }
 
@@ -415,10 +396,6 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
       <g class="ff-skip">
         <path d="M5 6l6 6-6 6" pathLength="1"/>
         <path d="M13 6l6 6-6 6" pathLength="1"/>
-      </g>
-      <g class="ff-replay">
-        <polyline points="1 4 1 10 7 10"/>
-        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
       </g>
     </svg>
   </button>
@@ -550,40 +527,25 @@ blobs.forEach((blob, i) => {
   const greetWords = () => greeting ? Array.prototype.slice.call(greeting.querySelectorAll('.gw')) : [];
   const ledeWords  = () => lede ? Array.prototype.filter.call(lede.childNodes, n => n.nodeType === 1 && n.tagName !== 'BR') : [];
 
-  // The control swaps roles: skip (chevrons) ⟷ replay (circular arrow).
-  function morphToReplay() {
-    if (!ff) return;
-    ff.classList.add('done');
-    ff.setAttribute('aria-label', 'Replay the intro');
-    ff.setAttribute('title', 'Replay intro');
-  }
-  function morphToChevrons() {
-    if (!ff) return;
-    ff.classList.remove('done');
-    ff.setAttribute('aria-label', 'Skip the intro animation');
-    ff.setAttribute('title', 'Skip intro');
-  }
-  // Flip to Replay only when the intro actually finishes — keyed off the last
-  // word's animationend, not a timer, so backgrounding the tab (which pauses CSS
+  // Once the intro finishes (or is skipped), the control just fades away.
+  function hideControl() { if (ff) ff.classList.add('is-hidden'); }
+  // Fade out only when the intro actually finishes — keyed off the last word's
+  // animationend, not a timer, so backgrounding the tab (which pauses CSS
   // animations) can never fire it early while the text is still mid-entrance.
   function clearReplayArm() {
     if (endWord) { endWord.removeEventListener('animationend', onIntroEnd); endWord = null; }
   }
-  function onIntroEnd() { clearReplayArm(); morphToReplay(); }
+  function onIntroEnd() { clearReplayArm(); hideControl(); }
   function armReplay(word) {
     clearReplayArm();
     if (word) { endWord = word; word.addEventListener('animationend', onIntroEnd); }
   }
 
-  // Play (or replay) the whole intro: reset every word to hidden, re-arm the
-  // chevron draw, trickle the greeting + lede back in, then settle on Replay.
-  // Replaying morphs the replay arrow back into the chevrons (the .done cross-
-  // fade) — it does NOT re-stroke them, so there's no jarring "reload". The
-  // chevrons stroke themselves in exactly once, on first load (see startIntro).
+  // Play the whole intro once: reset every word to hidden, then trickle the
+  // greeting + lede in. When the last word lands, the control fades away.
   function playIntro() {
     if (!wrapped && lede) { wrapWords(lede); wrapped = true; }
     clearReplayArm();
-    morphToChevrons();
 
     const gws = greetWords(), lws = ledeWords();
     // Clear any inline state from a prior run / fast-forward, then restart.
@@ -621,7 +583,7 @@ blobs.forEach((blob, i) => {
     if (!wrapped && lede) { wrapWords(lede); wrapped = true; lede.style.opacity = 1; }
     if (greeting) greeting.style.opacity = 1;
     clearReplayArm();
-    morphToReplay();          // flip to replay on tap — reacts immediately, in step with the text
+    hideControl();            // fade the control away on tap — reacts immediately, in step with the text
     const words = document.querySelectorAll('.greeting .gw, .lede .reveal-word');
     words.forEach(w => {
       const cs = getComputedStyle(w);
@@ -640,8 +602,7 @@ blobs.forEach((blob, i) => {
   }
 
   if (ff) ff.addEventListener('click', () => {
-    if (ff.classList.contains('done')) playIntro();   // replay
-    else fastForward();                               // skip to the end
+    if (!ff.classList.contains('is-hidden')) fastForward();   // skip to the end, then fade away
   });
 
   // Pressing Enter does the same as clicking the double chevron — unless a link
@@ -654,23 +615,46 @@ blobs.forEach((blob, i) => {
     ff.click();
   });
 
-  // Pin the button's vertical centre to the greeting line (it's right-aligned
-  // via CSS). Re-run on resize and after the font settles the layout.
-  function placeFF() {
+  // Position the controls on the greeting line. Desktop: the fast-forward sits at
+  // the hero's right edge and the toggle keeps its CSS top-left corner. Mobile:
+  // the fast-forward hugs the end of "Hi, I'm Nico." and the toggle takes the
+  // line's right edge (the fast-forward's old spot). Re-run on resize / font load.
+  function placeControls() {
     if (!ff || !greeting) return;
-    const r = greeting.getBoundingClientRect();
-    ff.style.top = (r.top + r.height / 2 - ff.offsetHeight / 2) + 'px';
+    const ts = document.getElementById('theme-switch');
+    const gr = greeting.getBoundingClientRect();
+    const lineY = gr.top + gr.height / 2;
     const hero = greeting.closest('.hero');
-    if (hero) ff.style.right = Math.max(0, window.innerWidth - hero.getBoundingClientRect().right) + 'px';
+    const heroRight = hero ? hero.getBoundingClientRect().right : window.innerWidth;
+    const edgeFromRight = Math.max(0, window.innerWidth - heroRight);
+
+    ff.style.top = (lineY - ff.offsetHeight / 2) + 'px';
+
+    if (window.innerWidth <= 700) {                 // mobile
+      const gws = greeting.querySelectorAll('.gw');
+      const last = gws.length ? gws[gws.length - 1] : null;
+      const textEnd = last ? last.getBoundingClientRect().right : gr.left;
+      ff.style.right = 'auto';
+      ff.style.left = Math.round(textEnd + 10) + 'px';
+      if (ts) {
+        ts.style.left = 'auto';
+        ts.style.right = edgeFromRight + 'px';
+        ts.style.top = (lineY - ts.offsetHeight / 2) + 'px';
+      }
+    } else {                                        // desktop
+      ff.style.left = 'auto';
+      ff.style.right = edgeFromRight + 'px';
+      if (ts) { ts.style.left = ''; ts.style.right = ''; ts.style.top = ''; }   // back to CSS top-left
+    }
   }
-  placeFF();
-  window.addEventListener('resize', placeFF);
+  placeControls();
+  window.addEventListener('resize', placeControls);
 
   // Draw the chevrons in once (stroke-dashoffset entrance), then play the intro.
   function startIntro() { if (ff) ff.classList.add('draw'); playIntro(); }
 
   // Wait for the web font so the layout is settled before revealing.
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { placeFF(); startIntro(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { placeControls(); startIntro(); });
   else startIntro();
 
   // Smooth the cross-page navigation: internal links fade the page out first, so

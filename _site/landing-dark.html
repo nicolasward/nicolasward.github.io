@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>nw</title>
 <script>document.documentElement.classList.add('js');</script>
-<!-- Preload the grain so it dithers the gradient at first paint (avoids the
-     faint banding flash on a cold hard refresh). -->
-<link rel="preload" as="image" href="/grain.png" type="image/png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,9 +18,9 @@
   --noise-size: 130px;
   --noise-opacity: .4;
 
-  --fg:         #1D1D1F;   /* ink (Apple near-black) — matches the blog */
-  --field:      #ffffff;   /* gradient field (white stops) */
-  --field-mid:  #f8fafc;   /* gradient midpoint (cool near-white) */
+  --fg:         #F5F5F7;   /* ink — near-white on the dark field */
+  --field:      #0C0E14;   /* deep field (near-black, faintly cool) */
+  --field-mid:  #141826;   /* gradient midpoint (a touch lifted) */
 }
 
 /* ---------------- Base ---------------- */
@@ -62,16 +59,19 @@ html.leaving body { opacity: 0; transition: opacity 0.16s ease; }
   background: radial-gradient(120% 120% at 50% 100%, var(--field) 0%, var(--field-mid) 60%, var(--field) 100%);
 }
 
+/* Image-free film grain + dithering: an inline SVG fractal-noise (desaturated to
+   grey), tiled and blended soft-light. The grain.png is dark-flecked and reads on
+   white but vanishes on a dark field, so the dark replica generates its own. */
 .stage::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: url("/grain.png");
-  background-size: var(--noise-size) var(--noise-size);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
   background-repeat: repeat;
-  opacity: 1;
-  mix-blend-mode: normal;
+  opacity: 0.4;
+  mix-blend-mode: soft-light;
 }
 
 /* ---------------- Blobs ---------------- */
@@ -80,14 +80,16 @@ html.leaving body { opacity: 0; transition: opacity 0.16s ease; }
   width: 36vmax; height: 36vmax;
   border-radius: 50%;
   filter: blur(100px);
-  opacity: .35;
+  opacity: .55;
+  mix-blend-mode: screen;     /* the pastels glow against the dark field */
   will-change: transform;
 }
-/* "Dawn" aurora — a warm sunrise wash: peach + amber anchoring the heart, with
-   a lavender cool counterpoint so it has depth rather than going flat-warm. */
-.blob--teal   { background: radial-gradient(circle at 35% 35%, #FFDAC6 0%, #FFB28C 42%, #FFC8A4 72%, rgba(0,0,0,0) 74%); }  /* peach */
-.blob--sunset { background: radial-gradient(circle at 65% 40%, #FFE9C2 0%, #FFCE7A 44%, #FFD992 74%, rgba(0,0,0,0) 76%); }  /* amber */
-.blob--plum   { background: radial-gradient(circle at 30% 60%, #E5D6FF 0%, #C9A7F0 42%, #E0B9F2 74%, rgba(0,0,0,0) 76%); }  /* lavender */
+/* An iridescent "Apple Intelligence" aurora: an analogous iris → rose → aqua
+   sweep — luminous jewel-pastels that melt into one soft light rather than three
+   competing dots. Warm rose anchors the centre; cool iris + aqua flank it. */
+.blob--teal   { background: radial-gradient(circle at 35% 35%, #C7CEFF 0%, #6E7BF2 42%, #A98CF0 72%, rgba(0,0,0,0) 74%); }  /* iris (periwinkle → violet) */
+.blob--sunset { background: radial-gradient(circle at 65% 40%, #FFC9DA 0%, #FF8FB4 44%, #FFB39B 74%, rgba(0,0,0,0) 76%); }  /* rose (coral-pink) */
+.blob--plum   { background: radial-gradient(circle at 30% 60%, #BDF3EA 0%, #5FD0D9 42%, #8FC4FF 74%, rgba(0,0,0,0) 76%); }  /* aqua (cyan → sky) */
 
 /* ---------------- Content ---------------- */
 .container {
@@ -132,7 +134,7 @@ html.leaving body { opacity: 0; transition: opacity 0.16s ease; }
 }
 .lede {
   margin: 0;
-  color: rgba(29, 29, 31, 0.25);   /* light grey body (coloured words keep their hue) */
+  color: rgba(255, 255, 255, 0.4);   /* muted light body (coloured words keep their hue) */
 }
 
 /* Word-by-word entrance: JS wraps each word so it can fade in sliding from the
@@ -318,11 +320,11 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   }
 
   /* Smaller on mobile so the three blobs don't blanket the whole screen —
-     leaving more of the paper field showing between them. */
+     leaving more of the dark field showing between them. */
   .blob {
     width: 40vmax;
     height: 40vmax;
-    opacity: 0.4;
+    opacity: 0.6;
     /* Smaller blur on mobile: the one-time rasterization of a huge blurred
        element is expensive on phones, and at this size 50px looks ~identical. */
     filter: blur(50px);

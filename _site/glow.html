@@ -25,11 +25,10 @@
   --field:      #ffffff;
   --field-mid:  #f8fafc;
 
-  /* Stage palette — sampled from the reference photo. The field is a vivid
-     cornflower blue (#2e6be5); the white glow lifts its region toward #6c9bed. */
-  --deep-low:   #3b78ef;   /* slightly brighter base, toward the centre */
-  --deep-mid:   #2e6be5;   /* the dominant sampled blue */
-  --deep-top:   #2257cf;   /* a touch deeper at the edges */
+  /* Deep "stage" palette — the original deep blue. */
+  --deep-low:   #14306e;   /* richer blue rising from the bottom */
+  --deep-mid:   #0a1633;   /* deep navy */
+  --deep-top:   #05060d;   /* near-black at the top/edges */
 }
 
 /* ---------------- Base ---------------- */
@@ -88,9 +87,9 @@ html.leaving body { opacity: 0; transition: opacity 0.16s ease; }
   position: absolute;
   width: 66vmax; height: 66vmax;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.85) 0%, rgba(210,228,255,0.45) 30%, rgba(255,255,255,0) 66%);
+  background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(210,228,255,0.45) 30%, rgba(255,255,255,0) 66%);
   filter: blur(70px);
-  opacity: .4;
+  opacity: .5;
   mix-blend-mode: screen;
   will-change: transform;
 }

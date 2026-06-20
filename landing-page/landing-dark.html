@@ -77,10 +77,10 @@ html.leaving body { opacity: 0; transition: opacity 0.16s ease; }
 /* ---------------- Blobs ---------------- */
 .blob {
   position: absolute;
-  width: 36vmax; height: 36vmax;
+  width: 46vmax; height: 46vmax;   /* one lone blob — a touch larger to fill the field */
   border-radius: 50%;
   filter: blur(100px);
-  opacity: .55;
+  opacity: .6;
   mix-blend-mode: screen;     /* the pastels glow against the dark field */
   will-change: transform;
 }
@@ -350,9 +350,7 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   </button>
 
   <div class="stage" aria-hidden="true">
-    <div class="blob blob--teal"></div>
-    <div class="blob blob--sunset"></div>
-    <div class="blob blob--plum"></div>
+    <div class="blob"></div>
   </div>
 
   <div class="container">
@@ -401,6 +399,10 @@ function drift(blob, prev) {
   anim.onfinish = () => drift(blob, next);
 }
 const blobs = document.querySelectorAll('.blob');
+// The dark page runs a single drifting blob — give it a random aurora hue each
+// load (iris / rose / aqua) so it's never the same glow twice.
+const blobHues = ['blob--teal', 'blob--sunset', 'blob--plum'];
+blobs.forEach(b => b.classList.add(blobHues[Math.floor(Math.random() * blobHues.length)]));
 const starts = spreadStarts(blobs.length);
 blobs.forEach((blob, i) => {
   const start = starts[i];

@@ -439,7 +439,6 @@ def build():
             related_posts=related_html,
             linked_mentions=linked_mentions_html,
             reply=reply_section(f"{SITE_URL}{BASE_PATH}/{post['slug']}", post["title"]),
-            newsletter=newsletter_section(),
             share=share_row(f"{SITE_URL}{BASE_PATH}/{post['slug']}", post["title"]),
             newer_url=(f"{BASE_PATH}/{newer['slug']}" if newer else ""),
             newer_title=(html.escape(newer["title"], quote=True) if newer else ""),
@@ -454,6 +453,7 @@ def build():
             content=post_html,
             nav_section=writing_nav,
             body_class="article",
+            newsletter=newsletter_section(),
         )
 
         post_dir = BLOG_DIR / post["slug"]
@@ -502,8 +502,8 @@ def build():
     all_tags = sorted(set(tag for p in posts for tag in p["tags"]))
     topic_links = ", ".join(f'<a href="#" data-search="{tag}">{tag}</a>' for tag in all_tags)
 
-    home_html = render(home_tpl, post_items=post_items, topic_links=topic_links, latest_section=latest_section, newsletter=newsletter_section())
-    index_html = render(base_tpl, base=BASE_PATH, title=SITE_TITLE, content=home_html, nav_section=writing_nav, body_class="home")
+    home_html = render(home_tpl, post_items=post_items, topic_links=topic_links, latest_section=latest_section)
+    index_html = render(base_tpl, base=BASE_PATH, title=SITE_TITLE, content=home_html, nav_section=writing_nav, body_class="home", newsletter=newsletter_section())
     (BLOG_DIR / "index.html").write_text(index_html)
 
     # --- Build static pages ---
@@ -520,7 +520,7 @@ def build():
             title = meta.get("title", filepath.stem.replace("-", " ").title())
 
             pg_html = render(page_tpl, title=title, content=prefix_internal_links(html_content, slug_set, BASE_PATH))
-            full_html = render(base_tpl, base=BASE_PATH, title=f'{title} — {SITE_TITLE}', content=pg_html, nav_section=writing_nav, body_class="page")
+            full_html = render(base_tpl, base=BASE_PATH, title=f'{title} — {SITE_TITLE}', content=pg_html, nav_section=writing_nav, body_class="page", newsletter=newsletter_section())
 
             pg_dir = BLOG_DIR / slug
             pg_dir.mkdir(parents=True, exist_ok=True)

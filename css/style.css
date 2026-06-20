@@ -1359,13 +1359,13 @@ h3:hover .heading-anchor {
   left: 50%;
   bottom: 0;                              /* sits flush to the page bottom — no overflow below */
   transform: translateX(-50%);
-  width: min(96vw, 1200px);
-  height: min(56vw, 620px);
+  width: min(96vw, 1500px);
+  height: min(75vw, 880px);
   /* Bright core hugs the bottom edge (a sun half-set on the horizon). The
      gradient reaches fully transparent before every box edge, and a generous
      blur melts the whole thing into the page — no defined border. */
   background: radial-gradient(60% 115% at 50% 100%, var(--footer-glow, #FF8FB4) 0%, transparent 78%);
-  filter: blur(95px);
+  filter: blur(110px);
   opacity: 0.5;
   pointer-events: none;
   z-index: -1;
@@ -1381,8 +1381,8 @@ h3:hover .heading-anchor {
   left: 50%;
   bottom: 0;
   transform: translateX(-50%);
-  width: min(96vw, 1200px);
-  height: min(56vw, 620px);
+  width: min(96vw, 1500px);
+  height: min(75vw, 880px);
   z-index: -1;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");

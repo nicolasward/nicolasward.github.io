@@ -350,7 +350,7 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   </button>
 
   <div class="stage" aria-hidden="true">
-    <div class="blob"></div>
+    <div class="blob blob--teal"></div>
   </div>
 
   <div class="container">
@@ -399,10 +399,6 @@ function drift(blob, prev) {
   anim.onfinish = () => drift(blob, next);
 }
 const blobs = document.querySelectorAll('.blob');
-// The dark page runs a single drifting blob — give it a random aurora hue each
-// load (iris / rose / aqua) so it's never the same glow twice.
-const blobHues = ['blob--teal', 'blob--sunset', 'blob--plum'];
-blobs.forEach(b => b.classList.add(blobHues[Math.floor(Math.random() * blobHues.length)]));
 const starts = spreadStarts(blobs.length);
 blobs.forEach((blob, i) => {
   const start = starts[i];

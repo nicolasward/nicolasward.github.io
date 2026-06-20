@@ -1369,9 +1369,9 @@ h3:hover .heading-anchor {
      blend at their edges — that interplay is what reads as ethereal, where a
      single hue just greyed into a disc. */
   background:
-    radial-gradient(46% 60% at 21% 113%, #C7CEFF 0%, #6E7BF2 34%, #A98CF0 58%, transparent 78%),
-    radial-gradient(54% 72% at 51% 123%, #FFC9DA 0%, #FF8FB4 36%, #FFB39B 60%, transparent 80%),
-    radial-gradient(42% 56% at 81% 110%, #BDF3EA 0%, #5FD0D9 34%, #8FC4FF 58%, transparent 78%);
+    radial-gradient(46% 60% at 21% 113%, #CDC6FF 0%, #8166EC 34%, #A98CF0 58%, transparent 78%),
+    radial-gradient(54% 72% at 51% 123%, #FFC8E6 0%, #FF7CC0 36%, #E08AD8 60%, transparent 80%),
+    radial-gradient(42% 56% at 81% 110%, #BFD6FF 0%, #5B86EF 34%, #8C93F2 58%, transparent 78%);
   /* Light mode: pastels on a near-white field have little contrast, so crank the
      opacity and saturate the hues so the aurora actually reads. Dark mode already
      glows, so it overrides back down (and drops the saturation). */

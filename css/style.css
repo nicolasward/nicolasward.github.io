@@ -1349,6 +1349,28 @@ h3:hover .heading-anchor {
   font-size: 0.8rem;
 }
 
+/* Footer sunset — one big, soft blob sitting half below the page's bottom edge,
+   glowing up behind the footer like a sun on the horizon. Static; its hue is a
+   random pick from the landing aurora (set by JS, with a rose fallback). It
+   lives at z-index:-1 inside .container's stacking context, so it paints behind
+   all text but above the paper background. */
+.footer-glow {
+  position: absolute;
+  left: 50%;
+  bottom: 0;                              /* sits flush to the page bottom — no overflow below */
+  transform: translateX(-50%);
+  width: min(96vw, 1200px);
+  height: min(56vw, 620px);
+  /* The gradient's bright core hugs the bottom edge, so the blob reads as a sun
+     half-set on the horizon, glowing up — without any element spilling below. */
+  background: radial-gradient(95% 130% at 50% 100%, var(--footer-glow, #FF8FB4) 0%, transparent 68%);
+  filter: blur(55px);
+  opacity: 0.42;
+  pointer-events: none;
+  z-index: -1;
+}
+[data-theme="dark"] .footer-glow { opacity: 0.34; }
+
 .footer-links {
   display: flex;
   gap: 1.2rem;

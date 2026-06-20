@@ -240,10 +240,11 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   color: var(--fg);
   text-decoration: none;
 }
-.write-link                { color: rgb(52, 168, 83); }    /* green */
-.design-link               { color: rgb(255, 121, 27); }   /* orange */
-.text-link[href^="https"]  { color: rgb(0, 114, 177); }    /* LinkedIn blue */
-.text-link[href^="mailto"] { color: rgb(251, 188, 5); }    /* email yellow */
+.atelier                   { color: rgb(255, 121, 27); }    /* orange (the old 'design' hue) */
+.write-link                { color: rgb(52, 168, 83); }     /* green */
+.design-link               { color: rgb(234, 67, 53); }     /* red */
+.text-link[href^="https"]  { color: rgb(0, 114, 177); }     /* LinkedIn blue */
+.text-link[href^="mailto"] { color: rgb(251, 188, 5); }     /* email yellow */
 /* Hover: a highlighter sweeps over the word from left to right — a translucent
    stroke behind the text that grows from 0 → full width (anchored left). Each
    link gets its own marker colour (Google-ish palette). The link gets its own
@@ -265,7 +266,7 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   transition: width 0.34s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .write-link::before                 { background: rgba(52, 168, 83, 0.6); }   /* green */
-.design-link::before                { background: rgba(255, 121, 27, 0.6); }  /* orange */
+.design-link::before                { background: rgba(234, 67, 53, 0.6); }   /* red */
 .text-link[href^="https"]::before   { background: rgba(0, 114, 177, 0.6); }   /* LinkedIn blue */
 .text-link[href^="mailto"]::before  { background: rgba(251, 188, 5, 0.6); }   /* email yellow */
 @media (hover: hover) {

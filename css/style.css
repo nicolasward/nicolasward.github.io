@@ -1361,15 +1361,16 @@ h3:hover .heading-anchor {
   transform: translateX(-50%);
   width: min(96vw, 1200px);
   height: min(56vw, 620px);
-  /* The gradient's bright core hugs the bottom edge, so the blob reads as a sun
-     half-set on the horizon, glowing up — without any element spilling below. */
-  background: radial-gradient(95% 130% at 50% 100%, var(--footer-glow, #FF8FB4) 0%, transparent 68%);
-  filter: blur(55px);
-  opacity: 0.42;
+  /* Bright core hugs the bottom edge (a sun half-set on the horizon). The
+     gradient reaches fully transparent before every box edge, and a generous
+     blur melts the whole thing into the page — no defined border. */
+  background: radial-gradient(60% 115% at 50% 100%, var(--footer-glow, #FF8FB4) 0%, transparent 78%);
+  filter: blur(95px);
+  opacity: 0.5;
   pointer-events: none;
   z-index: -1;
 }
-[data-theme="dark"] .footer-glow { opacity: 0.34; z-index: -2; }
+[data-theme="dark"] .footer-glow { opacity: 0.42; z-index: -2; }
 /* Grain ONLY the footer glow. A noise layer positioned to the blob's exact box
    and masked with the SAME radial as the glow, so the grain fades out with the
    glow — the flat dark reading area stays clean. Sits above the blob (z-index:-1

@@ -398,21 +398,28 @@ document.querySelectorAll('.blob').forEach(blob => {
   // too) so it can animate; preserve the spaces between them.
   function wrapWords(el) {
     const words = [], frag = [];
+    let lastEl = null;                 // last word/inline element, so trailing punctuation can hug it
     Array.prototype.forEach.call(el.childNodes, node => {
       if (node.nodeType === 3) {
+        let text = node.textContent;
+        // Punctuation that directly follows an inline element (e.g. the comma
+        // after a link or the period after "email") must hug that word, not
+        // become its own breakable token that drops to the next line.
+        const lead = /^[.,;:!?…]+/.exec(text);
+        if (lead && lastEl) { lastEl.appendChild(document.createTextNode(lead[0])); text = text.slice(lead[0].length); }
         let pendingDash = '';            // glue a standalone — / – onto the next word
-        node.textContent.split(/(\s+)/).forEach(p => {
+        text.split(/(\s+)/).forEach(p => {
           if (p === '') return;
           if (/^\s+$/.test(p)) { if (!pendingDash) frag.push(document.createTextNode(' ')); }
           else if (/^[—–]+$/.test(p)) { pendingDash = p; }
-          else { const w = document.createElement('span'); w.className = 'reveal-word'; w.textContent = pendingDash ? pendingDash + ' ' + p : p; pendingDash = ''; frag.push(w); words.push(w); }
+          else { const w = document.createElement('span'); w.className = 'reveal-word'; w.textContent = pendingDash ? pendingDash + ' ' + p : p; pendingDash = ''; frag.push(w); words.push(w); lastEl = w; }
         });
-        if (pendingDash) { const w = document.createElement('span'); w.className = 'reveal-word'; w.textContent = pendingDash; frag.push(w); words.push(w); }
+        if (pendingDash) { const w = document.createElement('span'); w.className = 'reveal-word'; w.textContent = pendingDash; frag.push(w); words.push(w); lastEl = w; }
       } else if (node.tagName === 'BR') {
         frag.push(node);                 // keep line breaks; don't animate them
       } else {
         if (node.classList) node.classList.add('reveal-word');
-        frag.push(node); words.push(node);
+        frag.push(node); words.push(node); lastEl = node;
       }
     });
     el.textContent = '';

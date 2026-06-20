@@ -1363,11 +1363,11 @@ h3:hover .heading-anchor {
   height: min(90vw, 1100px);
   /* A big circle centred on the page's bottom-centre — large enough that its
      sides run past the screen edges (a dome of light rising from the bottom).
-     Radius = the box height; the top fades transparent before the box top, and a
-     heavy blur melts it into the page. */
-  background: radial-gradient(circle farthest-side at 50% 100%, var(--footer-glow, #FF8FB4) 0%, transparent 84%);
-  filter: blur(100px);
-  opacity: 0.5;
+     The colour fades across the whole radius (gradient transparent only at the
+     box top) and a heavy blur dissolves any remaining boundary into the page. */
+  background: radial-gradient(circle farthest-side at 50% 100%, var(--footer-glow, #FF8FB4) 0%, var(--footer-glow, #FF8FB4) 8%, transparent 100%);
+  filter: blur(140px);
+  opacity: 0.55;
   pointer-events: none;
   z-index: -1;
 }

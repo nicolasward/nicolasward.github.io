@@ -78,7 +78,7 @@ function reset(){form.classList.remove('is-done','is-confirmed','is-settling','i
 var again=form.querySelector('.newsletter-again');if(again)again.addEventListener('click',reset);var submitBtn=form.querySelector('.newsletter-submit');if(submitBtn)submitBtn.addEventListener('click',function(e){if(!form.classList.contains('is-done'))return;e.preventDefault();redrawCheck();confettiBurst(submitBtn);});function startLoading(){if(reduce){succeed();return;}
 form.classList.add('is-loading');input.disabled=true;setTimeout(succeed,1400);}
 form.addEventListener('submit',function(e){e.preventDefault();if(form.classList.contains('is-loading')||form.classList.contains('is-done'))return;if(gotcha&&gotcha.value)return;var email=(input.value||'').trim();if(!EMAIL_RE.test(email)){fail('Hmm, that doesn’t look like an email.');return;}
-if(endpoint){var body=new FormData();body.append('email',email);try{fetch(endpoint,{method:'POST',body:body,mode:'no-cors'});}catch(err){}}
+setMsg('');if(endpoint){var body=new FormData();body.append('email',email);try{fetch(endpoint,{method:'POST',body:body,mode:'no-cors'});}catch(err){}}
 startLoading();});});})();(function(){var inputs=document.querySelectorAll('main .newsletter-input');if(!inputs.length)return;var emails=['steve@apple.com','claude@shannon.me','rich@feynman.io','alan@turing.xyz'];var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;Array.prototype.forEach.call(inputs,function(input){if(reduce){input.setAttribute('placeholder',emails[0]);return;}
 var idx=0,ch=0,typing=true,focused=false,timer;function set(text){input.setAttribute('placeholder',text);}
 function schedule(ms){clearTimeout(timer);timer=setTimeout(tick,ms);}

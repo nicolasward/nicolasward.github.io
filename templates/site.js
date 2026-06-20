@@ -1195,6 +1195,7 @@
           if (gotcha && gotcha.value) return;    // bot trap: ignore silently
           var email = (input.value || '').trim();
           if (!EMAIL_RE.test(email)) { fail('Hmm, that doesn’t look like an email.'); return; }
+          setMsg('');                            // clear any prior error before the loader runs
           // Fire-and-forget — nothing to wait on.
           if (endpoint) {
             var body = new FormData();

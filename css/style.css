@@ -1370,22 +1370,26 @@ h3:hover .heading-anchor {
   z-index: -1;
 }
 [data-theme="dark"] .footer-glow { opacity: 0.34; z-index: -2; }
-/* Dark mode drops the paper grain, so the footer blob would be smooth (and prone
-   to banding). Re-introduce a film grain — an image-free CSS noise covering the
-   whole page uniformly (no band, so no hard edge), layered above the blob
-   (z-index:-1 > the blob's -2) but behind the text. Overlay-blended and faint,
-   it stays invisible over the flat dark reading area and only really reads over
-   the footer blob, dithering it. */
+/* Grain ONLY the footer glow. A noise layer positioned to the blob's exact box
+   and masked with the SAME radial as the glow, so the grain fades out with the
+   glow — the flat dark reading area stays clean. Sits above the blob (z-index:-1
+   > the blob's -2) but behind the text. */
 [data-theme="dark"] .container::after {
   content: "";
   position: absolute;
-  inset: 0;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: min(96vw, 1200px);
+  height: min(56vw, 620px);
   z-index: -1;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 160px 160px;
   background-repeat: repeat;
-  opacity: 0.4;
+  -webkit-mask-image: radial-gradient(95% 130% at 50% 100%, #000 0%, transparent 68%);
+          mask-image: radial-gradient(95% 130% at 50% 100%, #000 0%, transparent 68%);
+  opacity: 0.6;
   mix-blend-mode: overlay;
 }
 

@@ -132,14 +132,15 @@ html[data-theme="dark"] .stage::after {
 }
 
 /* ---------------- Theme toggle ----------------
-   A quiet sun/moon in the bottom-left corner (the fast-forward owns the top-
-   right). Hidden until JS fades it in after the intro settles, so it never
-   competes with the entrance; safe-area-aware so it clears the home indicator.
-   Moon shows in light mode (→ go dark); sun shows in dark (→ go light). */
+   A quiet sun/moon in the top-left corner, mirroring the fast-forward (top-
+   right). The top zone is clear of the body text (which sits below) and clear of
+   the browser chrome — unlike the bottom, where the long hero text and Safari's
+   toolbar squeeze a control. Hidden until JS fades it in after the intro settles;
+   safe-area-aware so it clears the notch. Moon = light (→ go dark); sun = dark. */
 .theme-switch {
   position: fixed;
-  left: calc(1.5rem + env(safe-area-inset-left));
-  bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  left: calc(1.25rem + env(safe-area-inset-left));
+  top: calc(0.6rem + env(safe-area-inset-top));
   z-index: 5;
   display: grid;
   place-items: center;

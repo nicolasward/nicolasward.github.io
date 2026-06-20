@@ -230,9 +230,9 @@ html.js .fast-forward.done .ff-replay {
 html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .fast-forward { display: none !important; } }
 
-/* "Atelier" — a coloured accent in the prose (Google-blue, vibrant on light). */
-/* All inline links share the dark-grey ink of the greeting — no colour, no
-   underline; the darker weight against the light-grey body is the affordance. */
+/* "Atelier" stays the dark-grey ink of the greeting (it's not a link). Each
+   actual link wears the colour of its own highlighter — the marker hue, now the
+   resting ink — so the four read as a quiet Google-ish palette. No underline. */
 .atelier,
 .write-link,
 .design-link,
@@ -240,6 +240,10 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   color: var(--fg);
   text-decoration: none;
 }
+.write-link                { color: rgb(52, 168, 83); }    /* green */
+.design-link               { color: rgb(255, 121, 27); }   /* orange */
+.text-link[href^="https"]  { color: rgb(0, 114, 177); }    /* LinkedIn blue */
+.text-link[href^="mailto"] { color: rgb(251, 188, 5); }    /* email yellow */
 /* Hover: a highlighter sweeps over the word from left to right — a translucent
    stroke behind the text that grows from 0 → full width (anchored left). Each
    link gets its own marker colour (Google-ish palette). The link gets its own

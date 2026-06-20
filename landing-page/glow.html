@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>nw</title>
+<script>document.documentElement.classList.add('js');</script>
+<!-- Preload the grain so it dithers the gradient at first paint (avoids the
+     faint banding flash on a cold hard refresh). -->
+<link rel="preload" as="image" href="/grain.png" type="image/png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* Shared design tokens — same names/values as the blog (css/style.css) so the
+   landing page and blog read as one system. This page is standalone (it does
+   not import Flexoki), so the few colours it needs are defined locally. */
+:root {
+  --noise-size: 130px;
+  --noise-opacity: .4;
+
+  --fg:         #1D1D1F;   /* ink (unused on the dark variant, kept for parity) */
+  --field:      #ffffff;
+  --field-mid:  #f8fafc;
+
+  /* Deep "stage" palette for the glow experiment. */
+  --deep-top:   #05060d;   /* near-black at the top */
+  --deep-mid:   #0a1633;   /* deep navy */
+  --deep-low:   #14306e;   /* richer blue rising from the bottom */
+}
+
+/* ---------------- Base ---------------- */
+html {
+  height: 100%;
+  margin: 0;
+  /* Deep gradient on the ROOT so overscroll + the area behind the status bar
+     stays dark (the fixed .stage repaints the same field, glows + noise on top). */
+  background: radial-gradient(125% 120% at 50% 60%, var(--deep-low) 0%, var(--deep-mid) 45%, var(--deep-top) 100%);
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh; /* dynamic viewport: accounts for mobile browser chrome */
+  margin: 0;
+  font-family: "Figtree", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--deep-top); /* deep — gradient + glows live on .stage */
+  color: #fff;
+}
+/* Leaving for an internal page: fade out so the colourful background doesn't
+   "blink" to white before the next page paints (see the link handler in JS). */
+html.leaving body { opacity: 0; transition: opacity 0.16s ease; }
+
+/* The entire background stack (gradient + blobs + noise) lives inside this
+   fixed, self-isolating layer so it always fills the viewport and the noise's
+   mix-blend-mode reliably blends against the gradient + blobs (not the page). */
+.stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;        /* clip the drifting glows to the viewport */
+  isolation: isolate;      /* give mix-blend a self-contained context */
+  background: radial-gradient(125% 120% at 50% 60%, var(--deep-low) 0%, var(--deep-mid) 45%, var(--deep-top) 100%);
+}
+
+.stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("/grain.png");
+  background-size: var(--noise-size) var(--noise-size);
+  background-repeat: repeat;
+  opacity: .5;
+  mix-blend-mode: soft-light;   /* a filmic grain over the deep field */
+}
+
+/* ---------------- Glows ----------------
+   Big, soft white pools that drift behind the text. Screen-blended so they
+   only ever brighten the deep field — the moving light the text reads against. */
+.blob {
+  position: absolute;
+  width: 62vmax; height: 62vmax;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.85) 0%, rgba(202,224,255,0.34) 32%, rgba(255,255,255,0) 68%);
+  filter: blur(72px);
+  opacity: .45;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+/* ---------------- Content ---------------- */
+.container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* centre the narrative vertically */
+  align-items: center;       /* …and horizontally — a balanced, centred column */
+  height: 100vh;
+  height: 100dvh; /* dynamic viewport so content never hides behind mobile chrome */
+  width: 100%;
+  padding: 0 clamp(2rem, 5vw, 7rem);
+  box-sizing: border-box;
+}
+
+/* Shared entrance: a gentle fade + rise. Elements stagger in via their own
+   animation-delay (greeting → intro → CTA → links) for a smooth Apple-like
+   cascade. fill: both holds each hidden during its delay (no flash). */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Hero — a centred narrative: a muted greeting leading into a fuller-ink lede,
+   all one size, at an elegant reading measure with generous whitespace. */
+.hero {
+  max-width: min(64rem, 90vw);   /* an elegant measure — balanced, not crammed */
+}
+
+.greeting,
+.lede {
+  font-size: clamp(1.7rem, 3.3vw, 3.4rem);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.018em;
+  text-rendering: optimizeLegibility;
+}
+.greeting {
+  margin: 0 0 0.35em 0;
+  color: rgba(255, 255, 255, 0.72);   /* tone-on-tone — luminous where a glow drifts behind */
+}
+.lede {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.34);   /* faint body — the moving light reveals it */
+}
+
+/* Word-by-word entrance: JS wraps each word so it can fade in sliding from the
+   left, cascading left-to-right. Hidden up front only when JS is present
+   (no-JS users just see the text). */
+html.js .js-reveal { opacity: 0; }
+.reveal-word { display: inline-block; }
+/* Greeting words just fade (no slide); the narrative words slide in from left. */
+@keyframes word-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes word-in {
+  from { opacity: 0; transform: translateY(11px); }   /* rise straight up, not from the left */
+  to   { opacity: 1; transform: none; }
+}
+
+/* Fast-forward: top-right skip button, sized & coloured to sit on the same
+   line as the greeting (JS aligns its vertical centre to that line). It's the
+   first thing visible — the hero text is still hidden when it fades in. Only
+   useful with JS (the trickle only runs with JS), so it stays hidden otherwise.
+   Click fades whatever's left of the intro in at once. */
+.fast-forward { display: none; }
+html.js .fast-forward {
+  position: fixed;
+  top: 0;                                  /* JS aligns this to the greeting line */
+  right: calc((100vw - min(64rem, 90vw)) / 2);   /* sit at the hero's right edge, not the viewport's */
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: clamp(1.9rem, 3.3vw, 3.4rem);     /* tracks the (now larger) greeting cap height */
+  height: clamp(1.9rem, 3.3vw, 3.4rem);
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);         /* same light as the first line */
+  cursor: pointer;
+  touch-action: manipulation;              /* kill the ~300ms mobile tap delay */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 1;
+  transition: opacity 0.35s ease, transform 0.15s ease;
+}
+html.js .fast-forward:active { transform: scale(0.9); }
+/* The chevrons draw themselves in on load via stroke-dashoffset — the same
+   technique as the blog header's search glass and toggle. pathLength="1" lets us
+   dash in normalised units; the strokes are undrawn until JS adds .draw, so the
+   draw is actually seen rather than completing during the first paint. */
+html.js .fast-forward svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+html.js .fast-forward .ff-skip path {
+  stroke-linecap: round;
+  /* A gap (1 2) wider than the dash, with the undrawn offset set so the round cap
+     of the off-path dash clears the path start — round ends, no stray dot, and no
+     cap-swap "expand" once drawn. */
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 1.12;                 /* undrawn by default */
+}
+/* Entrance: a clear beat after the background settles, each chevron strokes
+   itself in, the second a beat after the first. */
+html.js .fast-forward.draw .ff-skip path {
+  animation: ff-draw 0.55s cubic-bezier(0.65, 0, 0.35, 1) 0.75s forwards;
+}
+html.js .fast-forward.draw .ff-skip path:last-child {
+  animation-delay: 0.92s;
+}
+@keyframes ff-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Once the intro has fully played, the skip control transforms into a replay
+   control: the chevrons spin out as the circular replay arrow spins in. The
+   two icon states overlay each other in the same SVG and cross-fade on .done. */
+html.js .fast-forward .ff-skip,
+html.js .fast-forward .ff-replay {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+html.js .fast-forward .ff-replay {
+  opacity: 0;
+  transform: rotate(-150deg) scale(0.55);
+}
+html.js .fast-forward.done .ff-skip {
+  opacity: 0;
+  transform: rotate(150deg) scale(0.55);
+}
+html.js .fast-forward.done .ff-replay {
+  opacity: 1;
+  transform: none;
+}
+html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .fast-forward { display: none !important; } }
+
+/* "Atelier" — a coloured accent in the prose (Google-blue, vibrant on light). */
+/* All inline links share the dark-grey ink of the greeting — no colour, no
+   underline; the darker weight against the light-grey body is the affordance. */
+.atelier,
+.write-link,
+.design-link,
+.text-link {
+  color: rgba(255, 255, 255, 0.92);   /* brighter than the body — the named things stand out */
+  text-decoration: none;
+}
+/* Hover: a highlighter sweeps over the word from left to right — a translucent
+   stroke behind the text that grows from 0 → full width (anchored left). Each
+   link gets its own marker colour (Google-ish palette). The link gets its own
+   stacking context so the highlight sits behind the glyphs but above the page. */
+.write-link,
+.design-link,
+.text-link { position: relative; z-index: 0; }
+.write-link::before,
+.design-link::before,
+.text-link::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -0.06em;
+  bottom: 0.04em;
+  width: 0;
+  height: 0.72em;
+  border-radius: 0.12em;
+  transition: width 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.write-link::before                 { background: rgba(52, 168, 83, 0.6); }   /* green */
+.design-link::before                { background: rgba(255, 121, 27, 0.6); }  /* orange */
+.text-link[href^="https"]::before   { background: rgba(0, 114, 177, 0.6); }   /* LinkedIn blue */
+.text-link[href^="mailto"]::before  { background: rgba(251, 188, 5, 0.6); }   /* email yellow */
+@media (hover: hover) {
+  .write-link:hover::before,
+  .design-link:hover::before,
+  .text-link:hover::before { width: calc(100% + 0.12em); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .write-link::before, .design-link::before, .text-link::before { transition: none; }
+}
+@keyframes cta-shimmer {
+  0%     { background-position: 100% 0; }   /* glow parked off-screen (right) */
+  33.3%  { background-position: 0% 0; }     /* 1.5s sweep across, glow exits left */
+  100%   { background-position: 0% 0; }     /* 3s rest — plain ink text */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No entrance animation — show everything immediately. */
+  html.js .js-reveal,
+  .greeting, .lede, .write-link, .design-link, .reveal-word, .gw {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 700px) {
+  :root { --noise-size: 110px; }   /* finer grain on mobile */
+
+  .container {
+    /* The narrative fills the height; centre it vertically. */
+    padding: 6vh 1.5rem;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* The narrative fills the width, left-to-right (like the reference). */
+  .hero { max-width: 100%; }
+
+  .greeting,
+  .lede {
+    font-size: clamp(2rem, 7.8vw, 2.5rem);
+    line-height: 1.3;
+  }
+
+  /* Smaller on mobile so the three blobs don't blanket the whole screen —
+     leaving more of the paper field showing between them. */
+  .blob {
+    width: 40vmax;
+    height: 40vmax;
+    opacity: 0.4;
+    /* Smaller blur on mobile: the one-time rasterization of a huge blurred
+       element is expensive on phones, and at this size 50px looks ~identical. */
+    filter: blur(50px);
+  }
+}
+</style>
+</head>
+
+<body>
+  <button class="fast-forward" id="fast-forward" type="button"
+          aria-label="Skip the intro animation" title="Skip intro">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <g class="ff-skip">
+        <path d="M5 6l6 6-6 6" pathLength="1"/>
+        <path d="M13 6l6 6-6 6" pathLength="1"/>
+      </g>
+      <g class="ff-replay">
+        <polyline points="1 4 1 10 7 10"/>
+        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+      </g>
+    </svg>
+  </button>
+
+  <div class="stage" aria-hidden="true">
+    <div class="blob"></div>
+    <div class="blob"></div>
+    <div class="blob"></div>
+  </div>
+
+  <div class="container">
+    <div class="hero">
+      <p class="greeting js-reveal"><span class="gw">Hi</span><span class="gw">, I&#8217;m</span> <span class="gw">Nico.</span></p>
+      <h1 class="lede js-reveal">I&#8217;m an AI engineer and designer with an obsession for technology that amplifies human potential.<br>I&#8217;m the founder of <span class="atelier">Atelier</span>, an applied AI studio building new tools for thinking.<br>I also enjoy <a class="write-link" href="/blog">writing</a> - about tech, <a class="design-link" href="/blog/design-and-delight">design</a>, and philosophy. You can reach me on <a class="text-link" href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" rel="noopener">LinkedIn</a> or via <a class="text-link" href="mailto:ward.nicolas@outlook.com">email</a>.</h1>
+    </div>
+  </div>
+
+<script>
+const rand = (min, max) => Math.random() * (max - min) + min;
+function randomPos(pad = 6) { return { x: rand(pad, 100 - pad), y: rand(pad, 100 - pad) }; }
+// Pick n start positions that are spread apart, so the very first frame is never
+// an ugly pile-up of all three blobs. Rejection-sample for a point at least
+// minDist from those already placed; if none turns up, keep the farthest tried.
+function spreadStarts(n, pad = 12, minDist = 40, tries = 80) {
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    let best = null, bestD = -1;
+    for (let t = 0; t < tries; t++) {
+      const p = randomPos(pad);
+      let d = Infinity;
+      for (const q of pts) d = Math.min(d, Math.hypot(p.x - q.x, p.y - q.y));
+      if (!pts.length || d >= minDist) { best = p; break; }
+      if (d > bestD) { bestD = d; best = p; }
+    }
+    pts.push(best);
+  }
+  return pts;
+}
+function drift(blob, prev) {
+  const next = randomPos();
+  // Slow, independently-varying segments so the blobs drift organically rather
+  // than retargeting on a shared heartbeat.
+  const duration = rand(9000, 16000);
+  // Translate only (no scale): scaling a heavily-blurred element forces the
+  // browser to re-rasterize the blur every frame, which is the main source of
+  // jank. A pure translate stays on the compositor and is cheap.
+  const anim = blob.animate(
+    [
+      { transform: `translate(${prev.x}vw, ${prev.y}vh) translate(-50%, -50%)` },
+      { transform: `translate(${next.x}vw, ${next.y}vh) translate(-50%, -50%)` }
+    ],
+    { duration, easing: 'ease-in-out', fill: 'forwards' }
+  );
+  anim.onfinish = () => drift(blob, next);
+}
+const blobs = document.querySelectorAll('.blob');
+const starts = spreadStarts(blobs.length);
+blobs.forEach((blob, i) => {
+  const start = starts[i];
+  blob.style.transform = `translate(${start.x}vw, ${start.y}vh) translate(-50%, -50%)`;
+  drift(blob, start);
+});
+
+// Reveal the hero word by word: the greeting types out with a beat after "Hi,",
+// then the narrative flows fast and smooth, left-to-right.
+(function () {
+  const greeting = document.querySelector('.greeting.js-reveal');
+  const lede = document.querySelector('.lede.js-reveal');
+  const all = [greeting, lede].filter(Boolean);
+  const ff = document.getElementById('fast-forward');
+  if (!all.length) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    all.forEach(el => { el.style.opacity = 1; });
+    if (ff) ff.classList.add('is-hidden');
+    return;
+  }
+  let wrapped = false;
+
+  // Wrap each word in a span (keeping inline links/spans, which become words
+  // too) so it can animate; preserve the spaces between them.
+  function wrapWords(el) {
+    const words = [], frag = [];
+    let lastEl = null;                 // last word/inline element, so trailing punctuation can hug it
+    Array.prototype.forEach.call(el.childNodes, node => {
+      if (node.nodeType === 3) {
+        let text = node.textContent;
+        // Punctuation that directly follows an inline element (e.g. the comma
+        // after a link or the period after "email") must hug that word, not
+        // become its own breakable token that drops to the next line.
+        const lead = /^[.,;:!?…]+/.exec(text);
+        if (lead && lastEl) { lastEl.appendChild(document.createTextNode(lead[0])); text = text.slice(lead[0].length); }
+        let pendingDash = '';            // glue a standalone — / – onto the next word
+        text.split(/(\s+)/).forEach(p => {
+          if (p === '') return;
+          if (/^\s+$/.test(p)) { if (!pendingDash) frag.push(document.createTextNode(' ')); }
+          else if (/^[—–]+$/.test(p)) { pendingDash = p; }
+          else { const w = document.createElement('span'); w.className = 'reveal-word'; w.textContent = pendingDash ? pendingDash + ' ' + p : p; pendingDash = ''; frag.push(w); words.push(w); lastEl = w; }
+        });
+        if (pendingDash) { const w = document.createElement('span'); w.className = 'reveal-word'; w.textContent = pendingDash; frag.push(w); words.push(w); lastEl = w; }
+      } else if (node.tagName === 'BR') {
+        frag.push(node);                 // keep line breaks; don't animate them
+      } else {
+        if (node.classList) node.classList.add('reveal-word');
+        frag.push(node); words.push(node); lastEl = node;
+      }
+    });
+    el.textContent = '';
+    frag.forEach(n => el.appendChild(n));
+    return words;
+  }
+
+  const EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';     // soft, floaty settle (eases out at the end)
+  const G_DELAYS = [1.1, 2.1, 2.4];                 // icon wipes in first (~0.6s); "Hi" begins ~0.5s after
+  let endWord = null;   // last intro word — its animationend flips the control to Replay
+
+  const greetWords = () => greeting ? Array.prototype.slice.call(greeting.querySelectorAll('.gw')) : [];
+  const ledeWords  = () => lede ? Array.prototype.filter.call(lede.childNodes, n => n.nodeType === 1 && n.tagName !== 'BR') : [];
+
+  // The control swaps roles: skip (chevrons) ⟷ replay (circular arrow).
+  function morphToReplay() {
+    if (!ff) return;
+    ff.classList.add('done');
+    ff.setAttribute('aria-label', 'Replay the intro');
+    ff.setAttribute('title', 'Replay intro');
+  }
+  function morphToChevrons() {
+    if (!ff) return;
+    ff.classList.remove('done');
+    ff.setAttribute('aria-label', 'Skip the intro animation');
+    ff.setAttribute('title', 'Skip intro');
+  }
+  // Flip to Replay only when the intro actually finishes — keyed off the last
+  // word's animationend, not a timer, so backgrounding the tab (which pauses CSS
+  // animations) can never fire it early while the text is still mid-entrance.
+  function clearReplayArm() {
+    if (endWord) { endWord.removeEventListener('animationend', onIntroEnd); endWord = null; }
+  }
+  function onIntroEnd() { clearReplayArm(); morphToReplay(); }
+  function armReplay(word) {
+    clearReplayArm();
+    if (word) { endWord = word; word.addEventListener('animationend', onIntroEnd); }
+  }
+
+  // Play (or replay) the whole intro: reset every word to hidden, re-arm the
+  // chevron draw, trickle the greeting + lede back in, then settle on Replay.
+  // Replaying morphs the replay arrow back into the chevrons (the .done cross-
+  // fade) — it does NOT re-stroke them, so there's no jarring "reload". The
+  // chevrons stroke themselves in exactly once, on first load (see startIntro).
+  function playIntro() {
+    if (!wrapped && lede) { wrapWords(lede); wrapped = true; }
+    clearReplayArm();
+    morphToChevrons();
+
+    const gws = greetWords(), lws = ledeWords();
+    // Clear any inline state from a prior run / fast-forward, then restart.
+    gws.concat(lws).forEach(w => {
+      w.style.animation = 'none';
+      w.style.transition = '';
+      w.style.opacity = '';
+      w.style.transform = '';
+    });
+    if (greeting) void greeting.offsetWidth;        // flush the reset so animations restart
+
+    if (greeting) {
+      greeting.style.opacity = 1;
+      gws.forEach((w, i) => {
+        const d = G_DELAYS[i] != null ? G_DELAYS[i] : 1.6 + (i - 2) * 0.3;
+        w.style.animation = 'word-fade 0.85s ease ' + d + 's both';
+      });
+    }
+    if (lede) {
+      lede.style.opacity = 1;
+      let lt = 4.0;                                 // a ~1s beat after the greeting lands
+      lws.forEach(node => {
+        node.style.animation = 'word-in 0.95s ' + EASE + ' ' + lt.toFixed(3) + 's both';
+        lt += 0.032;                                // slightly slower, floaty left-to-right drift
+      });
+      // Become the replay control when the LAST word's animation finishes.
+      if (ff) armReplay(lws.length ? lws[lws.length - 1] : (gws.length ? gws[gws.length - 1] : null));
+    }
+  }
+
+  // Fast-forward: fade whatever's left of the intro in at once, then settle on
+  // Replay. Pin each word at its current (mid-animation) state, then transition
+  // every one to visible together — so already-shown words don't flicker.
+  function fastForward() {
+    if (!wrapped && lede) { wrapWords(lede); wrapped = true; lede.style.opacity = 1; }
+    if (greeting) greeting.style.opacity = 1;
+    clearReplayArm();
+    morphToReplay();          // flip to replay on tap — reacts immediately, in step with the text
+    const words = document.querySelectorAll('.greeting .gw, .lede .reveal-word');
+    words.forEach(w => {
+      const cs = getComputedStyle(w);
+      const op = cs.opacity, tr = cs.transform;
+      w.style.animation = 'none';
+      w.style.opacity = op;
+      w.style.transform = (tr && tr !== 'none') ? tr : 'none';
+    });
+    requestAnimationFrame(() => {
+      words.forEach(w => {
+        w.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        w.style.opacity = '1';
+        w.style.transform = 'none';
+      });
+    });
+  }
+
+  if (ff) ff.addEventListener('click', () => {
+    if (ff.classList.contains('done')) playIntro();   // replay
+    else fastForward();                               // skip to the end
+  });
+
+  // Pressing Enter does the same as clicking the double chevron — unless a link
+  // or button is focused, which keeps its native Enter behaviour.
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || !ff) return;
+    const el = document.activeElement;
+    if (el && (el.tagName === 'A' || el.tagName === 'BUTTON')) return;
+    e.preventDefault();
+    ff.click();
+  });
+
+  // Pin the button's vertical centre to the greeting line (it's right-aligned
+  // via CSS). Re-run on resize and after the font settles the layout.
+  function placeFF() {
+    if (!ff || !greeting) return;
+    const r = greeting.getBoundingClientRect();
+    ff.style.top = (r.top + r.height / 2 - ff.offsetHeight / 2) + 'px';
+    const hero = greeting.closest('.hero');
+    if (hero) ff.style.right = Math.max(0, window.innerWidth - hero.getBoundingClientRect().right) + 'px';
+  }
+  placeFF();
+  window.addEventListener('resize', placeFF);
+
+  // Draw the chevrons in once (stroke-dashoffset entrance), then play the intro.
+  function startIntro() { if (ff) ff.classList.add('draw'); playIntro(); }
+
+  // Wait for the web font so the layout is settled before revealing.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { placeFF(); startIntro(); });
+  else startIntro();
+
+  // Smooth the cross-page navigation: internal links fade the page out first, so
+  // the colourful background doesn't blink to white before the blog paints.
+  // (Modified clicks, new-tab, external and mailto links keep native behaviour.)
+  document.querySelectorAll('a[href^="/"]').forEach((a) => {
+    a.addEventListener('click', (e) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      if (a.target && a.target !== '' && a.target !== '_self') return;
+      const href = a.getAttribute('href');
+      if (!href) return;
+      e.preventDefault();
+      document.documentElement.classList.add('leaving');
+      setTimeout(() => { window.location.href = href; }, 180);
+    });
+  });
+  // Restore visibility if the page is shown again from the back/forward cache.
+  window.addEventListener('pageshow', () => document.documentElement.classList.remove('leaving'));
+})();
+</script>
+</body>
+</html>

@@ -712,6 +712,18 @@
           });
         }, { rootMargin: '0px 0px -12% 0px' });
         below.forEach(function (el) { obs.observe(el); });
+
+        // Failsafe: the last block (the short footer) can sit entirely within the
+        // -12% margin at the very bottom, so its observer never fires — you can't
+        // scroll any lower. Reveal whatever's left once the page bottom is reached.
+        var revealRest = function () {
+          var sh = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+          if (window.innerHeight + window.scrollY < sh - 8) return;
+          below.forEach(function (el) { el.classList.add('in'); });
+          window.removeEventListener('scroll', revealRest);
+        };
+        window.addEventListener('scroll', revealRest, { passive: true });
+        revealRest();   // short pages: already at the bottom on load
       } else {
         below.forEach(function (el) { el.classList.add('in'); });
       }

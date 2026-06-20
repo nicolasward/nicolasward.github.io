@@ -1380,7 +1380,7 @@ h3:hover .heading-anchor {
   pointer-events: none;
   z-index: -1;
 }
-[data-theme="dark"] .footer-glow { opacity: 0.5; filter: blur(85px); z-index: -2; }
+[data-theme="dark"] .footer-glow { opacity: 0.65; filter: blur(85px) saturate(1.5); z-index: -2; }
 /* Grain ONLY the footer glow. A noise layer positioned to the blob's exact box
    and masked with the SAME radial as the glow, so the grain fades out with the
    glow — the flat dark reading area stays clean. Sits above the blob (z-index:-1
@@ -1402,7 +1402,7 @@ h3:hover .heading-anchor {
      grain isn't blurred, so unlike the (bleeding) glow it must not reach an edge. */
   -webkit-mask-image: radial-gradient(64% 88% at 50% 100%, #000 0%, #000 18%, transparent 72%);
           mask-image: radial-gradient(64% 88% at 50% 100%, #000 0%, #000 18%, transparent 72%);
-  opacity: 0.6;
+  opacity: 0.4;
   mix-blend-mode: overlay;
 }
 

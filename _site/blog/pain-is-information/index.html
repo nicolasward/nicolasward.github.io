@@ -13,7 +13,7 @@
        grain arrives a frame late and the raw gradient shows faint colour banding. -->
   <link rel="preload" as="image" href="/grain.png" type="image/png">
   <link rel="stylesheet" href="/blog/css/flexoki.css?v=64abfaf4">
-  <link rel="stylesheet" href="/blog/css/style.css?v=933509b6">
+  <link rel="stylesheet" href="/blog/css/style.css?v=40c27307">
   <link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feed.xml">
   <script>
     // Apply the saved/system theme SYNCHRONOUSLY, before the body renders, so
@@ -117,16 +117,24 @@
 
 <div id="reading-progress" class="reading-progress" aria-hidden="true" title="Back to top">
   <svg class="progress-ring" viewBox="0 0 40 40">
-    <circle class="progress-disc" cx="20" cy="20" r="20"/>
+    <defs>
+      <!-- Knock the checkmark out of the solid disc so the page's colour glow
+           reads through the tick (the disc itself stays fully opaque). The cut
+           "draws" itself on completion via the dashoffset transition. -->
+      <mask id="disc-check" maskUnits="userSpaceOnUse" x="0" y="0" width="40" height="40">
+        <rect width="40" height="40" fill="white"/>
+        <path class="check-cut" d="M13 20.5 L18 25.5 L28 14.5" fill="none" stroke="black"
+              stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"
+              stroke-dasharray="22" stroke-dashoffset="22"/>
+      </mask>
+    </defs>
+    <circle class="progress-disc" cx="20" cy="20" r="20" mask="url(#disc-check)"/>
     <circle class="progress-track" cx="20" cy="20" r="19" fill="none" stroke-width="1.54"/>
     <circle class="progress-fill" cx="20" cy="20" r="19" fill="none" stroke-width="1.54"
             stroke-dasharray="119.38" stroke-dashoffset="119.38"/>
   </svg>
   <span class="progress-percent">0%</span>
   <span class="progress-shine" aria-hidden="true"></span>
-  <svg class="progress-check" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M5 12.5l4.5 4.5L19 7.5" stroke-dasharray="22" stroke-dashoffset="22"/>
-  </svg>
 </div>
 
       <section class="newsletter" aria-labelledby="newsletter-heading">

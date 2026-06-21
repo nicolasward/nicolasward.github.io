@@ -2022,11 +2022,16 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 /* Completed disc fills with a quick solid accent orange */
 .progress-disc {
   fill: var(--fg);                    /* dark grey on complete (the glimmer sweeps over it) */
-  fill-opacity: 0.62;                 /* translucent so the page glow tints through */
   transform: scale(0);
   transform-origin: 20px 20px;
   transform-box: fill-box;
   transition: transform 0.42s cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+
+/* The checkmark is a cut-out in the disc (see the mask in post.html). Its cut
+   "draws" itself on completion, mirroring the old visible-tick timing. */
+.check-cut {
+  transition: stroke-dashoffset 0.3s cubic-bezier(0.65, 0, 0.35, 1) 0.22s;
 }
 
 .progress-percent {
@@ -2042,32 +2047,22 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   transition: opacity 0.2s ease;
 }
 
-.progress-check {
-  position: absolute;
-  inset: 22%;
-  width: 56%;
-  height: 56%;
-  stroke: var(--bg);
-  opacity: 0;
-  transform: scale(0.6);
-  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.progress-check path {
-  transition: stroke-dashoffset 0.28s cubic-bezier(0.65, 0, 0.35, 1) 0.08s;
-}
-
 /* Completed state */
 .reading-progress.complete {
-  /* Drop the opaque field tint and deepen the frost so the page's colour glow
-     reads through the translucent disc behind the check. */
+  /* The opaque disc covers the whole widget, so the field tint only shows
+     through the knocked-out checkmark. Clearing it (and deepening the frost a
+     touch) lets the page's colour glow read softly through the tick. */
   background: transparent;
-  -webkit-backdrop-filter: blur(13px);
-  backdrop-filter: blur(13px);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .reading-progress.complete .progress-disc {
   transform: scale(1);
+}
+
+.reading-progress.complete .check-cut {
+  stroke-dashoffset: 0;
 }
 
 .reading-progress.complete .progress-fill,
@@ -2078,17 +2073,6 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 
 .reading-progress.complete .progress-percent {
   opacity: 0;
-}
-
-.reading-progress.complete .progress-check {
-  opacity: 1;
-  transform: scale(1);
-  transition: opacity 0.15s ease 0.12s, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) 0.12s;
-}
-
-.reading-progress.complete .progress-check path {
-  stroke-dashoffset: 0;
-  transition-delay: 0.2s;
 }
 
 /* A glossy shine sweeps across the disc as it fills with the gradient. */

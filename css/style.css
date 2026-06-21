@@ -1409,12 +1409,11 @@ h3:hover .heading-anchor {
    and masked with the SAME radial as the glow, so the grain fades out with the
    glow — the flat dark reading area stays clean. Sits above the blob (z-index:-1
    > the blob's -2) but behind the text. */
+[data-theme="dark"] .container::before,
 [data-theme="dark"] .container::after {
   content: "";
   position: absolute;
   left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
   width: min(98vw, 1500px);
   height: min(90vw, 1100px);
   z-index: -1;
@@ -1429,6 +1428,8 @@ h3:hover .heading-anchor {
   opacity: 0.4;
   mix-blend-mode: overlay;
 }
+[data-theme="dark"] .container::after  { bottom: 0; transform: translateX(-50%); }            /* over the footer glow */
+[data-theme="dark"] .container::before { top: 0;    transform: translateX(-50%) scaleY(-1); }  /* the mirror, over the header glow */
 
 .footer-links {
   display: flex;

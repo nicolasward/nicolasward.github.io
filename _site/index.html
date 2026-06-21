@@ -71,9 +71,6 @@ body {
   background: var(--field); /* plain white — gradient lives on .stage */
   color: var(--fg);
 }
-/* Leaving for an internal page: fade out so the colourful background doesn't
-   "blink" to white before the next page paints (see the link handler in JS). */
-html.leaving body { opacity: 0; transition: opacity 0.16s ease; }
 
 /* The entire background stack (gradient + blobs + noise) lives inside this
    fixed, self-isolating layer so it always fills the viewport and the noise's
@@ -671,23 +668,6 @@ blobs.forEach((blob, i) => {
   // Wait for the web font so the layout is settled before revealing.
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { placeControls(); startIntro(); });
   else startIntro();
-
-  // Smooth the cross-page navigation: internal links fade the page out first, so
-  // the colourful background doesn't blink to white before the blog paints.
-  // (Modified clicks, new-tab, external and mailto links keep native behaviour.)
-  document.querySelectorAll('a[href^="/"]').forEach((a) => {
-    a.addEventListener('click', (e) => {
-      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      if (a.target && a.target !== '' && a.target !== '_self') return;
-      const href = a.getAttribute('href');
-      if (!href) return;
-      e.preventDefault();
-      document.documentElement.classList.add('leaving');
-      setTimeout(() => { window.location.href = href; }, 180);
-    });
-  });
-  // Restore visibility if the page is shown again from the back/forward cache.
-  window.addEventListener('pageshow', () => document.documentElement.classList.remove('leaving'));
 })();
 
 // Theme toggle (bottom-left). Flips data-theme, persists to the blog's shared

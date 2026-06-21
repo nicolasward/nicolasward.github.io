@@ -1367,13 +1367,14 @@ h3:hover .heading-anchor {
   pointer-events: none;
   z-index: -1;
 }
-.footer-glow { bottom: 0; transform: translateX(-50%) scale(1); }             /* glows up from the bottom */
-.header-glow { top: 0;    transform: translateX(-50%) scaleY(-1) scale(1); }  /* the mirror: glows down from the top */
-/* On a horizontal article swipe, contract the glows so the hand-off to the next
-   article's glow reads smoothly (current recedes, next blooms). Scale only — a
-   one-shot transition, no clash with the bloom's opacity. */
-body.swiping .footer-glow { transform: translateX(-50%) scale(0.5); }
-body.swiping .header-glow { transform: translateX(-50%) scaleY(-1) scale(0.5); }
+.footer-glow { bottom: 0; transform: translateX(-50%) translateY(0%) scale(1); }             /* glows up from the bottom */
+.header-glow { top: 0;    transform: translateX(-50%) translateY(0%) scaleY(-1) scale(1); }  /* the mirror: glows down from the top */
+/* On a horizontal article swipe, contract each glow toward its own core (the
+   page edge, not the box centre): scale down with a paired translate that keeps
+   the bottom/top edge pinned, so it recedes into the edge. Smoother hand-off to
+   the next article's glow; one-shot transform transition. */
+body.swiping .footer-glow { transform: translateX(-50%) translateY(25%) scale(0.5); }
+body.swiping .header-glow { transform: translateX(-50%) translateY(-25%) scaleY(-1) scale(0.5); }
 [data-theme="dark"] .pg { opacity: 0.65; z-index: -2; }
 /* Bloom in: with JS each glow starts hidden and swells up (footer when it scrolls
    into view, header on load). No-JS shows it statically; reduced motion instant. */

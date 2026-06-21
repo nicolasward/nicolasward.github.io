@@ -242,7 +242,7 @@ def newsletter_section():
     <form class="newsletter-form" data-endpoint="" novalidate>
       <div class="newsletter-field">
         <input class="newsletter-input" type="email" name="email" inputmode="email"
-               autocomplete="email" spellcheck="false" placeholder="you@example.com"
+               autocomplete="email" spellcheck="false" placeholder="steve@apple.com"
                aria-label="Email address" required>
         <input class="newsletter-gotcha" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
         <button class="newsletter-submit" type="submit" aria-label="Subscribe">

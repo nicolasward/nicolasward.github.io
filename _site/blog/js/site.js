@@ -86,11 +86,11 @@ form.classList.add('is-loading');input.disabled=true;setTimeout(succeed,1400);}
 form.addEventListener('submit',function(e){e.preventDefault();if(form.classList.contains('is-loading')||form.classList.contains('is-done'))return;if(gotcha&&gotcha.value)return;var email=(input.value||'').trim();if(!EMAIL_RE.test(email)){fail('Hmm, that doesn’t look like an email.');return;}
 setMsg('');if(endpoint){var body=new FormData();body.append('email',email);try{fetch(endpoint,{method:'POST',body:body,mode:'no-cors'});}catch(err){}}
 startLoading();});});})();(function(){var inputs=document.querySelectorAll('main .newsletter-input');if(!inputs.length)return;var emails=['steve@apple.com','claude@shannon.me','rich@feynman.io','alan@turing.xyz','ada@lovelace.ai','mariecurie@u-paris.fr','rosalind.franklin@cam.ac.uk'];var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;Array.prototype.forEach.call(inputs,function(input){if(reduce){input.setAttribute('placeholder',emails[0]);return;}
-var idx=0,ch=0,typing=true,focused=false,timer;function set(text){input.setAttribute('placeholder',text);}
+var idx=0,ch=emails[0].length,typing=false,focused=false,timer;function set(text){input.setAttribute('placeholder',text);}
 function schedule(ms){clearTimeout(timer);timer=setTimeout(tick,ms);}
 function tick(){var word=emails[idx];if(focused||input.value.length){if(ch>0){set(word.slice(0,--ch));schedule(28);}
 return;}
 if(typing){set(word.slice(0,++ch));if(ch>=word.length){typing=false;schedule(1500);}
 else schedule(80+Math.random()*70);}else{set(word.slice(0,--ch));if(ch<=0){typing=true;idx=(idx+1)%emails.length;schedule(380);}
 else schedule(42);}}
-input.addEventListener('focus',function(){focused=true;typing=false;schedule(0);});input.addEventListener('blur',function(){focused=false;if(!input.value.length){typing=true;schedule(280);}});schedule(700);});})();
+input.addEventListener('focus',function(){focused=true;typing=false;schedule(0);});input.addEventListener('blur',function(){focused=false;if(!input.value.length){typing=true;schedule(280);}});set(emails[0]);schedule(1800);});})();

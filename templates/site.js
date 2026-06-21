@@ -1288,7 +1288,7 @@
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       Array.prototype.forEach.call(inputs, function (input) {
         if (reduce) { input.setAttribute('placeholder', emails[0]); return; }
-        var idx = 0, ch = 0, typing = true, focused = false, timer;
+        var idx = 0, ch = emails[0].length, typing = false, focused = false, timer;
         function set(text) { input.setAttribute('placeholder', text); }
         function schedule(ms) { clearTimeout(timer); timer = setTimeout(tick, ms); }
         function tick() {
@@ -1314,6 +1314,7 @@
           focused = false;
           if (!input.value.length) { typing = true; schedule(280); }   // resume the demo
         });
-        schedule(700);
+        set(emails[0]);     // show a real address at once — never the static fallback
+        schedule(1800);     // hold it a beat, then erase and cycle
       });
     })();

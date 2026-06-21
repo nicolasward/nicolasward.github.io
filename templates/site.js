@@ -1090,18 +1090,29 @@
         // the body following, via a stroke-dashoffset slide.
         var SNAKE_LOAD = -38;   // snake parked on the circle, head at the seam (5,12.5)
         var SNAKE_DONE = -69;   // snake fully on the checkmark
-        // Success: the equalizer fades out and the checkmark traces itself onto
-        // the spinner path (the same tick the easter-egg redraws). The bars and
-        // the tick briefly overlap, so the meter reads as resolving into the check.
+        // Success: the bounce freezes and the four dots glide into the checkmark's
+        // vertices (echoes fading). Once they've landed, the tick traces itself
+        // through them on the spinner path and the dots fade — leaving the clean
+        // check. (Their resting x-positions already line up under the tick, so it's
+        // mostly dot 2 dropping to the vertex and dot 4 rising to the tip.)
         function eqToCheck() {
-          form.classList.remove('is-loading');                 // the bars fade out
-          var svg = form.querySelector('.ns-spinner'), path = form.querySelector('.ns-spinner-path');
-          if (!path) return;
-          if (svg) svg.style.transform = '';
+          var path = form.querySelector('.ns-spinner-path');
+          if (!path) { form.classList.remove('is-loading'); return; }
           path.style.strokeDashoffset = SNAKE_DONE;            // dash window anchored at the check's start
-          if (reduce) { path.style.strokeDasharray = '31 69'; return; }   // static check
-          path.style.strokeDasharray = '0 100';                // hidden until the redraw traces it on
-          setTimeout(redrawCheck, 70);                         // let the meter clear, then draw the tick
+          if (reduce) {
+            form.classList.remove('is-loading');
+            path.style.strokeDasharray = '31 69';              // static check
+            return;
+          }
+          path.style.strokeDasharray = '0 100';                // hidden until it traces on
+          form.classList.remove('is-loading');                 // freeze the bounce
+          form.classList.add('is-forming');                    // dots fly to the tick's vertices
+          setTimeout(function () {
+            redrawCheck();                                     // draw the tick through the dots
+            var btn = form.querySelector('.newsletter-submit');
+            if (btn) confettiBurst(btn);                       // pop as the check forms
+            form.classList.add('is-formed');                   // fade the dots, leaving the check
+          }, 460);
         }
         // On reset the checkmark spins and morphs back into the arrow (the reverse
         // of the spinner→check feel). The arrow and check share a 5-point path
@@ -1206,21 +1217,19 @@
           var card = section && section.querySelector('.newsletter-card');
           if (card) card.classList.add('is-subscribed');   // settle into the muted confirmed state
           var btn = form.querySelector('.newsletter-submit');
-          if (btn) {
-            btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
-            confettiBurst(btn);                              // grey pop as the check forms
-          }
+          if (btn) btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
+          // confetti fires from eqToCheck, as the tick forms through the dots
           // Let the checkmark settle before the confirmation reads in — a beat of
           // breathing room so it doesn't all land at once.
           setTimeout(function () {
             setMsg('You’re subscribed — welcome aboard!', 'success');
             form.classList.add('is-confirmed');   // reveals the "subscribe another" link, after
-          }, reduce ? 0 : 1100);
+          }, reduce ? 0 : 1500);
         }
         // "Subscribe another email": unwind back to a fresh, editable form — the
         // check spins and morphs back into the arrow.
         function reset() {
-          form.classList.remove('is-done', 'is-confirmed', 'is-settling', 'is-loading');
+          form.classList.remove('is-done', 'is-confirmed', 'is-settling', 'is-loading', 'is-forming', 'is-formed');
           var card = section && section.querySelector('.newsletter-card');
           if (card) card.classList.remove('is-subscribed');
           input.disabled = false;

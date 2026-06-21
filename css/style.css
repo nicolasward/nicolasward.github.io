@@ -2503,6 +2503,7 @@ html.js .reply-pill.in .reply-text {
   border-radius: 50%;
   background: currentColor;             /* echoes ride on lower opacity → lighter */
   transform: translateY(0);
+  transition: opacity 0.22s ease, transform 0.46s cubic-bezier(0.34, 1.4, 0.5, 1);
 }
 .newsletter-form.is-loading .ns-eq-col > b {
   animation-name: ns-eq;
@@ -2526,6 +2527,21 @@ html.js .reply-pill.in .reply-text {
   50%  { transform: translateY(0.45rem); }
   100% { transform: translateY(-0.45rem); }
 }
+/* End formation: the bounce freezes and the four dots glide into the checkmark's
+   vertices (echoes fading); the tick then traces through them and the dots fade,
+   leaving the clean check. The four rest x-positions already sit under the tick
+   (~5, 9.5, 14.25, 19 in the 24-unit glyph), so the move is mostly dot 2 dropping
+   to the vertex and dot 4 rising to the tip. */
+.newsletter-form.is-forming .ns-eq { opacity: 1; transform: scale(1); }
+.newsletter-form.is-forming .ns-eq-col { transition: transform 0.46s cubic-bezier(0.34, 1.4, 0.5, 1); }
+.newsletter-form.is-forming .ns-eq-col:nth-child(1) { transform: translate(0.03rem, 0.03rem); }
+.newsletter-form.is-forming .ns-eq-col:nth-child(2) { transform: translate(0, 0.32rem); }
+.newsletter-form.is-forming .ns-eq-col:nth-child(3) { transform: translate(-0.015rem, 0.015rem); }
+.newsletter-form.is-forming .ns-eq-col:nth-child(4) { transform: translate(-0.03rem, -0.29rem); }
+.newsletter-form.is-forming .ns-eq-col > b:nth-child(1),
+.newsletter-form.is-forming .ns-eq-col > b:nth-child(2),
+.newsletter-form.is-forming .ns-eq-col > b:nth-child(3) { opacity: 0; }
+.newsletter-form.is-formed .ns-eq { opacity: 0; }
 /* Grey confetti pop from the glyph — the exact radial fly-out + fade the
    reading-progress ring used on complete. Spawned in site.js, anchored to the
    submit button (left/top 50% of it) so it bursts from the glyph. */

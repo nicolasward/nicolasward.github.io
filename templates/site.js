@@ -833,7 +833,14 @@
       var el = document.querySelector('.footer-glow');
       if (!el) return;
       var palettes = ['', 'fg-aurora', 'fg-green'];   // '' = base sunset
-      var pick = palettes[Math.floor(Math.random() * palettes.length)];
+      // Never repeat the previous page's gradient: remember the last pick across
+      // navigations and choose from the others.
+      var last = null;
+      try { last = localStorage.getItem('footer-glow'); } catch (e) {}
+      var choices = palettes.filter(function (p) { return p !== last; });
+      if (!choices.length) choices = palettes;
+      var pick = choices[Math.floor(Math.random() * choices.length)];
+      try { localStorage.setItem('footer-glow', pick); } catch (e) {}
       if (pick) el.classList.add(pick);
 
       var foot = document.querySelector('.site-footer');

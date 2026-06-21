@@ -1367,27 +1367,31 @@ h3:hover .heading-anchor {
   pointer-events: none;
   z-index: -1;
 }
-.footer-glow { bottom: 0; transform: translateX(-50%) translateY(0%) scale(1); }             /* glows up from the bottom */
-.header-glow { top: 0;    transform: translateX(-50%) translateY(0%) scaleY(-1) scale(1); }  /* the mirror: glows down from the top */
-/* On a horizontal article swipe, contract each glow toward its own core (the
-   page edge, not the box centre): scale down with a paired translate that keeps
-   the bottom/top edge pinned, so it recedes into the edge. Smoother hand-off to
-   the next article's glow; one-shot transform transition. */
-body.swiping .footer-glow { transform: translateX(-50%) translateY(25%) scale(0.5); }
-body.swiping .header-glow { transform: translateX(-50%) translateY(-25%) scaleY(-1) scale(0.5); }
+.footer-glow { bottom: 0; transform: translateX(-50%) translateY(0%) scale(1); }             /* full (no-JS / lit) */
+.header-glow { top: 0;    transform: translateX(-50%) translateY(0%) scaleY(-1) scale(1); }
 [data-theme="dark"] .pg { opacity: 0.65; z-index: -2; }
-/* Bloom in: with JS each glow starts hidden and swells up (footer when it scrolls
-   into view, header on load). No-JS shows it statically; reduced motion instant. */
-.js .pg { opacity: 0; transition: opacity 1.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.45s cubic-bezier(0.4, 0, 0.2, 1); }
+.header-glow { opacity: 0.6; }                          /* gentler behind the nav links */
+[data-theme="dark"] .header-glow { opacity: 0.45; }
+
+/* With JS each glow starts HIDDEN and CONTRACTED at its own edge, then swells in
+   (opacity + scale, from the edge) once .lit is added — the header on load, the
+   footer when it scrolls into view. The same contracted state is reused on swipe.
+   No-JS shows it statically; reduced motion is instant. */
+.js .pg { opacity: 0; transition: opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1), transform 1.5s cubic-bezier(0.22, 1, 0.36, 1); }
+.js .footer-glow { transform: translateX(-50%) translateY(25%) scale(0.5); }
+.js .header-glow { transform: translateX(-50%) translateY(-25%) scaleY(-1) scale(0.5); }
+.js .footer-glow.lit { transform: translateX(-50%) translateY(0%) scale(1); }
+.js .header-glow.lit { transform: translateX(-50%) translateY(0%) scaleY(-1) scale(1); }
 .js .pg.lit { opacity: 0.9; }
-.js [data-theme="dark"] .pg.lit { opacity: 0.65; }
-@media (prefers-reduced-motion: reduce) { .js .pg { transition: none; } }
-/* The header glow sits behind the nav links, so keep it gentler than the footer
-   (which only backs less-critical text) — the nav stays legible. */
-.header-glow,
 .js .header-glow.lit { opacity: 0.6; }
-[data-theme="dark"] .header-glow,
+.js [data-theme="dark"] .pg.lit { opacity: 0.65; }
 .js [data-theme="dark"] .header-glow.lit { opacity: 0.45; }
+@media (prefers-reduced-motion: reduce) { .js .pg { transition: none; } }
+/* On a horizontal article swipe, contract each lit glow back to its edge (quick),
+   for a smooth hand-off to the next article's glow. */
+.js body.swiping .pg { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+.js body.swiping .footer-glow.lit { transform: translateX(-50%) translateY(25%) scale(0.5); }
+.js body.swiping .header-glow.lit { transform: translateX(-50%) translateY(-25%) scaleY(-1) scale(0.5); }
 /* Alternate palettes — JS adds one of these at random per load (no class = the
    base sunset above). Same three-pool composition, different hues. */
 .pg.fg-aurora {                 /* pink / purple / blue */

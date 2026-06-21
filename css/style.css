@@ -372,7 +372,7 @@ html.vt-toggling[data-theme="dark"] .site-header.scrolled {
   color: var(--flexoki-300);
   transition: color 0.4s ease;
 }
-[data-theme="dark"] .theme-toggle .toggle-shape { color: var(--flexoki-900); }
+[data-theme="dark"] .theme-toggle .toggle-shape { color: rgba(225, 226, 235, 0.34); }  /* light translucent (matches the nav pill) so it stays subtle over the header glow */
 
 @media (hover: hover) {
   .theme-toggle:hover .toggle-knob,

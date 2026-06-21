@@ -1379,6 +1379,12 @@ h3:hover .heading-anchor {
 .js .pg.lit { opacity: 0.9; }
 .js [data-theme="dark"] .pg.lit { opacity: 0.65; }
 @media (prefers-reduced-motion: reduce) { .js .pg { transition: none; } }
+/* The header glow sits behind the nav links, so keep it gentler than the footer
+   (which only backs less-critical text) — the nav stays legible. */
+.header-glow,
+.js .header-glow.lit { opacity: 0.6; }
+[data-theme="dark"] .header-glow,
+.js [data-theme="dark"] .header-glow.lit { opacity: 0.45; }
 /* Alternate palettes — JS adds one of these at random per load (no class = the
    base sunset above). Same three-pool composition, different hues. */
 .pg.fg-aurora {                 /* pink / purple / blue */

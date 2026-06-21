@@ -247,7 +247,7 @@ def newsletter_section():
         <input class="newsletter-gotcha" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
         <button class="newsletter-submit" type="submit" aria-label="Subscribe">
           <svg class="ns-state ns-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="ns-mark-path" d="M4 12 L19 12 M12.5 5.5 L19 12 L12.5 18.5" pathLength="100"/></svg>
-          <span class="ns-state ns-eq" aria-hidden="true"><i class="ns-eq-col"><b></b><b></b><b></b><b></b></i><i class="ns-eq-col"><b></b><b></b><b></b><b></b></i><i class="ns-eq-col"><b></b><b></b><b></b><b></b></i><i class="ns-eq-col"><b></b><b></b><b></b><b></b></i><i class="ns-eq-col"><b></b><b></b><b></b><b></b></i></span>
+          <span class="ns-state ns-eq" aria-hidden="true"><i class="ns-eq-col"><b></b><b></b><b></b><b></b></i><i class="ns-eq-col"><b></b><b></b><b></b><b></b></i><i class="ns-eq-col"><b></b><b></b><b></b><b></b></i><i class="ns-eq-col"><b></b><b></b><b></b><b></b></i></span>
           <svg class="ns-state ns-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="ns-spinner-path" pathLength="100" d="M5 12.5 A7.018 7.018 0 0 0 19 11.5 A7.018 7.018 0 0 0 5 12.5 L9.5 17 L19 7.5"/></svg>
         </button>
       </div>

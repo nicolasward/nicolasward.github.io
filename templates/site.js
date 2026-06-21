@@ -228,9 +228,31 @@
         }, EXIT_DURATION);
       }
 
+      // Sit the clear ✕ exactly under the toggle-as-✕. The toggle is lifted to a
+      // fixed position mirroring the header (pill on OR off), so measuring its
+      // centre and offsetting the clear to match works in every header state —
+      // pure geometry, no magic numbers.
+      function alignClear() {
+        var clearBtn = document.getElementById('search-clear');
+        var toggleEl = document.getElementById('theme-toggle');
+        if (!clearBtn || !toggleEl) return;
+        if (!ToggleClose.isEngaged() || !inputWrap.classList.contains('has-value')) {
+          clearBtn.style.right = '';                 // not the ✕ context → CSS default
+          return;
+        }
+        var cw = clearBtn.getBoundingClientRect().width;
+        if (!cw) return;
+        var tr = toggleEl.getBoundingClientRect();
+        var toggleCentre = tr.left + tr.width / 2;
+        var wrapRight = inputWrap.getBoundingClientRect().right;
+        clearBtn.style.right = (wrapRight - cw / 2 - toggleCentre) + 'px';
+      }
+
       function syncClear() {
         inputWrap.classList.toggle('has-value', input.value.length > 0);
+        alignClear();
       }
+      window.addEventListener('resize', alignClear, { passive: true });
 
       input.addEventListener('input', e => { render(e.target.value); syncClear(); });
 

@@ -2758,7 +2758,7 @@ main .newsletter-form.is-confirmed .newsletter-again {
   }
 
   .search-clear {
-    right: 14px;         /* line the clear ✕ up under the toggle-as-✕ (centred in a wider box) */
+    /* horizontal offset is set by JS (alignClear) to sit under the toggle-as-✕ */
     width: 24px;
     height: 24px;
   }

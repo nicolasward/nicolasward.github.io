@@ -118,9 +118,10 @@ body {
    shows a single, larger blob that *glows* (screen-blended) on the deep field,
    with the other two hidden. Body ink flips to a muted light, and the grain
    becomes a CSS noise (the dark-fleck grain.png is invisible on dark). */
-html[data-theme="dark"] .lede { color: rgba(255, 255, 255, 0.4); }
-html[data-theme="dark"] .blob { opacity: .6; mix-blend-mode: screen; }
-html[data-theme="dark"] .blob:first-child { width: 46vmax; height: 46vmax; }   /* the lone blob, larger */
+html[data-theme="dark"] .lede { color: rgba(255, 255, 255, 0.5); }
+/* A calm, dim glow so the drifting blob never washes out the light text. */
+html[data-theme="dark"] .blob { opacity: .3; mix-blend-mode: screen; }
+html[data-theme="dark"] .blob:first-child { width: 42vmax; height: 42vmax; }   /* the lone blob */
 html[data-theme="dark"] .blob:not(:first-child) { display: none; }
 html[data-theme="dark"] .stage::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");

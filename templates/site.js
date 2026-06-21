@@ -826,13 +826,13 @@
       });
     })();
 
-    // Footer glow: pick one of three palettes at random each load — the base
-    // sunset, the pink/purple/blue aurora, or the green aurora — then bloom it in
+    // Footer glow: pick one of five palettes at random each load (sunset, aurora,
+    // green, gold, navy) — never repeating the previous page's — then bloom it in
     // as the footer comes into view (rather than it being there from the start).
     (function () {
       var el = document.querySelector('.footer-glow');
       if (!el) return;
-      var palettes = ['', 'fg-aurora', 'fg-green'];   // '' = base sunset
+      var palettes = ['', 'fg-aurora', 'fg-green', 'fg-gold', 'fg-navy'];   // '' = base sunset
       // Never repeat the previous page's gradient: remember the last pick across
       // navigations and choose from the others.
       var last = null;

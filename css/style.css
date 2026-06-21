@@ -1403,6 +1403,18 @@ h3:hover .heading-anchor {
     radial-gradient(54% 72% at 51% 123%, #A6F2E2 0%, #3FD0BC 36%, #84E7D2 60%, transparent 80%),
     radial-gradient(42% 56% at 81% 110%, #BFE7FF 0%, #49AEE6 34%, #8CC9F2 58%, transparent 78%);
 }
+.footer-glow.fg-gold {                    /* gold / amber / lime — sunny */
+  background:
+    radial-gradient(46% 60% at 21% 113%, #FBF3B0 0%, #E6C23A 34%, #F2DC7C 58%, transparent 78%),
+    radial-gradient(54% 72% at 51% 123%, #FFF1A6 0%, #FFC92E 36%, #FFDF72 60%, transparent 80%),
+    radial-gradient(42% 56% at 81% 110%, #FFE79E 0%, #F2B02E 34%, #FFCF68 58%, transparent 78%);
+}
+.footer-glow.fg-navy {                    /* indigo / royal / deep blue */
+  background:
+    radial-gradient(46% 60% at 21% 113%, #AEB8F0 0%, #3A4EAE 34%, #6E7FD0 58%, transparent 78%),
+    radial-gradient(54% 72% at 51% 123%, #A6BCF2 0%, #2E55C0 36%, #6884DC 60%, transparent 80%),
+    radial-gradient(42% 56% at 81% 110%, #9FC0EE 0%, #2A6AB8 34%, #6B9AD8 58%, transparent 78%);
+}
 /* Grain ONLY the footer glow. A noise layer positioned to the blob's exact box
    and masked with the SAME radial as the glow, so the grain fades out with the
    glow — the flat dark reading area stays clean. Sits above the blob (z-index:-1
@@ -2746,6 +2758,7 @@ main .newsletter-form.is-confirmed .newsletter-again {
   }
 
   .search-clear {
+    right: 8px;          /* line the clear ✕ up under the toggle-as-✕ (centred in a wider box) */
     width: 24px;
     height: 24px;
   }

@@ -209,6 +209,10 @@
           });
         }
         ensureIndex(() => render(input.value));
+        // The open animation scales the input row in (search-rise), so the align
+        // above reads a slightly-shrunk box on a tag click. Re-align once it has
+        // settled — otherwise it only corrects on the first keystroke.
+        setTimeout(alignClear, 560);
       }
       function close() {
         if (!isOpen && !overlay.classList.contains('closing')) return;

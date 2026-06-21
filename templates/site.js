@@ -1110,13 +1110,16 @@
           form.classList.add('is-forming', 'is-settling');     // dots fly to the vertices; keep the ink dark
           var DRAW = 560;
           setTimeout(function () {
-            redrawCheck(DRAW, easeInOut);                      // thread a line through the dots, left→right
+            // The dots have landed in the checkmark formation — pop the confetti
+            // here, before the line draws.
             var btn = form.querySelector('.newsletter-submit');
-            // Pop mid-draw, as the line races up toward the tip — not before it.
-            if (btn) setTimeout(function () { confettiBurst(btn); }, DRAW * 0.5);
-            // Keep the dots lit until the line has connected them, then fade
-            // them — the drawn check stays.
-            setTimeout(function () { form.classList.add('is-formed'); }, DRAW + 140);
+            if (btn) confettiBurst(btn);
+            // A beat later, thread the line through the dots, left→right.
+            setTimeout(function () {
+              redrawCheck(DRAW, easeInOut);
+              // Keep the dots lit until the line has connected them, then fade.
+              setTimeout(function () { form.classList.add('is-formed'); }, DRAW + 140);
+            }, 180);
           }, 460);
         }
         // On reset the checkmark spins and morphs back into the arrow (the reverse

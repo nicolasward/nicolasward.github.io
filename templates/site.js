@@ -1097,11 +1097,38 @@
           var v = m[1].split(',');
           return Math.atan2(parseFloat(v[1]), parseFloat(v[0])) * 180 / Math.PI;
         }
+        // Loading "comet": rotation surges and eases each beat (momentum) while
+        // the tail stretches when fast and contracts when slow. The head stays
+        // pinned to the seam (path-pos 69) — dashoffset = L − 69 keeps the dash's
+        // leading edge there for any tail length L — so the success slide always
+        // finds the head ready to lead onto the check.
+        var cometRAF = null, cometAngle = 0, cometStart = 0, cometLast = 0;
+        function cometFrame(ts) {
+          var svg = form.querySelector('.ns-spinner'), path = form.querySelector('.ns-spinner-path');
+          if (!svg || !path) { cometRAF = null; return; }
+          if (!cometLast) { cometLast = ts; cometStart = ts; }
+          var dt = Math.min(64, ts - cometLast); cometLast = ts;
+          // s: 0→1 momentum pulse, ~1.05s period — eased surge then glide.
+          var s = 0.5 - 0.5 * Math.cos((ts - cometStart) / 1050 * Math.PI * 2);
+          var omega = 190 + 540 * s;                 // deg/s — glides at ~190, whips to ~730
+          cometAngle -= omega * dt / 1000;           // CCW (head dives into the tick at the seam)
+          svg.style.transform = 'rotate(' + cometAngle.toFixed(2) + 'deg)';
+          var L = 15 + 27 * s;                        // tail: 15 (parked) → 42 (whipping)
+          path.style.strokeDasharray = L.toFixed(1) + ' ' + (100 - L).toFixed(1);
+          path.style.strokeDashoffset = (L - 69).toFixed(1);   // head anchored at the seam
+          cometRAF = requestAnimationFrame(cometFrame);
+        }
+        function startComet() { cometLast = 0; if (!cometRAF) cometRAF = requestAnimationFrame(cometFrame); }
+        function stopComet() { if (cometRAF) { cancelAnimationFrame(cometRAF); cometRAF = null; } }
         // Spinner → checkmark: the spin settles to upright while the snake's head
         // leads off the ring and traces the tick (body following) — one motion.
         function spinnerToCheck() {
           var svg = form.querySelector('.ns-spinner'), path = form.querySelector('.ns-spinner-path');
           if (!path) return;
+          stopComet();
+          // Snap the tail back to the resting snake length (head is already pinned
+          // at the seam, so only the faint tail moves — invisible under the slide).
+          path.style.strokeDasharray = '31 69';
           if (reduce) { form.classList.remove('is-loading'); path.style.strokeDashoffset = SNAKE_DONE; if (svg) svg.style.transform = ''; return; }
           form.classList.add('is-settling');                         // hold the glyph dark through the animation
           var ang = spinAngle(svg);
@@ -1273,6 +1300,7 @@
         function startLoading() {
           if (reduce) { succeed(); return; }
           form.classList.add('is-loading');
+          startComet();
           input.disabled = true;
           setTimeout(succeed, 1400);
         }

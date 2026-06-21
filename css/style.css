@@ -2631,7 +2631,7 @@ main .newsletter-msg.is-success {
   padding: 0;
   background: none;
   border: none;
-  color: var(--fg-faint);
+  color: var(--fg-muted);   /* readable in both themes (fg-faint is too dim on dark) */
   font: inherit;
   font-size: 0.85rem;
   text-decoration: underline;
@@ -2643,7 +2643,7 @@ main .newsletter-form.is-confirmed .newsletter-again {
   display: block;
   animation: ns-msg-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;   /* after the message */
 }
-@media (hover: hover) { .newsletter-again:hover { color: var(--fg-muted); } }
+@media (hover: hover) { .newsletter-again:hover { color: var(--fg); } }
 
 /* Small pill toast (positioned in JS): "You're subscribed!", "Link copied", … */
 .toast-pill {

@@ -2472,27 +2472,29 @@ html.js .reply-pill.in .reply-text {
 .newsletter-form.is-loading .ns-eq { opacity: 1; }
 .newsletter-form.is-done .ns-spinner { opacity: 1; }
 
-/* Equalizer: five bars bouncing from the baseline like a sound-level meter —
-   echoing the pixel-waveform rule atop the newsletter block. Staggered delays
-   and slightly mismatched durations keep the crests travelling and never quite
-   repeating. On success the bars fade and the checkmark traces in (see site.js). */
+/* Equalizer: a centred audio waveform — nine bars with a tall middle tapering
+   to little dots at the edges (the geometry holds that silhouette). They swell
+   from the midline as a crest travels left→right, so it reads as a living sound
+   wave. On success the bars fade and the checkmark traces in (see site.js). */
 .ns-eq-bar {
   transform-box: fill-box;
-  transform-origin: 50% 100%;
-  transform: scaleY(0.26);
+  transform-origin: 50% 50%;            /* swell symmetrically from the midline */
+  transform: scaleY(0.62);
 }
 .newsletter-form.is-loading .ns-eq-bar {
-  animation-name: ns-eq;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
+  animation: ns-eq 1.1s ease-in-out infinite;
 }
-.ns-eq-bar:nth-child(1) { animation-duration: 0.86s; animation-delay: -0.90s; }
-.ns-eq-bar:nth-child(2) { animation-duration: 1.04s; animation-delay: -0.55s; }
-.ns-eq-bar:nth-child(3) { animation-duration: 0.78s; animation-delay: -0.20s; }
-.ns-eq-bar:nth-child(4) { animation-duration: 1.10s; animation-delay: -0.65s; }
-.ns-eq-bar:nth-child(5) { animation-duration: 0.92s; animation-delay: -0.35s; }
+.ns-eq-bar:nth-child(1) { animation-delay: -0.00s; }
+.ns-eq-bar:nth-child(2) { animation-delay: -0.10s; }
+.ns-eq-bar:nth-child(3) { animation-delay: -0.20s; }
+.ns-eq-bar:nth-child(4) { animation-delay: -0.30s; }
+.ns-eq-bar:nth-child(5) { animation-delay: -0.40s; }
+.ns-eq-bar:nth-child(6) { animation-delay: -0.50s; }
+.ns-eq-bar:nth-child(7) { animation-delay: -0.60s; }
+.ns-eq-bar:nth-child(8) { animation-delay: -0.70s; }
+.ns-eq-bar:nth-child(9) { animation-delay: -0.80s; }
 @keyframes ns-eq {
-  0%, 100% { transform: scaleY(0.26); }
+  0%, 100% { transform: scaleY(0.62); }
   50%      { transform: scaleY(1); }
 }
 /* Grey confetti pop from the glyph — the exact radial fly-out + fade the

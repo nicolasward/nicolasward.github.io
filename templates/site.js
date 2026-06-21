@@ -839,11 +839,12 @@
       var foot = document.querySelector('.site-footer');
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reduce || !foot || !('IntersectionObserver' in window)) { el.classList.add('lit'); return; }
-      // Trigger a touch early (footer 20% below the fold) so the glow is already
-      // swelling up by the time you arrive at it.
+      // Hold off until the footer is (nearly) fully in view — i.e. you've
+      // actually reached the bottom — so the glow blooms in as you arrive, not
+      // before.
       var obs = new IntersectionObserver(function (entries) {
-        if (entries[0].isIntersecting) { el.classList.add('lit'); obs.disconnect(); }
-      }, { rootMargin: '0px 0px 20% 0px' });
+        if (entries[0].intersectionRatio >= 0.95) { el.classList.add('lit'); obs.disconnect(); }
+      }, { threshold: [0.95, 1] });
       obs.observe(foot);
     })();
 

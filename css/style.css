@@ -2472,44 +2472,52 @@ html.js .reply-pill.in .reply-text {
 .newsletter-form.is-loading .ns-eq { opacity: 1; }
 .newsletter-form.is-done .ns-spinner { opacity: 1; }
 
-/* Equalizer of bouncing dots: five ink dots, each rising and falling on its own
-   rhythm. As a dot moves it stretches into a vertical streak — a round dot at
-   the turn-points, a long trace mid-flight where it's fastest (ease-in-out puts
-   the speed, and so the longest trace, at mid-travel) and a touch translucent
-   there, like motion blur. The five smears dance like an equalizer. Non-harmonic
-   durations and offset starts keep it from ever syncing. On success the dots
-   fade and the checkmark traces in (see site.js). */
+/* Equalizer of bouncing dots: five round dots, each rising and falling on its
+   own period. Behind every lead dot, three lighter echoes lag a beat or two
+   behind — true ghost copies of where it just was — so each dot drags a fading
+   motion trail in its wake. Non-harmonic periods and offset starts keep the five
+   from ever syncing. On success the dots fade and the checkmark traces in. */
 .ns-eq {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
-  padding: 0 0.12rem;
   box-sizing: border-box;
 }
-.ns-eq-dot {
-  width: 0.26rem;
-  height: 0.26rem;
-  border-radius: 0.13rem;               /* pill — round at rest, a streak when stretched */
-  background: currentColor;
-  transform-origin: 50% 50%;
-  transform: translateY(0) scaleY(1);
+.newsletter-form.is-loading .ns-eq { color: var(--fg); }   /* crisp ink lead while active */
+.ns-eq-col { position: relative; width: 0.2rem; }
+.ns-eq-col > b {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.2rem;
+  height: 0.2rem;
+  margin: -0.1rem 0 0 -0.1rem;
+  border-radius: 50%;
+  background: currentColor;             /* echoes ride on lower opacity → lighter */
+  transform: translateY(0);
 }
-.newsletter-form.is-loading .ns-eq-dot {
+.newsletter-form.is-loading .ns-eq-col > b {
   animation-name: ns-eq;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
+  animation-duration: var(--t);
 }
-.ns-eq-dot:nth-child(1) { animation-duration: 0.62s; animation-delay: -0.05s; }
-.ns-eq-dot:nth-child(2) { animation-duration: 0.78s; animation-delay: -0.40s; }
-.ns-eq-dot:nth-child(3) { animation-duration: 0.54s; animation-delay: -0.20s; }
-.ns-eq-dot:nth-child(4) { animation-duration: 0.70s; animation-delay: -0.52s; }
-.ns-eq-dot:nth-child(5) { animation-duration: 0.66s; animation-delay: -0.14s; }
+/* Per-column period (--t) and phase (--d). */
+.ns-eq-col:nth-child(1) { --t: 1.25s; --d: -0.10s; }
+.ns-eq-col:nth-child(2) { --t: 1.50s; --d: -0.55s; }
+.ns-eq-col:nth-child(3) { --t: 1.10s; --d: -0.30s; }
+.ns-eq-col:nth-child(4) { --t: 1.40s; --d: -0.70s; }
+.ns-eq-col:nth-child(5) { --t: 1.30s; --d: -0.20s; }
+/* Within a column: the lead (last, on top) plus three trailing echoes that lag
+   progressively further behind and fade lighter. */
+.ns-eq-col > b:nth-child(1) { animation-delay: calc(var(--d) + 0.27s); opacity: 0.12; }
+.ns-eq-col > b:nth-child(2) { animation-delay: calc(var(--d) + 0.18s); opacity: 0.24; }
+.ns-eq-col > b:nth-child(3) { animation-delay: calc(var(--d) + 0.09s); opacity: 0.42; }
+.ns-eq-col > b:nth-child(4) { animation-delay: var(--d);               opacity: 1; }
 @keyframes ns-eq {
-  0%   { transform: translateY(-0.45rem) scaleY(1);   opacity: 1; }
-  25%  { transform: translateY(0)        scaleY(2.4); opacity: 0.82; }
-  50%  { transform: translateY(0.45rem)  scaleY(1);   opacity: 1; }
-  75%  { transform: translateY(0)        scaleY(2.4); opacity: 0.82; }
-  100% { transform: translateY(-0.45rem) scaleY(1);   opacity: 1; }
+  0%   { transform: translateY(-0.45rem); }
+  50%  { transform: translateY(0.45rem); }
+  100% { transform: translateY(-0.45rem); }
 }
 /* Grey confetti pop from the glyph — the exact radial fly-out + fade the
    reading-progress ring used on complete. Spawned in site.js, anchored to the
@@ -2556,7 +2564,7 @@ html.js .reply-pill.in .reply-text {
   .newsletter-card.is-subscribed .newsletter-shine::before,
   main .newsletter-msg.is-success,
   main .newsletter-form.is-confirmed .newsletter-again,
-  .newsletter-form.is-loading .ns-eq-dot,
+  .newsletter-form.is-loading .ns-eq-col > b,
   .newsletter-field.shake { animation: none; }
 }
 

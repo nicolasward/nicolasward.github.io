@@ -105,22 +105,23 @@ body {
   opacity: .35;
   will-change: transform;
 }
-/* An iridescent "Apple Intelligence" aurora: an analogous iris → rose → aqua
-   sweep — luminous jewel-pastels that melt into one soft light rather than three
-   competing dots. Warm rose anchors the centre; cool iris + aqua flank it. */
-.blob--teal   { background: radial-gradient(circle at 35% 35%, #C7CEFF 0%, #6E7BF2 42%, #A98CF0 72%, rgba(0,0,0,0) 74%); }  /* iris (periwinkle → violet) */
-.blob--sunset { background: radial-gradient(circle at 65% 40%, #FFC9DA 0%, #FF8FB4 44%, #FFB39B 74%, rgba(0,0,0,0) 76%); }  /* rose (coral-pink) */
-.blob--plum   { background: radial-gradient(circle at 30% 60%, #BDF3EA 0%, #5FD0D9 42%, #8FC4FF 74%, rgba(0,0,0,0) 76%); }  /* aqua (cyan → sky) */
+/* Five blob colours — one per footer palette (sunset / aurora / green / gold /
+   navy). JS assigns three at random to the three blobs each load, so the aurora
+   is a fresh selection every visit. */
+.blob--c-sunset { background: radial-gradient(circle at 38% 36%, #FFCBDD 0%, #FF6F9C 42%, #FFB070 72%, rgba(0,0,0,0) 74%); }
+.blob--c-aurora { background: radial-gradient(circle at 38% 36%, #CDC6FF 0%, #8166EC 42%, #FF7CC0 72%, rgba(0,0,0,0) 74%); }
+.blob--c-green  { background: radial-gradient(circle at 38% 36%, #9FF0C2 0%, #34C77B 42%, #5FD0D9 72%, rgba(0,0,0,0) 74%); }
+.blob--c-gold   { background: radial-gradient(circle at 38% 36%, #FFF1A6 0%, #EBC53A 42%, #FFC93D 72%, rgba(0,0,0,0) 74%); }
+.blob--c-navy   { background: radial-gradient(circle at 38% 36%, #AEB8F0 0%, #3A4EAE 42%, #5B86EF 72%, rgba(0,0,0,0) 74%); }
 
-/* Dark theme overrides. The light page is a 3-blob aurora; the dark page is a
-   single, larger iris blob that *glows* (screen-blended) on the deep field, with
-   the other two hidden. Body ink flips to a muted light, and the grain becomes a
-   CSS noise (the dark-fleck grain.png is invisible on dark). */
+/* Dark theme overrides. The light page shows all three blobs; the dark page
+   shows a single, larger blob that *glows* (screen-blended) on the deep field,
+   with the other two hidden. Body ink flips to a muted light, and the grain
+   becomes a CSS noise (the dark-fleck grain.png is invisible on dark). */
 html[data-theme="dark"] .lede { color: rgba(255, 255, 255, 0.4); }
 html[data-theme="dark"] .blob { opacity: .6; mix-blend-mode: screen; }
-html[data-theme="dark"] .blob--teal { width: 46vmax; height: 46vmax; }   /* the lone iris, a touch larger */
-html[data-theme="dark"] .blob--sunset,
-html[data-theme="dark"] .blob--plum { display: none; }
+html[data-theme="dark"] .blob:first-child { width: 46vmax; height: 46vmax; }   /* the lone blob, larger */
+html[data-theme="dark"] .blob:not(:first-child) { display: none; }
 html[data-theme="dark"] .stage::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 160px 160px;
@@ -418,9 +419,9 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   </button>
 
   <div class="stage" aria-hidden="true">
-    <div class="blob blob--teal"></div>
-    <div class="blob blob--sunset"></div>
-    <div class="blob blob--plum"></div>
+    <div class="blob"></div>
+    <div class="blob"></div>
+    <div class="blob"></div>
   </div>
 
   <div class="container">
@@ -469,8 +470,13 @@ function drift(blob, prev) {
   anim.onfinish = () => drift(blob, next);
 }
 const blobs = document.querySelectorAll('.blob');
+// Each load, give the blobs a fresh random selection of the five footer palette
+// colours (distinct — shuffle and take as many as there are blobs).
+const blobColours = ['blob--c-sunset', 'blob--c-aurora', 'blob--c-green', 'blob--c-gold', 'blob--c-navy'];
+const pickedColours = blobColours.slice().sort(() => Math.random() - 0.5);
 const starts = spreadStarts(blobs.length);
 blobs.forEach((blob, i) => {
+  blob.classList.add(pickedColours[i % pickedColours.length]);
   const start = starts[i];
   blob.style.transform = `translate(${start.x}vw, ${start.y}vh) translate(-50%, -50%)`;
   drift(blob, start);

@@ -1095,6 +1095,7 @@
         // through them on the spinner path and the dots fade — leaving the clean
         // check. (Their resting x-positions already line up under the tick, so it's
         // mostly dot 2 dropping to the vertex and dot 4 rising to the tip.)
+        function easeInOut(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
         function eqToCheck() {
           var path = form.querySelector('.ns-spinner-path');
           if (!path) { form.classList.remove('is-loading'); return; }
@@ -1106,12 +1107,15 @@
           }
           path.style.strokeDasharray = '0 100';                // hidden until it traces on
           form.classList.remove('is-loading');                 // freeze the bounce
-          form.classList.add('is-forming');                    // dots fly to the tick's vertices
+          form.classList.add('is-forming', 'is-settling');     // dots fly to the vertices; keep the ink dark
+          var DRAW = 560;
           setTimeout(function () {
-            redrawCheck();                                     // draw the tick through the dots
+            redrawCheck(DRAW, easeInOut);                      // thread a line through the dots, left→right
             var btn = form.querySelector('.newsletter-submit');
-            if (btn) confettiBurst(btn);                       // pop as the check forms
-            form.classList.add('is-formed');                   // fade the dots, leaving the check
+            if (btn) confettiBurst(btn);                       // pop as the tick connects
+            // Keep the dots lit until the line has connected them, then fade
+            // them — the drawn check stays.
+            setTimeout(function () { form.classList.add('is-formed'); }, DRAW + 140);
           }, 460);
         }
         // On reset the checkmark spins and morphs back into the arrow (the reverse
@@ -1153,18 +1157,20 @@
           if (path) { path.style.strokeDasharray = '31 69'; path.style.strokeDashoffset = SNAKE_LOAD; }
           if (svg) svg.style.transform = '';
         }
-        // Easter egg replay: redraw the checkmark stroke from its start to its end
-        // (the tail of the success animation), without the ring or spin. Grows a
-        // dash window over just the check portion (path 69→100).
-        function redrawCheck() {
+        // Redraw the checkmark stroke from its start (the leftmost dot) to its
+        // end (the rightmost), growing a dash window over the check portion
+        // (path 69→100). Used both for the success formation (a slow, smooth
+        // thread through the four dots) and the easter-egg replay (snappy default).
+        function redrawCheck(dur, easeFn) {
           var path = form.querySelector('.ns-spinner-path');
           if (!path || reduce) return;
           form.classList.add('is-settling');   // dark through the redraw, then settles back to muted
-          var dur = 440, t0 = null;
-          function ease(x) { return 1 - Math.pow(1 - x, 4); }   // crisp ease-out
+          dur = dur || 440;
+          easeFn = easeFn || function (x) { return 1 - Math.pow(1 - x, 4); };   // crisp ease-out
+          var t0 = null;
           function frame(ts) {
             if (t0 === null) t0 = ts;
-            var k = Math.min(1, (ts - t0) / dur), L = 31 * ease(k);
+            var k = Math.min(1, (ts - t0) / dur), L = 31 * easeFn(k);
             path.style.strokeDasharray = L + ' ' + (100 - L);
             path.style.strokeDashoffset = SNAKE_DONE;          // dash window anchored at the check's start
             if (k < 1) requestAnimationFrame(frame);

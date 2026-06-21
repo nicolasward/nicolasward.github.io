@@ -2487,7 +2487,8 @@ html.js .reply-pill.in .reply-text {
 .ns-eq {
   display: flex;
   align-items: stretch;
-  justify-content: space-between;
+  justify-content: center;     /* cluster the dots in the middle */
+  gap: 0.12rem;
   box-sizing: border-box;
 }
 .newsletter-form.is-loading .ns-eq { color: var(--fg); }   /* crisp ink lead while active */

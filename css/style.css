@@ -289,11 +289,7 @@ html.vt-toggling[data-theme="dark"] .site-header.scrolled {
 }
 
 .nav-section-link .nav-slash {
-  color: var(--flexoki-300);
-}
-
-[data-theme="dark"] .nav-section-link .nav-slash {
-  color: var(--flexoki-700);
+  color: var(--fg-muted);   /* same as the rest of the header (theme-aware) */
 }
 
 .nav-section-link .nav-label {
@@ -369,10 +365,9 @@ html.vt-toggling[data-theme="dark"] .site-header.scrolled {
   inset: 0;
   width: 100%;
   height: 100%;
-  color: var(--flexoki-300);
+  color: var(--fg-muted);   /* same as the rest of the header (theme-aware) */
   transition: color 0.4s ease;
 }
-[data-theme="dark"] .theme-toggle .toggle-shape { color: rgba(225, 226, 235, 0.34); }  /* light translucent (matches the nav pill) so it stays subtle over the header glow */
 
 @media (hover: hover) {
   .theme-toggle:hover .toggle-knob,

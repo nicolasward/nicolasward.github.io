@@ -2511,11 +2511,13 @@ html.js .reply-pill.in .reply-text {
   animation-iteration-count: infinite;
   animation-duration: var(--t);
 }
-/* Per-column period (--t, all near 1s) and phase (--d). */
-.ns-eq-col:nth-child(1) { --t: 1.00s; --d: -0.05s; }
-.ns-eq-col:nth-child(2) { --t: 1.10s; --d: -0.45s; }
-.ns-eq-col:nth-child(3) { --t: 0.95s; --d: -0.25s; }
-.ns-eq-col:nth-child(4) { --t: 1.05s; --d: -0.60s; }
+/* Per-column period (--t) and phase (--d). Equal 1s period with an even phase
+   step, so a single crest travels smoothly along the row — a gentle snake
+   rather than four independent bouncers. */
+.ns-eq-col:nth-child(1) { --t: 1s; --d: 0s; }
+.ns-eq-col:nth-child(2) { --t: 1s; --d: -0.12s; }
+.ns-eq-col:nth-child(3) { --t: 1s; --d: -0.24s; }
+.ns-eq-col:nth-child(4) { --t: 1s; --d: -0.36s; }
 /* Within a column: the lead (last, on top) plus three trailing echoes that lag
    progressively further behind and fade lighter. */
 .ns-eq-col > b:nth-child(1) { animation-delay: calc(var(--d) + 0.27s); opacity: 0.12; }
@@ -2523,9 +2525,9 @@ html.js .reply-pill.in .reply-text {
 .ns-eq-col > b:nth-child(3) { animation-delay: calc(var(--d) + 0.09s); opacity: 0.42; }
 .ns-eq-col > b:nth-child(4) { animation-delay: var(--d);               opacity: 1; }
 @keyframes ns-eq {
-  0%   { transform: translateY(-0.3rem); }
-  50%  { transform: translateY(0.3rem); }
-  100% { transform: translateY(-0.3rem); }
+  0%   { transform: translateY(-0.35rem); }
+  50%  { transform: translateY(0.35rem); }
+  100% { transform: translateY(-0.35rem); }
 }
 /* End formation: the bounce freezes and the four dots glide into the checkmark's
    vertices (echoes fading); the tick then traces through them and the dots fade,

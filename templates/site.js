@@ -826,6 +826,17 @@
       });
     })();
 
+    // Footer glow: pick one of three palettes at random each load — the base
+    // sunset, the pink/purple/blue aurora, or the green aurora. (It's below the
+    // fold, so setting a class on load is invisible — no flash.)
+    (function () {
+      var el = document.querySelector('.footer-glow');
+      if (!el) return;
+      var palettes = ['', 'fg-aurora', 'fg-green'];   // '' = base sunset
+      var pick = palettes[Math.floor(Math.random() * palettes.length)];
+      if (pick) el.classList.add(pick);
+    })();
+
     // Copy-link share button: copy the current URL, flash the icon checkmark + a "Link copied" pill.
     (function () {
       document.querySelectorAll('.share-copy').forEach(function (btn) {

@@ -1305,8 +1305,14 @@
             else schedule(80 + Math.random() * 70);
           } else {
             set(word.slice(0, --ch));
-            if (ch <= 0) { typing = true; idx = (idx + 1) % emails.length; schedule(380); }
-            else schedule(42);
+            if (ch <= 0) {
+              typing = true;
+              // Pick the next address at random (never the same one twice).
+              var next = idx;
+              while (emails.length > 1 && next === idx) next = Math.floor(Math.random() * emails.length);
+              idx = next;
+              schedule(380);
+            } else schedule(42);
           }
         }
         input.addEventListener('focus', function () { focused = true; typing = false; schedule(0); });

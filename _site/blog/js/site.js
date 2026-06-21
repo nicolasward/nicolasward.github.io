@@ -91,6 +91,5 @@ function schedule(ms){clearTimeout(timer);timer=setTimeout(tick,ms);}
 function tick(){var word=emails[idx];if(focused||input.value.length){if(ch>0){set(word.slice(0,--ch));schedule(28);}
 return;}
 if(typing){set(word.slice(0,++ch));if(ch>=word.length){typing=false;schedule(1500);}
-else schedule(80+Math.random()*70);}else{set(word.slice(0,--ch));if(ch<=0){typing=true;idx=(idx+1)%emails.length;schedule(380);}
-else schedule(42);}}
+else schedule(80+Math.random()*70);}else{set(word.slice(0,--ch));if(ch<=0){typing=true;var next=idx;while(emails.length>1&&next===idx)next=Math.floor(Math.random()*emails.length);idx=next;schedule(380);}else schedule(42);}}
 input.addEventListener('focus',function(){focused=true;typing=false;schedule(0);});input.addEventListener('blur',function(){focused=false;if(!input.value.length){typing=true;schedule(280);}});set(emails[0]);schedule(1800);});})();

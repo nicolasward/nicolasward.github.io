@@ -2472,45 +2472,44 @@ html.js .reply-pill.in .reply-text {
 .newsletter-form.is-loading .ns-eq { opacity: 1; }
 .newsletter-form.is-done .ns-spinner { opacity: 1; }
 
-/* Equalizer: five equal-height bars, each dancing the full range from the
-   midline on its own rhythm — three irregular height profiles spread across the
-   bars with non-harmonic durations and offset starts, so every bar grows and
-   the wave never visibly repeats (a real spectrum analyser, not a synced bell).
-   On success the bars fade and the checkmark traces in (see site.js). */
-.ns-eq-bar {
-  transform-box: fill-box;
-  transform-origin: 50% 50%;            /* swell symmetrically from the midline */
-  transform: scaleY(0.4);
+/* Equalizer of bouncing dots: five ink dots, each rising and falling on its own
+   rhythm. As a dot moves it stretches into a vertical streak — a round dot at
+   the turn-points, a long trace mid-flight where it's fastest (ease-in-out puts
+   the speed, and so the longest trace, at mid-travel) and a touch translucent
+   there, like motion blur. The five smears dance like an equalizer. Non-harmonic
+   durations and offset starts keep it from ever syncing. On success the dots
+   fade and the checkmark traces in (see site.js). */
+.ns-eq {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.12rem;
+  box-sizing: border-box;
 }
-.newsletter-form.is-loading .ns-eq-bar {
+.ns-eq-dot {
+  width: 0.26rem;
+  height: 0.26rem;
+  border-radius: 0.13rem;               /* pill — round at rest, a streak when stretched */
+  background: currentColor;
+  transform-origin: 50% 50%;
+  transform: translateY(0) scaleY(1);
+}
+.newsletter-form.is-loading .ns-eq-dot {
+  animation-name: ns-eq;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
 }
-.ns-eq-bar:nth-child(1) { animation-name: ns-eq-b; animation-duration: 0.68s; animation-delay: -0.20s; }
-.ns-eq-bar:nth-child(2) { animation-name: ns-eq-a; animation-duration: 0.82s; animation-delay: -0.50s; }
-.ns-eq-bar:nth-child(3) { animation-name: ns-eq-c; animation-duration: 0.60s; animation-delay: -0.05s; }
-.ns-eq-bar:nth-child(4) { animation-name: ns-eq-b; animation-duration: 0.76s; animation-delay: -0.38s; }
-.ns-eq-bar:nth-child(5) { animation-name: ns-eq-a; animation-duration: 0.64s; animation-delay: -0.14s; }
-@keyframes ns-eq-a {
-  0%   { transform: scaleY(0.30); }
-  25%  { transform: scaleY(1); }
-  50%  { transform: scaleY(0.45); }
-  75%  { transform: scaleY(0.85); }
-  100% { transform: scaleY(0.30); }
-}
-@keyframes ns-eq-b {
-  0%   { transform: scaleY(0.85); }
-  30%  { transform: scaleY(0.25); }
-  60%  { transform: scaleY(1); }
-  85%  { transform: scaleY(0.50); }
-  100% { transform: scaleY(0.85); }
-}
-@keyframes ns-eq-c {
-  0%   { transform: scaleY(0.55); }
-  20%  { transform: scaleY(0.95); }
-  45%  { transform: scaleY(0.20); }
-  70%  { transform: scaleY(0.90); }
-  100% { transform: scaleY(0.55); }
+.ns-eq-dot:nth-child(1) { animation-duration: 0.62s; animation-delay: -0.05s; }
+.ns-eq-dot:nth-child(2) { animation-duration: 0.78s; animation-delay: -0.40s; }
+.ns-eq-dot:nth-child(3) { animation-duration: 0.54s; animation-delay: -0.20s; }
+.ns-eq-dot:nth-child(4) { animation-duration: 0.70s; animation-delay: -0.52s; }
+.ns-eq-dot:nth-child(5) { animation-duration: 0.66s; animation-delay: -0.14s; }
+@keyframes ns-eq {
+  0%   { transform: translateY(-0.45rem) scaleY(1);   opacity: 1; }
+  25%  { transform: translateY(0)        scaleY(2.4); opacity: 0.82; }
+  50%  { transform: translateY(0.45rem)  scaleY(1);   opacity: 1; }
+  75%  { transform: translateY(0)        scaleY(2.4); opacity: 0.82; }
+  100% { transform: translateY(-0.45rem) scaleY(1);   opacity: 1; }
 }
 /* Grey confetti pop from the glyph — the exact radial fly-out + fade the
    reading-progress ring used on complete. Spawned in site.js, anchored to the
@@ -2557,7 +2556,7 @@ html.js .reply-pill.in .reply-text {
   .newsletter-card.is-subscribed .newsletter-shine::before,
   main .newsletter-msg.is-success,
   main .newsletter-form.is-confirmed .newsletter-again,
-  .newsletter-form.is-loading .ns-eq-bar,
+  .newsletter-form.is-loading .ns-eq-dot,
   .newsletter-field.shake { animation: none; }
 }
 

@@ -1381,6 +1381,14 @@ h3:hover .heading-anchor {
   z-index: -1;
 }
 [data-theme="dark"] .footer-glow { opacity: 0.65; filter: blur(85px) saturate(1.5); z-index: -2; }
+/* Bloom in: with JS the glow starts dark and swells up once the footer comes
+   into view (JS adds .lit). No-JS shows it statically; reduced motion is instant.
+   The dark grain is overlay-blended, so it's invisible until the glow is beneath
+   it — it blooms along for free. */
+.js .footer-glow { opacity: 0; transition: opacity 1.6s cubic-bezier(0.22, 1, 0.36, 1); }
+.js .footer-glow.lit { opacity: 0.9; }
+.js [data-theme="dark"] .footer-glow.lit { opacity: 0.65; }
+@media (prefers-reduced-motion: reduce) { .js .footer-glow { transition: none; } }
 /* Alternate palettes — JS adds one of these at random per load (no class = the
    base sunset above). Same three-pool composition, different hues. */
 .footer-glow.fg-aurora {                 /* pink / purple / blue */

@@ -827,14 +827,24 @@
     })();
 
     // Footer glow: pick one of three palettes at random each load — the base
-    // sunset, the pink/purple/blue aurora, or the green aurora. (It's below the
-    // fold, so setting a class on load is invisible — no flash.)
+    // sunset, the pink/purple/blue aurora, or the green aurora — then bloom it in
+    // as the footer comes into view (rather than it being there from the start).
     (function () {
       var el = document.querySelector('.footer-glow');
       if (!el) return;
       var palettes = ['', 'fg-aurora', 'fg-green'];   // '' = base sunset
       var pick = palettes[Math.floor(Math.random() * palettes.length)];
       if (pick) el.classList.add(pick);
+
+      var foot = document.querySelector('.site-footer');
+      var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce || !foot || !('IntersectionObserver' in window)) { el.classList.add('lit'); return; }
+      // Trigger a touch early (footer 20% below the fold) so the glow is already
+      // swelling up by the time you arrive at it.
+      var obs = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) { el.classList.add('lit'); obs.disconnect(); }
+      }, { rootMargin: '0px 0px 20% 0px' });
+      obs.observe(foot);
     })();
 
     // Copy-link share button: copy the current URL, flash the icon checkmark + a "Link copied" pill.

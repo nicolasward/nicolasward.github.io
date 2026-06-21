@@ -2479,7 +2479,7 @@ html.js .reply-pill.in .reply-text {
 .newsletter-form.is-done .ns-spinner { opacity: 1; transform: scale(1); }
 
 /* Equalizer of bouncing dots: four round dots, each rising and falling on a
-   ~2s period. Behind every lead dot, three lighter echoes lag a beat or two
+   ~1s period. Behind every lead dot, three lighter echoes lag a beat or two
    behind — true ghost copies of where it just was — so each dot drags a fading
    motion trail in its wake. Slightly mismatched periods and offset starts keep
    the four from ever syncing. On success the dots fade and the checkmark
@@ -2510,11 +2510,11 @@ html.js .reply-pill.in .reply-text {
   animation-iteration-count: infinite;
   animation-duration: var(--t);
 }
-/* Per-column period (--t, all near 2s) and phase (--d). */
-.ns-eq-col:nth-child(1) { --t: 2.00s; --d: -0.05s; }
-.ns-eq-col:nth-child(2) { --t: 2.10s; --d: -0.45s; }
-.ns-eq-col:nth-child(3) { --t: 1.95s; --d: -0.25s; }
-.ns-eq-col:nth-child(4) { --t: 2.05s; --d: -0.60s; }
+/* Per-column period (--t, all near 1s) and phase (--d). */
+.ns-eq-col:nth-child(1) { --t: 1.00s; --d: -0.05s; }
+.ns-eq-col:nth-child(2) { --t: 1.10s; --d: -0.45s; }
+.ns-eq-col:nth-child(3) { --t: 0.95s; --d: -0.25s; }
+.ns-eq-col:nth-child(4) { --t: 1.05s; --d: -0.60s; }
 /* Within a column: the lead (last, on top) plus three trailing echoes that lag
    progressively further behind and fade lighter. */
 .ns-eq-col > b:nth-child(1) { animation-delay: calc(var(--d) + 0.27s); opacity: 0.12; }

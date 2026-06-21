@@ -1251,7 +1251,7 @@
           if (reduce) { succeed(); return; }
           form.classList.add('is-loading');      // the equalizer takes over (CSS)
           input.disabled = true;
-          setTimeout(succeed, 1400);
+          setTimeout(succeed, 2400);             // let the dots bounce a beat longer
         }
         form.addEventListener('submit', function (e) {
           e.preventDefault();

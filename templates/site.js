@@ -185,6 +185,9 @@
         isOpen = true;
         if (initialQuery !== undefined) input.value = initialQuery;
         syncClear(); // setting .value programmatically doesn't fire 'input', so sync manually
+        // If we opened with a value (tag click), the input row is still scaling in,
+        // so the align above is off. Keep the clear ✕ hidden until it settles.
+        if (input.value.length) inputWrap.classList.add('clear-pending');
         var isTouch = navigator.maxTouchPoints > 0 ||
                       (window.matchMedia && matchMedia('(pointer: coarse)').matches);
         if (isTouch) {
@@ -211,8 +214,11 @@
         ensureIndex(() => render(input.value));
         // The open animation scales the input row in (search-rise), so the align
         // above reads a slightly-shrunk box on a tag click. Re-align once it has
-        // settled — otherwise it only corrects on the first keystroke.
-        setTimeout(alignClear, 560);
+        // settled, then reveal the clear ✕ in its correct spot (no jump).
+        setTimeout(function () {
+          alignClear();
+          inputWrap.classList.remove('clear-pending');
+        }, 560);
       }
       function close() {
         if (!isOpen && !overlay.classList.contains('closing')) return;
@@ -221,6 +227,7 @@
         overlay.setAttribute('aria-hidden', 'true');
         isOpen = false;
         input.blur();
+        inputWrap.classList.remove('clear-pending');
         ToggleClose.startClose();   // morph the ✕ back to the toggle as the overlay exits
         if (closeTimeout) clearTimeout(closeTimeout);
         closeTimeout = setTimeout(() => {
@@ -258,7 +265,7 @@
       }
       window.addEventListener('resize', alignClear, { passive: true });
 
-      input.addEventListener('input', e => { render(e.target.value); syncClear(); });
+      input.addEventListener('input', e => { render(e.target.value); syncClear(); inputWrap.classList.remove('clear-pending'); });
 
       // The overlay and input row fade in from opacity 0, and a caret focused
       // during that fade won't paint until the user types. Once the input row

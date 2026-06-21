@@ -1777,6 +1777,14 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   display: inline-flex;
 }
 
+/* On a tag-click open the input row scales in (search-rise), so an align done
+   mid-animation misplaces the clear ✕. Hold it hidden until the layout settles,
+   then it fades in (opacity transition above) already in the right spot. */
+.search-input-wrap.clear-pending .search-clear {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .search-clear svg {
   width: 20px;
   height: 20px;

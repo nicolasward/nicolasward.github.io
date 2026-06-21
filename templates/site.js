@@ -1112,7 +1112,8 @@
           setTimeout(function () {
             redrawCheck(DRAW, easeInOut);                      // thread a line through the dots, left→right
             var btn = form.querySelector('.newsletter-submit');
-            if (btn) confettiBurst(btn);                       // pop as the tick connects
+            // Pop mid-draw, as the line races up toward the tip — not before it.
+            if (btn) setTimeout(function () { confettiBurst(btn); }, DRAW * 0.5);
             // Keep the dots lit until the line has connected them, then fade
             // them — the drawn check stays.
             setTimeout(function () { form.classList.add('is-formed'); }, DRAW + 140);

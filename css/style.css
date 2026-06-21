@@ -2472,26 +2472,45 @@ html.js .reply-pill.in .reply-text {
 .newsletter-form.is-loading .ns-eq { opacity: 1; }
 .newsletter-form.is-done .ns-spinner { opacity: 1; }
 
-/* Equalizer: a centred audio waveform — five bars with a tall middle tapering
-   to little dots at the edges (the geometry holds that silhouette). They swell
-   from the midline as a crest travels left→right, so it reads as a living sound
-   wave. On success the bars fade and the checkmark traces in (see site.js). */
+/* Equalizer: five equal-height bars, each dancing the full range from the
+   midline on its own rhythm — three irregular height profiles spread across the
+   bars with non-harmonic durations and offset starts, so every bar grows and
+   the wave never visibly repeats (a real spectrum analyser, not a synced bell).
+   On success the bars fade and the checkmark traces in (see site.js). */
 .ns-eq-bar {
   transform-box: fill-box;
   transform-origin: 50% 50%;            /* swell symmetrically from the midline */
-  transform: scaleY(0.62);
+  transform: scaleY(0.4);
 }
 .newsletter-form.is-loading .ns-eq-bar {
-  animation: ns-eq 1.1s ease-in-out infinite;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
 }
-.ns-eq-bar:nth-child(1) { animation-delay: -0.00s; }
-.ns-eq-bar:nth-child(2) { animation-delay: -0.14s; }
-.ns-eq-bar:nth-child(3) { animation-delay: -0.28s; }
-.ns-eq-bar:nth-child(4) { animation-delay: -0.42s; }
-.ns-eq-bar:nth-child(5) { animation-delay: -0.56s; }
-@keyframes ns-eq {
-  0%, 100% { transform: scaleY(0.62); }
-  50%      { transform: scaleY(1); }
+.ns-eq-bar:nth-child(1) { animation-name: ns-eq-b; animation-duration: 0.68s; animation-delay: -0.20s; }
+.ns-eq-bar:nth-child(2) { animation-name: ns-eq-a; animation-duration: 0.82s; animation-delay: -0.50s; }
+.ns-eq-bar:nth-child(3) { animation-name: ns-eq-c; animation-duration: 0.60s; animation-delay: -0.05s; }
+.ns-eq-bar:nth-child(4) { animation-name: ns-eq-b; animation-duration: 0.76s; animation-delay: -0.38s; }
+.ns-eq-bar:nth-child(5) { animation-name: ns-eq-a; animation-duration: 0.64s; animation-delay: -0.14s; }
+@keyframes ns-eq-a {
+  0%   { transform: scaleY(0.30); }
+  25%  { transform: scaleY(1); }
+  50%  { transform: scaleY(0.45); }
+  75%  { transform: scaleY(0.85); }
+  100% { transform: scaleY(0.30); }
+}
+@keyframes ns-eq-b {
+  0%   { transform: scaleY(0.85); }
+  30%  { transform: scaleY(0.25); }
+  60%  { transform: scaleY(1); }
+  85%  { transform: scaleY(0.50); }
+  100% { transform: scaleY(0.85); }
+}
+@keyframes ns-eq-c {
+  0%   { transform: scaleY(0.55); }
+  20%  { transform: scaleY(0.95); }
+  45%  { transform: scaleY(0.20); }
+  70%  { transform: scaleY(0.90); }
+  100% { transform: scaleY(0.55); }
 }
 /* Grey confetti pop from the glyph — the exact radial fly-out + fade the
    reading-progress ring used on complete. Spawned in site.js, anchored to the

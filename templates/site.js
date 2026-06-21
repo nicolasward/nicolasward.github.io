@@ -1188,12 +1188,28 @@
           requestAnimationFrame(frame);
         }
         // A radial confetti pop from the glyph — the exact fly-out + fade the
-        // reading-progress ring used on complete, in muted grey.
+        // reading-progress ring used on complete, tinted to match the page's glow.
+        var GLOW_COLOURS = {
+          '':          ['#FF6F9C', '#FF7E54', '#FFA23D'],   // sunset
+          'fg-aurora': ['#8166EC', '#FF7CC0', '#5B86EF'],
+          'fg-green':  ['#34C77B', '#3FD0BC', '#49AEE6'],
+          'fg-gold':   ['#E6C23A', '#FFC92E', '#F2B02E'],
+          'fg-navy':   ['#3A4EAE', '#2E55C0', '#2A6AB8']
+        };
+        function glowColours() {
+          var key = '', el = document.querySelector('.footer-glow');
+          if (el) ['fg-aurora', 'fg-green', 'fg-gold', 'fg-navy'].forEach(function (c) {
+            if (el.classList.contains(c)) key = c;
+          });
+          return GLOW_COLOURS[key] || GLOW_COLOURS[''];
+        }
         function confettiBurst(origin) {
           if (reduce || !origin) return;
+          var cols = glowColours();
           for (var i = 0; i < 50; i++) {
             var piece = document.createElement('div');
             piece.className = 'confetti-bit';
+            piece.style.background = cols[Math.floor(Math.random() * cols.length)];   // a random hue from the glow
             var angle = Math.random() * Math.PI * 2;
             var dist = 50 + Math.random() * 80;
             piece.style.setProperty('--tx', (Math.cos(angle) * dist).toFixed(1) + 'px');

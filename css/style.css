@@ -365,9 +365,10 @@ html.vt-toggling[data-theme="dark"] .site-header.scrolled {
   inset: 0;
   width: 100%;
   height: 100%;
-  color: var(--fg-muted);   /* same as the rest of the header (theme-aware) */
+  color: rgba(58, 60, 70, 0.4);   /* exact same contour colour as the header pill */
   transition: color 0.4s ease;
 }
+[data-theme="dark"] .theme-toggle .toggle-shape { color: rgba(225, 226, 235, 0.34); }
 
 @media (hover: hover) {
   .theme-toggle:hover .toggle-knob,
@@ -427,7 +428,8 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
    close, so it reads as one line slithering between the two shapes. */
 .theme-toggle .toggle-shape path { stroke-dasharray: 100; }
 .theme-toggle .ts-pill {
-  stroke-width: 1.2;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;                    /* exactly 1px, like the header pill */
   stroke-dashoffset: 0;                                  /* drawn at rest */
   /* On close the pill redraws LAST (delay lets the ✕ retract first). */
   transition: stroke-dashoffset 0.5s cubic-bezier(0.65, 0, 0.35, 1) 0.18s;

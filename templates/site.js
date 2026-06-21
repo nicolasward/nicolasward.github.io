@@ -852,12 +852,15 @@
       });
     })();
 
-    // Footer glow: pick one of five palettes at random each load (sunset, aurora,
-    // green, gold, navy) — never repeating the previous page's — then bloom it in
-    // as the footer comes into view (rather than it being there from the start).
+    // Page glows: pick one of five palettes at random each load (sunset, aurora,
+    // green, gold, navy) — never repeating the previous page's — and put the SAME
+    // hue on both the footer glow and its mirror at the header. Each then blooms
+    // in: the header on load (it's in view), the footer as you reach the bottom.
     (function () {
-      var el = document.querySelector('.footer-glow');
-      if (!el) return;
+      var glows = document.querySelectorAll('.pg');
+      if (!glows.length) return;
+      var footer = document.querySelector('.footer-glow');
+      var header = document.querySelector('.header-glow');
       var palettes = ['', 'fg-aurora', 'fg-green', 'fg-gold', 'fg-navy'];   // '' = base sunset
       // Never repeat the previous page's gradient: remember the last pick across
       // navigations and choose from the others.
@@ -867,18 +870,29 @@
       if (!choices.length) choices = palettes;
       var pick = choices[Math.floor(Math.random() * choices.length)];
       try { localStorage.setItem('footer-glow', pick); } catch (e) {}
-      if (pick) el.classList.add(pick);
+      if (pick) Array.prototype.forEach.call(glows, function (g) { g.classList.add(pick); });
 
-      var foot = document.querySelector('.site-footer');
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reduce || !foot || !('IntersectionObserver' in window)) { el.classList.add('lit'); return; }
-      // Hold off until the footer is (nearly) fully in view — i.e. you've
-      // actually reached the bottom — so the glow blooms in as you arrive, not
-      // before.
-      var obs = new IntersectionObserver(function (entries) {
-        if (entries[0].intersectionRatio >= 0.95) { el.classList.add('lit'); obs.disconnect(); }
-      }, { threshold: [0.95, 1] });
-      obs.observe(foot);
+
+      // Header glow: in view on load → bloom it straight in (two frames so the
+      // hidden state paints first and the transition actually plays).
+      if (header) {
+        if (reduce) header.classList.add('lit');
+        else requestAnimationFrame(function () { requestAnimationFrame(function () { header.classList.add('lit'); }); });
+      }
+
+      // Footer glow: hold off until the footer is (nearly) fully in view — i.e.
+      // you've reached the bottom — so it blooms in as you arrive, not before.
+      var foot = document.querySelector('.site-footer');
+      if (footer) {
+        if (reduce || !foot || !('IntersectionObserver' in window)) { footer.classList.add('lit'); }
+        else {
+          var obs = new IntersectionObserver(function (entries) {
+            if (entries[0].intersectionRatio >= 0.95) { footer.classList.add('lit'); obs.disconnect(); }
+          }, { threshold: [0.95, 1] });
+          obs.observe(foot);
+        }
+      }
     })();
 
     // Copy-link share button: copy the current URL, flash the icon checkmark + a "Link copied" pill.
@@ -1270,7 +1284,7 @@
     (function () {
       var inputs = document.querySelectorAll('main .newsletter-input');
       if (!inputs.length) return;
-      var emails = ['steve@apple.com', 'claude@shannon.me', 'rich@feynman.io', 'alan@turing.xyz'];
+      var emails = ['steve@apple.com', 'claude@shannon.me', 'rich@feynman.io', 'alan@turing.xyz', 'ada@lovelace.ai', 'mariecurie@u-paris.fr', 'rosalind.franklin@cam.ac.uk'];
       var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
       Array.prototype.forEach.call(inputs, function (input) {
         if (reduce) { input.setAttribute('placeholder', emails[0]); return; }

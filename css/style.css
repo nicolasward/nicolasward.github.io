@@ -1351,65 +1351,55 @@ h3:hover .heading-anchor {
   font-size: 0.8rem;
 }
 
-/* Footer sunset — one big, soft blob sitting half below the page's bottom edge,
-   glowing up behind the footer like a sun on the horizon. Static; its hue is a
-   random pick from the landing aurora (set by JS, with a rose fallback). It
-   lives at z-index:-1 inside .container's stacking context, so it paints behind
-   all text but above the paper background. */
-.footer-glow {
+/* Page glow — the ethereal aurora, mirrored at both the foot AND the head of the
+   page. Shared appearance here; each element only sets its position below. Lives
+   at z-index:-1 inside .container's stacking context, behind all text. */
+.pg {
   position: absolute;
   left: 50%;
-  bottom: 0;                              /* sits flush to the page bottom — no overflow below */
-  transform: translateX(-50%);
   width: min(98vw, 1500px);
   height: min(90vw, 1100px);
-  /* Reproduce the landing page's aurora: three distinct, overlapping hued blobs
-     (iris / rose / aqua) using the same multi-stop ramps, clustered near the
-     bottom at varied sizes/offsets. A moderate blur lets the *different hues*
-     blend at their edges — that interplay is what reads as ethereal, where a
-     single hue just greyed into a disc. */
+  /* Default sunset (JS swaps in a palette, the SAME on both glows): three hued
+     blobs whose different hues blend at the edges — ethereal, not a flat disc. */
   background:
     radial-gradient(46% 60% at 21% 113%, #FFCBDD 0%, #FF6F9C 34%, #FF93A8 58%, transparent 78%),
     radial-gradient(54% 72% at 51% 123%, #FFD2BE 0%, #FF7E54 36%, #FF9C6E 60%, transparent 80%),
     radial-gradient(42% 56% at 81% 110%, #FFE6BE 0%, #FFA23D 34%, #FFBE72 58%, transparent 78%);
-  /* Light mode: pastels on a near-white field have little contrast, so crank the
-     opacity and saturate the hues so the aurora actually reads. Dark mode already
-     glows, so it overrides back down (and drops the saturation). */
-  filter: blur(85px) saturate(1.5);
+  filter: blur(85px) saturate(1.5);   /* light mode cranks the hues so they read */
   opacity: 0.9;
   pointer-events: none;
   z-index: -1;
 }
-[data-theme="dark"] .footer-glow { opacity: 0.65; filter: blur(85px) saturate(1.5); z-index: -2; }
-/* Bloom in: with JS the glow starts dark and swells up once the footer comes
-   into view (JS adds .lit). No-JS shows it statically; reduced motion is instant.
-   The dark grain is overlay-blended, so it's invisible until the glow is beneath
-   it — it blooms along for free. */
-.js .footer-glow { opacity: 0; transition: opacity 1.6s cubic-bezier(0.22, 1, 0.36, 1); }
-.js .footer-glow.lit { opacity: 0.9; }
-.js [data-theme="dark"] .footer-glow.lit { opacity: 0.65; }
-@media (prefers-reduced-motion: reduce) { .js .footer-glow { transition: none; } }
+.footer-glow { bottom: 0; transform: translateX(-50%); }             /* glows up from the bottom */
+.header-glow { top: 0;    transform: translateX(-50%) scaleY(-1); }  /* the mirror: glows down from the top */
+[data-theme="dark"] .pg { opacity: 0.65; z-index: -2; }
+/* Bloom in: with JS each glow starts hidden and swells up (footer when it scrolls
+   into view, header on load). No-JS shows it statically; reduced motion instant. */
+.js .pg { opacity: 0; transition: opacity 1.6s cubic-bezier(0.22, 1, 0.36, 1); }
+.js .pg.lit { opacity: 0.9; }
+.js [data-theme="dark"] .pg.lit { opacity: 0.65; }
+@media (prefers-reduced-motion: reduce) { .js .pg { transition: none; } }
 /* Alternate palettes — JS adds one of these at random per load (no class = the
    base sunset above). Same three-pool composition, different hues. */
-.footer-glow.fg-aurora {                 /* pink / purple / blue */
+.pg.fg-aurora {                 /* pink / purple / blue */
   background:
     radial-gradient(46% 60% at 21% 113%, #CDC6FF 0%, #8166EC 34%, #A98CF0 58%, transparent 78%),
     radial-gradient(54% 72% at 51% 123%, #FFC8E6 0%, #FF7CC0 36%, #E08AD8 60%, transparent 80%),
     radial-gradient(42% 56% at 81% 110%, #BFD6FF 0%, #5B86EF 34%, #8C93F2 58%, transparent 78%);
 }
-.footer-glow.fg-green {                   /* emerald / teal / cyan — aurora borealis */
+.pg.fg-green {                   /* emerald / teal / cyan — aurora borealis */
   background:
     radial-gradient(46% 60% at 21% 113%, #9FF0C2 0%, #34C77B 34%, #79E3A6 58%, transparent 78%),
     radial-gradient(54% 72% at 51% 123%, #A6F2E2 0%, #3FD0BC 36%, #84E7D2 60%, transparent 80%),
     radial-gradient(42% 56% at 81% 110%, #BFE7FF 0%, #49AEE6 34%, #8CC9F2 58%, transparent 78%);
 }
-.footer-glow.fg-gold {                    /* gold / amber / lime — sunny */
+.pg.fg-gold {                    /* gold / amber / lime — sunny */
   background:
     radial-gradient(46% 60% at 21% 113%, #FBF3B0 0%, #E6C23A 34%, #F2DC7C 58%, transparent 78%),
     radial-gradient(54% 72% at 51% 123%, #FFF1A6 0%, #FFC92E 36%, #FFDF72 60%, transparent 80%),
     radial-gradient(42% 56% at 81% 110%, #FFE79E 0%, #F2B02E 34%, #FFCF68 58%, transparent 78%);
 }
-.footer-glow.fg-navy {                    /* indigo / royal / deep blue */
+.pg.fg-navy {                    /* indigo / royal / deep blue */
   background:
     radial-gradient(46% 60% at 21% 113%, #AEB8F0 0%, #3A4EAE 34%, #6E7FD0 58%, transparent 78%),
     radial-gradient(54% 72% at 51% 123%, #A6BCF2 0%, #2E55C0 36%, #6884DC 60%, transparent 80%),

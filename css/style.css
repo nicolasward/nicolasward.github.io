@@ -2463,19 +2463,38 @@ html.js .reply-pill.in .reply-text {
    on success its head leads off the circle and traces the check, body following
    (a stroke-dashoffset slide, driven in JS). The arrow is a separate glyph that
    crossfades out on submit and back in on reset. */
-.ns-mark, .ns-spinner { transition: opacity 0.22s ease; }
-.ns-spinner { opacity: 0; }
+.ns-mark, .ns-spinner, .ns-eq { transition: opacity 0.22s ease; }
+.ns-spinner, .ns-eq { opacity: 0; }
 .ns-spinner-path { stroke-dasharray: 31 69; stroke-dashoffset: -38; }   /* snake parked on the circle */
 .newsletter-form.is-loading .ns-mark,
 .newsletter-form.is-done .ns-mark { opacity: 0; }
-.newsletter-form.is-loading .ns-spinner,
+/* Loading shows the equalizer; success draws the spinner path on as the check. */
+.newsletter-form.is-loading .ns-eq { opacity: 1; }
 .newsletter-form.is-done .ns-spinner { opacity: 1; }
-/* The loading phase is a "comet": JS drives the rotation with surging momentum
-   while the snake's tail stretches when fast and contracts when slow, its head
-   pinned to the seam (path-pos 69) so the success slide can lead it straight
-   onto the check. Counter-clockwise, so the head's motion at the seam continues
-   DOWN into the tick (a clockwise spin would read as a retreat). The success
-   slide drives rotation from JS too — see site.js. */
+
+/* Equalizer: five bars bouncing from the baseline like a sound-level meter —
+   echoing the pixel-waveform rule atop the newsletter block. Staggered delays
+   and slightly mismatched durations keep the crests travelling and never quite
+   repeating. On success the bars fade and the checkmark traces in (see site.js). */
+.ns-eq-bar {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transform: scaleY(0.26);
+}
+.newsletter-form.is-loading .ns-eq-bar {
+  animation-name: ns-eq;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.ns-eq-bar:nth-child(1) { animation-duration: 0.86s; animation-delay: -0.90s; }
+.ns-eq-bar:nth-child(2) { animation-duration: 1.04s; animation-delay: -0.55s; }
+.ns-eq-bar:nth-child(3) { animation-duration: 0.78s; animation-delay: -0.20s; }
+.ns-eq-bar:nth-child(4) { animation-duration: 1.10s; animation-delay: -0.65s; }
+.ns-eq-bar:nth-child(5) { animation-duration: 0.92s; animation-delay: -0.35s; }
+@keyframes ns-eq {
+  0%, 100% { transform: scaleY(0.26); }
+  50%      { transform: scaleY(1); }
+}
 /* Grey confetti pop from the glyph — the exact radial fly-out + fade the
    reading-progress ring used on complete. Spawned in site.js, anchored to the
    submit button (left/top 50% of it) so it bursts from the glyph. */
@@ -2521,6 +2540,7 @@ html.js .reply-pill.in .reply-text {
   .newsletter-card.is-subscribed .newsletter-shine::before,
   main .newsletter-msg.is-success,
   main .newsletter-form.is-confirmed .newsletter-again,
+  .newsletter-form.is-loading .ns-eq-bar,
   .newsletter-field.shake { animation: none; }
 }
 

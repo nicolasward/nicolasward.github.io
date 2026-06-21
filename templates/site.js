@@ -1090,68 +1090,18 @@
         // the body following, via a stroke-dashoffset slide.
         var SNAKE_LOAD = -38;   // snake parked on the circle, head at the seam (5,12.5)
         var SNAKE_DONE = -69;   // snake fully on the checkmark
-        function spinAngle(svg) {
-          var cs = svg && getComputedStyle(svg).transform;
-          var m = cs && cs.indexOf('matrix') === 0 ? cs.match(/matrix\(([^)]+)\)/) : null;
-          if (!m) return 0;
-          var v = m[1].split(',');
-          return Math.atan2(parseFloat(v[1]), parseFloat(v[0])) * 180 / Math.PI;
-        }
-        // Loading "comet": rotation surges and eases each beat (momentum) while
-        // the tail stretches when fast and contracts when slow. The head stays
-        // pinned to the seam (path-pos 69) — dashoffset = L − 69 keeps the dash's
-        // leading edge there for any tail length L — so the success slide always
-        // finds the head ready to lead onto the check.
-        var cometRAF = null, cometAngle = 0, cometStart = 0, cometLast = 0;
-        function cometFrame(ts) {
-          var svg = form.querySelector('.ns-spinner'), path = form.querySelector('.ns-spinner-path');
-          if (!svg || !path) { cometRAF = null; return; }
-          if (!cometLast) { cometLast = ts; cometStart = ts; }
-          var dt = Math.min(64, ts - cometLast); cometLast = ts;
-          // s: 0→1 momentum pulse, ~1.05s period — eased surge then glide.
-          var s = 0.5 - 0.5 * Math.cos((ts - cometStart) / 1050 * Math.PI * 2);
-          var omega = 190 + 540 * s;                 // deg/s — glides at ~190, whips to ~730
-          cometAngle -= omega * dt / 1000;           // CCW (head dives into the tick at the seam)
-          svg.style.transform = 'rotate(' + cometAngle.toFixed(2) + 'deg)';
-          var L = 15 + 27 * s;                        // tail: 15 (parked) → 42 (whipping)
-          path.style.strokeDasharray = L.toFixed(1) + ' ' + (100 - L).toFixed(1);
-          path.style.strokeDashoffset = (L - 69).toFixed(1);   // head anchored at the seam
-          cometRAF = requestAnimationFrame(cometFrame);
-        }
-        function startComet() { cometLast = 0; if (!cometRAF) cometRAF = requestAnimationFrame(cometFrame); }
-        function stopComet() { if (cometRAF) { cancelAnimationFrame(cometRAF); cometRAF = null; } }
-        // Spinner → checkmark: the spin settles to upright while the snake's head
-        // leads off the ring and traces the tick (body following) — one motion.
-        function spinnerToCheck() {
+        // Success: the equalizer fades out and the checkmark traces itself onto
+        // the spinner path (the same tick the easter-egg redraws). The bars and
+        // the tick briefly overlap, so the meter reads as resolving into the check.
+        function eqToCheck() {
+          form.classList.remove('is-loading');                 // the bars fade out
           var svg = form.querySelector('.ns-spinner'), path = form.querySelector('.ns-spinner-path');
           if (!path) return;
-          stopComet();
-          // Snap the tail back to the resting snake length (head is already pinned
-          // at the seam, so only the faint tail moves — invisible under the slide).
-          path.style.strokeDasharray = '31 69';
-          if (reduce) { form.classList.remove('is-loading'); path.style.strokeDashoffset = SNAKE_DONE; if (svg) svg.style.transform = ''; return; }
-          form.classList.add('is-settling');                         // hold the glyph dark through the animation
-          var ang = spinAngle(svg);
-          if (svg) svg.style.transform = 'rotate(' + ang + 'deg)';   // freeze the live angle…
-          form.classList.remove('is-loading');                       // …then stop the CSS spin (no snap)
-          var target = Math.round(ang / 360) * 360;                  // settle to the nearest upright
-          // One continuous motion, crisp: the spin eases out while the snake's
-          // head darts off the ring and traces the check (snappy ease-out).
-          var dur = 440, t0 = null;
-          function easeRot(x) { return 1 - Math.pow(1 - x, 3); }    // ease-out — spin decelerates
-          function easeSlide(x) { return 1 - Math.pow(1 - x, 4); }  // crisper ease-out — head darts out
-          function frame(ts) {
-            if (t0 === null) t0 = ts;
-            var k = Math.min(1, (ts - t0) / dur);
-            if (svg) svg.style.transform = 'rotate(' + (ang + (target - ang) * easeRot(k)).toFixed(2) + 'deg)';
-            path.style.strokeDashoffset = SNAKE_LOAD + (SNAKE_DONE - SNAKE_LOAD) * easeSlide(k);
-            if (k < 1) requestAnimationFrame(frame);
-            else {
-              if (svg) svg.style.transform = '';                    // target is a whole turn ⇒ upright
-              form.classList.remove('is-settling');                 // now let the check settle to muted grey
-            }
-          }
-          requestAnimationFrame(frame);
+          if (svg) svg.style.transform = '';
+          path.style.strokeDashoffset = SNAKE_DONE;            // dash window anchored at the check's start
+          if (reduce) { path.style.strokeDasharray = '31 69'; return; }   // static check
+          path.style.strokeDasharray = '0 100';                // hidden until the redraw traces it on
+          setTimeout(redrawCheck, 70);                         // let the meter clear, then draw the tick
         }
         // On reset the checkmark spins and morphs back into the arrow (the reverse
         // of the spinner→check feel). The arrow and check share a 5-point path
@@ -1250,8 +1200,8 @@
           }
         }
         function succeed() {
-          form.classList.add('is-done');         // keep the spinner shown as is-loading drops
-          spinnerToCheck();                      // spinner morphs into the checkmark
+          form.classList.add('is-done');         // shows the spinner path (drawn as the check)
+          eqToCheck();                           // equalizer fades out, checkmark traces in
           input.disabled = true;
           var card = section && section.querySelector('.newsletter-card');
           if (card) card.classList.add('is-subscribed');   // settle into the muted confirmed state
@@ -1295,12 +1245,11 @@
           confettiBurst(submitBtn);
         });
 
-        // Submit → the arrow gives way to a loading ring for a beat, which then
-        // morphs into the checkmark. (Cosmetic — the request is fire-and-forget.)
+        // Submit → the arrow gives way to a bouncing equalizer for a beat, which
+        // then resolves into the checkmark. (Cosmetic — the request is fire-and-forget.)
         function startLoading() {
           if (reduce) { succeed(); return; }
-          form.classList.add('is-loading');
-          startComet();
+          form.classList.add('is-loading');      // the equalizer takes over (CSS)
           input.disabled = true;
           setTimeout(succeed, 1400);
         }

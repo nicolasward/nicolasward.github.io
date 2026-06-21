@@ -1963,6 +1963,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
   background: var(--progress-bg);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
+  transition: background 0.42s ease, -webkit-backdrop-filter 0.42s ease, backdrop-filter 0.42s ease;
   /* Appears last — after the share icons — with a clockwise ring-draw. */
   opacity: 0;
   animation: progress-fade 0.4s ease 1.7s both;
@@ -2021,6 +2022,7 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 /* Completed disc fills with a quick solid accent orange */
 .progress-disc {
   fill: var(--fg);                    /* dark grey on complete (the glimmer sweeps over it) */
+  fill-opacity: 0.62;                 /* translucent so the page glow tints through */
   transform: scale(0);
   transform-origin: 20px 20px;
   transform-box: fill-box;
@@ -2056,6 +2058,14 @@ body.article .footer-keys .key-hint--nav { display: inline-flex; }
 }
 
 /* Completed state */
+.reading-progress.complete {
+  /* Drop the opaque field tint and deepen the frost so the page's colour glow
+     reads through the translucent disc behind the check. */
+  background: transparent;
+  -webkit-backdrop-filter: blur(13px);
+  backdrop-filter: blur(13px);
+}
+
 .reading-progress.complete .progress-disc {
   transform: scale(1);
 }

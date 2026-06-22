@@ -1308,6 +1308,27 @@
       Array.prototype.forEach.call(inputs, function (input) {
         if (reduce) { input.setAttribute('placeholder', emails[0]); return; }
         var idx = 0, ch = emails[0].length, typing = false, focused = false, timer;
+        // Draw the next address from a shuffled bag so every address shows once
+        // before any repeats (sampling without replacement), reshuffling each pass.
+        var bag = [];
+        function shuffle(a) {
+          for (var i = a.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t;
+          }
+          return a;
+        }
+        function nextIdx(curr) {
+          if (!bag.length) {
+            var all = [];
+            for (var i = 0; i < emails.length; i++) all.push(i);
+            shuffle(all);
+            if (all[0] === curr && all.length > 1) { all[0] = all[1]; all[1] = curr; }  // no repeat across the seam
+            bag = all;
+          }
+          return bag.shift();
+        }
+        // Seed the first pass with the other addresses — emails[0] is shown at once.
+        (function () { var rest = []; for (var i = 1; i < emails.length; i++) rest.push(i); bag = shuffle(rest); })();
         function set(text) { input.setAttribute('placeholder', text); }
         function schedule(ms) { clearTimeout(timer); timer = setTimeout(tick, ms); }
         function tick() {
@@ -1326,10 +1347,7 @@
             set(word.slice(0, --ch));
             if (ch <= 0) {
               typing = true;
-              // Pick the next address at random (never the same one twice).
-              var next = idx;
-              while (emails.length > 1 && next === idx) next = Math.floor(Math.random() * emails.length);
-              idx = next;
+              idx = nextIdx(idx);   // next address from the shuffled bag
               schedule(380);
             } else schedule(42);
           }

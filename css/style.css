@@ -1372,6 +1372,11 @@ h3:hover .heading-anchor {
 [data-theme="dark"] .pg { opacity: 0.65; z-index: -2; }
 .header-glow { opacity: 0.6; }                          /* gentler behind the nav links */
 [data-theme="dark"] .header-glow { opacity: 0.45; }
+/* Desktop: a more contained dome, so the glow takes a touch less of the page.
+   Mobile (≤600px) keeps the fuller size from the base rule above. */
+@media (min-width: 601px) {
+  .pg { width: min(82vw, 1220px); height: min(60vw, 780px); }
+}
 
 /* With JS each glow starts HIDDEN and CONTRACTED at its own edge, then swells in
    (opacity + scale, from the edge) once .lit is added — the header on load, the
@@ -1491,9 +1496,14 @@ button.key-hint { cursor: pointer; }
   min-width: 1.35rem;
   height: 1.35rem;
   padding: 0 0.35rem;
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  border: 1px solid var(--fg-faint);
+  border-radius: 5px;
+  /* A frosted keycap so it reads as a crisp, premium key over the footer glow
+     rather than a flat washed-out chip. */
   background: var(--kbd-bg);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
   font-family: inherit;
   font-size: 0.72rem;
   color: var(--fg);
@@ -2653,6 +2663,20 @@ main .newsletter-submit { width: 2.4rem; height: 2.4rem; }
 main .newsletter-msg { margin: 0.8rem auto 0; text-align: center; }
 @media (hover: hover) {
   main .newsletter-card:not(.is-subscribed):hover .newsletter-field { border-color: var(--fg); }
+}
+/* Desktop: the pill sits right over the footer glow, where a fully transparent
+   field and faint ghost text wash out. Give it a quiet frosted backing (the same
+   as the reading-progress ring) so it reads as a clear surface, firm up the
+   border, and make the placeholder solid. Mobile keeps the airy transparent pill. */
+@media (min-width: 601px) {
+  main .newsletter-field {
+    background: var(--progress-bg);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-color: var(--fg-muted);
+  }
+  main .newsletter-card.is-subscribed .newsletter-field { background: none; }   /* clean once confirmed */
+  main .newsletter-input::placeholder { color: var(--fg-muted); opacity: 1; }
 }
 /* Subscribed (inline): the section stays put and eases into a calm, confirmed
    state — the WHOLE block recedes to a very light muted grey (heading, dek, the

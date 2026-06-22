@@ -131,11 +131,12 @@ html[data-theme="dark"] .stage::after {
 }
 
 /* ---------------- Theme toggle ----------------
-   A quiet sun/moon in the top-left corner, mirroring the fast-forward (top-
-   right). The top zone is clear of the body text (which sits below) and clear of
-   the browser chrome — unlike the bottom, where the long hero text and Safari's
-   toolbar squeeze a control. Hidden until JS fades it in after the intro settles;
-   safe-area-aware so it clears the notch. Moon = light (→ go dark); sun = dark. */
+   A quiet sun/moon. This top-left corner is the pre-JS / no-JS default; once JS
+   runs, placeControls() repositions it per breakpoint — on desktop into the left
+   gutter, vertically centred on the greeting line (mirroring the fast-forward at
+   the hero's right edge); on mobile to the greeting line's right edge. Hidden
+   until JS fades it in after the intro settles; safe-area-aware so it clears the
+   notch. Moon = light (→ go dark); sun = dark. */
 .theme-switch {
   position: fixed;
   left: calc(1.25rem + env(safe-area-inset-left));
@@ -299,9 +300,9 @@ html.js .fast-forward.draw .ff-skip path:last-child {
 html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .fast-forward { display: none !important; } }
 
-/* "Atelier" stays the dark-grey ink of the greeting (it's not a link). Each
-   actual link wears the colour of its own highlighter — the marker hue, now the
-   resting ink — so the four read as a quiet Google-ish palette. No underline. */
+/* Every word — "Atelier" and the four links — rests in the dark-grey greeting
+   ink. Colour appears only on hover, when each link's own highlighter sweeps
+   over it (below). No underline. */
 .atelier,
 .write-link,
 .design-link,
@@ -309,11 +310,6 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   color: var(--fg);
   text-decoration: none;
 }
-.atelier                   { color: rgb(0, 161, 180); }     /* brand teal — the site's accent */
-.write-link                { color: rgb(52, 168, 83); }     /* green */
-.design-link               { color: rgb(255, 121, 27); }    /* orange */
-.text-link[href^="https"]  { color: rgb(0, 114, 177); }     /* LinkedIn blue */
-.text-link[href^="mailto"] { color: rgb(251, 188, 5); }     /* email yellow */
 /* Hover: a highlighter sweeps over the word from left to right — a translucent
    stroke behind the text that grows from 0 → full width (anchored left). Each
    link gets its own marker colour (Google-ish palette). The link gets its own
@@ -662,7 +658,15 @@ blobs.forEach((blob, i) => {
     } else {                                        // desktop
       ff.style.left = 'auto';
       ff.style.right = edgeFromRight + 'px';
-      if (ts) { ts.style.left = ''; ts.style.right = ''; ts.style.top = ''; }   // back to CSS top-left
+      if (ts) {
+        // Sit the toggle in the left gutter, vertically centred on the greeting
+        // line — mirroring the fast-forward at the hero's right edge — so it
+        // reads as part of the hero rather than stranded in the top corner.
+        var heroLeft = hero ? hero.getBoundingClientRect().left : edgeFromRight;
+        ts.style.right = 'auto';
+        ts.style.left = Math.max(14, (heroLeft - ts.offsetWidth) / 2) + 'px';
+        ts.style.top = (lineY - ts.offsetHeight / 2) + 'px';
+      }
     }
   }
   placeControls();
@@ -692,6 +696,14 @@ blobs.forEach((blob, i) => {
     else html.removeAttribute('data-theme');
     if (meta) meta.setAttribute('content', FIELD[next]);
     try { localStorage.setItem('theme-choice', next); } catch (e) {}
+  });
+  // Press T to toggle the theme — same shortcut the blog uses.
+  document.addEventListener('keydown', function (e) {
+    if ((e.key !== 't' && e.key !== 'T') || e.metaKey || e.ctrlKey || e.altKey) return;
+    var el = document.activeElement;
+    if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable)) return;
+    e.preventDefault();
+    btn.click();
   });
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   setTimeout(function () { btn.classList.add('ready'); }, reduce ? 200 : 2400);

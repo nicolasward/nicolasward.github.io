@@ -1232,13 +1232,14 @@
           eqToCheck();                           // equalizer fades out, checkmark traces in
           input.disabled = true;
           var card = section && section.querySelector('.newsletter-card');
-          if (card) card.classList.add('is-subscribed');   // settle into the muted confirmed state
           var btn = form.querySelector('.newsletter-submit');
           if (btn) btn.setAttribute('aria-label', 'Subscribed');   // confirmation for screen readers
           // confetti fires from eqToCheck, as the tick forms through the dots
-          // Let the checkmark settle before the confirmation reads in — a beat of
-          // breathing room so it doesn't all land at once.
+          // Hold the block fully readable through the whole checkmark formation,
+          // THEN — as the confirmation reads in — settle it into the muted state.
+          // (Fading it during the tick made the email vanish mid-transition.)
           setTimeout(function () {
+            if (card) card.classList.add('is-subscribed');   // recede to the confirmed state
             setMsg('You’re subscribed — welcome aboard!', 'success');
             form.classList.add('is-confirmed');   // reveals the "subscribe another" link, after
           }, reduce ? 0 : 1500);

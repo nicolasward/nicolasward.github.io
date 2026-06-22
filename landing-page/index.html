@@ -131,16 +131,15 @@ html[data-theme="dark"] .stage::after {
 }
 
 /* ---------------- Theme toggle ----------------
-   A quiet sun/moon. This top-left corner is the pre-JS / no-JS default; once JS
-   runs, placeControls() repositions it per breakpoint — on desktop into the left
-   gutter, vertically centred on the greeting line (mirroring the fast-forward at
-   the hero's right edge); on mobile to the greeting line's right edge. Hidden
-   until JS fades it in after the intro settles; safe-area-aware so it clears the
-   notch. Moon = light (→ go dark); sun = dark. */
+   A quiet sun/moon in the top-right corner — the conventional, symmetric home
+   for a theme control. This is the desktop resting position (and the pre-JS / no-
+   JS default); on mobile, placeControls() moves it onto the greeting line's right
+   edge. Hidden until JS fades it in after the intro settles; safe-area-aware so it
+   clears the notch. Moon = light (→ go dark); sun = dark. */
 .theme-switch {
   position: fixed;
-  left: calc(1.25rem + env(safe-area-inset-left));
-  top: calc(0.6rem + env(safe-area-inset-top));
+  right: calc(1.5rem + env(safe-area-inset-right));
+  top: calc(1.15rem + env(safe-area-inset-top));
   z-index: 5;
   display: grid;
   place-items: center;
@@ -300,9 +299,9 @@ html.js .fast-forward.draw .ff-skip path:last-child {
 html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .fast-forward { display: none !important; } }
 
-/* Every word — "Atelier" and the four links — rests in the dark-grey greeting
-   ink. Colour appears only on hover, when each link's own highlighter sweeps
-   over it (below). No underline. */
+/* Each word keeps its own resting colour — "Atelier" the brand teal, the four
+   links a quiet Google-ish palette. The hover highlighter, by contrast, is now
+   one shared neutral for every link (see below). No underline. */
 .atelier,
 .write-link,
 .design-link,
@@ -310,10 +309,17 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   color: var(--fg);
   text-decoration: none;
 }
+.atelier                   { color: rgb(0, 161, 180); }     /* brand teal — the site's accent */
+.write-link                { color: rgb(52, 168, 83); }     /* green */
+.design-link               { color: rgb(255, 121, 27); }    /* orange */
+.text-link[href^="https"]  { color: rgb(0, 114, 177); }     /* LinkedIn blue */
+.text-link[href^="mailto"] { color: rgb(251, 188, 5); }     /* email yellow */
 /* Hover: a highlighter sweeps over the word from left to right — a translucent
-   stroke behind the text that grows from 0 → full width (anchored left). Each
-   link gets its own marker colour (Google-ish palette). The link gets its own
-   stacking context so the highlight sits behind the glyphs but above the page. */
+   stroke behind the text that grows from 0 → full width (anchored left). One
+   elegant, neutral marker for ALL links — a soft graphite wash in light mode, an
+   off-white wash in dark — so the colour pop stays in the resting ink, not the
+   highlight. The link gets its own stacking context so the highlight sits behind
+   the glyphs but above the page. */
 .write-link,
 .design-link,
 .text-link { position: relative; z-index: 0; }
@@ -328,12 +334,14 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   width: 0;
   height: 0.72em;
   border-radius: 0.12em;
+  background: rgba(29, 29, 31, 0.13);   /* neutral graphite wash (light) */
   transition: width 0.34s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.write-link::before                 { background: rgba(52, 168, 83, 0.6); }   /* green */
-.design-link::before                { background: rgba(255, 121, 27, 0.6); }  /* orange */
-.text-link[href^="https"]::before   { background: rgba(0, 114, 177, 0.6); }   /* LinkedIn blue */
-.text-link[href^="mailto"]::before  { background: rgba(251, 188, 5, 0.6); }   /* email yellow */
+html[data-theme="dark"] .write-link::before,
+html[data-theme="dark"] .design-link::before,
+html[data-theme="dark"] .text-link::before {
+  background: rgba(245, 245, 247, 0.17);   /* soft off-white wash (dark) */
+}
 @media (hover: hover) {
   .write-link:hover::before,
   .design-link:hover::before,
@@ -630,7 +638,7 @@ blobs.forEach((blob, i) => {
   });
 
   // Position the controls on the greeting line. Desktop: the fast-forward sits at
-  // the hero's right edge and the toggle keeps its CSS top-left corner. Mobile:
+  // the hero's right edge and the toggle keeps its CSS top-right corner. Mobile:
   // the fast-forward hugs the end of "Hi, I'm Nico." and the toggle takes the
   // line's right edge (the fast-forward's old spot). Re-run on resize / font load.
   function placeControls() {
@@ -658,15 +666,7 @@ blobs.forEach((blob, i) => {
     } else {                                        // desktop
       ff.style.left = 'auto';
       ff.style.right = edgeFromRight + 'px';
-      if (ts) {
-        // Sit the toggle in the left gutter, vertically centred on the greeting
-        // line — mirroring the fast-forward at the hero's right edge — so it
-        // reads as part of the hero rather than stranded in the top corner.
-        var heroLeft = hero ? hero.getBoundingClientRect().left : edgeFromRight;
-        ts.style.right = 'auto';
-        ts.style.left = Math.max(14, (heroLeft - ts.offsetWidth) / 2) + 'px';
-        ts.style.top = (lineY - ts.offsetHeight / 2) + 'px';
-      }
+      if (ts) { ts.style.left = ''; ts.style.right = ''; ts.style.top = ''; }   // CSS top-right corner
     }
   }
   placeControls();

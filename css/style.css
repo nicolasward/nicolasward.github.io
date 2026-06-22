@@ -1347,6 +1347,14 @@ h3:hover .heading-anchor {
   color: var(--fg-muted);
   font-size: 0.8rem;
 }
+/* In dark mode the footer sits right over the brightest part of the glow, where
+   the muted ink goes unreadable. Lift it to a light tint and add a soft shadow so
+   it reads over both the bright wash and the dark edges. (Light mode reads fine.) */
+[data-theme="dark"] .site-footer,
+[data-theme="dark"] .footer-keys {
+  color: rgba(245, 245, 247, 0.78);
+}
+[data-theme="dark"] .site-footer { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45); }
 
 /* Page glow — the ethereal aurora, mirrored at both the foot AND the head of the
    page. Shared appearance here; each element only sets its position below. Lives
@@ -1376,6 +1384,7 @@ h3:hover .heading-anchor {
    Mobile (≤600px) keeps the fuller size from the base rule above. */
 @media (min-width: 601px) {
   .pg { width: min(82vw, 1220px); height: min(60vw, 780px); }
+  [data-theme="dark"] .container::after { width: min(82vw, 1220px); height: min(60vw, 780px); }   /* grain tracks the glow */
 }
 
 /* With JS each glow starts HIDDEN and CONTRACTED at its own edge, then swells in
@@ -1426,14 +1435,18 @@ h3:hover .heading-anchor {
 /* Grain ONLY the footer glow. A noise layer positioned to the blob's exact box
    and masked with the SAME radial as the glow, so the grain fades out with the
    glow — the flat dark reading area stays clean. Sits above the blob (z-index:-1
-   > the blob's -2) but behind the text. */
-[data-theme="dark"] .container::before,
+   > the blob's -2) but behind the text.
+   NB: only the footer grain — a matching top grain over the header glow has to go,
+   because its mix-blend-mode poisons the header's backdrop-filter (the frosted nav
+   stopped blurring behind it in dark mode). */
 [data-theme="dark"] .container::after {
   content: "";
   position: absolute;
   left: 50%;
+  bottom: 0;
   width: min(98vw, 1500px);
   height: min(90vw, 1100px);
+  transform: translateX(-50%);
   z-index: -1;
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -1446,8 +1459,6 @@ h3:hover .heading-anchor {
   opacity: 0.4;
   mix-blend-mode: overlay;
 }
-[data-theme="dark"] .container::after  { bottom: 0; transform: translateX(-50%); }            /* over the footer glow */
-[data-theme="dark"] .container::before { top: 0;    transform: translateX(-50%) scaleY(-1); }  /* the mirror, over the header glow */
 
 .footer-links {
   display: flex;
@@ -2665,18 +2676,20 @@ main .newsletter-msg { margin: 0.8rem auto 0; text-align: center; }
   main .newsletter-card:not(.is-subscribed):hover .newsletter-field { border-color: var(--fg); }
 }
 /* Desktop: the pill sits right over the footer glow, where a fully transparent
-   field and faint ghost text wash out. Give it a quiet frosted backing (the same
-   as the reading-progress ring) so it reads as a clear surface, firm up the
-   border, and make the placeholder solid. Mobile keeps the airy transparent pill. */
+   field and faint ghost text wash out. Give it a quiet, sheer frosted backing so
+   it reads as a surface without going milky-white, firm up the border, and make
+   the placeholder solid. Mobile keeps the airy transparent pill. */
 @media (min-width: 601px) {
   main .newsletter-field {
-    background: var(--progress-bg);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.3);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
     border-color: var(--fg-muted);
   }
+  [data-theme="dark"] main .newsletter-field { background: rgba(18, 17, 17, 0.34); }
   main .newsletter-card.is-subscribed .newsletter-field { background: none; }   /* clean once confirmed */
   main .newsletter-input::placeholder { color: var(--fg-muted); opacity: 1; }
+  main .newsletter-submit { color: var(--fg-muted); }   /* arrow matches the ghost text */
 }
 /* Subscribed (inline): the section stays put and eases into a calm, confirmed
    state — the WHOLE block recedes to a very light muted grey (heading, dek, the

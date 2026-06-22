@@ -13,7 +13,7 @@
        grain arrives a frame late and the raw gradient shows faint colour banding. -->
   <link rel="preload" as="image" href="/grain.png" type="image/png">
   <link rel="stylesheet" href="/blog/css/flexoki.css?v=64abfaf4">
-  <link rel="stylesheet" href="/blog/css/style.css?v=6b3930d3">
+  <link rel="stylesheet" href="/blog/css/style.css?v=6648d3d3">
   <link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feed.xml">
   <script>
     // Apply the saved/system theme SYNCHRONOUSLY, before the body renders, so
@@ -47,8 +47,16 @@
 </head>
 <body class="article">
   <div class="container">
-    <!-- Header glow: the same aurora as the footer, mirrored at the top. -->
-    <div class="header-glow pg" aria-hidden="true"></div>
+    <!-- Page glow (+ dark-mode grain) on an ISOLATED layer. The grain blends with
+         mix-blend-mode, and Chromium disables backdrop-filter on anything sharing
+         a stacking context with a non-normal blend — so isolating the glow+grain
+         here keeps the blend off the header's context and lets the frosted nav
+         keep its blur (WebKit never had the bug; this matches it). Both glows are
+         absolutely positioned (header at top, footer at bottom). -->
+    <div class="page-bg" aria-hidden="true">
+      <div class="header-glow pg"></div>
+      <div class="footer-glow pg"></div>
+    </div>
 
     <header class="site-header">
       <svg class="pill-outline" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="18" ry="18"/></svg>
@@ -187,11 +195,6 @@
         <span class="key-hint key-hint--nav"><kbd>&larr;</kbd><kbd>&rarr;</kbd> navigate</span>
       </div>
     </footer>
-
-    <!-- Footer sunset: one big soft blob (a random hue from the landing aurora,
-         set by JS) sits half below the page's bottom edge, glowing up behind the
-         footer. Behind all text via .container's stacking context. -->
-    <div class="footer-glow pg" aria-hidden="true"></div>
   </div>
 
   <div id="search-overlay" class="search-overlay" aria-hidden="true">

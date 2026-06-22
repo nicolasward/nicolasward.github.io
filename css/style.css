@@ -1356,9 +1356,21 @@ h3:hover .heading-anchor {
 }
 [data-theme="dark"] .site-footer { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45); }
 
+/* Isolated background layer holding both glows (+ the dark-mode grain pseudos).
+   isolation:isolate keeps the grain's mix-blend-mode contained here, so it never
+   shares the header's stacking context — otherwise Chromium silently disables the
+   nav's backdrop-filter (the dark-mode "lost blur"). Sits behind all content. */
+.page-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  isolation: isolate;
+  pointer-events: none;
+}
+
 /* Page glow — the ethereal aurora, mirrored at both the foot AND the head of the
    page. Shared appearance here; each element only sets its position below. Lives
-   at z-index:-1 inside .container's stacking context, behind all text. */
+   behind all text, inside the isolated .page-bg layer. */
 .pg {
   position: absolute;
   left: 50%;
@@ -1384,6 +1396,8 @@ h3:hover .heading-anchor {
    Mobile (≤600px) keeps the fuller size from the base rule above. */
 @media (min-width: 601px) {
   .pg { width: min(82vw, 1220px); height: min(60vw, 780px); }
+  [data-theme="dark"] .page-bg::before,
+  [data-theme="dark"] .page-bg::after { width: min(82vw, 1220px); height: min(60vw, 780px); }   /* grain tracks the glow */
 }
 
 /* With JS each glow starts HIDDEN and CONTRACTED at its own edge, then swells in
@@ -1431,12 +1445,31 @@ h3:hover .heading-anchor {
     radial-gradient(54% 72% at 51% 123%, #A6BCF2 0%, #2E55C0 36%, #6884DC 60%, transparent 80%),
     radial-gradient(42% 56% at 81% 110%, #9FC0EE 0%, #2A6AB8 34%, #6B9AD8 58%, transparent 78%);
 }
-/* NB: the dark-mode glow grain (a noise layer over the glows, blended with
-   mix-blend-mode) had to go entirely. Chromium disables an element's
-   backdrop-filter whenever ANY non-normal mix-blend-mode element shares its
-   stacking context — so the grain and the frosted header's blur cannot coexist
-   in .container. The header blur wins; the glows are simply smooth in dark mode.
-   (To bring the grain back we'd isolate the glows+grain on their own layer.) */
+/* Grain over the glows (dark mode). A noise layer masked with the SAME radial as
+   the glow so it fades out with the glow. Lives inside .page-bg, whose isolation
+   contains this mix-blend-mode — so it textures the glows without disabling the
+   header's backdrop-filter (see .page-bg). Grain sits above the glows (z auto >
+   the glows' negative z) but is itself behind all page content (page-bg is -1). */
+[data-theme="dark"] .page-bg::before,
+[data-theme="dark"] .page-bg::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: min(98vw, 1500px);
+  height: min(90vw, 1100px);
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  background-repeat: repeat;
+  /* A broad ellipse over the wash, fading transparent BEFORE the box edges — the
+     grain isn't blurred, so unlike the (bleeding) glow it must not reach an edge. */
+  -webkit-mask-image: radial-gradient(64% 88% at 50% 100%, #000 0%, #000 18%, transparent 72%);
+          mask-image: radial-gradient(64% 88% at 50% 100%, #000 0%, #000 18%, transparent 72%);
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+}
+[data-theme="dark"] .page-bg::after  { bottom: 0; transform: translateX(-50%); }            /* over the footer glow */
+[data-theme="dark"] .page-bg::before { top: 0;    transform: translateX(-50%) scaleY(-1); }  /* over the header glow */
 
 .footer-links {
   display: flex;

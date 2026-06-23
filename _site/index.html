@@ -340,16 +340,16 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   position: absolute;
   z-index: -1;
   left: -0.14em;
-  bottom: 0;
-  width: 0;
-  height: 0.96em;                                   /* thick — a fat brush */
+  bottom: -0.05em;
+  width: calc(100% + 0.3em);                        /* full-size brush; the reveal is a clip wipe */
+  height: 1.15em;                                   /* thick — like the first slanted highlight */
   background: #fff;                                 /* opaque white paint */
   /* A real dry-brush stroke: the body is a stroke shape, then an SVG turbulence
      displacement filter frays its edges into bristles (high vertical / low
      horizontal noise = vertical fingers). Carried as a mask, stretched to the
      word; paints in left-to-right as the width sweeps. */
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 120' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-25%25' y='-70%25' width='150%25' height='240%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.011 0.29' numOctaves='3' seed='8' result='n'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='n' scale='24' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3Cpath filter='url(%23b)' fill='%23fff' d='M14 62 C46 34 96 30 156 34 C214 38 258 28 302 40 C314 44 314 78 302 82 C258 92 214 82 156 86 C96 90 46 86 14 62 Z'/%3E%3C/svg%3E");
-          mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 120' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-25%25' y='-70%25' width='150%25' height='240%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.011 0.29' numOctaves='3' seed='8' result='n'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='n' scale='24' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3Cpath filter='url(%23b)' fill='%23fff' d='M14 62 C46 34 96 30 156 34 C214 38 258 28 302 40 C314 44 314 78 302 82 C258 92 214 82 156 86 C96 90 46 86 14 62 Z'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 120' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-25%25' y='-70%25' width='150%25' height='240%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.011 0.29' numOctaves='3' seed='8' result='n'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='n' scale='16' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3Cpath filter='url(%23b)' fill='%23fff' d='M14 60 C46 22 96 16 156 20 C214 24 258 12 302 24 C316 28 316 92 302 96 C258 108 214 98 156 102 C96 106 46 102 14 60 Z'/%3E%3C/svg%3E");
+          mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 120' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-25%25' y='-70%25' width='150%25' height='240%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.011 0.29' numOctaves='3' seed='8' result='n'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='n' scale='16' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3Cpath filter='url(%23b)' fill='%23fff' d='M14 60 C46 22 96 16 156 20 C214 24 258 12 302 24 C316 28 316 92 302 96 C258 108 214 98 156 102 C96 106 46 102 14 60 Z'/%3E%3C/svg%3E");
   -webkit-mask-size: 100% 100%;  mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
   /* A slight upward slant — low-left to high-right — pivoting from the left as it
@@ -357,7 +357,10 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   transform: rotate(-3deg);
   transform-origin: left center;
   filter: drop-shadow(0 1px 1.5px rgba(35, 40, 60, 0.32));
-  transition: width 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  /* Draw it on left-to-right by wiping the fixed-shape stroke open (clip), rather
+     than stretching a squished brush out to width. */
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.42s cubic-bezier(0.22, 1, 0.36, 1);
 }
 html[data-theme="dark"] .write-link::before,
 html[data-theme="dark"] .design-link::before,
@@ -367,7 +370,7 @@ html[data-theme="dark"] .text-link::before {
 @media (hover: hover) {
   .write-link:hover::before,
   .design-link:hover::before,
-  .text-link:hover::before { width: calc(100% + 0.12em); }
+  .text-link:hover::before { clip-path: inset(0 0% 0 0); }
 }
 @media (prefers-reduced-motion: reduce) {
   .write-link::before, .design-link::before, .text-link::before { transition: none; }

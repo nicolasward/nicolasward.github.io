@@ -175,6 +175,15 @@ html[data-theme="dark"] .theme-switch .ts-moon { opacity: 1; transform: none; } 
   .theme-switch svg { transition: none; }
 }
 
+/* Theme switch: a soft, even cross-fade between the two themes (View Transitions
+   API) — the same gentle dissolve the blog uses. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.55s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  mix-blend-mode: normal;
+}
+
 /* ---------------- Content ---------------- */
 .container {
   position: relative;
@@ -691,12 +700,19 @@ blobs.forEach((blob, i) => {
   if (!btn) return;
   var meta = document.getElementById('theme-color-meta');
   var FIELD = { light: '#ffffff', dark: '#0C0E14' };
-  btn.addEventListener('click', function () {
-    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  function apply(next) {
     if (next === 'dark') html.setAttribute('data-theme', 'dark');
     else html.removeAttribute('data-theme');
     if (meta) meta.setAttribute('content', FIELD[next]);
     try { localStorage.setItem('theme-choice', next); } catch (e) {}
+  }
+  btn.addEventListener('click', function () {
+    var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    var reduceM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Soft cross-fade between the two themes (View Transitions API), matching the
+    // blog; falls back to an instant switch where unsupported or reduced-motion.
+    if (!document.startViewTransition || reduceM) { apply(next); return; }
+    document.startViewTransition(function () { apply(next); });
   });
   // Press T to toggle the theme — same shortcut the blog uses.
   document.addEventListener('keydown', function (e) {

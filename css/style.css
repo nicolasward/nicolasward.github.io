@@ -1391,7 +1391,9 @@ h3:hover .heading-anchor {
 .header-glow { top: 0;    transform: translateX(-50%) translateY(0%) scaleY(-1) scale(1); }
 [data-theme="dark"] .pg { opacity: 0.65; z-index: -2; }
 .header-glow { opacity: 0.6; }                          /* gentler behind the nav links */
-[data-theme="dark"] .header-glow { opacity: 0.45; }
+/* The glows are gorgeous in light mode but, on the dark field, the header one
+   clashes with the (now light) nav text — so it's dimmed hard in dark mode. */
+[data-theme="dark"] .header-glow { opacity: 0.2; }
 /* Desktop: a more contained dome, so the glow takes a touch less of the page.
    Mobile (≤600px) keeps the fuller size from the base rule above. */
 @media (min-width: 601px) {
@@ -1412,7 +1414,7 @@ h3:hover .heading-anchor {
 .js .pg.lit { opacity: 0.9; }
 .js .header-glow.lit { opacity: 0.6; }
 .js [data-theme="dark"] .pg.lit { opacity: 0.65; }
-.js [data-theme="dark"] .header-glow.lit { opacity: 0.45; }
+.js [data-theme="dark"] .header-glow.lit { opacity: 0.2; }   /* dim hard behind the dark-mode nav */
 @media (prefers-reduced-motion: reduce) { .js .pg { transition: none; } }
 /* On a horizontal article swipe, contract each lit glow back to its edge (quick),
    for a smooth hand-off to the next article's glow. */
@@ -1444,19 +1446,6 @@ h3:hover .heading-anchor {
     radial-gradient(46% 60% at 21% 113%, #AEB8F0 0%, #3A4EAE 34%, #6E7FD0 58%, transparent 78%),
     radial-gradient(54% 72% at 51% 123%, #A6BCF2 0%, #2E55C0 36%, #6884DC 60%, transparent 80%),
     radial-gradient(42% 56% at 81% 110%, #9FC0EE 0%, #2A6AB8 34%, #6B9AD8 58%, transparent 78%);
-}
-/* The gold palette is far more luminous than the others — a bright lemon that
-   washes out the header (worst in dark mode, where the nav text is light). On
-   desktop, deepen it to a warmer honey-amber and dim its header glow so the nav
-   stays readable. Mobile keeps the brighter sunny gold. */
-@media (min-width: 601px) {
-  .pg.fg-gold {
-    background:
-      radial-gradient(46% 60% at 21% 113%, #E9C879 0%, #C9971E 34%, #D9B24A 58%, transparent 78%),
-      radial-gradient(54% 72% at 51% 123%, #EDC25A 0%, #D49A1C 36%, #E0B038 60%, transparent 80%),
-      radial-gradient(42% 56% at 81% 110%, #E5C158 0%, #BE851A 34%, #D6A838 58%, transparent 78%);
-  }
-  .js [data-theme="dark"] .header-glow.fg-gold.lit { opacity: 0.3; }
 }
 /* Grain over the glows (dark mode). A noise layer masked with the SAME radial as
    the glow so it fades out with the glow. Lives inside .page-bg, whose isolation

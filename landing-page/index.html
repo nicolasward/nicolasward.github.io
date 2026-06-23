@@ -138,8 +138,8 @@ html[data-theme="dark"] .stage::after {
    clears the notch. Moon = light (→ go dark); sun = dark. */
 .theme-switch {
   position: fixed;
-  right: calc(1.5rem + env(safe-area-inset-right));
-  top: calc(1.15rem + env(safe-area-inset-top));
+  right: calc(2rem + env(safe-area-inset-right));
+  top: calc(1.5rem + env(safe-area-inset-top));
   z-index: 5;
   display: grid;
   place-items: center;
@@ -706,7 +706,11 @@ blobs.forEach((blob, i) => {
     btn.click();
   });
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  setTimeout(function () { btn.classList.add('ready'); }, reduce ? 200 : 2400);
+  // Desktop: the toggle (top-right corner) appears at once, before the intro —
+  // it's quiet and out of the way. Mobile keeps it until the intro has settled,
+  // since there it shares the greeting line.
+  var instant = reduce || window.innerWidth > 700;
+  setTimeout(function () { btn.classList.add('ready'); }, instant ? 0 : 2400);
 })();
 </script>
 </body>

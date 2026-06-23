@@ -138,8 +138,9 @@ html[data-theme="dark"] .stage::after {
    clears the notch. Moon = light (→ go dark); sun = dark. */
 .theme-switch {
   position: fixed;
+  /* Equal inset from the top and right edges — a square gap to the corner. */
   right: calc(2rem + env(safe-area-inset-right));
-  top: calc(1.5rem + env(safe-area-inset-top));
+  top: calc(2rem + env(safe-area-inset-top));
   z-index: 5;
   display: grid;
   place-items: center;

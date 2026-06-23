@@ -1383,7 +1383,7 @@ h3:hover .heading-anchor {
     radial-gradient(54% 72% at 51% 123%, #FFD2BE 0%, #FF7E54 36%, #FF9C6E 60%, transparent 80%),
     radial-gradient(42% 56% at 81% 110%, #FFE6BE 0%, #FFA23D 34%, #FFBE72 58%, transparent 78%);
   filter: blur(85px) saturate(1.5);   /* light mode cranks the hues so they read */
-  opacity: 0.9;
+  opacity: 0.6;                       /* footer matches the header's gentler glow */
   pointer-events: none;
   z-index: -1;
 }
@@ -1411,7 +1411,7 @@ h3:hover .heading-anchor {
 .js .header-glow { transform: translateX(-50%) translateY(-25%) scaleY(-1) scale(0.5); }
 .js .footer-glow.lit { transform: translateX(-50%) translateY(0%) scale(1); }
 .js .header-glow.lit { transform: translateX(-50%) translateY(0%) scaleY(-1) scale(1); }
-.js .pg.lit { opacity: 0.9; }
+.js .pg.lit { opacity: 0.6; }                                /* footer matches the header */
 .js .header-glow.lit { opacity: 0.6; }
 .js [data-theme="dark"] .pg.lit { opacity: 0.2; }            /* both glows dim hard in dark mode */
 .js [data-theme="dark"] .header-glow.lit { opacity: 0.2; }

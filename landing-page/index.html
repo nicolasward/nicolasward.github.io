@@ -339,18 +339,20 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   content: "";
   position: absolute;
   z-index: -1;
-  left: -0.06em;
-  bottom: 0.04em;
+  left: -0.08em;
+  bottom: 0.02em;
   width: 0;
-  height: 0.72em;
-  border-radius: 0.12em;
-  background: rgba(29, 29, 31, 0.13);   /* neutral graphite wash (light) */
+  height: 0.78em;
+  border-radius: 0.14em;
+  background: rgba(255, 255, 255, 0.92);            /* a bright white paint stroke */
+  box-shadow: 0 2px 14px rgba(40, 44, 66, 0.16);    /* soft lift so it reads on the pale field */
   transition: width 0.34s cubic-bezier(0.22, 1, 0.36, 1);
 }
 html[data-theme="dark"] .write-link::before,
 html[data-theme="dark"] .design-link::before,
 html[data-theme="dark"] .text-link::before {
-  background: rgba(245, 245, 247, 0.17);   /* soft off-white wash (dark) */
+  background: rgba(255, 255, 255, 0.3);             /* a luminous white stroke on the dark field */
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.32);
 }
 @media (hover: hover) {
   .write-link:hover::before,

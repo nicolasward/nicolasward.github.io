@@ -344,11 +344,12 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   width: 0;
   height: 0.96em;                                   /* thick — a fat brush */
   background: #fff;                                 /* opaque white paint */
-  /* The shape is an actual brush stroke (organic edges, tapered ends) carried by
-     an SVG mask, stretched to the word — crisp, not a rounded bar. It paints in
-     left-to-right as the width sweeps. */
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 100' preserveAspectRatio='none'%3E%3Cpath fill='%23fff' d='M6 52 C34 18 84 14 146 18 C206 22 250 12 286 24 C295 28 299 40 292 52 C299 64 295 76 286 80 C250 90 206 80 146 84 C84 88 34 84 6 52 Z'/%3E%3C/svg%3E");
-          mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 100' preserveAspectRatio='none'%3E%3Cpath fill='%23fff' d='M6 52 C34 18 84 14 146 18 C206 22 250 12 286 24 C295 28 299 40 292 52 C299 64 295 76 286 80 C250 90 206 80 146 84 C84 88 34 84 6 52 Z'/%3E%3C/svg%3E");
+  /* A real dry-brush stroke: the body is a stroke shape, then an SVG turbulence
+     displacement filter frays its edges into bristles (high vertical / low
+     horizontal noise = vertical fingers). Carried as a mask, stretched to the
+     word; paints in left-to-right as the width sweeps. */
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 120' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-25%25' y='-70%25' width='150%25' height='240%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.011 0.29' numOctaves='3' seed='8' result='n'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='n' scale='24' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3Cpath filter='url(%23b)' fill='%23fff' d='M14 62 C46 34 96 30 156 34 C214 38 258 28 302 40 C314 44 314 78 302 82 C258 92 214 82 156 86 C96 90 46 86 14 62 Z'/%3E%3C/svg%3E");
+          mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 120' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-25%25' y='-70%25' width='150%25' height='240%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.011 0.29' numOctaves='3' seed='8' result='n'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='n' scale='24' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3Cpath filter='url(%23b)' fill='%23fff' d='M14 62 C46 34 96 30 156 34 C214 38 258 28 302 40 C314 44 314 78 302 82 C258 92 214 82 156 86 C96 90 46 86 14 62 Z'/%3E%3C/svg%3E");
   -webkit-mask-size: 100% 100%;  mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
   /* A slight upward slant — low-left to high-right — pivoting from the left as it

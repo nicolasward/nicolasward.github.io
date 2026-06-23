@@ -339,20 +339,27 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
   content: "";
   position: absolute;
   z-index: -1;
-  left: -0.08em;
-  bottom: 0.02em;
+  left: -0.12em;
+  bottom: 0;
   width: 0;
-  height: 0.78em;
-  border-radius: 0.14em;
-  background: rgba(255, 255, 255, 0.92);            /* a bright white paint stroke */
-  box-shadow: 0 2px 14px rgba(40, 44, 66, 0.16);    /* soft lift so it reads on the pale field */
+  height: 0.94em;                                   /* thick — a fat brush, not a thin marker */
+  border-radius: 0.2em;
+  background: rgba(255, 255, 255, 0.95);            /* a bright white paint stroke */
+  /* Taper both ends so it reads as a brush stroke rather than a bar. */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 9%, #000 90%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, #000 9%, #000 90%, transparent 100%);
+  /* A slight upward slant — low-left to high-right — pivoting from the left as it
+     sweeps in. drop-shadow (not box-shadow) so the lift follows the masked shape. */
+  transform: rotate(-3deg);
+  transform-origin: left center;
+  filter: drop-shadow(0 2px 10px rgba(40, 44, 66, 0.2));
   transition: width 0.34s cubic-bezier(0.22, 1, 0.36, 1);
 }
 html[data-theme="dark"] .write-link::before,
 html[data-theme="dark"] .design-link::before,
 html[data-theme="dark"] .text-link::before {
-  background: rgba(255, 255, 255, 0.3);             /* a luminous white stroke on the dark field */
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.32);
+  background: rgba(255, 255, 255, 0.9);             /* the same bright white paint on the dark field */
+  filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.45));
 }
 @media (hover: hover) {
   .write-link:hover::before,

@@ -228,6 +228,39 @@ def render(template_str, **kwargs):
     return result
 
 
+def optimize_images(src_dir, out_dir, max_w=1600, quality=80):
+    """Copy images/ → out, but resize oversized rasters and re-encode them as
+    WebP — far lighter than source PNG/JPEG. Returns {original_web_path:
+    webp_web_path} so cover/inline references can be rewritten to the optimized
+    file. Non-rasters (SVG, etc.) and anything that fails to process are copied
+    through unchanged; if Pillow is missing, everything is copied as-is."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        from PIL import Image
+    except ImportError:
+        Image = None
+    mapping = {}
+    for f in sorted(src_dir.iterdir()):
+        if not f.is_file() or f.name == ".DS_Store":
+            continue
+        if Image and f.suffix.lower() in {".png", ".jpg", ".jpeg"}:
+            try:
+                im = Image.open(f)
+                if im.mode in ("P", "LA"):
+                    im = im.convert("RGBA")
+                if im.width > max_w:
+                    h = round(im.height * max_w / im.width)
+                    im = im.resize((max_w, h), Image.LANCZOS)
+                out_name = f.stem + ".webp"
+                im.save(out_dir / out_name, "WEBP", quality=quality, method=6)
+                mapping[f"/images/{f.name}"] = f"/images/{out_name}"
+                continue
+            except Exception:
+                pass   # fall back to a plain copy
+        shutil.copy2(f, out_dir / f.name)
+    return mapping
+
+
 def format_date_long(date_str):
     dt = datetime.strptime(date_str, "%Y-%m-%d")
     return dt.strftime("%B %d, %Y")
@@ -321,11 +354,10 @@ def build():
             else:
                 shutil.copy2(item, dest)
 
-    # Static images (post cover artwork, etc.) → /images
+    # Static images (post cover artwork, etc.) → /images, resized + re-encoded as
+    # WebP. image_map rewrites references from the source path to the optimized one.
     images_src = ROOT / "images"
-    if images_src.exists():
-        shutil.copytree(images_src, OUTPUT_DIR / "images",
-                        ignore=shutil.ignore_patterns(".DS_Store"))
+    image_map = optimize_images(images_src, OUTPUT_DIR / "images") if images_src.exists() else {}
 
     # Tell GitHub Pages not to run Jekyll over the output
     (OUTPUT_DIR / ".nojekyll").write_text("")
@@ -480,17 +512,21 @@ def build():
   </div>
 </div>'''
 
+        cover_src = image_map.get(post["cover"], post["cover"])
         cover_html = (
-            f'<figure class="post-cover"><img src="{post["cover"]}" alt="" /></figure>'
+            f'<figure class="post-cover"><img src="{cover_src}" alt="" loading="eager" /></figure>'
             if post["cover"] else ""
         )
+        content_html = prefix_internal_links(post["html"], slug_set, BASE_PATH)
+        for _orig, _opt in image_map.items():
+            content_html = content_html.replace(_orig, _opt)
         post_html = render(
             post_tpl,
             cover=cover_html,
             title=post["title"],
             date_formatted=format_date_long(post["date"]),
             read_time=str(post["read_time"]),
-            content=prefix_internal_links(post["html"], slug_set, BASE_PATH),
+            content=content_html,
             related_posts=related_html,
             linked_mentions=linked_mentions_html,
             reply=reply_section(f"{SITE_URL}{BASE_PATH}/{post['slug']}", post["title"]),

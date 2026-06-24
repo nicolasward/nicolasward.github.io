@@ -1,3 +1,4 @@
 markdown==3.9
 rcssmin==1.2.2
 rjsmin==1.2.5
+Pillow==12.2.0

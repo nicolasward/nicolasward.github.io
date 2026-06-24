@@ -696,6 +696,17 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
   width: 100%;
   height: auto;
 }
+/* Mobile: the banner goes full-bleed (edge to edge), breaking out of the
+   content column's padding, with square corners. */
+@media (max-width: 600px) {
+  .post-cover {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 0;
+  }
+}
 
 .post-header {
   margin-bottom: 2rem;

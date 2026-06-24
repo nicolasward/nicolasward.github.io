@@ -1415,6 +1415,16 @@ h3:hover .heading-anchor {
 .js .header-glow.lit { opacity: 0.6; }
 .js [data-theme="dark"] .pg.lit { opacity: 0.2; }            /* both glows dim hard in dark mode */
 .js [data-theme="dark"] .header-glow.lit { opacity: 0.2; }
+/* Desktop: run the glows 30% dimmer than mobile (0.6 → 0.42 light, 0.2 → 0.14
+   dark). Placed after the lit rules so it wins; mobile keeps the fuller glow. */
+@media (min-width: 601px) {
+  .pg { opacity: 0.42; }
+  [data-theme="dark"] .pg { opacity: 0.14; }
+  .js .pg.lit,
+  .js .header-glow.lit { opacity: 0.42; }
+  .js [data-theme="dark"] .pg.lit,
+  .js [data-theme="dark"] .header-glow.lit { opacity: 0.14; }
+}
 @media (prefers-reduced-motion: reduce) { .js .pg { transition: none; } }
 /* On a horizontal article swipe, contract each lit glow back to its edge (quick),
    for a smooth hand-off to the next article's glow. */

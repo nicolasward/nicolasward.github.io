@@ -194,7 +194,12 @@ def style_remedies(html):
         re.DOTALL,
     )
 
+    count = [0]
+
     def repl(m):
+        count[0] += 1
+        # A dinkus (centred ·· break) between sections — never before the first.
+        dinkus = "" if count[0] == 1 else '<div class="dinkus" aria-hidden="true"></div>'
         attrs = m.group(2)
         if 'class="' in attrs:
             attrs = attrs.replace('class="', 'class="culprit ', 1)
@@ -208,6 +213,7 @@ def style_remedies(html):
             i = cap.start()
             body = body[:i] + body[i].upper() + body[i + 1:]
         return (
+            f"{dinkus}"
             f"{m.group(1)}{attrs}{m.group(3)}{m.group(4)}{m.group(5)}{m.group(6)}"
             f'<ul class="remedy"><li><span class="remedy-label">{label}</span>{body}</li></ul>'
         )

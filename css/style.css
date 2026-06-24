@@ -1149,9 +1149,22 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
 .post-content { counter-reset: culprit; }
 .post-content h2.culprit {
   counter-increment: culprit;
-  margin-top: 2.4em;
-  padding-top: 1.5em;
-  border-top: 1px solid var(--border);   /* faint hairline between sections */
+  margin-top: 2.2em;
+}
+.post-content .dinkus + h2.culprit { margin-top: 0; }   /* the dinkus owns the gap above */
+/* Dinkus — a soft, centred three-dot break between sections. Deliberately NOT a
+   full-width hairline (that reads as the article ending). */
+.post-content .dinkus {
+  margin: 2.6rem 0 2rem;
+  text-align: center;
+  line-height: 1;
+  color: var(--fg-faint);
+}
+.post-content .dinkus::before {
+  content: "•••";
+  font-size: 0.62rem;
+  letter-spacing: 0.55em;
+  margin-left: 0.55em;   /* offset the trailing letter-spacing so the dots centre */
 }
 .post-content h2.culprit::before {
   content: counter(culprit) ".";

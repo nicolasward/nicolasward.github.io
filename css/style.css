@@ -38,7 +38,7 @@
 }
 
 [data-theme="dark"] {
-  --accent:    #DA702C;   /* lighter terracotta (Flexoki orange 400) reads better on black */
+  --accent:    #FF5F1F;   /* same bright orange as light mode */
 
   --canvas:    var(--flexoki-black);
   --field:     var(--flexoki-black);
@@ -1478,11 +1478,9 @@ h3:hover .heading-anchor {
   .js [data-theme="dark"] .header-glow.lit { opacity: 0.14; }
 }
 /* The header glow returns on the HOME page only (no dense reading at the top
-   there) — and softer than the footer, so the masthead stays calm. Article and
-   static pages keep it hidden (.header-glow display:none above). */
+   there). It matches the footer glow's opacity via the shared .pg/.header-glow
+   rules. Article and static pages keep it hidden (.header-glow display:none). */
 body.home .header-glow { display: block; }
-.js body.home .header-glow.lit { opacity: 0.3; }
-[data-theme="dark"] body.home .header-glow.lit { opacity: 0.12; }
 @media (prefers-reduced-motion: reduce) { .js .pg { transition: none; } }
 /* On a horizontal article swipe, contract each lit glow back to its edge (quick),
    for a smooth hand-off to the next article's glow. */

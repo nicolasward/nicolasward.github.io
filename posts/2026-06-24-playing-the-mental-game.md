@@ -1,7 +1,7 @@
 ---
 title: The mental game
 date: 2026-06-24
-slug: playing-the-mental-game
+slug: the-mental-game
 tags: startups, psychology
 cover: /images/the-mental-game.png
 ---

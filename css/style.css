@@ -9,8 +9,10 @@
    (see css/flexoki.css); the accent and the background field sit deliberately
    outside it. Call sites reference these tokens — never raw hex. */
 :root {
-  /* Brand accent — the one highlight colour (hover, active, focus, caret). */
-  --accent: #00a1b4;
+  /* Brand accent — the one highlight colour (hover, active, focus, caret). A
+     warm Flexoki terracotta; the deeper 600 reads on the cream paper, the
+     lighter 400 is set for dark mode below. */
+  --accent: #BC5215;
 
   /* Background field — intentionally COOL (not Flexoki's warm paper), near-white.
      canvas paints the root + iOS safe-area; field / field-mid are gradient stops. */
@@ -36,6 +38,8 @@
 }
 
 [data-theme="dark"] {
+  --accent:    #DA702C;   /* lighter terracotta (Flexoki orange 400) reads better on black */
+
   --canvas:    var(--flexoki-black);
   --field:     var(--flexoki-black);
   --field-mid: var(--flexoki-black);

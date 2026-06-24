@@ -202,6 +202,11 @@ def style_remedies(html):
             attrs = attrs + ' class="culprit"'
         label = m.group(7).rstrip(" :")
         body = m.group(8).lstrip()
+        # Capitalise the remedy's first letter ("build…" → "Build…").
+        cap = re.search(r"[A-Za-z]", body)
+        if cap:
+            i = cap.start()
+            body = body[:i] + body[i].upper() + body[i + 1:]
         return (
             f"{m.group(1)}{attrs}{m.group(3)}{m.group(4)}{m.group(5)}{m.group(6)}"
             f'<ul class="remedy"><li><span class="remedy-label">{label}</span>{body}</li></ul>'

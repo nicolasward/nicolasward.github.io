@@ -1143,15 +1143,20 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
 }
 
 /* Numbered "culprit" sections + their remedy callout (tagged by the build's
-   style_remedies). A heading answered by a remedy gets a terracotta ordinal;
-   the remedy becomes an accent-ruled aside with a small uppercase label, so the
-   problem→remedy rhythm reads as a deliberate editorial device. */
+   style_remedies). A heading answered by a remedy gets a muted ordinal and a
+   hairline rule above it; the remedy becomes a quiet aside with a small uppercase
+   label — all monochrome, so the problem→remedy rhythm reads as structure. */
 .post-content { counter-reset: culprit; }
-.post-content h2.culprit { counter-increment: culprit; }
+.post-content h2.culprit {
+  counter-increment: culprit;
+  margin-top: 2.4em;
+  padding-top: 1.5em;
+  border-top: 1px solid var(--border);   /* faint hairline between sections */
+}
 .post-content h2.culprit::before {
   content: counter(culprit) ".";
   margin-right: 0.4em;
-  color: var(--accent);
+  color: var(--fg-muted);
   font-variant-numeric: tabular-nums;
 }
 .post-content ul.remedy {
@@ -1161,7 +1166,7 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
 }
 .post-content ul.remedy > li {
   padding: 0.05rem 0 0.05rem 1.3rem;
-  border-left: 2px solid var(--accent);
+  border-left: 2px solid var(--fg-faint);
 }
 .post-content ul.remedy > li::before { content: none; }   /* no bullet on the callout */
 .post-content .remedy-label {
@@ -1171,7 +1176,7 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
   font-weight: 600;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--fg-muted);
 }
 
 .post-content code {

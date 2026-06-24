@@ -1161,10 +1161,9 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
   color: var(--fg-faint);
 }
 .post-content .dinkus::before {
-  content: "•••";
-  font-size: 0.62rem;
-  letter-spacing: 0.55em;
-  margin-left: 0.55em;   /* offset the trailing letter-spacing so the dots centre */
+  content: "• • •";
+  font-size: 0.85rem;
+  word-spacing: 2.3em;   /* big, airy gaps; spaces (not letter-spacing) centre cleanly */
 }
 .post-content h2.culprit::before {
   content: counter(culprit) ".";

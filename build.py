@@ -181,6 +181,35 @@ def style_footnotes(html):
     return html
 
 
+def style_remedies(html):
+    """Promote a lone "**Lead-in:** …" bullet that answers a section heading into
+    an editorial callout — an accent-ruled aside with the lead-in as a small label
+    — and tag that heading as a numbered "culprit". Turns the post's
+    problem→remedy rhythm into a deliberate device instead of a stray bullet.
+    Headings without a following lead-in bullet (intro/outro) are left untouched."""
+    section_re = re.compile(
+        r'(<h2)([^>]*)(>)(.*?)(</h2>)'                              # the heading
+        r'((?:(?!<h2).)*?)'                                         # its intro (no other heading)
+        r'<ul>\s*<li>\s*<strong>(.*?)</strong>(.*?)</li>\s*</ul>',  # the lone lead-in bullet
+        re.DOTALL,
+    )
+
+    def repl(m):
+        attrs = m.group(2)
+        if 'class="' in attrs:
+            attrs = attrs.replace('class="', 'class="culprit ', 1)
+        else:
+            attrs = attrs + ' class="culprit"'
+        label = m.group(7).rstrip(" :")
+        body = m.group(8).lstrip()
+        return (
+            f"{m.group(1)}{attrs}{m.group(3)}{m.group(4)}{m.group(5)}{m.group(6)}"
+            f'<ul class="remedy"><li><span class="remedy-label">{label}</span>{body}</li></ul>'
+        )
+
+    return section_re.sub(repl, html)
+
+
 def render(template_str, **kwargs):
     result = template_str
     for key, val in kwargs.items():
@@ -344,6 +373,7 @@ def build():
         md.reset()
         html_content = md.convert(body)
         html_content = add_heading_anchors(html_content)
+        html_content = style_remedies(html_content)
         html_content = style_footnotes(html_content)
 
         slug = meta.get("slug", filepath.stem)

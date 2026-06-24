@@ -1142,6 +1142,38 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
   font-style: italic;
 }
 
+/* Numbered "culprit" sections + their remedy callout (tagged by the build's
+   style_remedies). A heading answered by a remedy gets a terracotta ordinal;
+   the remedy becomes an accent-ruled aside with a small uppercase label, so the
+   problem→remedy rhythm reads as a deliberate editorial device. */
+.post-content { counter-reset: culprit; }
+.post-content h2.culprit { counter-increment: culprit; }
+.post-content h2.culprit::before {
+  content: counter(culprit) ".";
+  margin-right: 0.4em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.post-content ul.remedy {
+  margin: 1.1rem 0 1.7rem;
+  padding: 0;
+  list-style: none;
+}
+.post-content ul.remedy > li {
+  padding: 0.05rem 0 0.05rem 1.3rem;
+  border-left: 2px solid var(--accent);
+}
+.post-content ul.remedy > li::before { content: none; }   /* no bullet on the callout */
+.post-content .remedy-label {
+  display: block;
+  margin-bottom: 0.32em;
+  font-size: 0.7em;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
 .post-content code {
   font-family: 'SF Mono', 'Fira Code', Menlo, monospace;
   font-size: 0.85em;

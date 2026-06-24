@@ -694,7 +694,8 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 .post-cover img {
   display: block;
   width: 100%;
-  height: auto;
+  aspect-ratio: 16 / 9;   /* desktop: a banner crop, not the artwork's near-square ratio */
+  object-fit: cover;
 }
 /* Mobile: the banner goes full-bleed (edge to edge), breaking out of the
    content column's padding, with square corners — and a taller 4:3 crop so it

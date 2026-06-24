@@ -48,14 +48,12 @@ def share_row(url, title):
     x = f"https://twitter.com/intent/tweet?url={u}&text={t}"
     whatsapp = f"https://wa.me/?text={quote(title + ' ' + url, safe='')}"
     email = f"mailto:?subject={t}&body={u}"
-    matter = f"https://hq.getmatter.com/share?url={u}"
     return (
         '<div class="post-share">'
         f'<a class="share-btn" href="{linkedin}" target="_blank" rel="noopener" aria-label="Share on LinkedIn" title="Share on LinkedIn">{_ICON_LINKEDIN}</a>'
         f'<a class="share-btn" href="{x}" target="_blank" rel="noopener" aria-label="Share on X" title="Share on X">{_ICON_X}</a>'
         f'<a class="share-btn" href="{whatsapp}" target="_blank" rel="noopener" aria-label="Share on WhatsApp" title="Share on WhatsApp">{_ICON_WHATSAPP}</a>'
         f'<a class="share-btn" href="{email}" aria-label="Share by email" title="Share by email">{_ICON_MAIL}</a>'
-        f'<a class="share-btn" href="{matter}" target="_blank" rel="noopener" aria-label="Save to Matter" title="Save to Matter">{_ICON_MATTER}</a>'
         '<button class="share-btn share-copy" type="button" aria-label="Copy link" title="Copy link">'
         f'<span class="icon-link">{_ICON_LINK}</span><span class="icon-check">{_ICON_CHECK}</span>'
         '</button>'

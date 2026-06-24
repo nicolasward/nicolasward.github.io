@@ -1158,12 +1158,12 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
   margin: 2.6rem 0 2rem;
   text-align: center;
   line-height: 1;
-  color: var(--fg-faint);
+  color: var(--fg-muted);   /* faint was washing out on the light field */
 }
 .post-content .dinkus::before {
   content: "• • •";
-  font-size: 0.85rem;
-  word-spacing: 2.3em;   /* big, airy gaps; spaces (not letter-spacing) centre cleanly */
+  font-size: 1.05rem;
+  word-spacing: 2em;   /* big, airy gaps; spaces (not letter-spacing) centre cleanly */
 }
 .post-content h2.culprit::before {
   content: counter(culprit) ".";

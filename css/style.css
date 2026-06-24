@@ -1450,7 +1450,8 @@ h3:hover .heading-anchor {
    Mobile (≤600px) keeps the fuller size from the base rule above. */
 @media (min-width: 601px) {
   .pg { width: min(82vw, 1220px); height: min(60vw, 780px); }
-  [data-theme="dark"] .page-bg::after { width: min(82vw, 1220px); height: min(60vw, 780px); }   /* grain tracks the glow */
+  [data-theme="dark"] .page-bg::after,
+  [data-theme="dark"] body.home .page-bg::before { width: min(82vw, 1220px); height: min(60vw, 780px); }   /* grain tracks the glow */
 }
 
 /* With JS each glow starts HIDDEN and CONTRACTED at its own edge, then swells in
@@ -1519,7 +1520,8 @@ body.home .header-glow { display: block; }
    contains this mix-blend-mode — so it textures the glows without disabling the
    header's backdrop-filter (see .page-bg). Grain sits above the glows (z auto >
    the glows' negative z) but is itself behind all page content (page-bg is -1). */
-[data-theme="dark"] .page-bg::after {
+[data-theme="dark"] .page-bg::after,
+[data-theme="dark"] body.home .page-bg::before {
   content: "";
   position: absolute;
   left: 50%;
@@ -1537,6 +1539,7 @@ body.home .header-glow { display: block; }
   mix-blend-mode: overlay;
 }
 [data-theme="dark"] .page-bg::after  { bottom: 0; transform: translateX(-50%); }            /* over the footer glow */
+[data-theme="dark"] body.home .page-bg::before { top: 0; transform: translateX(-50%) scaleY(-1); }   /* over the home header glow */
 
 .footer-links {
   display: flex;

@@ -1076,6 +1076,7 @@
         var gotcha = form.querySelector('.newsletter-gotcha');
         var section = form.closest('.newsletter');
         var endpoint = form.getAttribute('data-endpoint') || '';
+        var emailField = form.getAttribute('data-email-field') || 'email';
 
         function setMsg(text, kind) {
           msg.textContent = text || '';
@@ -1290,7 +1291,7 @@
           // Fire-and-forget — nothing to wait on.
           if (endpoint) {
             var body = new FormData();
-            body.append('email', email);
+            body.append(emailField, email);
             try { fetch(endpoint, { method: 'POST', body: body, mode: 'no-cors' }); } catch (err) {}
           }
           startLoading();

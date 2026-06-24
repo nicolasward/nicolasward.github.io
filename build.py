@@ -310,7 +310,7 @@ def newsletter_section():
       <h2 class="newsletter-heading" id="newsletter-heading">New essays in your inbox.</h2>
       <p class="newsletter-dek">Human-typed essays about AI, learning, and design to supercharge your thinking.</p>
     </div>
-    <form class="newsletter-form" data-endpoint="" novalidate>
+    <form class="newsletter-form" data-endpoint="https://app.kit.com/forms/9606201/subscriptions" data-email-field="email_address" novalidate>
       <div class="newsletter-field">
         <input class="newsletter-input" type="email" name="email" inputmode="email"
                autocomplete="email" spellcheck="false" placeholder="steve@apple.com"

@@ -697,7 +697,8 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
   height: auto;
 }
 /* Mobile: the banner goes full-bleed (edge to edge), breaking out of the
-   content column's padding, with square corners. */
+   content column's padding, with square corners — and a taller 4:3 crop so it
+   commands the top of the page (the wide artwork is otherwise a thin strip). */
 @media (max-width: 600px) {
   .post-cover {
     width: 100vw;
@@ -705,6 +706,10 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
     left: 50%;
     transform: translateX(-50%);
     border-radius: 0;
+  }
+  .post-cover img {
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
   }
 }
 

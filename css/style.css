@@ -1445,13 +1445,11 @@ h3:hover .heading-anchor {
 /* The glows are gorgeous in light mode but, on the dark field, they clash with
    the (now light) header/footer text — so both are dimmed hard in dark mode. */
 [data-theme="dark"] .pg { opacity: 0.2; z-index: -2; }
-.header-glow { opacity: 0.6; }                          /* gentler behind the nav links */
-[data-theme="dark"] .header-glow { opacity: 0.2; }
+.header-glow { display: none; }   /* removed — it competed with the reading area (footer glow stays) */
 /* Desktop: a more contained dome, so the glow takes a touch less of the page.
    Mobile (≤600px) keeps the fuller size from the base rule above. */
 @media (min-width: 601px) {
   .pg { width: min(82vw, 1220px); height: min(60vw, 780px); }
-  [data-theme="dark"] .page-bg::before,
   [data-theme="dark"] .page-bg::after { width: min(82vw, 1220px); height: min(60vw, 780px); }   /* grain tracks the glow */
 }
 
@@ -1515,7 +1513,6 @@ h3:hover .heading-anchor {
    contains this mix-blend-mode — so it textures the glows without disabling the
    header's backdrop-filter (see .page-bg). Grain sits above the glows (z auto >
    the glows' negative z) but is itself behind all page content (page-bg is -1). */
-[data-theme="dark"] .page-bg::before,
 [data-theme="dark"] .page-bg::after {
   content: "";
   position: absolute;
@@ -1534,7 +1531,6 @@ h3:hover .heading-anchor {
   mix-blend-mode: overlay;
 }
 [data-theme="dark"] .page-bg::after  { bottom: 0; transform: translateX(-50%); }            /* over the footer glow */
-[data-theme="dark"] .page-bg::before { top: 0;    transform: translateX(-50%) scaleY(-1); }  /* over the header glow */
 
 .footer-links {
   display: flex;

@@ -118,7 +118,7 @@ body {
    shows a single, larger blob that *glows* (screen-blended) on the deep field,
    with the other two hidden. Body ink flips to a muted light, and the grain
    becomes a CSS noise (the dark-fleck grain.png is invisible on dark). */
-html[data-theme="dark"] .lede { color: rgba(255, 255, 255, 0.5); }
+html[data-theme="dark"] .lede { color: rgba(255, 255, 255, 0.25); }
 /* A calm, dim glow so the drifting blob never washes out the light text. */
 html[data-theme="dark"] .blob { opacity: .3; mix-blend-mode: screen; }
 html[data-theme="dark"] .blob:first-child { width: 42vmax; height: 42vmax; }   /* the lone blob */
@@ -327,7 +327,7 @@ html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
 /* Trailing punctuation hugged onto a coloured word (the comma after Atelier /
    design, the period after email) keeps the body ink, not the word's colour. */
 .punct { color: rgba(29, 29, 31, 0.25); }
-html[data-theme="dark"] .punct { color: rgba(255, 255, 255, 0.5); }
+html[data-theme="dark"] .punct { color: rgba(255, 255, 255, 0.25); }
 /* Hover: a highlighter sweeps over the word from left to right — a translucent
    stroke behind the text that grows from 0 → full width (anchored left). One
    elegant, neutral marker for ALL links — a soft graphite wash in light mode, an

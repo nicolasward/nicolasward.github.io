@@ -10,9 +10,9 @@
    outside it. Call sites reference these tokens — never raw hex. */
 :root {
   /* Brand accent — the one highlight colour (hover, active, focus, caret). A
-     warm Flexoki terracotta; the deeper 600 reads on the cream paper, the
-     lighter 400 is set for dark mode below. */
-  --accent: #BC5215;
+     warm Flexoki orange: a clean, punchy 500 on the light field; the lighter
+     400 (set for dark mode below) glows on black. */
+  --accent: #CB6120;
 
   /* Background field — intentionally COOL (not Flexoki's warm paper), near-white.
      canvas paints the root + iOS safe-area; field / field-mid are gradient stops. */

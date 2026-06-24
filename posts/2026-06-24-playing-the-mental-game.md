@@ -3,7 +3,7 @@ title: The mental game
 date: 2026-06-24
 slug: playing-the-mental-game
 tags: startups, psychology
-cover: /images/the-mental-game.svg
+cover: /images/the-mental-game.png
 ---
 
 Of all the great challenges that pave a founder’s journey, perhaps the toughest of all is learning to play - and win - the constant mental game that comes with the job.

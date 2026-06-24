@@ -714,6 +714,26 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
   }
 }
 
+/* Entrance: the artwork comes into focus — starting slightly zoomed, softly
+   blurred and a touch dim — then settles to crisp, full-scale, full-brightness.
+   It leads the reveal: by the time the title rises (0.1s) and the meta follows
+   (0.35s), the banner is still easing into focus above them. */
+.post-cover img {
+  animation: cover-focus-in 1.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes cover-focus-in {
+  from {
+    opacity: 0;
+    transform: scale(1.06);
+    filter: blur(12px) brightness(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0) brightness(1);
+  }
+}
+
 .post-header {
   margin-bottom: 2rem;
 }
@@ -901,6 +921,7 @@ html.skip-intro body.home .post-list li,
 html.skip-intro body.home .topics-inline,
 html.skip-intro .roll-in,
 html.skip-intro .reveal-up,
+html.skip-intro .post-cover img,
 html.skip-intro body.article .post-content,
 html.skip-intro body.page .post-content {
   animation: none !important;
@@ -971,6 +992,7 @@ body.swiping #reading-progress { opacity: 0 !important; transition: none; pointe
   .post-title,
   .page-title,
   .post-meta { animation: none; opacity: 1; }
+  .post-cover img { animation: none; opacity: 1; filter: none; transform: none; }
   .js body.article .post-content,
   .js body.page .post-content { opacity: 1; }
 }

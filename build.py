@@ -321,6 +321,12 @@ def build():
             else:
                 shutil.copy2(item, dest)
 
+    # Static images (post cover artwork, etc.) → /images
+    images_src = ROOT / "images"
+    if images_src.exists():
+        shutil.copytree(images_src, OUTPUT_DIR / "images",
+                        ignore=shutil.ignore_patterns(".DS_Store"))
+
     # Tell GitHub Pages not to run Jekyll over the output
     (OUTPUT_DIR / ".nojekyll").write_text("")
 
@@ -391,12 +397,14 @@ def build():
         title = meta.get("title", filepath.stem.replace("-", " ").title())
         date = meta.get("date", "2024-01-01")
         tags = meta.get("tags", [])
+        cover = meta.get("cover", "")
 
         posts.append({
             "slug": slug,
             "title": title,
             "date": date,
             "tags": tags,
+            "cover": cover,
             "html": html_content,
             "body": body,
             "read_time": estimate_read_time(body),
@@ -472,8 +480,13 @@ def build():
   </div>
 </div>'''
 
+        cover_html = (
+            f'<figure class="post-cover"><img src="{post["cover"]}" alt="" /></figure>'
+            if post["cover"] else ""
+        )
         post_html = render(
             post_tpl,
+            cover=cover_html,
             title=post["title"],
             date_formatted=format_date_long(post["date"]),
             read_time=str(post["read_time"]),

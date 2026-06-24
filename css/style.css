@@ -682,6 +682,21 @@ html.vt-toggling .theme-toggle .toggle-knob { transition: none; }
 }
 
 /* ===== Post page ===== */
+/* Optional header artwork — a content-width banner above the title (set via the
+   post's `cover:` frontmatter). Rounded, full of the artwork at its own ratio. */
+.post-cover {
+  margin: 0 0 2.4rem;
+  border-radius: 12px;
+  overflow: hidden;
+  line-height: 0;
+  background: var(--surface);
+}
+.post-cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .post-header {
   margin-bottom: 2rem;
 }

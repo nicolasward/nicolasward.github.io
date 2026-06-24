@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 440" preserveAspectRatio="xMidYMid slice">
+  <!-- PLACEHOLDER cover art: a marble-style swirl in the reference palette
+       (cream / caramel / teal / petrol / brown). Replace this file with the
+       real artwork (e.g. the-mental-game.jpg) and update the post's cover: path. -->
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"  stop-color="#E9D9BC"/>
+      <stop offset="16%" stop-color="#B98A4A"/>
+      <stop offset="36%" stop-color="#2D6470"/>
+      <stop offset="50%" stop-color="#0E2E36"/>
+      <stop offset="66%" stop-color="#1E4E58"/>
+      <stop offset="84%" stop-color="#8A5A2C"/>
+      <stop offset="100%" stop-color="#EADCC0"/>
+    </linearGradient>
+    <filter id="marble" x="-25%" y="-25%" width="150%" height="150%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.005" numOctaves="4" seed="14" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="175" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <rect x="-140" y="-140" width="1480" height="720" fill="url(#g)" filter="url(#marble)"/>
+</svg>

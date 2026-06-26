@@ -8,17 +8,17 @@ cover: /images/mental-game.jpg
 
 Of all the great challenges that pave a founder’s journey, perhaps the toughest of all is learning to play - and win - the constant mental game that comes with the job.
 
-Mental games come in many forms, and each day in the life of a founder brings with it new antagonists, with their unique flavours of ruses and tactics. Below, I list the main culprits I’ve noticed in my own life and offer a few strategies to defeat them.
+Mental games come in many forms, and each day in the life of a founder brings with it new antagonists, with their unique flavours of ruses and tactics. Below, I list the main culprits I’ve noticed in my own life and offer a few strategies that help me defeat them.
 
 ## Procrastination
 Writer’s block, “ideation” sessions, endlessly re-cleaning your house, cooking healthy meals, consuming “educational” content, or working out to feel productive - this is your mind pulling you away from the work. 
 
-- **How to defeat it:** work in blocks, set a schedule and stick to it, work on your discipline (and by all means keep exercising, eating healthy, and cleaning your house - just not as escape mechanisms / substitutes for the real work).
+- **How to defeat it:** Work in blocks, stick to a schedule, use your calendar as a to-do list. If working from home, get out of the house - to your local coffeeshop or library. I've also found that I procrastinate substantially more when the task on my to-do list is broad / blurry - making it unclear where to start (e.g. "write a blog post", "build a feature"). A great way to overcome this is to set some time aside every day to break down your tasks into smaller, more tactical chunks ("write section X including anecdote A", "implement the login flow"). And by all means - keep exercising, eating healthy, and cleaning your house - just not as escape mechanisms from the real work.
 
 ## Comparison
 This is a big one; a friend gets a new job or a promotion, LinkedIn announcements left and right, a fellow founder celebrates a key milestone and your competitor announces their latest fundraise - all while you’re struggling to get traction / fundraise / hire and anxious about runway. 
 
-- **How to defeat it:** you need to realise that (1) your employed friends have other problems (bullshit jobs even if they look good on paper, building someone else’s vision, less agency/freedom, capped earnings), and (2) the struggle of your founding journey is precisely the reason why most people stay in their comfort zones and never dare to start a company. The struggle is the price to pay to get to build something great. Focus on your next step.
+- **How to defeat it:** you need to realise that (1) your employed friends have other problems (bullshit jobs even if they look good on paper, building someone else’s vision, less agency/freedom, capped earnings), and (2) the struggle of your founding journey is precisely the reason why most people stay in their comfort zones and never dare to start a company. The struggle is the price you pay to get a shot at building something great. Focus on your next step.
 
 ## Rejection
 Rejection can come from anywhere: customers, investors, potential hires, but also friends, family, and people you meet at networking events or coffee chats, all of whom can be ruthlessly effective at explaining to you in 25 different (and surprisingly creative) ways why your startup is bound to fail. The risk with rejection is how easy it is to start believing all the feedback you receive and give up on your idea (or course-correct too much, which leads to inconsistency and lack of focus). 

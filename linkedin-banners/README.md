@@ -14,6 +14,21 @@ gradient, the five footer blob palettes, and the real `grain.png` texture.
 The dark variant keeps the left side dark, so a profile photo (bottom-left)
 sits cleanly on it.
 
+### Aurora set (light mode)
+
+Buttery, seam-free colour fields — each pixel is a normalised Gaussian blend of
+six hues, gently warped into waves. Same geometry, five colourways.
+
+| File | Flow |
+| --- | --- |
+| `banner-aurora-cool.png`   | green → teal → blue → violet |
+| `banner-aurora-meadow.png` | lime → green → teal → aqua |
+| `banner-aurora-dusk.png`   | sky → blue → violet → pink |
+| `banner-aurora-sunset.png` | gold → peach → coral → pink |
+| `banner-aurora-iris.png`   | teal → blue → violet → pink → peach (full spectrum) |
+
+`banner-cool.png` is the same image as `banner-aurora-cool.png`.
+
 ### Plain + single-blob set (light mode)
 
 Same light-mode blog background (gradient + grain) everywhere; the colour

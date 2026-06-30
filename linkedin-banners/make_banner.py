@@ -212,24 +212,40 @@ render_light([
     ("aurora", (0.90, 0.34), 1.3),
 ], f"{OUT}/banner-warm.png")
 
-# Variant 2 — cool aurora: green → teal → blue → a soft lilac, all smoothly
-# merged (no disc seams) with a gentle wave warp. Ethereal, futuristic.
-_AUR_GREEN, _AUR_TEAL, _AUR_CYAN, _AUR_BLUE, _AUR_DEEP, _AUR_VIO = (
-    _hexrgb(0x54D6A0), _hexrgb(0x2FC6C9), _hexrgb(0x4AA6F0),
-    _hexrgb(0x5E7CEC), _hexrgb(0x4E62D8), _hexrgb(0x8A6FE6))
-render_aurora([
-    (_AUR_GREEN, (0.00, 0.64), 1.0),
-    (_AUR_TEAL,  (0.20, 0.32), 1.0),
-    (_AUR_CYAN,  (0.40, 0.70), 1.0),
-    (_AUR_VIO,   (0.58, 0.20), 0.75),
-    (_AUR_BLUE,  (0.74, 0.62), 1.0),
-    (_AUR_DEEP,  (0.99, 0.36), 1.05),
-    (_AUR_BLUE,  (0.92, 0.92), 0.8),   # fill bottom-right (no white corner)
-    (_AUR_VIO,   (0.84, 0.02), 0.55),  # fill top-right
-], f"{OUT}/banner-cool.png", sigma=0.17, warp=0.15, max_alpha=0.48, seed=5, k=5.0)
-
 # Variant 3 — dark, single aurora glow
 render_dark("aurora", (0.70, 0.45), f"{OUT}/banner-dark.png", seed=7)
+
+
+# ---- Aurora set: five buttery colourways, one shared full-coverage geometry ----
+# Each colourway is six hues flowing left -> right; render_aurora melts them into
+# a seam-free, gently-waved field. (banner-cool.png is the "cool" member.)
+_AUR_POS = [
+    ((0.00, 0.64), 1.0), ((0.20, 0.32), 1.0), ((0.40, 0.70), 1.0),
+    ((0.58, 0.20), 0.75), ((0.74, 0.62), 1.0), ((0.99, 0.36), 1.05),
+]
+_AUR_FILLS = [(4, (0.92, 0.92), 0.8), (3, (0.84, 0.02), 0.55)]   # (colour-idx, pos, w)
+_AUR_WAYS = {
+    "cool":   [0x54D6A0, 0x2FC6C9, 0x4AA6F0, 0x8A6FE6, 0x5E7CEC, 0x4E62D8],  # green→blue→violet
+    "meadow": [0x9BE06A, 0x5FD68F, 0x2FC6B0, 0x6FD9C0, 0x4FC9D9, 0x39B6C9],  # lime→teal→aqua
+    "dusk":   [0x4FA8E8, 0x6E86E8, 0x8E6FE6, 0xC56FD0, 0xA86FE0, 0xD96FB0],  # sky→violet→pink
+    "sunset": [0xFFCE73, 0xFFA876, 0xFF8A86, 0xF98AB5, 0xF87FA0, 0xF06AA0],  # gold→peach→pink
+    "iris":   [0x4FD6B0, 0x4AA6F0, 0x8A6FE6, 0xC56FD0, 0xF87FA0, 0xFF9E76],  # teal→violet→peach
+}
+
+
+def _aur_anchors(hexes):
+    cols = [_hexrgb(h) for h in hexes]
+    anchors = [(cols[i], _AUR_POS[i][0], _AUR_POS[i][1]) for i in range(6)]
+    return anchors + [(cols[ci], pos, w) for ci, pos, w in _AUR_FILLS]
+
+
+for _i, (_name, _hex) in enumerate(_AUR_WAYS.items()):
+    render_aurora(_aur_anchors(_hex), f"{OUT}/banner-aurora-{_name}.png",
+                  sigma=0.17, warp=0.15, max_alpha=0.48, seed=5 + _i * 4, k=5.0)
+
+# Keep the thematic "cool" name pointing at the cool aurora (same image).
+render_aurora(_aur_anchors(_AUR_WAYS["cool"]), f"{OUT}/banner-cool.png",
+              sigma=0.17, warp=0.15, max_alpha=0.48, seed=5, k=5.0)
 
 
 # ---- Plain + single-blob set (light mode only) ----

@@ -29,6 +29,16 @@ six hues, gently warped into waves. Same geometry, five colourways.
 
 `banner-cool.png` is the same image as `banner-aurora-cool.png`.
 
+### Marble set (light mode)
+
+Fluid-art marbling in the site palette — colour strata folded by three scales of
+fractal warp, with thin cream veins. Bolder and more textural than the auroras.
+
+| File | Look |
+| --- | --- |
+| `banner-marble-copper.png` | Earthy — navy, teal, copper, rust, cream veins |
+| `banner-marble-cool.png`   | Cool — navy, teal, cyan, blue, violet |
+
 ### Plain + single-blob set (light mode)
 
 Same light-mode blog background (gradient + grain) everywhere; the colour

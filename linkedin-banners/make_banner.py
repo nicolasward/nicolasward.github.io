@@ -204,6 +204,53 @@ def render_aurora(anchors, name, sigma, warp, max_alpha, seed, k):
     print("wrote", name)
 
 
+def _mnoise(cells, seed):
+    """Smooth value noise in [-0.5,0.5] (bilinear + blur, no bicubic ripple)."""
+    rng = np.random.default_rng(seed)
+    cols = max(2, cells)
+    rows = max(2, int(cells * GH / GW))
+    low = rng.random((rows, cols))
+    img = Image.fromarray((low * 255).astype(np.uint8)).resize((GW, GH), Image.BILINEAR)
+    img = img.filter(ImageFilter.GaussianBlur(GW / cols * 0.28))
+    return np.asarray(img, float) / 255.0 - 0.5
+
+
+def _fbm(cells, octaves, seed, persistence=0.55, lacunarity=2.0):
+    total = np.zeros((GH, GW))
+    amp, freq, norm = 1.0, cells, 0.0
+    for o in range(octaves):
+        total += amp * _mnoise(int(round(freq)), seed + o * 17)
+        norm += amp
+        amp *= persistence
+        freq *= lacunarity
+    return total / norm
+
+
+def _ramp(colors, s):
+    """Map s through a ping-pong colour ramp -> smooth, periodic marble bands."""
+    C = np.stack(colors)
+    n = len(colors) - 1
+    tri = np.abs((s % 2.0) - 1.0)               # seamless triangle wave
+    x = (1 - tri) * n
+    i = np.clip(np.floor(x).astype(int), 0, n - 1)
+    f = (x - i)[..., None]
+    return C[i] * (1 - f) + C[i + 1] * f
+
+
+def render_marble(name, colors, bands, seed, big=5.5, med=1.4, fine=0.4, ax=0.5, ay=1.0):
+    """Fluid-art marbling: colour strata folded by three scales of fractal warp."""
+    ys, xs = np.mgrid[0:GH, 0:GW].astype(np.float64)
+    t = (xs / GW * ax + ys / GH * ay) * bands
+    t = (t + big * _fbm(2, 2, seed)
+           + med * _fbm(6, 3, seed + 31)
+           + fine * _fbm(20, 3, seed + 91))
+    field = _ramp([np.array(c, float) for c in colors], t)
+    img = Image.fromarray((np.clip(field, 0, 1) * 255).astype(np.uint8), "RGB").resize((W, H), Image.LANCZOS)
+    img = add_grain_light(img)
+    img.save(name, "PNG")
+    print("wrote", name)
+
+
 OUT = "linkedin-banners"
 # Variant 1 — light, warm (sunset / gold / aurora)
 render_light([
@@ -246,6 +293,17 @@ for _i, (_name, _hex) in enumerate(_AUR_WAYS.items()):
 # Keep the thematic "cool" name pointing at the cool aurora (same image).
 render_aurora(_aur_anchors(_AUR_WAYS["cool"]), f"{OUT}/banner-cool.png",
               sigma=0.17, warp=0.15, max_alpha=0.48, seed=5, k=5.0)
+
+
+# ---- Marble set: fluid-art strata in the site palette ----
+_MARB_COPPER = [_hexrgb(h) for h in    # navy/slate/cream-vein/copper/rust/wine
+                (0x1F2A38, 0x314A4A, 0x314A4A, 0xE6D6BC, 0xC07A45, 0xC07A45,
+                 0x9C4A2E, 0x9C4A2E, 0x5E2A33, 0x1F2A38)]
+_MARB_COOL = [_hexrgb(h) for h in      # navy/teal/cream-vein/cyan/blue/violet
+              (0x1F2A38, 0x2C7A72, 0x2C7A72, 0xE8E4F0, 0x3FA8C0, 0x4F6FD8,
+               0x4F6FD8, 0x7A5FD0, 0x1F2A38)]
+render_marble(f"{OUT}/banner-marble-copper.png", _MARB_COPPER, bands=3.0, seed=29)
+render_marble(f"{OUT}/banner-marble-cool.png", _MARB_COOL, bands=3.0, seed=21)
 
 
 # ---- Plain + single-blob set (light mode only) ----

@@ -162,6 +162,48 @@ def render_dark(colour, pos, name, seed):
     print("wrote", name)
 
 
+def _hexrgb(h):
+    return np.array([(h >> 16) & 255, (h >> 8) & 255, h & 255], float) / 255.0
+
+
+def _smooth_noise(cells, seed):
+    """Smooth value noise in [-0.5, 0.5]; `cells` sets the number of undulations."""
+    rng = np.random.default_rng(seed)
+    cols = max(2, cells)
+    rows = max(2, int(cells * GH / GW))
+    low = rng.random((rows, cols))
+    img = Image.fromarray((low * 255).astype(np.uint8)).resize((GW, GH), Image.BICUBIC)
+    return np.asarray(img, float) / 255.0 - 0.5
+
+
+def render_aurora(anchors, name, sigma, warp, max_alpha, seed, k):
+    """A continuous, smoothly-merged colour field (no disc seams).
+
+    Each pixel is a Gaussian-weighted, *normalised* blend of all colour anchors,
+    so neighbouring hues melt together with no hard edges; a low-frequency domain
+    warp bends the bands into gentle waves. High k = full coverage (no white
+    corners); airiness comes from max_alpha, not from gaps in the field.
+    """
+    base = gradient(**LIGHT)
+    ys, xs = np.mgrid[0:GH, 0:GW].astype(np.float64)
+    xn = xs / GW + warp * _smooth_noise(7, seed)
+    yn = ys / GH + warp * 1.5 * _smooth_noise(9, seed + 9)
+    num = np.zeros((GH, GW, 3))
+    den = np.zeros((GH, GW, 1))
+    for colour, (fx, fy), w in anchors:
+        d2 = (xn - fx) ** 2 + ((yn - fy) * 0.5) ** 2   # aspect-aware falloff
+        wi = (w * np.exp(-d2 / (2 * sigma ** 2)))[..., None]
+        num += wi * colour
+        den += wi
+    field = num / np.maximum(den, 1e-6)
+    alpha = (1 - np.exp(-den * k)) * max_alpha
+    out = base * (1 - alpha) + field * alpha
+    img = Image.fromarray((np.clip(out, 0, 1) * 255).astype(np.uint8), "RGB").resize((W, H), Image.LANCZOS)
+    img = add_grain_light(img)
+    img.save(name, "PNG")
+    print("wrote", name)
+
+
 OUT = "linkedin-banners"
 # Variant 1 — light, warm (sunset / gold / aurora)
 render_light([
@@ -170,15 +212,21 @@ render_light([
     ("aurora", (0.90, 0.34), 1.3),
 ], f"{OUT}/banner-warm.png")
 
-# Variant 2 — cool: blue/green dominant with a touch of warm coral (ethereal).
-# green → luminous cyan → electric blue, with a soft peach glow off the top.
-render_light([
-    ("green", (0.04, 0.62), 1.35),
-    ("cyan",  (0.30, 0.42), 1.55),
-    ("navy",  (0.66, 0.42), 1.2),
-    ("navy",  (0.96, 0.56), 1.5),
-    ("coral", (0.42, 0.04), 1.05, 0.30),
-], f"{OUT}/banner-cool.png")
+# Variant 2 — cool aurora: green → teal → blue → a soft lilac, all smoothly
+# merged (no disc seams) with a gentle wave warp. Ethereal, futuristic.
+_AUR_GREEN, _AUR_TEAL, _AUR_CYAN, _AUR_BLUE, _AUR_DEEP, _AUR_VIO = (
+    _hexrgb(0x54D6A0), _hexrgb(0x2FC6C9), _hexrgb(0x4AA6F0),
+    _hexrgb(0x5E7CEC), _hexrgb(0x4E62D8), _hexrgb(0x8A6FE6))
+render_aurora([
+    (_AUR_GREEN, (0.00, 0.64), 1.0),
+    (_AUR_TEAL,  (0.20, 0.32), 1.0),
+    (_AUR_CYAN,  (0.40, 0.70), 1.0),
+    (_AUR_VIO,   (0.58, 0.20), 0.75),
+    (_AUR_BLUE,  (0.74, 0.62), 1.0),
+    (_AUR_DEEP,  (0.99, 0.36), 1.05),
+    (_AUR_BLUE,  (0.92, 0.92), 0.8),   # fill bottom-right (no white corner)
+    (_AUR_VIO,   (0.84, 0.02), 0.55),  # fill top-right
+], f"{OUT}/banner-cool.png", sigma=0.17, warp=0.15, max_alpha=0.48, seed=5, k=5.0)
 
 # Variant 3 — dark, single aurora glow
 render_dark("aurora", (0.70, 0.45), f"{OUT}/banner-dark.png", seed=7)

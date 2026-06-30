@@ -23,6 +23,10 @@ PALETTE = {
     "green":  ((0x9F, 0xF0, 0xC2), (0x34, 0xC7, 0x7B), (0x5F, 0xD0, 0xD9)),
     "gold":   ((0xFF, 0xF1, 0xA6), (0xEB, 0xC5, 0x3A), (0xFF, 0xC9, 0x3D)),
     "navy":   ((0xAE, 0xB8, 0xF0), (0x3A, 0x4E, 0xAE), (0x5B, 0x86, 0xEF)),
+    # Extras for the cool banner — a luminous cyan and a peach-coral warm accent
+    # (a yellow-orange would wash to cream atop the light cyan; coral stays warm).
+    "cyan":   ((0xCB, 0xFB, 0xF1), (0x4F, 0xD6, 0xD0), (0x5A, 0x9E, 0xEF)),
+    "coral":  ((0xFF, 0xE4, 0xC8), (0xFF, 0xA8, 0x66), (0xFF, 0x73, 0x2E)),
 }
 
 
@@ -135,10 +139,12 @@ def add_grain_dark(img, seed):
 
 def render_light(blobs, name):
     base = gradient(**LIGHT)
-    for colour, (fx, fy), scale in blobs:
+    for spec in blobs:
+        colour, (fx, fy), scale = spec[0], spec[1], spec[2]
+        op = spec[3] if len(spec) > 3 else LIGHT_OP   # optional per-blob opacity
         core, mid, outer = PALETTE[colour]
         layer = blob(int(GH * scale), core, mid, outer)
-        place(base, layer, fx * GW, fy * GH, opacity=LIGHT_OP, mode="normal")
+        place(base, layer, fx * GW, fy * GH, opacity=op, mode="normal")
     img = Image.fromarray((np.clip(base, 0, 1) * 255).astype(np.uint8), "RGB").resize((W, H), Image.LANCZOS)
     img = add_grain_light(img)
     img.save(name, "PNG")
@@ -164,11 +170,14 @@ render_light([
     ("aurora", (0.90, 0.34), 1.3),
 ], f"{OUT}/banner-warm.png")
 
-# Variant 2 — light, cool (green / navy / aurora)
+# Variant 2 — cool: blue/green dominant with a touch of warm coral (ethereal).
+# green → luminous cyan → electric blue, with a soft peach glow off the top.
 render_light([
-    ("green",  (0.12, 0.74), 1.25),
-    ("aurora", (0.50, 0.18), 1.3),
-    ("navy",   (0.90, 0.64), 1.3),
+    ("green", (0.04, 0.62), 1.35),
+    ("cyan",  (0.30, 0.42), 1.55),
+    ("navy",  (0.66, 0.42), 1.2),
+    ("navy",  (0.96, 0.56), 1.5),
+    ("coral", (0.42, 0.04), 1.05, 0.30),
 ], f"{OUT}/banner-cool.png")
 
 # Variant 3 — dark, single aurora glow

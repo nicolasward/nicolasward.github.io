@@ -8,3 +8,6 @@ __pycache__/
 
 # macOS cruft
 .DS_Store
+
+# Scratch / temp working files
+scratchpad/

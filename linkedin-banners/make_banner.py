@@ -182,3 +182,13 @@ render_light([
 
 # Variant 3 — dark, single aurora glow
 render_dark("aurora", (0.70, 0.45), f"{OUT}/banner-dark.png", seed=7)
+
+
+# ---- Plain + single-blob set (light mode only) ----
+# Plain: exactly the light-mode blog background — gradient + grain, no blob.
+render_light([], f"{OUT}/banner-plain.png")
+
+# One banner per on-site blob palette, the blob set towards the right, at the
+# site's own 0.35 opacity over the same background.
+for _colour in ("sunset", "aurora", "green", "gold", "navy"):
+    render_light([(_colour, (0.80, 0.46), 1.5, 0.35)], f"{OUT}/banner-blob-{_colour}.png")

@@ -338,9 +338,11 @@ html[data-theme="dark"] .punct { color: rgba(255, 255, 255, 0.25); }
    off-white wash in dark — so the colour pop stays in the resting ink, not the
    highlight. The link gets its own stacking context so the highlight sits behind
    the glyphs but above the page. */
+.cosimo,
 .write-link,
 .text-link,
 .healf-link { position: relative; z-index: 0; }
+.cosimo::before,
 .write-link::before,
 .text-link::before,
 .healf-link::before {
@@ -370,18 +372,20 @@ html[data-theme="dark"] .punct { color: rgba(255, 255, 255, 0.25); }
   clip-path: inset(0 100% 0 0);
   transition: clip-path 0.42s cubic-bezier(0.22, 1, 0.36, 1);
 }
+html[data-theme="dark"] .cosimo::before,
 html[data-theme="dark"] .write-link::before,
 html[data-theme="dark"] .text-link::before,
 html[data-theme="dark"] .healf-link::before {
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
 }
 @media (hover: hover) {
+  .cosimo:hover::before,
   .write-link:hover::before,
   .text-link:hover::before,
   .healf-link:hover::before { clip-path: inset(0 0% 0 0); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .write-link::before, .text-link::before, .healf-link::before { transition: none; }
+  .cosimo::before, .write-link::before, .text-link::before, .healf-link::before { transition: none; }
 }
 @keyframes cta-shimmer {
   0%     { background-position: 100% 0; }   /* glow parked off-screen (right) */
@@ -465,7 +469,7 @@ html[data-theme="dark"] .healf-link::before {
   <div class="container">
     <div class="hero">
       <p class="greeting js-reveal"><span class="gw">Hi</span><span class="gw">, I&#8217;m</span> <span class="gw">Nico.</span></p>
-      <h1 class="lede js-reveal">I&#8217;m an engineer and designer - most recently led AI &amp; personalisation at <a class="healf-link" href="https://healf.com" target="_blank" rel="noopener">Healf</a>.<br>I&#8217;m now building <span class="cosimo">Cosimo</span>, an applied AI company amplifying human creativity.<br>I also enjoy <a class="write-link" href="/blog">writing</a> - about tech, design, and startups. You can reach me on <a class="text-link" href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" rel="noopener">LinkedIn</a> or via <a class="text-link" href="mailto:ward.nicolas@outlook.com">email</a>.</h1>
+      <h1 class="lede js-reveal">I&#8217;m an engineer and designer - most recently led AI &amp; personalisation at <a class="healf-link" href="https://healf.com" target="_blank" rel="noopener">Healf</a>.<br>I&#8217;m now building <a class="cosimo" href="https://cosimo.studio" target="_blank" rel="noopener">Cosimo</a>, an applied AI company amplifying human creativity.<br>I also enjoy <a class="write-link" href="/blog">writing</a> - about tech, design, and startups. You can reach me on <a class="text-link" href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" rel="noopener">LinkedIn</a> or via <a class="text-link" href="mailto:ward.nicolas@outlook.com">email</a>.</h1>
     </div>
   </div>
 

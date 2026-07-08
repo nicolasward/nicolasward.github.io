@@ -1535,6 +1535,12 @@ h3:hover .heading-anchor {
    there). It matches the footer glow's opacity via the shared .pg/.header-glow
    rules. Article and static pages keep it hidden (.header-glow display:none). */
 body.home .header-glow { display: block; }
+/* Desktop: drop the top-of-page glow entirely (it stays on mobile), plus the
+   dark-mode grain dome that tracked it, so nothing is left hanging at the top. */
+@media (min-width: 601px) {
+  body.home .header-glow { display: none; }
+  [data-theme="dark"] body.home .page-bg::before { display: none; }
+}
 @media (prefers-reduced-motion: reduce) { .js .pg { transition: none; } }
 /* On a horizontal article swipe, contract each lit glow back to its edge (quick),
    for a smooth hand-off to the next article's glow. */

@@ -121,7 +121,12 @@ body {
 html[data-theme="dark"] .lede { color: rgba(255, 255, 255, 0.25); }
 /* A calm, dim glow so the drifting blob never washes out the light text. */
 html[data-theme="dark"] .blob { opacity: .3; mix-blend-mode: screen; }
-html[data-theme="dark"] .blob:first-child { width: 42vmax; height: 42vmax; }   /* the lone blob */
+html[data-theme="dark"] .blob:first-child {
+  width: 42vmax; height: 42vmax;                                    /* the lone blob */
+  /* Always the blue (navy) blob in dark mode — the other colours look wrong on
+     the deep field. Overrides whatever random colour class JS assigns. */
+  background: radial-gradient(circle at 38% 36%, #AEB8F0 0%, #3A4EAE 42%, #5B86EF 72%, rgba(0,0,0,0) 74%);
+}
 html[data-theme="dark"] .blob:not(:first-child) { display: none; }
 html[data-theme="dark"] .stage::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -309,23 +314,18 @@ html.js .fast-forward.draw .ff-skip path:last-child {
 html.js .fast-forward.is-hidden { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .fast-forward { display: none !important; } }
 
-/* Each word keeps its own resting colour — "Atelier" the brand teal, the four
-   links a quiet Google-ish palette. The hover highlighter, by contrast, is now
-   one shared neutral for every link (see below). No underline. */
-.atelier,
-.write-link,
-.design-link,
-.text-link {
+/* Each word keeps its own resting colour — "Cosimo" the brand orange, "Healf"
+   the brand blue. The hover highlighter is one shared neutral brushstroke on
+   the link. No underline. */
+.cosimo,
+.healf-link {
   color: var(--fg);
   text-decoration: none;
 }
-.atelier                   { color: rgb(62, 164, 228); }     /* brand blue */
-.write-link                { color: rgb(52, 168, 83); }     /* green */
-.design-link               { color: rgb(255, 121, 27); }    /* orange */
-.text-link[href^="https"]  { color: rgb(0, 114, 177); }     /* LinkedIn blue */
-.text-link[href^="mailto"] { color: rgb(251, 188, 5); }     /* email yellow */
-/* Trailing punctuation hugged onto a coloured word (the comma after Atelier /
-   design, the period after email) keeps the body ink, not the word's colour. */
+.cosimo     { color: rgb(255, 121, 27); }   /* Cosimo — brand orange */
+.healf-link { color: rgb(62, 164, 228); }   /* Healf — brand blue */
+/* Trailing punctuation hugged onto a coloured word (the comma after Cosimo, the
+   period after Healf) keeps the body ink, not the word's colour. */
 .punct { color: rgba(29, 29, 31, 0.25); }
 html[data-theme="dark"] .punct { color: rgba(255, 255, 255, 0.25); }
 /* Hover: a highlighter sweeps over the word from left to right — a translucent
@@ -334,12 +334,8 @@ html[data-theme="dark"] .punct { color: rgba(255, 255, 255, 0.25); }
    off-white wash in dark — so the colour pop stays in the resting ink, not the
    highlight. The link gets its own stacking context so the highlight sits behind
    the glyphs but above the page. */
-.write-link,
-.design-link,
-.text-link { position: relative; z-index: 0; }
-.write-link::before,
-.design-link::before,
-.text-link::before {
+.healf-link { position: relative; z-index: 0; }
+.healf-link::before {
   content: "";
   position: absolute;
   z-index: -1;
@@ -366,18 +362,14 @@ html[data-theme="dark"] .punct { color: rgba(255, 255, 255, 0.25); }
   clip-path: inset(0 100% 0 0);
   transition: clip-path 0.42s cubic-bezier(0.22, 1, 0.36, 1);
 }
-html[data-theme="dark"] .write-link::before,
-html[data-theme="dark"] .design-link::before,
-html[data-theme="dark"] .text-link::before {
+html[data-theme="dark"] .healf-link::before {
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
 }
 @media (hover: hover) {
-  .write-link:hover::before,
-  .design-link:hover::before,
-  .text-link:hover::before { clip-path: inset(0 0% 0 0); }
+  .healf-link:hover::before { clip-path: inset(0 0% 0 0); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .write-link::before, .design-link::before, .text-link::before { transition: none; }
+  .healf-link::before { transition: none; }
 }
 @keyframes cta-shimmer {
   0%     { background-position: 100% 0; }   /* glow parked off-screen (right) */
@@ -388,7 +380,7 @@ html[data-theme="dark"] .text-link::before {
 @media (prefers-reduced-motion: reduce) {
   /* No entrance animation — show everything immediately. */
   html.js .js-reveal,
-  .greeting, .lede, .write-link, .design-link, .reveal-word, .gw {
+  .greeting, .lede, .healf-link, .cosimo, .reveal-word, .gw {
     animation: none;
     opacity: 1;
     transform: none;
@@ -461,7 +453,7 @@ html[data-theme="dark"] .text-link::before {
   <div class="container">
     <div class="hero">
       <p class="greeting js-reveal"><span class="gw">Hi</span><span class="gw">, I&#8217;m</span> <span class="gw">Nico.</span></p>
-      <h1 class="lede js-reveal">I&#8217;m an engineer and designer, crafting technologies that amplify creative minds.<br>I&#8217;m currently building <span class="atelier">Atelier</span>, an applied AI studio building new tools for thinking.<br>I also enjoy <a class="write-link" href="/blog">writing</a> - about tech, <a class="design-link" href="/blog/design-and-delight">design</a>, and startups. You can reach me on <a class="text-link" href="https://www.linkedin.com/in/nicolaswrd/" target="_blank" rel="noopener">LinkedIn</a> or via <a class="text-link" href="mailto:ward.nicolas@outlook.com">email</a>.</h1>
+      <h1 class="lede js-reveal">I&#8217;m an engineer and designer - most recently led AI &amp; personalisation at <a class="healf-link" href="https://healf.com" target="_blank" rel="noopener">Healf</a>.<br>I&#8217;m now building <span class="cosimo">Cosimo</span>, an applied AI company amplifying human creativity.</h1>
     </div>
   </div>
 

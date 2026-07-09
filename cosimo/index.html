@@ -82,55 +82,72 @@ body {
   to   { transform: translate(-7vw, 5vh) rotate(-5deg); }
 }
 
-/* --- 2. rays: shafts of off-white light flashing through the dark ---
-   Each ray is a tall, thin, tilted, blurred bar, screen-blended so it reads
-   as light. It sweeps across the screen inside a narrow slice of a long
-   animation cycle and stays dark for the rest — four rays on co-prime clocks
-   with sweeps in different slices = flashes at irregular-feeling intervals.
-   Transform + opacity only, so everything stays on the compositor. */
-.ray {
+/* --- 2. strobes: diffuse pools of light flashing out of the smoke ---
+   Rave floods, not beams: each strobe is a huge, shapeless radial glow
+   pinned to its own corner/edge of the stage, screen-blended so it reads
+   as light behind the haze. It fires in a brief slice of its own
+   co-prime-length cycle — fast attack, soft decay, some double-hits —
+   and stays dark the rest of the time, so flashes land at irregular
+   intervals all over the screen. Opacity + scale only (compositor-cheap). */
+.strobe {
   position: absolute;
-  left: 50%; top: 50%;
-  height: 200vmax;
   mix-blend-mode: screen;
-  filter: blur(34px);
   opacity: 0;
-  will-change: transform, opacity;
+  will-change: opacity, transform;
   pointer-events: none;
 }
-/* Across the shaft: dark edge -> bright core -> dark edge. */
-.ray--a, .ray--c {
-  background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(240,241,236,0.85) 50%, rgba(0,0,0,0) 100%);
+.strobe--a {                              /* upper left */
+  width: 95vmax; height: 70vmax;
+  left: -28vmax; top: -22vmax;
+  background: radial-gradient(ellipse at 50% 50%, rgba(240,241,236,0.7) 0%, rgba(234,235,229,0.28) 38%, rgba(0,0,0,0) 68%);
+  animation: strobe-a 7.1s linear infinite;
 }
-.ray--b, .ray--d {
-  background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(230,231,226,0.7) 50%, rgba(0,0,0,0) 100%);
+.strobe--b {                              /* right edge */
+  width: 85vmax; height: 75vmax;
+  right: -30vmax; top: 4%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(236,237,231,0.65) 0%, rgba(228,230,224,0.24) 40%, rgba(0,0,0,0) 70%);
+  animation: strobe-b 9.7s linear infinite;
 }
-.ray--a { width: 9vmax;  animation: ray-a 9.7s  linear infinite; }
-.ray--b { width: 5vmax;  animation: ray-b 13.3s linear infinite; }
-.ray--c { width: 16vmax; animation: ray-c 11.1s linear infinite; animation-delay: -4s; }
-.ray--d { width: 6vmax;  animation: ray-d 17.9s linear infinite; animation-delay: -9s; }
+.strobe--c {                              /* low centre, behind the wordmark */
+  width: 110vmax; height: 65vmax;
+  left: 50%; bottom: -30vmax;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 50%, rgba(238,239,233,0.6) 0%, rgba(230,231,225,0.22) 42%, rgba(0,0,0,0) 70%);
+  animation: strobe-c 11.3s linear infinite;
+}
+.strobe--d {                              /* high centre, gentle (copy sits here) */
+  width: 90vmax; height: 55vmax;
+  left: 24%; top: -18vmax;
+  background: radial-gradient(ellipse at 50% 50%, rgba(233,234,228,0.5) 0%, rgba(226,228,222,0.2) 40%, rgba(0,0,0,0) 68%);
+  animation: strobe-d 8.3s linear infinite;
+}
 
-/* Sweeps: a ray fades in, crosses, and dies inside its slice; 0 elsewhere.
-   Angles and directions vary so no two flashes feel alike. */
-@keyframes ray-a {           /* left -> right, steep tilt */
-  0%, 4%    { transform: translate(calc(-50% - 62vw), -50%) rotate(-24deg); opacity: 0; }
-  9%        { opacity: 0.55; }
-  16%, 100% { transform: translate(calc(-50% + 62vw), -50%) rotate(-24deg); opacity: 0; }
+/* Fast attack, soft decay; a and c double-hit like a strobe. The keyframe
+   slices sit at different phases of co-prime cycles, so the room never
+   flashes in a predictable order. */
+@keyframes strobe-a {
+  0%, 16%   { opacity: 0; transform: scale(0.94); }
+  19%       { opacity: 0.6; transform: scale(1); }
+  22%       { opacity: 0.1; }
+  25%       { opacity: 0.5; }
+  34%, 100% { opacity: 0; transform: scale(1.05); }
 }
-@keyframes ray-b {           /* right -> left, shallower */
-  0%, 48%   { transform: translate(calc(-50% + 58vw), -50%) rotate(-14deg); opacity: 0; }
-  54%       { opacity: 0.45; }
-  62%, 100% { transform: translate(calc(-50% - 58vw), -50%) rotate(-14deg); opacity: 0; }
+@keyframes strobe-b {
+  0%, 55%   { opacity: 0; transform: scale(0.95); }
+  58%       { opacity: 0.55; transform: scale(1); }
+  70%, 100% { opacity: 0; transform: scale(1.06); }
 }
-@keyframes ray-c {           /* wide, soft, slow pass left -> right */
-  0%, 24%   { transform: translate(calc(-50% - 66vw), -50%) rotate(-30deg); opacity: 0; }
-  33%       { opacity: 0.4; }
-  44%, 100% { transform: translate(calc(-50% + 66vw), -50%) rotate(-30deg); opacity: 0; }
+@keyframes strobe-c {
+  0%, 34%   { opacity: 0; transform: translateX(-50%) scale(0.95); }
+  37%       { opacity: 0.5; transform: translateX(-50%) scale(1); }
+  40%       { opacity: 0.12; }
+  43%       { opacity: 0.45; }
+  54%, 100% { opacity: 0; transform: translateX(-50%) scale(1.05); }
 }
-@keyframes ray-d {           /* quick bright flick, right -> left */
-  0%, 74%   { transform: translate(calc(-50% + 60vw), -50%) rotate(-20deg); opacity: 0; }
-  78%       { opacity: 0.65; }
-  83%, 100% { transform: translate(calc(-50% - 60vw), -50%) rotate(-20deg); opacity: 0; }
+@keyframes strobe-d {
+  0%, 76%   { opacity: 0; transform: scale(0.96); }
+  79%       { opacity: 0.42; transform: scale(1); }
+  90%, 100% { opacity: 0; transform: scale(1.05); }
 }
 
 /* --- 3+4. halftone + grain: one fixed overlay over the WHOLE scene ---
@@ -280,7 +297,7 @@ body {
 /* ---------------- Reduced motion ---------------- */
 @media (prefers-reduced-motion: reduce) {
   .smoke { animation: none; }
-  .ray { animation: none; opacity: 0; }
+  .strobe { animation: none; opacity: 0; }
 }
 
 /* ---------------- Mobile ---------------- */
@@ -297,10 +314,10 @@ body {
   <div class="stage" aria-hidden="true">
     <div class="smoke smoke--a"></div>
     <div class="smoke smoke--b"></div>
-    <div class="ray ray--a"></div>
-    <div class="ray ray--b"></div>
-    <div class="ray ray--c"></div>
-    <div class="ray ray--d"></div>
+    <div class="strobe strobe--a"></div>
+    <div class="strobe strobe--b"></div>
+    <div class="strobe strobe--c"></div>
+    <div class="strobe strobe--d"></div>
   </div>
   <div class="texture" aria-hidden="true"></div>
 

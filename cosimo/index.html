@@ -82,64 +82,55 @@ body {
   to   { transform: translate(-7vw, 5vh) rotate(-5deg); }
 }
 
-/* --- 2. aurora: elongated curtains of light, slowly sweeping ---
-   Each ribbon is a heavily-blurred, tilted gradient bar, screen-blended so it
-   GLOWS on the dark field rather than painting over it. Transform-only
-   animation (translate / rotate / scale) keeps it on the compositor. */
-.aurora {
+/* --- 2. rays: shafts of off-white light flashing through the dark ---
+   Each ray is a tall, thin, tilted, blurred bar, screen-blended so it reads
+   as light. It sweeps across the screen inside a narrow slice of a long
+   animation cycle and stays dark for the rest — four rays on co-prime clocks
+   with sweeps in different slices = flashes at irregular-feeling intervals.
+   Transform + opacity only, so everything stays on the compositor. */
+.ray {
   position: absolute;
+  left: 50%; top: 50%;
+  height: 200vmax;
   mix-blend-mode: screen;
-  filter: blur(70px);
-  border-radius: 50%;
+  filter: blur(34px);
+  opacity: 0;
   will-change: transform, opacity;
   pointer-events: none;
 }
-.aurora--green {
-  width: 110vmax; height: 26vmax;
-  left: -25vmax; top: 12%;
-  background: linear-gradient(90deg,
-    rgba(0,0,0,0) 0%, rgba(233,234,228,0.5) 28%,
-    rgba(240,241,236,0.68) 52%, rgba(226,228,222,0.45) 74%, rgba(0,0,0,0) 100%);
-  transform: rotate(-14deg);
-  animation: aur-green 9s ease-in-out infinite alternate;
-  opacity: 0.5;
+/* Across the shaft: dark edge -> bright core -> dark edge. */
+.ray--a, .ray--c {
+  background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(240,241,236,0.85) 50%, rgba(0,0,0,0) 100%);
 }
-.aurora--teal {
-  width: 95vmax; height: 20vmax;
-  right: -30vmax; top: 34%;
-  background: linear-gradient(90deg,
-    rgba(0,0,0,0) 0%, rgba(236,237,231,0.55) 30%,
-    rgba(228,230,224,0.5) 58%, rgba(0,0,0,0) 100%);
-  transform: rotate(-10deg);
-  animation: aur-teal 13s ease-in-out infinite alternate;
-  opacity: 0.42;
+.ray--b, .ray--d {
+  background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(230,231,226,0.7) 50%, rgba(0,0,0,0) 100%);
 }
-.aurora--violet {
-  width: 90vmax; height: 30vmax;
-  left: 6vmax; bottom: -6vmax;
-  background: linear-gradient(90deg,
-    rgba(0,0,0,0) 0%, rgba(230,231,225,0.45) 34%,
-    rgba(238,239,233,0.38) 60%, rgba(0,0,0,0) 100%);
-  transform: rotate(-16deg);
-  animation: aur-violet 17s ease-in-out infinite alternate;
-  opacity: 0.34;
+.ray--a { width: 9vmax;  animation: ray-a 9.7s  linear infinite; }
+.ray--b { width: 5vmax;  animation: ray-b 13.3s linear infinite; }
+.ray--c { width: 16vmax; animation: ray-c 11.1s linear infinite; animation-delay: -4s; }
+.ray--d { width: 6vmax;  animation: ray-d 17.9s linear infinite; animation-delay: -9s; }
+
+/* Sweeps: a ray fades in, crosses, and dies inside its slice; 0 elsewhere.
+   Angles and directions vary so no two flashes feel alike. */
+@keyframes ray-a {           /* left -> right, steep tilt */
+  0%, 4%    { transform: translate(calc(-50% - 62vw), -50%) rotate(-24deg); opacity: 0; }
+  9%        { opacity: 0.55; }
+  16%, 100% { transform: translate(calc(-50% + 62vw), -50%) rotate(-24deg); opacity: 0; }
 }
-/* Slow, wandering sweeps — different durations so the composition never
-   repeats. A gentle scaleY "breath" makes the curtains billow. */
-@keyframes aur-green {
-  0%   { transform: translate(0, 0) rotate(-14deg) scaleY(1); opacity: 0.36; }
-  45%  { transform: translate(10vw, 7vh) rotate(-9deg) scaleY(1.25); opacity: 0.58; }
-  100% { transform: translate(22vw, -4vh) rotate(-15deg) scaleY(0.9); opacity: 0.4; }
+@keyframes ray-b {           /* right -> left, shallower */
+  0%, 48%   { transform: translate(calc(-50% + 58vw), -50%) rotate(-14deg); opacity: 0; }
+  54%       { opacity: 0.45; }
+  62%, 100% { transform: translate(calc(-50% - 58vw), -50%) rotate(-14deg); opacity: 0; }
 }
-@keyframes aur-teal {
-  0%   { transform: translate(0, 0) rotate(-10deg) scaleY(1); opacity: 0.3; }
-  50%  { transform: translate(-12vw, -6vh) rotate(-16deg) scaleY(1.3); opacity: 0.5; }
-  100% { transform: translate(-20vw, 5vh) rotate(-8deg) scaleY(1); opacity: 0.34; }
+@keyframes ray-c {           /* wide, soft, slow pass left -> right */
+  0%, 24%   { transform: translate(calc(-50% - 66vw), -50%) rotate(-30deg); opacity: 0; }
+  33%       { opacity: 0.4; }
+  44%, 100% { transform: translate(calc(-50% + 66vw), -50%) rotate(-30deg); opacity: 0; }
 }
-@keyframes aur-violet {
-  0%   { transform: translate(0, 0) rotate(-16deg) scaleY(1); opacity: 0.24; }
-  55%  { transform: translate(8vw, -8vh) rotate(-11deg) scaleY(1.35); opacity: 0.4; }
-  100% { transform: translate(16vw, 2vh) rotate(-18deg) scaleY(1.05); opacity: 0.28; }
+@keyframes ray-d {           /* quick bright flick, right -> left */
+  0%, 74%   { transform: translate(calc(-50% + 60vw), -50%) rotate(-20deg); opacity: 0; }
+  78%       { opacity: 0.65; }
+  83%, 100% { transform: translate(calc(-50% - 60vw), -50%) rotate(-20deg); opacity: 0; }
 }
 
 /* --- 3+4. halftone + grain: one fixed overlay over the WHOLE scene ---
@@ -288,7 +279,8 @@ body {
 
 /* ---------------- Reduced motion ---------------- */
 @media (prefers-reduced-motion: reduce) {
-  .smoke, .aurora { animation: none; }
+  .smoke { animation: none; }
+  .ray { animation: none; opacity: 0; }
 }
 
 /* ---------------- Mobile ---------------- */
@@ -305,9 +297,10 @@ body {
   <div class="stage" aria-hidden="true">
     <div class="smoke smoke--a"></div>
     <div class="smoke smoke--b"></div>
-    <div class="aurora aurora--green"></div>
-    <div class="aurora aurora--teal"></div>
-    <div class="aurora aurora--violet"></div>
+    <div class="ray ray--a"></div>
+    <div class="ray ray--b"></div>
+    <div class="ray ray--c"></div>
+    <div class="ray ray--d"></div>
   </div>
   <div class="texture" aria-hidden="true"></div>
 

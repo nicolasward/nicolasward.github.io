@@ -19,7 +19,7 @@
 :root {
   --ink:        #E3E4DF;                /* warm off-white text */
   --ink-dim:    rgba(227, 228, 223, 0.88);
-  --field:      #101211;                /* near-black green-tinged charcoal */
+  --field:      #171915;                /* dark green-grey charcoal (Monolog-warm) */
 }
 
 * { box-sizing: border-box; }
@@ -54,32 +54,47 @@ body {
   background: var(--field);
 }
 
-/* --- 1. smoke: two soft grey clouds, barely lighter than the field --- */
+/* --- 1. smoke: big, blurry, HIGH-CONTRAST clouds (the blurred-photo feel).
+   Monolog's field isn't uniform — broad bright washes sweep diagonally out of
+   deep blacks. Sage-tinted highlights, much stronger than before, plus a wide
+   bright band low-centre that backlights the wordmark. --- */
 .smoke {
   position: absolute;
   border-radius: 50%;
-  filter: blur(90px);
+  filter: blur(80px);
   will-change: transform;
 }
-.smoke--a {
-  width: 90vmax; height: 55vmax;
-  left: -20vmax; top: 30%;
-  background: radial-gradient(ellipse at 45% 50%, rgba(160,162,155,0.34) 0%, rgba(120,122,116,0.14) 45%, rgba(0,0,0,0) 72%);
+.smoke--a {                              /* dominant diagonal wash, upper-left */
+  width: 100vmax; height: 60vmax;
+  left: -30vmax; top: -14vmax;
+  background: radial-gradient(ellipse at 55% 55%, rgba(178,182,168,0.5) 0%, rgba(140,144,132,0.22) 45%, rgba(0,0,0,0) 72%);
+  transform: rotate(-14deg);
   animation: smoke-a 53s ease-in-out infinite alternate;
 }
-.smoke--b {
-  width: 80vmax; height: 48vmax;
-  right: -25vmax; top: 6%;
-  background: radial-gradient(ellipse at 55% 45%, rgba(150,152,146,0.26) 0%, rgba(110,112,106,0.11) 48%, rgba(0,0,0,0) 74%);
+.smoke--b {                              /* soft mid-right cloud */
+  width: 85vmax; height: 50vmax;
+  right: -28vmax; top: 22%;
+  background: radial-gradient(ellipse at 50% 45%, rgba(165,168,156,0.34) 0%, rgba(120,124,112,0.14) 48%, rgba(0,0,0,0) 74%);
   animation: smoke-b 67s ease-in-out infinite alternate;
 }
+.smoke--c {                              /* bright horizontal band behind the wordmark */
+  width: 120vmax; height: 34vmax;
+  left: 50%; bottom: 4vmax;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 50%, rgba(172,176,162,0.4) 0%, rgba(130,134,122,0.16) 50%, rgba(0,0,0,0) 74%);
+  animation: smoke-c 59s ease-in-out infinite alternate;
+}
 @keyframes smoke-a {
-  from { transform: translate(0, 0) rotate(0deg); }
-  to   { transform: translate(9vw, -6vh) rotate(6deg); }
+  from { transform: rotate(-14deg) translate(0, 0); }
+  to   { transform: rotate(-10deg) translate(7vw, 4vh); }
 }
 @keyframes smoke-b {
   from { transform: translate(0, 0) rotate(0deg); }
   to   { transform: translate(-7vw, 5vh) rotate(-5deg); }
+}
+@keyframes smoke-c {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(calc(-50% + 6vw)); }
 }
 
 /* --- 2. strobes: diffuse pools of light flashing out of the smoke ---
@@ -150,20 +165,30 @@ body {
   90%, 100% { opacity: 0; transform: scale(1.05); }
 }
 
-/* --- 3+4. halftone + grain: one fixed overlay over the WHOLE scene ---
-   In the mockup the print-dot grid and film noise sit over everything — the
-   letters and copy included — which is what welds the layers into one print-
-   like image. Top of the stack, blend-only, click-through. */
-.texture {
+/* --- 3+4. halftone + grain: fixed overlays over the WHOLE scene ---
+   The halftone is the signature of the mockup: a clearly VISIBLE grid of dark
+   print dots that bite hardest into the light areas (overlay blend does that —
+   dark dots barely touch the blacks, chew into the highlights). The grain is a
+   separate film-noise pass. Both cover everything — letters and copy included —
+   which welds the layers into one printed image. Blend-only, click-through. */
+.tex-dots {
+  position: fixed;
+  inset: 0;
+  z-index: 29;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(10,12,10,0.6) 1.1px, rgba(0,0,0,0) 1.5px);
+  background-size: 5px 5px;
+  mix-blend-mode: overlay;
+  opacity: 0.55;
+}
+.tex-grain {
   position: fixed;
   inset: 0;
   z-index: 30;
   pointer-events: none;
-  background-image:
-    radial-gradient(rgba(255,255,255,0.055) 1px, rgba(0,0,0,0) 1.1px),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 5px 5px, 160px 160px;
-  opacity: 0.55;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  opacity: 0.45;
   mix-blend-mode: overlay;
 }
 
@@ -283,12 +308,15 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin: 0 -2.2vw -7.5vw;        /* crop: sides bleed slightly, bottom crops hard */
+  /* Letters fully visible: sides bleed a touch past the edges, and the bottom
+     margin only eats the font's built-in descender padding so the caps sit
+     flush on the screen edge without being cropped. */
+  margin: 0 -2.2vw -4.4vw;
   font-weight: 800;
   font-size: 24vw;
   line-height: 1;
   letter-spacing: -0.02em;
-  color: rgba(196, 198, 190, 0.62);
+  color: rgba(190, 193, 181, 0.85);
   user-select: none;
   pointer-events: none;
 }
@@ -322,7 +350,7 @@ body {
   .nav { display: none; }         /* keep the chrome minimal on small screens */
   .middle { padding-bottom: 20vh; }
   .pitch { font-size: 1.02rem; }
-  .wordmark { font-size: 26vw; margin-bottom: -8.5vw; }
+  .wordmark { font-size: 26vw; margin-bottom: -4.8vw; }
 }
 </style>
 </head>
@@ -336,7 +364,8 @@ body {
     <div class="strobe strobe--c"></div>
     <div class="strobe strobe--d"></div>
   </div>
-  <div class="texture" aria-hidden="true"></div>
+  <div class="tex-dots" aria-hidden="true"></div>
+  <div class="tex-grain" aria-hidden="true"></div>
 
   <header class="top">
     <a class="brand" href="/cosimo">COSIMO</a>

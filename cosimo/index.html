@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Cosimo</title>
 <meta name="theme-color" content="#101211">
+<script>document.documentElement.classList.add('js');</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -322,10 +323,16 @@ body {
 }
 /* Entrance: the letters rise from below the screen one by one, in quick
    succession from the RIGHT (the trailing O leads, the C lands last), each
-   settling softly. fill: both keeps them hidden below until their turn. */
-.wordmark span {
-  display: block;
+   settling softly. The animation is gated on html.ready — added by JS one
+   frame after the web font has loaded — because a pure load-time CSS
+   animation can finish BEFORE first paint on mobile (the render-blocking
+   font fetch eats the whole animation window) and appear not to run at all.
+   Letters hide below only when JS is present; no-JS just shows them. */
+.wordmark span { display: block; }
+html.js .wordmark span {
   transform: translateY(115%);
+}
+html.js.ready .wordmark span {
   animation: letter-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .wordmark span:nth-child(6) { animation-delay: 0.25s; }
@@ -342,7 +349,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .smoke { animation: none; }
   .strobe { animation: none; opacity: 0; }
-  .wordmark span { animation: none; transform: none; }
+  .wordmark span { animation: none !important; transform: none !important; }
 }
 
 /* ---------------- Mobile ---------------- */
@@ -420,5 +427,24 @@ body {
   <div class="wordmark" aria-hidden="true">
     <span>C</span><span>O</span><span>S</span><span>I</span><span>M</span><span>O</span>
   </div>
+
+<script>
+// Start the wordmark entrance only once the web font is in and a frame has
+// painted — so the rise is actually SEEN on slow (mobile) loads instead of
+// completing behind the white first-paint. The timeout is a safety net: if
+// the font hangs, the letters still come in after 1.6s in the fallback face.
+(function () {
+  var done = false;
+  function fire() {
+    if (done) return;
+    done = true;
+    requestAnimationFrame(function () {
+      document.documentElement.classList.add('ready');
+    });
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fire);
+  setTimeout(fire, 1600);
+})();
+</script>
 </body>
 </html>

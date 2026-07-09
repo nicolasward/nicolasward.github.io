@@ -292,12 +292,29 @@ body {
   user-select: none;
   pointer-events: none;
 }
-.wordmark span { display: block; }
+/* Entrance: the letters rise from below the screen one by one, in quick
+   succession from the RIGHT (the trailing O leads, the C lands last), each
+   settling softly. fill: both keeps them hidden below until their turn. */
+.wordmark span {
+  display: block;
+  transform: translateY(115%);
+  animation: letter-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.wordmark span:nth-child(6) { animation-delay: 0.25s; }
+.wordmark span:nth-child(5) { animation-delay: 0.34s; }
+.wordmark span:nth-child(4) { animation-delay: 0.43s; }
+.wordmark span:nth-child(3) { animation-delay: 0.52s; }
+.wordmark span:nth-child(2) { animation-delay: 0.61s; }
+.wordmark span:nth-child(1) { animation-delay: 0.70s; }
+@keyframes letter-in {
+  to { transform: translateY(0); }
+}
 
 /* ---------------- Reduced motion ---------------- */
 @media (prefers-reduced-motion: reduce) {
   .smoke { animation: none; }
   .strobe { animation: none; opacity: 0; }
+  .wordmark span { animation: none; transform: none; }
 }
 
 /* ---------------- Mobile ---------------- */

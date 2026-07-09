@@ -287,6 +287,22 @@ body {
   margin-bottom: 2.6rem;
   color: var(--ink);
 }
+/* Fan-out: each circle sweeps from the shared 0° position to its own angle
+   around the rosette centre, so the mark opens from ONE circle into the full
+   weave. It waits for the wordmark to finish (last letter lands ~1.6s after
+   .ready), then unfolds. No-JS shows the finished rosette. */
+.logo circle {
+  transform-origin: 80px 80px;
+  transform: rotate(var(--a));
+}
+html.js .logo circle { transform: rotate(0deg); }
+html.js.ready .logo circle {
+  animation: logo-fan 1.3s cubic-bezier(0.22, 1, 0.36, 1) 1.75s both;
+}
+@keyframes logo-fan {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(var(--a)); }
+}
 .pitch {
   max-width: 21em;
   margin: 0;
@@ -350,6 +366,7 @@ html.js.ready .wordmark span {
   .smoke { animation: none; }
   .strobe { animation: none; opacity: 0; }
   .wordmark span { animation: none !important; transform: none !important; }
+  .logo circle { animation: none !important; transform: rotate(var(--a)) !important; }
 }
 
 /* ---------------- Mobile ---------------- */
@@ -401,22 +418,26 @@ html.js.ready .wordmark span {
   </header>
 
   <main class="middle">
-    <!-- Spirograph rosette: 12 circles whose centres ride a small ring -->
+    <!-- Spirograph rosette: 12 circles whose centres ride a small ring.
+         Every circle is drawn at the SAME spot (the 0° position) and rotated
+         into place around the rosette centre by --a — so with all rotations
+         at 0 the mark is a single circle, and animating each rotation fans
+         it open into the full weave. -->
     <svg class="logo" viewBox="0 0 160 160" fill="none" stroke="currentColor"
          stroke-width="1.3" aria-hidden="true">
       <g>
-        <circle cx="105.00" cy="80.00" r="48.5"/>
-        <circle cx="101.65" cy="92.50" r="48.5"/>
-        <circle cx="92.50" cy="101.65" r="48.5"/>
-        <circle cx="80.00" cy="105.00" r="48.5"/>
-        <circle cx="67.50" cy="101.65" r="48.5"/>
-        <circle cx="58.35" cy="92.50" r="48.5"/>
-        <circle cx="55.00" cy="80.00" r="48.5"/>
-        <circle cx="58.35" cy="67.50" r="48.5"/>
-        <circle cx="67.50" cy="58.35" r="48.5"/>
-        <circle cx="80.00" cy="55.00" r="48.5"/>
-        <circle cx="92.50" cy="58.35" r="48.5"/>
-        <circle cx="101.65" cy="67.50" r="48.5"/>
+        <circle cx="105" cy="80" r="48.5" style="--a: 0deg"/>
+        <circle cx="105" cy="80" r="48.5" style="--a: 30deg"/>
+        <circle cx="105" cy="80" r="48.5" style="--a: 60deg"/>
+        <circle cx="105" cy="80" r="48.5" style="--a: 90deg"/>
+        <circle cx="105" cy="80" r="48.5" style="--a: 120deg"/>
+        <circle cx="105" cy="80" r="48.5" style="--a: 150deg"/>
+        <circle cx="105" cy="80" r="48.5" style="--a: 180deg"/>
+        <circle cx="105" cy="80" r="48.5" style="--a: 210deg"/>
+        <circle cx="105" cy="80" r="48.5" style="--a: 240deg"/>
+        <circle cx="105" cy="80" r="48.5" style="--a: 270deg"/>
+        <circle cx="105" cy="80" r="48.5" style="--a: 300deg"/>
+        <circle cx="105" cy="80" r="48.5" style="--a: 330deg"/>
       </g>
     </svg>
 
@@ -429,21 +450,37 @@ html.js.ready .wordmark span {
   </div>
 
 <script>
-// Start the wordmark entrance only once the web font is in and a frame has
-// painted — so the rise is actually SEEN on slow (mobile) loads instead of
-// completing behind the white first-paint. The timeout is a safety net: if
-// the font hangs, the letters still come in after 1.6s in the fallback face.
+// Start the entrance only after the page is PAINTED. fonts.ready is not
+// enough — it can resolve before the render-blocking font CSS has even
+// loaded, so on mobile the animation still finished behind the blank first
+// paint. window load (all blocking resources done) + a double rAF (rAF only
+// fires once the browser is producing real frames) guarantees at least one
+// visible frame before the letters start to rise. The timeout is a slow-
+// network cap; it goes through the same rAF gate, so it can't beat paint.
 (function () {
   var done = false;
   function fire() {
     if (done) return;
     done = true;
     requestAnimationFrame(function () {
-      document.documentElement.classList.add('ready');
+      requestAnimationFrame(function () {
+        document.documentElement.classList.add('ready');
+      });
     });
   }
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fire);
-  setTimeout(fire, 1600);
+  if (document.readyState === 'complete') fire();
+  else window.addEventListener('load', fire);
+  setTimeout(fire, 3000);
+
+  // iOS restores the page from the back-forward cache with all animations
+  // already finished — replay the entrance so returning visitors see it too.
+  window.addEventListener('pageshow', function (e) {
+    if (!e.persisted) return;
+    var root = document.documentElement;
+    root.classList.remove('ready');
+    void root.offsetWidth;                 /* flush, so re-adding restarts */
+    root.classList.add('ready');
+  });
 })();
 </script>
 </body>

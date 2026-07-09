@@ -287,26 +287,29 @@ body {
   margin-bottom: 2.6rem;
   color: var(--ink);
 }
-/* Fan-out: every circle starts CONCENTRIC at the rosette centre (one circle,
-   invisible) and slides radially outward in its own direction — rotate(--a)
-   sets the direction, translateX the distance — so the mark fades in and
-   blooms symmetrically around the centre into the full weave. It waits for
-   the wordmark to finish, then unfolds. No-JS shows the finished rosette. */
+/* Build: the circles appear ONE BY ONE, clockwise. Each starts as a point at
+   the rosette centre and grows while it slides out into its slot — rotate(--a)
+   sets its direction, translateX the travel, scale the growth. --i staggers
+   the twelve builds around the ring; the delay is set as a longhand AFTER the
+   shorthand in the same rule (the shorthand's implicit 0s would silently win
+   from a lower-specificity rule). Starts once the wordmark has landed.
+   No-JS shows the finished rosette. */
 .logo circle {
   transform-origin: 80px 80px;
   transform: rotate(var(--a)) translateX(25px);
 }
 html.js .logo circle {
-  transform: rotate(var(--a)) translateX(0);
+  transform: rotate(var(--a)) translateX(0) scale(0);
   opacity: 0;
 }
 html.js.ready .logo circle {
-  animation: logo-fan 1.3s cubic-bezier(0.22, 1, 0.36, 1) 2s both;
+  animation: logo-grow 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(1.5s + var(--i) * 90ms);
 }
-@keyframes logo-fan {
-  from { transform: rotate(var(--a)) translateX(0); opacity: 0; }
-  22%  { opacity: 1; }
-  to   { transform: rotate(var(--a)) translateX(25px); opacity: 1; }
+@keyframes logo-grow {
+  from { transform: rotate(var(--a)) translateX(0) scale(0); opacity: 0; }
+  30%  { opacity: 1; }
+  to   { transform: rotate(var(--a)) translateX(25px) scale(1); opacity: 1; }
 }
 .pitch {
   max-width: 21em;
@@ -354,18 +357,18 @@ html.js .wordmark span {
   transform: translateY(115%);
 }
 html.js.ready .wordmark span {
-  animation: letter-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: letter-in 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-/* Per-letter stagger (150ms steps). These MUST match the specificity of the
+/* Per-letter stagger (120ms steps). These MUST match the specificity of the
    gated shorthand above — the `animation:` shorthand implicitly resets
    animation-delay to 0s, and a lower-specificity delay rule loses to it,
    which made all six letters rise as one block. */
-html.js.ready .wordmark span:nth-child(6) { animation-delay: 0.25s; }
-html.js.ready .wordmark span:nth-child(5) { animation-delay: 0.40s; }
-html.js.ready .wordmark span:nth-child(4) { animation-delay: 0.55s; }
-html.js.ready .wordmark span:nth-child(3) { animation-delay: 0.70s; }
-html.js.ready .wordmark span:nth-child(2) { animation-delay: 0.85s; }
-html.js.ready .wordmark span:nth-child(1) { animation-delay: 1.00s; }
+html.js.ready .wordmark span:nth-child(6) { animation-delay: 0.20s; }
+html.js.ready .wordmark span:nth-child(5) { animation-delay: 0.32s; }
+html.js.ready .wordmark span:nth-child(4) { animation-delay: 0.44s; }
+html.js.ready .wordmark span:nth-child(3) { animation-delay: 0.56s; }
+html.js.ready .wordmark span:nth-child(2) { animation-delay: 0.68s; }
+html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.80s; }
 @keyframes letter-in {
   to { transform: translateY(0); }
 }
@@ -442,18 +445,18 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 1.00s; }
     <svg class="logo" viewBox="0 0 160 160" fill="none" stroke="currentColor"
          stroke-width="1.3" aria-hidden="true">
       <g>
-        <circle cx="80" cy="80" r="48.5" style="--a: 0deg"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 30deg"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 60deg"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 90deg"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 120deg"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 150deg"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 180deg"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 210deg"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 240deg"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 270deg"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 300deg"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 330deg"/>
+        <circle cx="80" cy="80" r="48.5" style="--a: 0deg;   --i: 0"/>
+        <circle cx="80" cy="80" r="48.5" style="--a: 30deg;  --i: 1"/>
+        <circle cx="80" cy="80" r="48.5" style="--a: 60deg;  --i: 2"/>
+        <circle cx="80" cy="80" r="48.5" style="--a: 90deg;  --i: 3"/>
+        <circle cx="80" cy="80" r="48.5" style="--a: 120deg; --i: 4"/>
+        <circle cx="80" cy="80" r="48.5" style="--a: 150deg; --i: 5"/>
+        <circle cx="80" cy="80" r="48.5" style="--a: 180deg; --i: 6"/>
+        <circle cx="80" cy="80" r="48.5" style="--a: 210deg; --i: 7"/>
+        <circle cx="80" cy="80" r="48.5" style="--a: 240deg; --i: 8"/>
+        <circle cx="80" cy="80" r="48.5" style="--a: 270deg; --i: 9"/>
+        <circle cx="80" cy="80" r="48.5" style="--a: 300deg; --i: 10"/>
+        <circle cx="80" cy="80" r="48.5" style="--a: 330deg; --i: 11"/>
       </g>
     </svg>
 

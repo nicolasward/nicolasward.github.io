@@ -144,79 +144,6 @@ body {
   mix-blend-mode: normal;
 }
 
-/* ---------------- Chrome (nav) ---------------- */
-.top {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1.6rem clamp(1.2rem, 2.5vw, 2.4rem);
-}
-.brand {
-  font-weight: 800;
-  font-size: 1.05rem;
-  letter-spacing: 0.04em;
-  color: var(--ink);
-  text-decoration: none;
-}
-.nav {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 1.9rem;
-}
-.nav a {
-  color: var(--ink-dim);
-  text-decoration: none;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: color 0.25s ease;
-}
-.nav a:hover { color: #fff; }
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-}
-.mute {
-  display: grid;
-  place-items: center;
-  width: 2.4rem; height: 2.4rem;
-  border: none;
-  border-radius: 6px;
-  background: rgba(10, 11, 10, 0.72);
-  color: var(--ink);
-  cursor: pointer;
-}
-.mute svg { width: 1.05rem; height: 1.05rem; }
-.cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.62rem 0.95rem;
-  border-radius: 6px;
-  background: #F4F4F1;
-  color: #111;
-  font-weight: 600;
-  font-size: 0.98rem;
-  text-decoration: none;
-  transition: transform 0.2s ease;
-}
-.cta:hover { transform: translateY(-1px); }
-.cta .box {
-  display: grid;
-  place-items: center;
-  width: 1.35rem; height: 1.35rem;
-  border-radius: 4px;
-  background: #111;
-  color: #F4F4F1;
-}
-.cta .box svg { width: 0.7rem; height: 0.7rem; }
-
 /* ---------------- Centre copy ---------------- */
 .middle {
   position: relative;
@@ -285,6 +212,7 @@ html.js.ready .logo.is-replaying circle {
 .pitch {
   max-width: 21em;
   margin: 0;
+  font-family: "Figtree", system-ui, -apple-system, sans-serif;
   font-size: clamp(1.02rem, 1.35vw, 1.25rem);
   font-weight: 500;
   line-height: 1.5;
@@ -359,7 +287,6 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
 
 /* ---------------- Mobile ---------------- */
 @media (max-width: 700px) {
-  .nav { display: none; }         /* keep the chrome minimal on small screens */
   /* Lighter blur on phones: rasterising 80px blurs tanks mobile frame rates,
      which is what smeared the letter stagger into a single movement. */
   .drift { filter: blur(44px); }
@@ -380,32 +307,6 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
     <div class="drift drift--light"></div>
   </div>
   <div class="tex-grain" aria-hidden="true"></div>
-
-  <header class="top">
-    <a class="brand" href="/cosimo">COSIMO</a>
-    <nav class="nav" aria-label="Primary">
-      <a href="#">About</a>
-      <a href="#">Work</a>
-      <a href="#">Services</a>
-      <a href="#">Process</a>
-    </nav>
-    <div class="actions">
-      <button class="mute" type="button" aria-label="Sound off">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M11 5 6 9H2v6h4l5 4z"/>
-          <line x1="22" y1="9" x2="16" y2="15"/>
-          <line x1="16" y1="9" x2="22" y2="15"/>
-        </svg>
-      </button>
-      <a class="cta" href="#">Start a project
-        <span class="box">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M7 17 17 7M8 7h9v9"/>
-          </svg>
-        </span>
-      </a>
-    </div>
-  </header>
 
   <main class="middle">
     <!-- Spirograph rosette: 12 circles whose centres ride a small ring.

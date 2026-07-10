@@ -54,8 +54,8 @@ body {
   overflow: hidden;
   isolation: isolate;
   background:
-    radial-gradient(130% 90% at 78% -10%, rgba(16, 30, 68, 0.55) 0%, rgba(16, 30, 68, 0) 55%),
-    radial-gradient(120% 100% at 15% 110%, rgba(10, 40, 90, 0.35) 0%, rgba(10, 40, 90, 0) 60%),
+    radial-gradient(130% 90% at 78% -10%, rgba(16, 30, 68, 0.22) 0%, rgba(16, 30, 68, 0) 55%),
+    radial-gradient(120% 100% at 15% 110%, rgba(10, 40, 90, 0.28) 0%, rgba(10, 40, 90, 0) 60%),
     var(--field);
 }
 
@@ -71,22 +71,34 @@ body {
   will-change: transform, opacity;
   pointer-events: none;
 }
-.drift--coral {                          /* dominant warm centre cloud */
+.drift--coral {                          /* dominant warm centre cloud — proper orange */
   width: 85vmax; height: 60vmax;
   left: 8%; top: 18%;
-  background: radial-gradient(ellipse at 45% 50%, rgba(255,158,110,0.85) 0%, rgba(250,120,105,0.45) 45%, rgba(0,0,0,0) 72%);
+  background: radial-gradient(ellipse at 45% 50%, rgba(255,150,82,0.9) 0%, rgba(252,116,70,0.5) 45%, rgba(0,0,0,0) 72%);
   animation: drift-coral 24s ease-in-out infinite alternate;
 }
-.drift--magenta {                        /* hot pink, low sweep */
+.drift--beige {                          /* warm cream glow — lifts the top-right corner */
+  width: 80vmax; height: 55vmax;
+  right: -18vmax; top: -12vmax;
+  background: radial-gradient(ellipse at 50% 50%, rgba(247,226,188,0.85) 0%, rgba(240,206,158,0.38) 48%, rgba(0,0,0,0) 72%);
+  animation: drift-beige 26s ease-in-out infinite alternate;
+}
+.drift--magenta {                        /* hot magenta, low sweep — brighter */
   width: 75vmax; height: 48vmax;
   left: 22%; bottom: -16vmax;
-  background: radial-gradient(ellipse at 50% 45%, rgba(236,84,150,0.7) 0%, rgba(224,70,140,0.32) 48%, rgba(0,0,0,0) 74%);
+  background: radial-gradient(ellipse at 50% 45%, rgba(255,64,158,0.8) 0%, rgba(244,54,146,0.38) 48%, rgba(0,0,0,0) 74%);
   animation: drift-magenta 29s ease-in-out infinite alternate;
 }
-.drift--indigo {                         /* deep shadow mass, upper right */
-  width: 90vmax; height: 65vmax;
-  right: -25vmax; top: -20vmax;
-  background: radial-gradient(ellipse at 50% 50%, rgba(18,32,74,0.75) 0%, rgba(20,36,80,0.35) 48%, rgba(0,0,0,0) 72%);
+.drift--pink {                           /* bright pink bloom, upper-centre */
+  width: 55vmax; height: 42vmax;
+  left: 38%; top: 24%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255,112,196,0.8) 0%, rgba(255,92,182,0.34) 48%, rgba(0,0,0,0) 74%);
+  animation: drift-pink 21s ease-in-out infinite alternate;
+}
+.drift--indigo {                         /* soft depth anchor, LOWER right (out of the top corner) */
+  width: 75vmax; height: 52vmax;
+  right: -22vmax; bottom: -18vmax;
+  background: radial-gradient(ellipse at 50% 50%, rgba(26,46,102,0.5) 0%, rgba(28,50,106,0.22) 48%, rgba(0,0,0,0) 72%);
   animation: drift-indigo 33s ease-in-out infinite alternate;
 }
 .drift--cyan {                           /* bright azure pocket keeps the field luminous */
@@ -130,6 +142,16 @@ body {
   0%   { transform: translate(0, 0) scale(0.9);        opacity: 0.35; }
   45%  { transform: translate(14vw, 10vh) scale(1.3);  opacity: 0.9; }
   100% { transform: translate(-10vw, 4vh) scale(0.85); opacity: 0.45; }
+}
+@keyframes drift-beige {
+  0%   { transform: translate(0, 0) rotate(4deg) scale(0.95);   opacity: 0.6; }
+  50%  { transform: translate(-8vw, 6vh) rotate(-5deg) scale(1.16); opacity: 1; }
+  100% { transform: translate(5vw, -4vh) rotate(7deg) scale(0.94);  opacity: 0.7; }
+}
+@keyframes drift-pink {
+  0%   { transform: translate(0, 0) rotate(-5deg) scale(0.92);  opacity: 0.5; }
+  50%  { transform: translate(10vw, 6vh) rotate(6deg) scale(1.22); opacity: 1; }
+  100% { transform: translate(-7vw, -5vh) rotate(-9deg) scale(0.9); opacity: 0.6; }
 }
 
 /* --- 3. grain: the SAME texture as the light-mode landing page ---
@@ -306,8 +328,10 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
   <div class="stage" aria-hidden="true">
     <div class="drift drift--indigo"></div>
     <div class="drift drift--cyan"></div>
+    <div class="drift drift--beige"></div>
     <div class="drift drift--coral"></div>
     <div class="drift drift--magenta"></div>
+    <div class="drift drift--pink"></div>
     <div class="drift drift--light"></div>
   </div>
   <div class="tex-grain" aria-hidden="true"></div>

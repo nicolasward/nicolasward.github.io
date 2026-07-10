@@ -68,64 +68,68 @@ body {
   position: absolute;
   border-radius: 50%;
   filter: blur(80px);
-  will-change: transform;
+  will-change: transform, opacity;
   pointer-events: none;
 }
 .drift--coral {                          /* dominant warm centre cloud */
   width: 85vmax; height: 60vmax;
   left: 8%; top: 18%;
   background: radial-gradient(ellipse at 45% 50%, rgba(255,158,110,0.85) 0%, rgba(250,120,105,0.45) 45%, rgba(0,0,0,0) 72%);
-  animation: drift-coral 37s ease-in-out infinite alternate;
+  animation: drift-coral 24s ease-in-out infinite alternate;
 }
 .drift--magenta {                        /* hot pink, low sweep */
   width: 75vmax; height: 48vmax;
   left: 22%; bottom: -16vmax;
   background: radial-gradient(ellipse at 50% 45%, rgba(236,84,150,0.7) 0%, rgba(224,70,140,0.32) 48%, rgba(0,0,0,0) 74%);
-  animation: drift-magenta 47s ease-in-out infinite alternate;
+  animation: drift-magenta 29s ease-in-out infinite alternate;
 }
 .drift--indigo {                         /* deep shadow mass, upper right */
   width: 90vmax; height: 65vmax;
   right: -25vmax; top: -20vmax;
   background: radial-gradient(ellipse at 50% 50%, rgba(18,32,74,0.75) 0%, rgba(20,36,80,0.35) 48%, rgba(0,0,0,0) 72%);
-  animation: drift-indigo 53s ease-in-out infinite alternate;
+  animation: drift-indigo 33s ease-in-out infinite alternate;
 }
 .drift--cyan {                           /* bright azure pocket keeps the field luminous */
   width: 70vmax; height: 55vmax;
   left: -20vmax; bottom: -12vmax;
   background: radial-gradient(ellipse at 55% 45%, rgba(120,214,248,0.75) 0%, rgba(90,190,236,0.3) 50%, rgba(0,0,0,0) 74%);
-  animation: drift-cyan 43s ease-in-out infinite alternate;
+  animation: drift-cyan 27s ease-in-out infinite alternate;
 }
 .drift--light {                          /* a wandering white glow — the "light" */
   width: 60vmax; height: 45vmax;
   left: 30%; top: -10vmax;
   mix-blend-mode: screen;
   background: radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0.1) 45%, rgba(0,0,0,0) 70%);
-  animation: drift-light 31s ease-in-out infinite alternate;
+  animation: drift-light 19s ease-in-out infinite alternate;
 }
+/* Each cloud both WANDERS (translate/rotate) and GLOWS (scale + opacity swell
+   and fade), so the colours pulse like breathing light as they move. The
+   brightness peak coincides with the scale peak mid-cycle — a bloom — then
+   dims toward the ends. Different phases per cloud keep the room alive. */
 @keyframes drift-coral {
-  0%   { transform: translate(0, 0) rotate(-8deg) scale(1); }
-  50%  { transform: translate(9vw, -6vh) rotate(4deg) scale(1.12); }
-  100% { transform: translate(-6vw, 5vh) rotate(-14deg) scale(0.95); }
+  0%   { transform: translate(0, 0) rotate(-8deg) scale(0.95);  opacity: 0.65; }
+  50%  { transform: translate(9vw, -6vh) rotate(4deg) scale(1.18); opacity: 1; }
+  100% { transform: translate(-6vw, 5vh) rotate(-14deg) scale(0.92); opacity: 0.7; }
 }
 @keyframes drift-magenta {
-  0%   { transform: translate(0, 0) rotate(6deg) scale(1); }
-  50%  { transform: translate(-10vw, -5vh) rotate(-6deg) scale(1.15); }
-  100% { transform: translate(7vw, 3vh) rotate(10deg) scale(0.92); }
+  0%   { transform: translate(0, 0) rotate(6deg) scale(1);       opacity: 0.55; }
+  50%  { transform: translate(-10vw, -5vh) rotate(-6deg) scale(1.2); opacity: 1; }
+  100% { transform: translate(7vw, 3vh) rotate(10deg) scale(0.9);  opacity: 0.65; }
 }
 @keyframes drift-indigo {
-  0%   { transform: translate(0, 0) rotate(0deg) scale(1); }
-  50%  { transform: translate(-7vw, 6vh) rotate(-7deg) scale(1.1); }
-  100% { transform: translate(4vw, -4vh) rotate(5deg) scale(1.02); }
+  0%   { transform: translate(0, 0) rotate(0deg) scale(1);       opacity: 0.8; }
+  50%  { transform: translate(-7vw, 6vh) rotate(-7deg) scale(1.14); opacity: 1; }
+  100% { transform: translate(4vw, -4vh) rotate(5deg) scale(1.02); opacity: 0.85; }
 }
 @keyframes drift-cyan {
-  0%   { transform: translate(0, 0) rotate(0deg) scale(1); }
-  50%  { transform: translate(8vw, -7vh) rotate(8deg) scale(1.08); }
-  100% { transform: translate(-5vw, 4vh) rotate(-6deg) scale(0.96); }
+  0%   { transform: translate(0, 0) rotate(0deg) scale(0.96);    opacity: 0.6; }
+  50%  { transform: translate(8vw, -7vh) rotate(8deg) scale(1.12); opacity: 1; }
+  100% { transform: translate(-5vw, 4vh) rotate(-6deg) scale(0.94); opacity: 0.68; }
 }
 @keyframes drift-light {
-  0%   { transform: translate(0, 0) scale(1); }
-  45%  { transform: translate(14vw, 10vh) scale(1.25); }
-  100% { transform: translate(-10vw, 4vh) scale(0.9); }
+  0%   { transform: translate(0, 0) scale(0.9);        opacity: 0.35; }
+  45%  { transform: translate(14vw, 10vh) scale(1.3);  opacity: 0.9; }
+  100% { transform: translate(-10vw, 4vh) scale(0.85); opacity: 0.45; }
 }
 
 /* --- 3. grain: the SAME texture as the light-mode landing page ---

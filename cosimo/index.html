@@ -128,34 +128,20 @@ body {
   100% { transform: translate(-10vw, 4vh) scale(0.9); }
 }
 
-/* --- 3+4. fluted glass + grain: fixed overlays over the WHOLE scene ---
-   The flutes are the signature of the reference: vertical ribbed-glass
-   channels — a soft highlight and shadow per rib — laid over everything
-   (letters and copy included), which welds the layers into one image seen
-   through reeded glass. The grain is a separate film-noise pass. */
-.tex-flutes {
-  position: fixed;
-  inset: 0;
-  z-index: 29;
-  pointer-events: none;
-  background-image: repeating-linear-gradient(90deg,
-    rgba(255, 255, 255, 0.14) 0px,
-    rgba(255, 255, 255, 0.02) 3px,
-    rgba(8, 20, 44, 0.10) 8px,
-    rgba(255, 255, 255, 0.02) 13px,
-    rgba(255, 255, 255, 0.14) 16px);
-  mix-blend-mode: overlay;
-  opacity: 0.9;
-}
+/* --- 3. grain: the SAME texture as the light-mode landing page ---
+   The site's grain.png (dark flecks, faint alpha), tiled at the landing
+   page's 130px (110px on mobile), normal blend — laid over everything so
+   the whole scene reads as one printed surface. */
 .tex-grain {
   position: fixed;
   inset: 0;
   z-index: 30;
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 160px 160px;
-  opacity: 0.35;
-  mix-blend-mode: overlay;
+  background-image: url("/grain.png");
+  background-size: 130px 130px;
+  background-repeat: repeat;
+  opacity: 1;
+  mix-blend-mode: normal;
 }
 
 /* ---------------- Chrome (nav) ---------------- */
@@ -377,6 +363,7 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
   /* Lighter blur on phones: rasterising 80px blurs tanks mobile frame rates,
      which is what smeared the letter stagger into a single movement. */
   .drift { filter: blur(44px); }
+  .tex-grain { background-size: 110px 110px; }   /* finer grain, like the landing page */
   .middle { padding-bottom: 20vh; }
   .pitch { font-size: 1.02rem; }
   .wordmark { font-size: 26vw; margin-bottom: -4.8vw; }
@@ -392,7 +379,6 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
     <div class="drift drift--magenta"></div>
     <div class="drift drift--light"></div>
   </div>
-  <div class="tex-flutes" aria-hidden="true"></div>
   <div class="tex-grain" aria-hidden="true"></div>
 
   <header class="top">

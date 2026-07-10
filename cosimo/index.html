@@ -311,6 +311,25 @@ html.js.ready .logo circle {
   30%  { opacity: 1; }
   to   { transform: rotate(var(--a)) translateX(25px) scale(1); opacity: 1; }
 }
+
+/* Easter egg: click the rosette and it rewinds — circles peel off in reverse
+   order (anticlockwise), accelerating back into the centre, hold collapsed,
+   then the clockwise build replays (without the entrance's 0.8s handoff).
+   Both rules must match the gated rule's specificity or its delays win. */
+.logo { cursor: pointer; }
+html.js.ready .logo.is-collapsing circle {
+  animation: logo-collapse 0.39s cubic-bezier(0.55, 0, 0.68, 0.19) both;
+  animation-delay: calc((11 - var(--i)) * 63ms);
+}
+html.js.ready .logo.is-replaying circle {
+  animation: logo-grow 0.39s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i) * 63ms);
+}
+@keyframes logo-collapse {
+  from { transform: rotate(var(--a)) translateX(25px) scale(1); opacity: 1; }
+  70%  { opacity: 1; }
+  to   { transform: rotate(var(--a)) translateX(0) scale(0); opacity: 0; }
+}
 .pitch {
   max-width: 21em;
   margin: 0;
@@ -490,6 +509,20 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
   if (document.readyState === 'complete') fire();
   else window.addEventListener('load', fire);
   setTimeout(fire, 3000);
+
+  // Click the rosette: rewind anticlockwise into one point, hold, rebuild.
+  var logo = document.querySelector('.logo');
+  if (logo) logo.addEventListener('click', function () {
+    if (logo._busy || !document.documentElement.classList.contains('ready')) return;
+    logo._busy = true;
+    logo.classList.remove('is-replaying');
+    logo.classList.add('is-collapsing');            /* rewind (~1.1s), hold… */
+    setTimeout(function () {
+      logo.classList.remove('is-collapsing');
+      logo.classList.add('is-replaying');           /* …then rebuild */
+      setTimeout(function () { logo._busy = false; }, 1200);
+    }, 3300);
+  });
 
   // iOS restores the page from the back-forward cache with all animations
   // already finished — replay the entrance so returning visitors see it too.

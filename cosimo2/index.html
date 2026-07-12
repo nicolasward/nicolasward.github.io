@@ -69,6 +69,29 @@ body {
   mix-blend-mode: overlay;
 }
 
+/* ---------------- Page frame ----------------
+   A double hairline border inset from the viewport edges, rounded corners,
+   the same white as the page content. Decorative overlay, click-through. */
+.frame {
+  position: fixed;
+  inset: 14px;
+  z-index: 40;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 22px;
+}
+.frame::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 17px;
+}
+@media (max-width: 700px) {
+  .frame { inset: 9px; border-radius: 18px; }
+  .frame::before { inset: 4px; border-radius: 14px; }
+}
+
 /* ---------------- Centre copy ---------------- */
 .middle {
   position: relative;
@@ -320,6 +343,7 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
   <div class="stage" aria-hidden="true">
   </div>
   <div class="tex-grain" aria-hidden="true"></div>
+  <div class="frame" aria-hidden="true"></div>
 
   <main class="middle">
     <!-- Spirograph rosette: 12 circles whose centres ride a small ring.

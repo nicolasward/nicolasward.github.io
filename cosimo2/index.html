@@ -264,19 +264,18 @@ html.js.ready .vlabel { animation: vlabel-in 0.9s ease 0.9s both; }
    negative margins push the first/last glyphs past the edges like the mockup. */
 .wordmark {
   position: fixed;
-  left: 0; right: 0;
-  bottom: 0;
-  z-index: 4;                     /* under the halftone/grain? no — stage is z0; this sits over stage, under nothing else */
+  /* Contained INSIDE the frame: inset past the inner border line, no bleed,
+     and lifted off the bottom so the caps sit fully visible above it. */
+  left: 2.3rem; right: 2.3rem;
+  bottom: 2.2rem;
+  z-index: 4;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  /* Letters fully visible: sides bleed a touch past the edges, and the bottom
-     margin only eats the font's built-in descender padding so the caps sit
-     flush on the screen edge without being cropped. */
-  margin: 0 -2.2vw -4.4vw;
+  margin: 0;
   font-weight: 800;
-  font-size: 24vw;
-  line-height: 1;
+  font-size: 18vw;
+  line-height: 0.85;              /* trim the below-cap space so the caps sit low */
   letter-spacing: -0.02em;
   color: rgba(255, 255, 255, 0.5);
   user-select: none;
@@ -330,7 +329,7 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
   .tex-grain { background-size: 110px 110px; }   /* finer grain, like the landing page */
   .middle { padding: 0 2.5rem 22vh; }   /* room for the spine labels inside the frame */
   .pitch { font-size: 1.02rem; }
-  .wordmark { font-size: 26vw; margin-bottom: -4.8vw; }
+  .wordmark { font-size: 21vw; left: 1.5rem; right: 1.5rem; bottom: 1.6rem; }
   /* Keep the spine labels on mobile — tucked just inside the frame's inner line
      (frame inset 9px, inner border ~13px), clear of the border and the copy. */
   .vlabel { font-size: 0.56rem; letter-spacing: 0.16em; }

@@ -203,14 +203,24 @@ body {
   transform-origin: 80px 80px;
   transform: rotate(var(--a)) translateX(25px);
 }
-html.js .logo circle {
-  transform: rotate(var(--a)) translateX(0) scale(0);
-  opacity: 0;
+/* Entrance: the mark whirls in (scale + spin easing to rest) while the inner
+   group spins continuously — so it arrives spinning and never stops. Two
+   elements = two composing rotations. Gated on .ready (paint-safe). */
+html.js .logo { opacity: 0; }
+html.js.ready .logo {
+  animation: logo-in 1.15s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
 }
-html.js.ready .logo circle {
-  animation: logo-grow 0.39s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: calc(0.8s + var(--i) * 63ms);
+@keyframes logo-in {
+  from { opacity: 0; transform: scale(0.35) rotate(-250deg); }
+  55%  { opacity: 1; }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
 }
+.logo g {
+  transform-origin: 80px 80px;
+  animation: logo-spin 16s linear infinite;
+}
+@keyframes logo-spin { to { transform: rotate(360deg); } }
+/* Kept for the click easter egg (is-replaying) below. */
 @keyframes logo-grow {
   from { transform: rotate(var(--a)) translateX(0) scale(0); opacity: 0; }
   30%  { opacity: 1; }
@@ -246,7 +256,78 @@ html.js.ready .logo.is-replaying circle {
   /* a whisper of cool shadow so white copy holds on the palest drift */
   text-shadow: 0 1px 14px rgba(16, 38, 84, 0.35);
 }
-.pitch + .pitch { margin-top: 1.4em; }
+.statement {
+  margin: 0 0 1.25rem;
+  font-family: "Figtree", system-ui, -apple-system, sans-serif;
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  text-shadow: 0 2px 22px rgba(16, 38, 84, 0.4);
+}
+.ctas {
+  display: flex;
+  gap: 0.9rem;
+  margin-top: 2.3rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.82rem 1.45rem;
+  border-radius: 100px;
+  font-family: "Figtree", system-ui, -apple-system, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+}
+.btn svg { width: 0.82rem; height: 0.82rem; }
+.btn--ghost { color: var(--ink); border: 1px solid rgba(255, 255, 255, 0.5); }
+.btn--solid { background: #F7F7F5; color: #16233A; border: 1px solid #F7F7F5; }
+@media (hover: hover) {
+  .btn:hover { transform: translateY(-1px); }
+  .btn--ghost:hover { border-color: #ffffff; background: rgba(255, 255, 255, 0.14); }
+  .btn--solid:hover { background: #ffffff; border-color: #ffffff; }
+}
+
+/* Copy entrance: fade up, gated on .ready (each rule holds its own delay so
+   the animation shorthand's implicit 0s can't override it). */
+html.js .reveal { opacity: 0; }
+html.js.ready .statement.reveal { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
+html.js.ready .pitch.reveal     { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.34s both; }
+html.js.ready .ctas.reveal      { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.48s both; }
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------------- Vertical spine labels ----------------
+   Rotated marginalia running up the left edge and down the right. */
+.vlabel {
+  position: fixed;
+  top: 50%;
+  z-index: 6;
+  font-family: "Figtree", system-ui, -apple-system, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+  text-shadow: 0 1px 12px rgba(16, 38, 84, 0.4);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  writing-mode: vertical-rl;
+}
+.vlabel--left  { left: 1.7rem;  transform: translateY(-50%) rotate(180deg); }   /* reads up */
+.vlabel--right { right: 1.7rem; transform: translateY(-50%); }                  /* reads down */
+html.js .vlabel { opacity: 0; }
+html.js.ready .vlabel { animation: vlabel-in 0.9s ease 0.9s both; }
+@keyframes vlabel-in { from { opacity: 0; } to { opacity: 1; } }
 
 /* ---------------- Giant wordmark ----------------
    Fills the viewport edge-to-edge and is cropped by the bottom of the screen.
@@ -304,11 +385,15 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
 @media (prefers-reduced-motion: reduce) {
   .drift { animation: none; }
   .wordmark span { animation: none !important; transform: none !important; }
+  .logo { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .logo g { animation: none !important; transform: none !important; }
   .logo circle {
     animation: none !important;
     transform: rotate(var(--a)) translateX(25px) !important;
     opacity: 1 !important;
   }
+  .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .vlabel { animation: none !important; opacity: 1 !important; }
 }
 
 /* ---------------- Mobile ---------------- */
@@ -320,6 +405,10 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
   .middle { padding-bottom: 20vh; }
   .pitch { font-size: 1.02rem; }
   .wordmark { font-size: 26vw; margin-bottom: -4.8vw; }
+  /* Keep the spine labels on mobile — tighter to the edges and smaller. */
+  .vlabel { font-size: 0.56rem; letter-spacing: 0.16em; }
+  .vlabel--left  { left: 0.5rem; }
+  .vlabel--right { right: 0.5rem; }
 }
 </style>
 </head>
@@ -360,9 +449,20 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
       </g>
     </svg>
 
-    <p class="pitch">We design change-making website experiences that finally reflect what you&#8217;ve actually built.</p>
-    <p class="pitch">For established brands whose reputation has outgrown their digital presence.</p>
+    <h1 class="statement reveal">Making is free.<br>Taste isn&#8217;t.</h1>
+    <p class="pitch reveal">Cosimo is a creative house that sells judgment at fixed prices &mdash; for founders whose reputation has outgrown their craft.</p>
+    <div class="ctas reveal">
+      <a class="btn btn--ghost" href="#manifesto">Manifesto
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+      </a>
+      <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Let&#8217;s talk
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+      </a>
+    </div>
   </main>
+
+  <span class="vlabel vlabel--left" aria-hidden="true">It is not enough to create. We must care.</span>
+  <span class="vlabel vlabel--right" aria-hidden="true">London &bull; Paris &bull; San Francisco</span>
 
   <div class="wordmark" aria-hidden="true">
     <span>C</span><span>O</span><span>S</span><span>I</span><span>M</span><span>O</span>

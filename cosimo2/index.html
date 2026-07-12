@@ -101,14 +101,25 @@ body {
   transform-origin: 80px 80px;
   transform: rotate(var(--a)) translateX(25px);
 }
-html.js .logo circle {
-  transform: rotate(var(--a)) translateX(0) scale(0);
-  opacity: 0;
+/* Entrance: the mark whirls in — scaling up from small with a spin that eases
+   into rest — while the inner group spins continuously, so it ARRIVES spinning
+   and never stops. The two rotations live on different elements (SVG entrance
+   vs inner-group forever-spin) so they compose. Gated on .ready (paint-safe). */
+html.js .logo { opacity: 0; }
+html.js.ready .logo {
+  animation: logo-in 1.15s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
 }
-html.js.ready .logo circle {
-  animation: logo-grow 0.39s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: calc(0.8s + var(--i) * 63ms);
+@keyframes logo-in {
+  from { opacity: 0; transform: scale(0.35) rotate(-250deg); }
+  55%  { opacity: 1; }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
 }
+.logo g {
+  transform-origin: 80px 80px;
+  animation: logo-spin 16s linear infinite;
+}
+@keyframes logo-spin { to { transform: rotate(360deg); } }
+/* Kept for the click easter egg (is-replaying) below. */
 @keyframes logo-grow {
   from { transform: rotate(var(--a)) translateX(0) scale(0); opacity: 0; }
   30%  { opacity: 1; }
@@ -192,9 +203,9 @@ html.js.ready .logo.is-replaying circle {
    its own delay so the animation shorthand's implicit 0s can't override it). */
 html.js .reveal { opacity: 0; }
 html.js.ready .eyebrow.reveal   { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
-html.js.ready .statement.reveal { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both; }
-html.js.ready .pitch.reveal     { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.46s both; }
-html.js.ready .ctas.reveal      { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both; }
+html.js.ready .statement.reveal { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
+html.js.ready .pitch.reveal     { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.34s both; }
+html.js.ready .ctas.reveal      { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.48s both; }
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: none; }
@@ -279,6 +290,8 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
 /* ---------------- Reduced motion ---------------- */
 @media (prefers-reduced-motion: reduce) {
   .wordmark span { animation: none !important; transform: none !important; }
+  .logo { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .logo g { animation: none !important; transform: none !important; }
   .logo circle {
     animation: none !important;
     transform: rotate(var(--a)) translateX(25px) !important;
@@ -295,7 +308,10 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
   .middle { padding-bottom: 22vh; }
   .pitch { font-size: 1.02rem; }
   .wordmark { font-size: 26vw; margin-bottom: -4.8vw; }
-  .vlabel { display: none; }       /* spine labels would crowd the narrow column */
+  /* Keep the spine labels on mobile — just tighter to the edges and smaller. */
+  .vlabel { font-size: 0.56rem; letter-spacing: 0.16em; }
+  .vlabel--left  { left: 0.5rem; }
+  .vlabel--right { right: 0.5rem; }
 }
 </style>
 </head>
@@ -329,7 +345,6 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
       </g>
     </svg>
 
-    <p class="eyebrow reveal">The taste business</p>
     <h1 class="statement reveal">Making is free.<br>Taste isn&#8217;t.</h1>
     <p class="pitch reveal">Cosimo is a creative house that sells judgment at fixed prices &mdash; for founders whose reputation has outgrown their craft.</p>
     <div class="ctas reveal">

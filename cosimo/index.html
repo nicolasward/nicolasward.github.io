@@ -323,8 +323,8 @@ html.js.ready .ctas.reveal      { animation: fade-up 0.6s cubic-bezier(0.16, 1, 
   user-select: none;
   writing-mode: vertical-rl;
 }
-.vlabel--left  { left: 1.7rem;  transform: translateY(-50%) rotate(180deg); }   /* reads up */
-.vlabel--right { right: 1.7rem; transform: translateY(-50%); }                  /* reads down */
+.vlabel--left  { top: 34%; left: 1.7rem;  transform: translateY(-50%) rotate(180deg); }   /* reads up, sits high */
+.vlabel--right { top: 66%; right: 1.7rem; transform: translateY(-50%); }                  /* reads down, sits low */
 html.js .vlabel { opacity: 0; }
 html.js.ready .vlabel { animation: vlabel-in 0.9s ease 0.9s both; }
 @keyframes vlabel-in { from { opacity: 0; } to { opacity: 1; } }

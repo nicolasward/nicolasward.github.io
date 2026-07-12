@@ -425,13 +425,14 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
      which is what smeared the letter stagger into a single movement. */
   .drift { filter: blur(44px); }
   .tex-grain { background-size: 110px 110px; }   /* finer grain, like the landing page */
-  .middle { padding-bottom: 20vh; }
+  .middle { padding: 0 2.5rem 20vh; }   /* room for the spine labels inside the frame */
   .pitch { font-size: 1.02rem; }
   .wordmark { font-size: 26vw; margin-bottom: -4.8vw; }
-  /* Keep the spine labels on mobile — tighter to the edges and smaller. */
+  /* Keep the spine labels on mobile — tucked just inside the frame's inner line
+     (frame inset 9px, inner border ~13px), clear of the border and the copy. */
   .vlabel { font-size: 0.56rem; letter-spacing: 0.16em; }
-  .vlabel--left  { left: 0.5rem; }
-  .vlabel--right { right: 0.5rem; }
+  .vlabel--left  { left: 1.2rem; }
+  .vlabel--right { right: 1.2rem; }
 }
 </style>
 </head>

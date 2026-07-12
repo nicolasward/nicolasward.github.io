@@ -170,27 +170,67 @@ body {
   mix-blend-mode: normal;
 }
 
+/* ---------------- Intro ----------------
+   A white screen with a single dot the colour of the field that's about to
+   arrive; the dot irises out to fill the screen, then the white fades to
+   reveal the real (textured) background. Shown only with JS; driven by
+   html.intro (added after first paint); skipped under reduced motion. */
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #ffffff;
+  display: none;
+  overflow: hidden;
+}
+html.js .intro-overlay { display: block; }
+.intro-dot {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--field);            /* the colour about to expand */
+  transform: translate(-50%, -50%) scale(1);
+}
+html.intro .intro-dot { animation: dot-expand 0.9s cubic-bezier(0.7, 0, 0.25, 1) 0.2s both; }
+html.intro .intro-overlay { animation: overlay-out 0.4s ease 1.05s both; }
+@keyframes dot-expand {
+  from { transform: translate(-50%, -50%) scale(1); }
+  to   { transform: translate(-50%, -50%) scale(260); }
+}
+@keyframes overlay-out { to { opacity: 0; visibility: hidden; } }
+
 /* ---------------- Page frame ----------------
-   A double hairline border inset from the viewport edges, rounded corners,
-   the same white as the page content. Decorative overlay, click-through. */
+   A double hairline border, rounded corners, the same white as the page.
+   Two SVG rects so it can DRAW ITSELF clockwise (stroke-dashoffset) once
+   html.frame-in is set. Behind the content (z-index 1). */
 .frame {
   position: fixed;
-  inset: 14px;
-  z-index: 1;                    /* behind the content, so the wordmark sits over it */
+  inset: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
   pointer-events: none;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 22px;
 }
-.frame::before {
-  content: "";
-  position: absolute;
-  inset: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 17px;
+.frame rect {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-width: 1;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;                /* drawn by default (no-JS) */
 }
+html.js .frame rect { stroke-dashoffset: 1; }   /* JS hides it until frame-in draws it */
+.frame-outer { x: 14px; y: 14px; width: calc(100% - 28px); height: calc(100% - 28px); rx: 22px; ry: 22px; }
+.frame-inner { x: 19px; y: 19px; width: calc(100% - 38px); height: calc(100% - 38px); rx: 17px; ry: 17px; }
+html.frame-in .frame-outer { animation: frame-draw 1.1s cubic-bezier(0.65, 0, 0.35, 1) both; }
+html.frame-in .frame-inner { animation: frame-draw 1.1s cubic-bezier(0.65, 0, 0.35, 1) 0.12s both; }
+@keyframes frame-draw { to { stroke-dashoffset: 0; } }
 @media (max-width: 700px) {
-  .frame { inset: 9px; border-radius: 30px; }
-  .frame::before { inset: 4px; border-radius: 26px; }
+  .frame-outer { x: 9px;  y: 9px;  width: calc(100% - 18px); height: calc(100% - 18px); rx: 30px; ry: 30px; }
+  .frame-inner { x: 13px; y: 13px; width: calc(100% - 26px); height: calc(100% - 26px); rx: 26px; ry: 26px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro-overlay { display: none !important; }
+  .frame rect { animation: none !important; stroke-dashoffset: 0 !important; }
 }
 
 /* ---------------- Centre copy ---------------- */
@@ -452,7 +492,11 @@ html.js.ready .wordmark span:nth-child(1) b { animation-delay: 0.40s; }
     <div class="drift drift--light"></div>
   </div>
   <div class="tex-grain" aria-hidden="true"></div>
-  <div class="frame" aria-hidden="true"></div>
+  <svg class="frame" aria-hidden="true">
+    <rect class="frame-outer" pathLength="1"/>
+    <rect class="frame-inner" pathLength="1"/>
+  </svg>
+  <div class="intro-overlay" aria-hidden="true"><span class="intro-dot"></span></div>
 
   <main class="middle">
     <!-- Spirograph rosette: 12 circles whose centres ride a small ring.
@@ -506,19 +550,24 @@ html.js.ready .wordmark span:nth-child(1) b { animation-delay: 0.40s; }
 // visible frame before the letters start to rise. The timeout is a slow-
 // network cap; it goes through the same rAF gate, so it can't beat paint.
 (function () {
+  var root = document.documentElement;
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   var done = false;
   function fire() {
     if (done) return;
     done = true;
+    if (reduce) { root.classList.add('ready'); return; }   // skip the intro
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
-        document.documentElement.classList.add('ready');
+        root.classList.add('intro');                        // 1. dot irises the background in
+        setTimeout(function () { root.classList.add('frame-in'); }, 1500);   // 2. frame draws clockwise
+        setTimeout(function () { root.classList.add('ready'); }, 2750);      // 3. COSIMO + the rest
       });
     });
   }
   if (document.readyState === 'complete') fire();
   else window.addEventListener('load', fire);
-  setTimeout(fire, 3000);
+  setTimeout(fire, 3200);
 
   // Click the rosette: rewind anticlockwise into one point, hold, rebuild.
   var logo = document.querySelector('.logo');

@@ -382,23 +382,28 @@ html.js.ready .vlabel { animation: vlabel-in 0.9s ease 0.9s both; }
    animation can finish BEFORE first paint on mobile (the render-blocking
    font fetch eats the whole animation window) and appear not to run at all.
    Letters hide below only when JS is present; no-JS just shows them. */
-.wordmark span { display: block; }
-html.js .wordmark span {
-  transform: translateY(115%);
+/* Each letter is an inner <b> that slides up inside its <span> cell. The cell
+   clips only its BOTTOM (clip-path inset with an open, negative top) so the
+   letter is invisible below its resting box — no tops peeking before the
+   slide — while cap tops are never clipped. */
+.wordmark span { display: block; clip-path: inset(-45% -6% 0 -6%); }
+.wordmark b { display: block; font: inherit; }
+html.js .wordmark b {
+  transform: translateY(120%);
 }
-html.js.ready .wordmark span {
+html.js.ready .wordmark b {
   animation: letter-in 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 /* Per-letter stagger (120ms steps). These MUST match the specificity of the
    gated shorthand above — the `animation:` shorthand implicitly resets
    animation-delay to 0s, and a lower-specificity delay rule loses to it,
    which made all six letters rise as one block. */
-html.js.ready .wordmark span:nth-child(6) { animation-delay: 0.10s; }
-html.js.ready .wordmark span:nth-child(5) { animation-delay: 0.16s; }
-html.js.ready .wordmark span:nth-child(4) { animation-delay: 0.22s; }
-html.js.ready .wordmark span:nth-child(3) { animation-delay: 0.28s; }
-html.js.ready .wordmark span:nth-child(2) { animation-delay: 0.34s; }
-html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
+html.js.ready .wordmark span:nth-child(6) b { animation-delay: 0.10s; }
+html.js.ready .wordmark span:nth-child(5) b { animation-delay: 0.16s; }
+html.js.ready .wordmark span:nth-child(4) b { animation-delay: 0.22s; }
+html.js.ready .wordmark span:nth-child(3) b { animation-delay: 0.28s; }
+html.js.ready .wordmark span:nth-child(2) b { animation-delay: 0.34s; }
+html.js.ready .wordmark span:nth-child(1) b { animation-delay: 0.40s; }
 @keyframes letter-in {
   to { transform: translateY(0); }
 }
@@ -406,7 +411,7 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
 /* ---------------- Reduced motion ---------------- */
 @media (prefers-reduced-motion: reduce) {
   .drift { animation: none; }
-  .wordmark span { animation: none !important; transform: none !important; }
+  .wordmark b { animation: none !important; transform: none !important; }
   .logo { animation: none !important; opacity: 1 !important; transform: none !important; }
   .logo g { animation: none !important; transform: none !important; }
   .logo circle {
@@ -473,7 +478,7 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
       </g>
     </svg>
 
-    <h1 class="statement reveal">Making is free.<br>Taste isn&#8217;t.</h1>
+    <h1 class="statement reveal">Making is free.<br>Craft isn&#8217;t.</h1>
     <p class="pitch reveal">Cosimo is a creative house that sells judgment at fixed prices &mdash; for founders whose reputation has outgrown their craft.</p>
     <div class="ctas reveal">
       <a class="btn btn--ghost" href="#manifesto">Manifesto
@@ -489,7 +494,7 @@ html.js.ready .wordmark span:nth-child(1) { animation-delay: 0.40s; }
   <span class="vlabel vlabel--right" aria-hidden="true">London &bull; Paris &bull; San Francisco</span>
 
   <div class="wordmark" aria-hidden="true">
-    <span>C</span><span>O</span><span>S</span><span>I</span><span>M</span><span>O</span>
+    <span><b>C</b></span><span><b>O</b></span><span><b>S</b></span><span><b>I</b></span><span><b>M</b></span><span><b>O</b></span>
   </div>
 
 <script>

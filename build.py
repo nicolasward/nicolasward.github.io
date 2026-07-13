@@ -352,12 +352,18 @@ def build():
             else:
                 shutil.copy2(item, dest)
 
-    # Cosimo teaser pages → /cosimo, /cosimo2 (self-contained, copied as-is)
+    # Cosimo teaser pages → /cosimo, /cosimo2 (self-contained dirs, copied as-is)
     for _cosimo_dir in ("cosimo", "cosimo2"):
         cosimo_src = ROOT / _cosimo_dir
         if cosimo_src.exists():
             shutil.copytree(cosimo_src, OUTPUT_DIR / _cosimo_dir,
                             ignore=shutil.ignore_patterns(".DS_Store"))
+
+    # Cosimo3 teaser → /cosimo3.html (single file at root + its background image)
+    for asset in ("cosimo3.html", "cosimo3-liquid-bg.jpg"):
+        asset_src = ROOT / asset
+        if asset_src.exists():
+            shutil.copy2(asset_src, OUTPUT_DIR / asset)
 
     # Static images (post cover artwork, etc.) → /images, resized + re-encoded as
     # WebP. image_map rewrites references from the source path to the optimized one.

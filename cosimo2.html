@@ -68,12 +68,33 @@
   @media (prefers-reduced-motion: reduce) {
     .caption { opacity: 1; animation: none; transform: none; }
   }
+
+  /* grain: the SAME texture as /cosimo — the site's grain.png (dark flecks,
+     faint alpha), tiled at 130px (110px on mobile), normal blend — laid over
+     the whole page so it reads as one printed surface. */
+  .tex-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
+    background-image: url("/grain.png");
+    background-size: 130px 130px;
+    background-repeat: repeat;
+    opacity: 1;
+    mix-blend-mode: normal;
+  }
+
+  @media (max-width: 700px) {
+    .tex-grain { background-size: 110px 110px; }   /* finer grain, like the landing page */
+  }
 </style>
 
 <div class="frame">
   <canvas id="scene" aria-label="Retro desktop scene" role="img"></canvas>
   <p class="caption">all sky, no limit</p>
 </div>
+
+<div class="tex-grain" aria-hidden="true"></div>
 
 <script>
   (function () {

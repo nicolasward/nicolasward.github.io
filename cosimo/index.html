@@ -201,32 +201,35 @@ html.intro .intro-overlay { animation: overlay-out 0.4s ease 1.05s both; }
 @keyframes overlay-out { to { opacity: 0; visibility: hidden; } }
 
 /* ---------------- Page frame ----------------
-   A double hairline border, rounded corners, the same white as the page.
-   Two SVG rects so it can DRAW ITSELF clockwise (stroke-dashoffset) once
-   html.frame-in is set. Behind the content (z-index 1). */
+   A thick white rectangular border framing the scene, the same white as the
+   page. One SVG rect with a heavy stroke, inset by half its width so the outer
+   edge sits flush to the viewport; it DRAWS ITSELF clockwise (stroke-dashoffset)
+   once html.frame-in is set. Behind the content (z-index 1). */
 .frame {
   position: fixed;
   inset: 0;
   width: 100%; height: 100%;
   z-index: 1;
   pointer-events: none;
+  --fw: 26px;                          /* frame thickness */
 }
 .frame rect {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.5);
-  stroke-width: 1;
+  stroke: #ffffff;
+  stroke-width: var(--fw);
+  /* inset by half the stroke so the band's outer edge is flush to the edge */
+  x: calc(var(--fw) / 2);
+  y: calc(var(--fw) / 2);
+  width: calc(100% - var(--fw));
+  height: calc(100% - var(--fw));
   stroke-dasharray: 1;
   stroke-dashoffset: 0;                /* drawn by default (no-JS) */
 }
 html.js .frame rect { stroke-dashoffset: 1; }   /* JS hides it until frame-in draws it */
-.frame-outer { x: 14px; y: 14px; width: calc(100% - 28px); height: calc(100% - 28px); rx: 22px; ry: 22px; }
-.frame-inner { x: 19px; y: 19px; width: calc(100% - 38px); height: calc(100% - 38px); rx: 17px; ry: 17px; }
-html.frame-in .frame-outer { animation: frame-draw 1.1s cubic-bezier(0.65, 0, 0.35, 1) both; }
-html.frame-in .frame-inner { animation: frame-draw 1.1s cubic-bezier(0.65, 0, 0.35, 1) 0.12s both; }
+html.frame-in .frame-line { animation: frame-draw 1.15s cubic-bezier(0.65, 0, 0.35, 1) both; }
 @keyframes frame-draw { to { stroke-dashoffset: 0; } }
 @media (max-width: 700px) {
-  .frame-outer { x: 9px;  y: 9px;  width: calc(100% - 18px); height: calc(100% - 18px); rx: 30px; ry: 30px; }
-  .frame-inner { x: 13px; y: 13px; width: calc(100% - 26px); height: calc(100% - 26px); rx: 26px; ry: 26px; }
+  .frame { --fw: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .intro-overlay { display: none !important; }
@@ -493,8 +496,7 @@ html.js.ready .wordmark span:nth-child(1) b { animation-delay: 0.40s; }
   </div>
   <div class="tex-grain" aria-hidden="true"></div>
   <svg class="frame" aria-hidden="true">
-    <rect class="frame-outer" pathLength="1"/>
-    <rect class="frame-inner" pathLength="1"/>
+    <rect class="frame-line" pathLength="1"/>
   </svg>
   <div class="intro-overlay" aria-hidden="true"><span class="intro-dot"></span></div>
 

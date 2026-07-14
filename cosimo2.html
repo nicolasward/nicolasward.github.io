@@ -57,7 +57,7 @@
     letter-spacing: -0.018em;
     text-rendering: optimizeLegibility;
     opacity: 0;
-    animation: caption-in 900ms ease 1500ms forwards;
+    animation: caption-in 800ms ease 900ms forwards;
   }
 
   @keyframes caption-in {
@@ -83,7 +83,7 @@
     img.src = 'retro-desktop.png';
 
     var TILE = 16;          // css px per tile block
-    var DURATION = 2400;    // ms for the full top-left -> bottom-right sweep
+    var DURATION = 1500;    // ms for the full top-left -> bottom-right sweep
     var JITTER = 0.32;      // scatter along the diagonal, for the "trickle" feel
 
     var dpr = Math.max(1, window.devicePixelRatio || 1);

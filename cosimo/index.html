@@ -21,6 +21,8 @@
   --ink:        #FAFCFC;                /* clean white text */
   --ink-dim:    rgba(250, 252, 252, 0.92);
   --field:      #3FA3DB;                /* saturated azure (Pelmatech-style) */
+  --frame-margin: 12px;                /* gap from the viewport edge to the frame */
+  --frame-width:  20px;                /* thickness of the white frame band */
 }
 
 * { box-sizing: border-box; }
@@ -201,39 +203,20 @@ html.intro .intro-overlay { animation: overlay-out 0.4s ease 1.05s both; }
 @keyframes overlay-out { to { opacity: 0; visibility: hidden; } }
 
 /* ---------------- Page frame ----------------
-   A thick white rectangular border framing the scene, the same white as the
-   page. One SVG rect with a heavy stroke, inset by half its width so the outer
-   edge sits flush to the viewport; it DRAWS ITSELF clockwise (stroke-dashoffset)
-   once html.frame-in is set. Behind the content (z-index 1). */
+   A thick white rectangular frame, brought in from the edges so a thin band of
+   the coloured stage shows all around it — a frame sitting on the scene, not an
+   edge border. A plain bordered box gives perfectly mitred, fully closed
+   corners, and it's present from first paint (no draw-in). Behind the content
+   (z-index 1). */
 .frame {
   position: fixed;
-  inset: 0;
-  width: 100%; height: 100%;
+  inset: var(--frame-margin);          /* brought in from the viewport edges */
   z-index: 1;
   pointer-events: none;
-  --fw: 26px;                          /* frame thickness */
-}
-.frame rect {
-  fill: none;
-  stroke: #ffffff;
-  stroke-width: var(--fw);
-  /* inset by half the stroke so the band's outer edge is flush to the edge */
-  x: calc(var(--fw) / 2);
-  y: calc(var(--fw) / 2);
-  width: calc(100% - var(--fw));
-  height: calc(100% - var(--fw));
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;                /* drawn by default (no-JS) */
-}
-html.js .frame rect { stroke-dashoffset: 1; }   /* JS hides it until frame-in draws it */
-html.frame-in .frame-line { animation: frame-draw 1.15s cubic-bezier(0.65, 0, 0.35, 1) both; }
-@keyframes frame-draw { to { stroke-dashoffset: 0; } }
-@media (max-width: 700px) {
-  .frame { --fw: 16px; }
+  border: var(--frame-width) solid #ffffff;
 }
 @media (prefers-reduced-motion: reduce) {
   .intro-overlay { display: none !important; }
-  .frame rect { animation: none !important; stroke-dashoffset: 0 !important; }
 }
 
 /* ---------------- Centre copy ---------------- */
@@ -389,8 +372,9 @@ html.js.ready .ctas.reveal      { animation: fade-up 0.6s cubic-bezier(0.16, 1, 
   user-select: none;
   writing-mode: vertical-rl;
 }
-.vlabel--left  { top: 34%; left: 1.7rem;  transform: translateY(-50%) rotate(180deg); }   /* reads up, sits high */
-.vlabel--right { top: 66%; right: 1.7rem; transform: translateY(-50%); }                  /* reads down, sits low */
+/* sit just inside the frame band (offset = margin + band + a small gap) */
+.vlabel--left  { top: 34%; left: calc(var(--frame-margin) + var(--frame-width) + 0.7rem);  transform: translateY(-50%) rotate(180deg); }   /* reads up, sits high */
+.vlabel--right { top: 66%; right: calc(var(--frame-margin) + var(--frame-width) + 0.7rem); transform: translateY(-50%); }                  /* reads down, sits low */
 html.js .vlabel { opacity: 0; }
 html.js.ready .vlabel { animation: vlabel-in 0.9s ease 0.9s both; }
 @keyframes vlabel-in { from { opacity: 0; } to { opacity: 1; } }
@@ -468,6 +452,8 @@ html.js.ready .wordmark span:nth-child(1) b { animation-delay: 0.40s; }
 
 /* ---------------- Mobile ---------------- */
 @media (max-width: 700px) {
+  /* Thinner, tighter frame on phones. */
+  :root { --frame-margin: 8px; --frame-width: 12px; }
   /* Lighter blur on phones: rasterising 80px blurs tanks mobile frame rates,
      which is what smeared the letter stagger into a single movement. */
   .drift { filter: blur(44px); }
@@ -475,11 +461,9 @@ html.js.ready .wordmark span:nth-child(1) b { animation-delay: 0.40s; }
   .middle { padding: 0 2.5rem 20vh; }   /* room for the spine labels inside the frame */
   .pitch { font-size: 1.02rem; }
   .wordmark { font-size: 21vw; left: 1.5rem; right: 1.5rem; bottom: 1.6rem; }
-  /* Keep the spine labels on mobile — tucked just inside the frame's inner line
-     (frame inset 9px, inner border ~13px), clear of the border and the copy. */
+  /* Spine labels stay tucked just inside the frame band (their left/right offset
+     tracks the frame vars automatically). */
   .vlabel { font-size: 0.56rem; letter-spacing: 0.16em; }
-  .vlabel--left  { left: 1.2rem; }
-  .vlabel--right { right: 1.2rem; }
 }
 </style>
 </head>
@@ -495,9 +479,7 @@ html.js.ready .wordmark span:nth-child(1) b { animation-delay: 0.40s; }
     <div class="drift drift--light"></div>
   </div>
   <div class="tex-grain" aria-hidden="true"></div>
-  <svg class="frame" aria-hidden="true">
-    <rect class="frame-line" pathLength="1"/>
-  </svg>
+  <div class="frame" aria-hidden="true"></div>
   <div class="intro-overlay" aria-hidden="true"><span class="intro-dot"></span></div>
 
   <main class="middle">
@@ -561,9 +543,8 @@ html.js.ready .wordmark span:nth-child(1) b { animation-delay: 0.40s; }
     if (reduce) { root.classList.add('ready'); return; }   // skip the intro
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
-        root.classList.add('intro');                        // 1. dot irises the background in
-        setTimeout(function () { root.classList.add('frame-in'); }, 1500);   // 2. frame draws clockwise
-        setTimeout(function () { root.classList.add('ready'); }, 2750);      // 3. COSIMO + the rest
+        root.classList.add('intro');                        // 1. dot irises the background in (frame is already there)
+        setTimeout(function () { root.classList.add('ready'); }, 1600);      // 2. COSIMO + the rest
       });
     });
   }

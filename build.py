@@ -359,8 +359,8 @@ def build():
             shutil.copytree(cosimo_src, OUTPUT_DIR / _cosimo_dir,
                             ignore=shutil.ignore_patterns(".DS_Store"))
 
-    # Cosimo3 teaser → /cosimo3.html (single file at root + its background image)
-    for asset in ("cosimo3.html", "cosimo3-liquid-bg.jpg"):
+    # Cosimo2 teaser → /cosimo2.html (single file at root + its central image)
+    for asset in ("cosimo2.html", "retro-desktop.png"):
         asset_src = ROOT / asset
         if asset_src.exists():
             shutil.copy2(asset_src, OUTPUT_DIR / asset)

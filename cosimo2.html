@@ -11,8 +11,8 @@
   * { box-sizing: border-box; }
 
   :root {
-    /* a bit of breathing room on all four sides of the image */
-    --pad: clamp(1.5rem, 5vmin, 4rem);
+    /* thin white margin around the full-page image */
+    --pad: clamp(0.5rem, 1.2vmin, 1rem);
   }
 
   html, body { height: 100%; }
@@ -22,26 +22,26 @@
     background: #fff;                       /* white page */
     padding: var(--pad);
     display: grid;
-    place-items: center;                    /* image sits centred in the padded frame */
+    place-items: stretch;                   /* image fills the padded frame */
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
   }
 
-  /* Wraps tightly around the image so the caption can anchor to the image's
-     own top-left corner (not the viewport's). */
+  /* Fills the whole padded viewport so the image reaches every edge and the
+     caption can anchor to the image's top-left corner. */
   .frame {
     position: relative;
     line-height: 0;                         /* kill descender gap under the img */
+    width: 100%;
+    height: 100%;
   }
 
-  /* Constrain the image against the padded viewport so the whole thing is
-     always visible, whatever the aspect ratio of the window. */
+  /* Image covers the entire padded frame, cropping as needed so there is no
+     white space inside the margin, whatever the window's aspect ratio. */
   .frame img {
     display: block;
-    max-width: calc(100dvw - 2 * var(--pad));
-    max-height: calc(100dvh - 2 * var(--pad));
-    width: auto;
-    height: auto;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   /* White caption, top-left, matched to the landing page's "Hi, I'm Nico." */

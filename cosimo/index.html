@@ -36,8 +36,18 @@
     clip-path: circle(150vmax at 50% 50%);   /* default: nothing clipped */
     will-change: clip-path;
   }
+  /* The dot first breathes in place (~2s, two gentle pulses), THEN irises out.
+     The pulse fills forwards, ending back at the dot size; the open is delayed
+     until the pulse is done and uses forwards-only fill so it doesn't clamp the
+     clip-path during the pulse (a backwards fill would freeze the breathing). */
   html.intro .iris {
-    animation: iris-open 1.15s cubic-bezier(0.7, 0, 0.25, 1) 0.2s both;
+    animation:
+      iris-pulse 1s ease-in-out 0.2s 2 both,
+      iris-open 1.15s cubic-bezier(0.7, 0, 0.25, 1) 2.2s forwards;
+  }
+  @keyframes iris-pulse {
+    0%, 100% { clip-path: circle(1.6vmax at 50% 50%); }   /* the resting dot */
+    50%      { clip-path: circle(2.3vmax at 50% 50%); }   /* the breath */
   }
   @keyframes iris-open {
     from { clip-path: circle(1.6vmax at 50% 50%); }   /* a small dot onto the bg */

@@ -359,11 +359,11 @@ def build():
             shutil.copytree(cosimo_src, OUTPUT_DIR / _cosimo_dir,
                             ignore=shutil.ignore_patterns(".DS_Store"))
 
-    # Cosimo2 teaser → /cosimo2.html (single file at root + its central image)
-    for asset in ("cosimo2.html", "retro-desktop.png"):
-        asset_src = ROOT / asset
-        if asset_src.exists():
-            shutil.copy2(asset_src, OUTPUT_DIR / asset)
+    # Cosimo2 teaser → /cosimo2.html (single self-contained file at root; its
+    # grain overlay reuses /grain.png, already emitted with the landing page).
+    cosimo2_src = ROOT / "cosimo2.html"
+    if cosimo2_src.exists():
+        shutil.copy2(cosimo2_src, OUTPUT_DIR / "cosimo2.html")
 
     # Static images (post cover artwork, etc.) → /images, resized + re-encoded as
     # WebP. image_map rewrites references from the source path to the optimized one.

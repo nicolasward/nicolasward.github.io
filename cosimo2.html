@@ -1,192 +1,235 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cosimo — all sky, no limit</title>
+<title>Cosimo</title>
 <meta name="robots" content="noindex">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Preload the grain so it dithers the gradient at first paint (matches the
+     landing page's "Hi, I'm Nico." treatment). -->
+<link rel="preload" as="image" href="/grain.png" type="image/png">
 
 <style>
-  * { box-sizing: border-box; }
+  :root {
+    /* Fallback gradient, shown if WebGL is unavailable. Keep it in the
+       same colour family as PALETTE below so the swap is invisible. */
+    --fallback: linear-gradient(135deg, #1B2A6B, #6E2594, #C2185B, #E85D2F);
+    --noise-size: 130px;          /* signature grain tile — matches the landing page */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
   html, body { height: 100%; }
 
   body {
-    margin: 0;
-    background: #fff;                       /* shows through the faded image */
-    display: grid;
-    place-items: stretch;                   /* image fills the whole viewport */
-    font-family: "Figtree", system-ui, -apple-system, sans-serif;
+    background: #0B0A14;
+    overflow: hidden;
   }
 
-  /* Fills the whole viewport, edge to edge, so the image goes full screen and
-     the caption can anchor to its top-left corner. */
-  .frame {
-    position: relative;
-    line-height: 0;                         /* kill descender gap under the img */
-    width: 100%;
-    height: 100%;
-  }
-
-  /* The canvas covers the entire viewport; the image is drawn onto it in tile
-     blocks that trickle in diagonally (see the script below). Slightly faded
-     so the dark backdrop mutes it. */
-  .frame canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-    opacity: 0.6;
-  }
-
-  /* White caption, top-left, matched to the landing page's "Hi, I'm Nico".
-     Fades in as the image finishes trickling into place. */
-  .caption {
-    position: absolute;
-    top: clamp(1rem, 3.2vmin, 2.5rem);
-    left: clamp(1rem, 3.2vmin, 2.5rem);
-    margin: 0;
-    color: #fff;
-    font-size: clamp(1.7rem, 3.3vw, 3.4rem);
-    font-weight: 600;
-    line-height: 1.3;
-    letter-spacing: -0.018em;
-    text-rendering: optimizeLegibility;
-    opacity: 0;
-    animation: caption-in 800ms ease 900ms forwards;
-  }
-
-  @keyframes caption-in {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: none; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .caption { opacity: 1; animation: none; transform: none; }
-  }
-
-  /* grain: the SAME texture as /cosimo — the site's grain.png (dark flecks,
-     faint alpha), tiled at 130px (110px on mobile), normal blend — laid over
-     the whole page so it reads as one printed surface. */
-  .tex-grain {
+  /* The animated mesh gradient fills the whole page. */
+  #gradient {
     position: fixed;
     inset: 0;
-    z-index: 30;
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: var(--fallback);
+    z-index: 0;
+  }
+
+  /* The landing page's signature graininess, overlaid on top of the animation.
+     A tiled dark-fleck PNG — same tile size and treatment as the hero. */
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
     pointer-events: none;
     background-image: url("/grain.png");
-    background-size: 130px 130px;
+    background-size: var(--noise-size) var(--noise-size);
     background-repeat: repeat;
-    opacity: 1;
     mix-blend-mode: normal;
   }
 
-  @media (max-width: 700px) {
-    .tex-grain { background-size: 110px 110px; }   /* finer grain, like the landing page */
+  @media (max-width: 640px) {
+    :root { --noise-size: 110px; }   /* finer grain on mobile, as on the landing page */
   }
 </style>
 
-<div class="frame">
-  <canvas id="scene" aria-label="Retro desktop scene" role="img"></canvas>
-  <p class="caption">all sky, no limit</p>
-</div>
-
-<div class="tex-grain" aria-hidden="true"></div>
+<canvas id="gradient"></canvas>
+<div class="grain" aria-hidden="true"></div>
 
 <script>
-  (function () {
-    var canvas = document.getElementById('scene');
-    var ctx = canvas.getContext('2d');
-    var img = new Image();
-    img.src = 'retro-desktop.png';
+/* ============================================================
+   CONFIG — this is the only part you normally need to touch.
+   ============================================================ */
+const PALETTE = [
+  [0.106, 0.165, 0.420],  // deep indigo
+  [0.431, 0.145, 0.580],  // violet
+  [0.761, 0.094, 0.365],  // magenta
+  [0.910, 0.365, 0.184],  // ember orange
+];
+const SPEED = 0.10;   // higher = faster drift. 0.06–0.15 is the tasteful range.
+const SCALE = 1.15;   // higher = more, smaller colour blobs.
+const WARP  = 0.55;   // domain warp strength. This is what makes it liquid.
 
-    var TILE = 16;          // css px per tile block
-    var DURATION = 1500;    // ms for the full top-left -> bottom-right sweep
-    var JITTER = 0.32;      // scatter along the diagonal, for the "trickle" feel
+/* To convert a hex colour: #C2185B -> [0xC2/255, 0x18/255, 0x5B/255]
+   i.e. [0.761, 0.094, 0.357]. Keep values 0–1, not 0–255. */
 
-    var dpr = Math.max(1, window.devicePixelRatio || 1);
-    var reduce = window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* ============================================================
+   The shader. Two ideas are doing all the work here:
 
-    // Cover-fit source rectangle: which part of the image maps onto the canvas
-    // so it fills the frame (cropping the overflow), matching object-fit: cover.
-    function coverSrc(cw, ch) {
-      var scale = Math.max(cw / img.width, ch / img.height);
-      var sw = cw / scale, sh = ch / scale;
-      return { sx: (img.width - sw) / 2, sy: (img.height - sh) / 2, sw: sw, sh: sh };
+   1. NOISE — smooth pseudo-random values that flow over time.
+      This is what gives organic blobs instead of hard bands.
+   2. DOMAIN WARPING — feeding noise into the *coordinates* of more
+      noise. Cheap trick, enormous payoff: it's the difference
+      between "blurry blobs" and "liquid metal".
+
+   The last line adds grain. Don't remove it. 8-bit colour channels
+   can't represent a smooth gradient across 1000px, so you get visible
+   banding stripes. A tiny bit of noise dithers those away.
+   ============================================================ */
+const FRAG = `
+precision highp float;
+uniform vec2  u_res;
+uniform float u_time;
+uniform vec3  u_c0, u_c1, u_c2, u_c3;
+uniform float u_scale, u_warp;
+
+// -- 2D simplex noise (Ashima / Ian McEwan, MIT licensed) ------------
+vec3 mod289(vec3 x){ return x - floor(x * (1.0/289.0)) * 289.0; }
+vec2 mod289(vec2 x){ return x - floor(x * (1.0/289.0)) * 289.0; }
+vec3 permute(vec3 x){ return mod289(((x*34.0)+1.0)*x); }
+
+float snoise(vec2 v){
+  const vec4 C = vec4(0.211324865, 0.366025403, -0.577350269, 0.024390243);
+  vec2 i  = floor(v + dot(v, C.yy));
+  vec2 x0 = v - i + dot(i, C.xx);
+  vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+  vec4 x12 = x0.xyxy + C.xxzz;
+  x12.xy -= i1;
+  i = mod289(i);
+  vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0))
+                           + i.x + vec3(0.0, i1.x, 1.0));
+  vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+  m = m*m; m = m*m;
+  vec3 x = 2.0 * fract(p * C.www) - 1.0;
+  vec3 h = abs(x) - 0.5;
+  vec3 ox = floor(x + 0.5);
+  vec3 a0 = x - ox;
+  m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+  vec3 g;
+  g.x  = a0.x  * x0.x  + h.x  * x0.y;
+  g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+  return 130.0 * dot(m, g);
+}
+
+void main(){
+  // Aspect-corrected UVs, so blobs stay round on wide screens.
+  vec2 uv = gl_FragCoord.xy / u_res.xy;
+  uv.x *= u_res.x / u_res.y;
+  uv *= u_scale;
+
+  float t = u_time;
+
+  // --- Domain warp: offset the sampling position using noise. ---
+  vec2 q = vec2(
+    snoise(uv + vec2(0.0, t * 0.6)),
+    snoise(uv + vec2(5.2, 1.3) - t * 0.4)
+  );
+  vec2 p = uv + u_warp * q;
+
+  // --- Three independent noise fields drive the colour mixing. ---
+  float n0 = snoise(p * 0.9 + vec2(t * 0.5, 0.0));
+  float n1 = snoise(p * 1.3 + vec2(-t * 0.35, 2.7));
+  float n2 = snoise(p * 0.7 + vec2(1.9, t * 0.45));
+
+  // smoothstep turns raw noise (-1..1) into soft 0..1 blend masks.
+  vec3 col = u_c0;
+  col = mix(col, u_c1, smoothstep(-0.65, 0.55, n0));
+  col = mix(col, u_c2, smoothstep(-0.50, 0.70, n1));
+  col = mix(col, u_c3, smoothstep(-0.30, 0.85, n2) * 0.85);
+
+  // --- Grain / dither. Kills banding. Keep this. ---
+  float grain = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+  col += (grain - 0.5) * 0.022;
+
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
+const VERT = `
+attribute vec2 a_pos;
+void main(){ gl_Position = vec4(a_pos, 0.0, 1.0); }`;
+
+/* ============================================================
+   Boilerplate: compile, link, resize, draw.
+   ============================================================ */
+(function init(){
+  const canvas = document.getElementById('gradient');
+  const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
+
+  // No WebGL (old browser, blocked GPU) — the CSS fallback is already
+  // painted underneath, so we just leave it and bail out silently.
+  if (!gl) { canvas.remove(); return; }
+
+  function compile(type, src){
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      console.error(gl.getShaderInfoLog(s));
+      return null;
     }
+    return s;
+  }
 
-    var cw, ch, cols, rows, order, src;
+  const vs = compile(gl.VERTEX_SHADER, VERT);
+  const fs = compile(gl.FRAGMENT_SHADER, FRAG);
+  if (!vs || !fs) { canvas.remove(); return; }
 
-    function build() {
-      cw = canvas.clientWidth;
-      ch = canvas.clientHeight;
-      canvas.width = Math.round(cw * dpr);
-      canvas.height = Math.round(ch * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      cols = Math.ceil(cw / TILE);
-      rows = Math.ceil(ch / TILE);
-      src = coverSrc(cw, ch);
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vs);
+  gl.attachShader(prog, fs);
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
 
-      // Order tiles by their diagonal position (top-left first), nudged by a
-      // random amount so blocks trickle in rather than march in a clean line.
-      order = [];
-      for (var r = 0; r < rows; r++) {
-        for (var c = 0; c < cols; c++) {
-          var nx = (c + 0.5) / cols, ny = (r + 0.5) / rows;
-          var key = (nx + ny) / 2 + (Math.random() - 0.5) * JITTER;
-          order.push({ c: c, r: r, key: key });
-        }
-      }
-      order.sort(function (a, b) { return a.key - b.key; });
+  // One full-screen triangle. Cheaper than two triangles for a quad,
+  // and the fragment shader is where all the actual work happens.
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'a_pos');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  const U = n => gl.getUniformLocation(prog, n);
+  const uRes = U('u_res'), uTime = U('u_time');
+  gl.uniform3fv(U('u_c0'), PALETTE[0]);
+  gl.uniform3fv(U('u_c1'), PALETTE[1]);
+  gl.uniform3fv(U('u_c2'), PALETTE[2]);
+  gl.uniform3fv(U('u_c3'), PALETTE[3]);
+  gl.uniform1f(U('u_scale'), SCALE);
+  gl.uniform1f(U('u_warp'), WARP);
+
+  function resize(){
+    // Cap DPR at 2. A full-screen shader at DPR 3 on a phone is a
+    // battery fire for zero visible gain.
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.floor(canvas.clientWidth  * dpr);
+    const h = Math.floor(canvas.clientHeight * dpr);
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w; canvas.height = h;
+      gl.viewport(0, 0, w, h);
+      gl.uniform2f(uRes, w, h);
     }
+  }
 
-    function drawTile(t) {
-      var x = t.c * TILE, y = t.r * TILE;
-      var w = Math.min(TILE, cw - x) + 1;   // +1px to avoid hairline seams
-      var h = Math.min(TILE, ch - y) + 1;
-      ctx.drawImage(
-        img,
-        src.sx + (x / cw) * src.sw, src.sy + (y / ch) * src.sh,
-        (w / cw) * src.sw, (h / ch) * src.sh,
-        x, y, w, h
-      );
-    }
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-    function drawAll() { order.forEach(drawTile); }
-
-    var revealed = 0, start = null, animating = false;
-
-    function frame(now) {
-      if (start === null) start = now;
-      var p = Math.min(1, (now - start) / DURATION);
-      var eased = 1 - Math.pow(1 - p, 2);          // ease-out
-      var target = Math.floor(eased * order.length);
-      for (; revealed < target; revealed++) drawTile(order[revealed]);
-      if (p < 1) {
-        requestAnimationFrame(frame);
-      } else {
-        for (; revealed < order.length; revealed++) drawTile(order[revealed]);
-        animating = false;
-      }
-    }
-
-    function run() {
-      build();
-      if (reduce) { drawAll(); return; }
-      revealed = 0; start = null; animating = true;
-      requestAnimationFrame(frame);
-    }
-
-    // On resize, refit to the new frame. Once the trickle has played, just
-    // repaint the whole image; don't replay the animation.
-    var resizeTimer;
-    window.addEventListener('resize', function () {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () {
-        if (animating) { run(); } else { build(); drawAll(); }
-      }, 150);
-    });
-
-    if (img.complete) { run(); } else { img.onload = run; }
-  })();
+  function draw(ms){
+    resize();
+    // Respect reduced-motion: freeze on a nice static frame rather
+    // than removing the gradient entirely.
+    gl.uniform1f(uTime, reduced.matches ? 4.0 : (ms / 1000) * SPEED);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
 </script>

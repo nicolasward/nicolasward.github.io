@@ -145,36 +145,27 @@
     .btn--ghost:hover { border-color: #ffffff; background: rgba(255, 255, 255, 0.16); }
   }
 
-  /* Scarcity badge — a quiet pill with a live, pulsing dot flagging the
-     closing window without shouting. */
+  /* Availability — an understated editorial eyebrow instead of a badge: small,
+     wide-tracked caps flanked by hairlines. No pill, no status light. */
   .availability {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    margin: 2.3rem 0 0;
-    padding: 0.42rem 1rem 0.42rem 0.9rem;
-    border: 1px solid rgba(255, 255, 255, 0.36);
-    border-radius: 100px;
-    background: rgba(255, 255, 255, 0.10);
-    font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+    gap: clamp(0.7rem, 3vw, 1rem);
+    margin: 2.7rem 0 0;
+    font-size: clamp(0.62rem, 2.4vw, 0.72rem);
     font-weight: 500;
-    white-space: nowrap;                /* keep the scarcity line to one row */
-    color: var(--ink-dim);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.68);
     text-shadow: 0 1px 12px rgba(6, 34, 78, 0.3);
   }
-  .availability-dot {
-    width: 0.5rem;
-    height: 0.5rem;
-    flex: none;
-    border-radius: 50%;
-    background: #FFC24B;                 /* warm amber — a countdown, not a green light */
-    box-shadow: 0 0 0 0 rgba(255, 194, 75, 0.6);
-    animation: pulse-dot 2.4s ease-out infinite;
-  }
-  @keyframes pulse-dot {
-    0%   { box-shadow: 0 0 0 0 rgba(255, 194, 75, 0.55); }
-    70%  { box-shadow: 0 0 0 7px rgba(255, 194, 75, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(255, 194, 75, 0); }
+  .availability::before,
+  .availability::after {
+    content: "";
+    width: clamp(0.9rem, 4vw, 1.9rem);
+    height: 1px;
+    background: rgba(255, 255, 255, 0.38);
   }
 
   /* ---------------- Credo ----------------
@@ -199,6 +190,13 @@
     .credo-toggle:hover { transform: scale(1.15); }
   }
   html.credo-open .credo-toggle { box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.18); }
+  /* The dot is the last thing to arrive, after all the hero copy has settled. */
+  html.js .credo-toggle { opacity: 0; }
+  html.intro .credo-toggle { animation: dot-in 0.5s cubic-bezier(0.34, 1.45, 0.5, 1) 4.95s both; }
+  @keyframes dot-in {
+    from { opacity: 0; transform: scale(0.3); }
+    to   { opacity: 1; transform: none; }
+  }
   .credo {
     position: fixed;
     right: 1.55rem;
@@ -224,11 +222,12 @@
   }
   html.credo-open .credo { opacity: 1; transform: scaleY(1); }
 
-  /* When the credo is open on narrow screens, slide the hero copy clear of the
-     credo column so the two never overlap. */
-  .hero { transition: padding-right 0.55s cubic-bezier(0.65, 0, 0.35, 1); }
+  /* On narrow screens the credo would cross the copy, so opening it fades the
+     hero out (giving the credo the stage) rather than shoving the copy aside.
+     Closing the credo brings the hero back. */
   @media (max-width: 760px) {
-    html.credo-open .hero { padding-right: 3.5rem; }
+    .hero { transition: opacity 0.4s ease; }
+    html.credo-open .hero { opacity: 0; pointer-events: none; }
   }
 
   /* Hero headline: each letter rolls up into place, one after another. Words
@@ -243,9 +242,11 @@
     will-change: transform, opacity;
   }
   html.js .headline .ch { opacity: 0; transform: rotateX(-90deg); }
+  /* Starts at 3.4s — just after the iris has finished opening (~3.35s) — so the
+     letters roll up onto the fully-revealed background, not before. */
   html.intro .headline .ch {
-    animation: letter-roll 0.5s cubic-bezier(0.2, 0.75, 0.25, 1) both;
-    animation-delay: calc(2.5s + var(--i) * 0.034s);
+    animation: letter-roll 0.46s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+    animation-delay: calc(3.4s + var(--i) * 0.03s);
   }
   @keyframes letter-roll {
     0%   { opacity: 0; transform: rotateX(-90deg); }
@@ -257,9 +258,9 @@
      way. Each rule keeps its own delay so the animation shorthand's implicit 0s
      can't override it. */
   html.js .reveal { opacity: 0; }
-  html.intro .sub.reveal          { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.35s both; }
-  html.intro .ctas.reveal         { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.52s both; }
-  html.intro .availability.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.68s both; }
+  html.intro .sub.reveal          { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 4.15s both; }
+  html.intro .ctas.reveal         { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 4.32s both; }
+  html.intro .availability.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 4.48s both; }
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: none; }
@@ -267,7 +268,7 @@
   @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1 !important; animation: none !important; transform: none !important; }
     .headline .ch { opacity: 1 !important; transform: none !important; animation: none !important; }
-    .availability-dot { animation: none !important; }
+    .credo-toggle { opacity: 1 !important; transform: none !important; animation: none !important; }
   }
 </style>
 
@@ -286,10 +287,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
     </a>
   </div>
-  <p class="availability reveal">
-    <span class="availability-dot" aria-hidden="true"></span>
-    First cohort closes September 10
-  </p>
+  <p class="availability reveal">First cohort &mdash; closing 10 September</p>
 </main>
 
 <button class="credo-toggle" type="button" aria-label="Reveal studio credo" aria-expanded="false"></button>

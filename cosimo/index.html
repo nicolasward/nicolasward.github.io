@@ -96,7 +96,7 @@
   .headline {
     max-width: 18ch;
     text-wrap: balance;                 /* even line lengths, no orphaned word */
-    margin: 0 0 1.4rem;
+    margin: 0 0 1.6rem;
     font-size: clamp(2.5rem, 6.4vw, 5rem);
     font-weight: 700;
     line-height: 1.02;
@@ -104,11 +104,11 @@
     text-shadow: 0 2px 30px rgba(6, 34, 78, 0.4);
   }
   .sub {
-    max-width: 34rem;
+    max-width: 40rem;
     margin: 0;
-    font-size: clamp(1.02rem, 1.5vw, 1.28rem);
+    font-size: clamp(1.18rem, 3.4vw, 1.5rem);
     font-weight: 500;
-    line-height: 1.55;
+    line-height: 1.5;
     color: var(--ink-dim);
     text-shadow: 0 1px 16px rgba(6, 34, 78, 0.34);
   }
@@ -117,7 +117,7 @@
   .ctas {
     display: flex;
     gap: 0.9rem;
-    margin-top: 2.4rem;
+    margin-top: 2.7rem;
     flex-wrap: wrap;
     justify-content: center;
   }
@@ -134,11 +134,27 @@
     transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
   }
   .btn svg { width: 0.82rem; height: 0.82rem; transition: transform 0.2s ease; }
-  .btn--solid { background: #FFFFFF; color: var(--deep); border: 1px solid #FFFFFF; box-shadow: 0 6px 26px rgba(6, 34, 78, 0.22); }
+  /* Knockout CTA: a white pill whose label + arrow are filled with a slowly
+     drifting blue gradient (background-clip: text), so they read as the moving
+     blue background showing through the letters. */
+  .btn--solid { background: #FFFFFF; border: 1px solid #FFFFFF; }
+  .btn--solid .knock {
+    background: linear-gradient(100deg, #0B5FB8 0%, #2E93F2 26%, #64B1F7 50%, #2E93F2 74%, #0B5FB8 100%);
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+            color: transparent;
+    animation: knock-drift 7s ease-in-out infinite;
+  }
+  @keyframes knock-drift {
+    0%   { background-position:   0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position:   0% 50%; }
+  }
   .btn--ghost { color: var(--ink); border: 1px solid rgba(255, 255, 255, 0.6); }
   @media (hover: hover) {
     .btn:hover { transform: translateY(-1px); }
-    .btn--solid:hover svg { transform: translateX(3px); }   /* nudge the arrow */
     .btn--ghost:hover { border-color: #ffffff; background: rgba(255, 255, 255, 0.16); }
   }
 
@@ -148,13 +164,14 @@
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
-    margin: 2.1rem 0 0;
-    padding: 0.42rem 0.95rem 0.42rem 0.85rem;
+    margin: 2.3rem 0 0;
+    padding: 0.42rem 1rem 0.42rem 0.9rem;
     border: 1px solid rgba(255, 255, 255, 0.36);
     border-radius: 100px;
     background: rgba(255, 255, 255, 0.10);
-    font-size: 0.83rem;
+    font-size: clamp(0.8rem, 2.5vw, 0.9rem);
     font-weight: 500;
+    white-space: nowrap;                /* keep the scarcity line to one row */
     color: var(--ink-dim);
     text-shadow: 0 1px 12px rgba(6, 34, 78, 0.3);
   }
@@ -173,6 +190,50 @@
     100% { box-shadow: 0 0 0 0 rgba(255, 194, 75, 0); }
   }
 
+  /* ---------------- Credo ----------------
+     A small white dot at the bottom-right; clicking it reveals the studio credo
+     running vertically up the right edge. */
+  .credo-toggle {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 6;
+    width: 13px;
+    height: 13px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 2px 12px rgba(6, 34, 78, 0.35);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  @media (hover: hover) {
+    .credo-toggle:hover { transform: scale(1.15); }
+  }
+  html.credo-open .credo-toggle { box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.18); }
+  .credo {
+    position: fixed;
+    right: 1.55rem;
+    bottom: 3.1rem;                     /* rises from just above the dot */
+    z-index: 6;
+    margin: 0;
+    writing-mode: vertical-rl;
+    font-family: "Figtree", system-ui, -apple-system, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.82);
+    text-shadow: 0 1px 12px rgba(6, 34, 78, 0.45);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+  html.credo-open .credo { opacity: 1; transform: none; }
+
   /* Entrance: fade up, staggered, landing just after the iris finishes opening
      (~3.35s). Each rule keeps its own delay so the animation shorthand's
      implicit 0s can't override it. */
@@ -188,6 +249,7 @@
   @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1 !important; animation: none !important; transform: none !important; }
     .availability-dot { animation: none !important; }
+    .btn--solid .knock { animation: none !important; }
   }
 </style>
 
@@ -199,18 +261,19 @@
   <h1 class="headline reveal">Interfaces for an AI world</h1>
   <p class="sub reveal">Cosimo is an applied AI studio turning frontier intelligence into bespoke systems. We transform the most ambitious teams in the world into AI-native operations.</p>
   <div class="ctas reveal">
-    <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Talk to us
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
+    <a class="btn btn--solid" href="mailto:hello@cosimo.studio"><span class="knock">Talk to us&nbsp;&rarr;</span></a>
     <a class="btn btn--ghost" href="#manifesto">Our Manifesto
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
     </a>
   </div>
   <p class="availability reveal">
     <span class="availability-dot" aria-hidden="true"></span>
-    Onboarding our first cohort &mdash; closing September 10
+    First cohort closes September 10
   </p>
 </main>
+
+<button class="credo-toggle" type="button" aria-label="Reveal studio credo" aria-expanded="false"></button>
+<p class="credo" aria-hidden="true">It is not enough to create. We must care.</p>
 
 <script>
 /* Kick off the iris the same way /cosimo does: add the class after the first
@@ -221,6 +284,17 @@
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   requestAnimationFrame(function () {
     requestAnimationFrame(function () { root.classList.add('intro'); });
+  });
+})();
+
+/* The bottom-right dot toggles the studio credo up the right edge. */
+(function () {
+  var root = document.documentElement;
+  var toggle = document.querySelector('.credo-toggle');
+  if (!toggle) return;
+  toggle.addEventListener('click', function () {
+    var open = root.classList.toggle('credo-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
 })();
 </script>

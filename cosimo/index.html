@@ -3,6 +3,10 @@
 <title>Cosimo</title>
 <meta name="robots" content="noindex">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <!-- js flips the page into "start as a dot, then iris open" mode. Without it
      (or under reduced motion) the gradient is simply full-screen from the off. -->
 <script>document.documentElement.classList.add('js');</script>
@@ -12,6 +16,9 @@
     /* Fallback gradient, shown if WebGL is unavailable. Keep it in the
        same colour family as the shader palette so the swap is invisible. */
     --fallback: linear-gradient(160deg, #0B76D6, #3198F4, #64B1F7, #93C9F9);
+    --ink:     #FFFFFF;
+    --ink-dim: rgba(255, 255, 255, 0.90);
+    --deep:    #0B4A80;                  /* deep blue drawn from the palette */
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -67,11 +74,143 @@
   @media (prefers-reduced-motion: reduce) {
     html.intro .iris { animation: none; clip-path: circle(150vmax at 50% 50%); }
   }
+
+  /* ---------------- Hero ----------------
+     Centred copy over the gradient. Sits above the iris (z-index 2) and reveals
+     after the iris has opened. */
+  .hero {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: clamp(1.5rem, 5vw, 3rem);
+    color: var(--ink);
+    font-family: "Figtree", system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .headline {
+    max-width: 18ch;
+    text-wrap: balance;                 /* even line lengths, no orphaned word */
+    margin: 0 0 1.4rem;
+    font-size: clamp(2.5rem, 6.4vw, 5rem);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.032em;
+    text-shadow: 0 2px 30px rgba(6, 34, 78, 0.4);
+  }
+  .sub {
+    max-width: 34rem;
+    margin: 0;
+    font-size: clamp(1.02rem, 1.5vw, 1.28rem);
+    font-weight: 500;
+    line-height: 1.55;
+    color: var(--ink-dim);
+    text-shadow: 0 1px 16px rgba(6, 34, 78, 0.34);
+  }
+
+  /* CTAs */
+  .ctas {
+    display: flex;
+    gap: 0.9rem;
+    margin-top: 2.4rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.5rem;
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+  }
+  .btn svg { width: 0.82rem; height: 0.82rem; transition: transform 0.2s ease; }
+  .btn--solid { background: #FFFFFF; color: var(--deep); border: 1px solid #FFFFFF; box-shadow: 0 6px 26px rgba(6, 34, 78, 0.22); }
+  .btn--ghost { color: var(--ink); border: 1px solid rgba(255, 255, 255, 0.6); }
+  @media (hover: hover) {
+    .btn:hover { transform: translateY(-1px); }
+    .btn--solid:hover svg { transform: translateX(3px); }   /* nudge the arrow */
+    .btn--ghost:hover { border-color: #ffffff; background: rgba(255, 255, 255, 0.16); }
+  }
+
+  /* Scarcity badge — a quiet pill with a live, pulsing dot flagging the
+     closing window without shouting. */
+  .availability {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 2.1rem 0 0;
+    padding: 0.42rem 0.95rem 0.42rem 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.36);
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.10);
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--ink-dim);
+    text-shadow: 0 1px 12px rgba(6, 34, 78, 0.3);
+  }
+  .availability-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    flex: none;
+    border-radius: 50%;
+    background: #FFC24B;                 /* warm amber — a countdown, not a green light */
+    box-shadow: 0 0 0 0 rgba(255, 194, 75, 0.6);
+    animation: pulse-dot 2.4s ease-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%   { box-shadow: 0 0 0 0 rgba(255, 194, 75, 0.55); }
+    70%  { box-shadow: 0 0 0 7px rgba(255, 194, 75, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 194, 75, 0); }
+  }
+
+  /* Entrance: fade up, staggered, landing just after the iris finishes opening
+     (~3.35s). Each rule keeps its own delay so the animation shorthand's
+     implicit 0s can't override it. */
+  html.js .reveal { opacity: 0; }
+  html.intro .headline.reveal     { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.7s both; }
+  html.intro .sub.reveal          { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.86s both; }
+  html.intro .ctas.reveal         { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.02s both; }
+  html.intro .availability.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.18s both; }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1 !important; animation: none !important; transform: none !important; }
+    .availability-dot { animation: none !important; }
+  }
 </style>
 
 <div class="iris">
   <canvas id="gradient"></canvas>
 </div>
+
+<main class="hero">
+  <h1 class="headline reveal">Interfaces for an AI world</h1>
+  <p class="sub reveal">Cosimo is an applied AI studio turning frontier intelligence into bespoke systems. We transform the most ambitious teams in the world into AI-native operations.</p>
+  <div class="ctas reveal">
+    <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Talk to us
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+    <a class="btn btn--ghost" href="#manifesto">Our Manifesto
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+    </a>
+  </div>
+  <p class="availability reveal">
+    <span class="availability-dot" aria-hidden="true"></span>
+    Onboarding our first cohort &mdash; closing September 10
+  </p>
+</main>
 
 <script>
 /* Kick off the iris the same way /cosimo does: add the class after the first

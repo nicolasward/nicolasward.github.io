@@ -137,24 +137,11 @@
   /* Knockout CTA: a white pill whose label + arrow are filled with a slowly
      drifting blue gradient (background-clip: text), so they read as the moving
      blue background showing through the letters. */
-  .btn--solid { background: #FFFFFF; border: 1px solid #FFFFFF; }
-  .btn--solid .knock {
-    background: linear-gradient(100deg, #0B5FB8 0%, #2E93F2 26%, #64B1F7 50%, #2E93F2 74%, #0B5FB8 100%);
-    background-size: 220% 100%;
-    -webkit-background-clip: text;
-            background-clip: text;
-    -webkit-text-fill-color: transparent;
-            color: transparent;
-    animation: knock-drift 7s ease-in-out infinite;
-  }
-  @keyframes knock-drift {
-    0%   { background-position:   0% 50%; }
-    50%  { background-position: 100% 50%; }
-    100% { background-position:   0% 50%; }
-  }
+  .btn--solid { background: #FFFFFF; color: var(--deep); border: 1px solid #FFFFFF; }
   .btn--ghost { color: var(--ink); border: 1px solid rgba(255, 255, 255, 0.6); }
   @media (hover: hover) {
     .btn:hover { transform: translateY(-1px); }
+    .btn--solid:hover svg { transform: translateX(3px); }   /* nudge the chevron */
     .btn--ghost:hover { border-color: #ffffff; background: rgba(255, 255, 255, 0.16); }
   }
 
@@ -228,28 +215,59 @@
     color: rgba(255, 255, 255, 0.82);
     text-shadow: 0 1px 12px rgba(6, 34, 78, 0.45);
     pointer-events: none;
+    /* Unrolls out of the dot: scaled to nothing at its bottom edge (the dot),
+       then grows upward so the phrase rolls out. */
+    transform-origin: 50% 100%;
+    transform: scaleY(0);
     opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.45s ease, transform 0.45s ease;
+    transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.25s ease;
   }
-  html.credo-open .credo { opacity: 1; transform: none; }
+  html.credo-open .credo { opacity: 1; transform: scaleY(1); }
 
-  /* Entrance: fade up, staggered, landing just after the iris finishes opening
-     (~3.35s). Each rule keeps its own delay so the animation shorthand's
-     implicit 0s can't override it. */
+  /* When the credo is open on narrow screens, slide the hero copy clear of the
+     credo column so the two never overlap. */
+  .hero { transition: padding-right 0.55s cubic-bezier(0.65, 0, 0.35, 1); }
+  @media (max-width: 760px) {
+    html.credo-open .hero { padding-right: 3.5rem; }
+  }
+
+  /* Hero headline: each letter rolls up into place, one after another. Words
+     are kept intact (inline-block) so the line still wraps; the split into
+     per-letter spans is done in JS. */
+  .headline { perspective: 720px; }
+  .headline .word { display: inline-block; }
+  .headline .ch {
+    display: inline-block;
+    transform-origin: 50% 100%;         /* hinge at the baseline, so it turns up */
+    backface-visibility: hidden;
+    will-change: transform, opacity;
+  }
+  html.js .headline .ch { opacity: 0; transform: rotateX(-90deg); }
+  html.intro .headline .ch {
+    animation: letter-roll 0.5s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+    animation-delay: calc(2.5s + var(--i) * 0.034s);
+  }
+  @keyframes letter-roll {
+    0%   { opacity: 0; transform: rotateX(-90deg); }
+    55%  { opacity: 1; }
+    100% { opacity: 1; transform: rotateX(0deg); }
+  }
+
+  /* The rest of the copy fades up, staggered, once the headline is well on its
+     way. Each rule keeps its own delay so the animation shorthand's implicit 0s
+     can't override it. */
   html.js .reveal { opacity: 0; }
-  html.intro .headline.reveal     { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.7s both; }
-  html.intro .sub.reveal          { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.86s both; }
-  html.intro .ctas.reveal         { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.02s both; }
-  html.intro .availability.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.18s both; }
+  html.intro .sub.reveal          { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.35s both; }
+  html.intro .ctas.reveal         { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.52s both; }
+  html.intro .availability.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.68s both; }
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1 !important; animation: none !important; transform: none !important; }
+    .headline .ch { opacity: 1 !important; transform: none !important; animation: none !important; }
     .availability-dot { animation: none !important; }
-    .btn--solid .knock { animation: none !important; }
   }
 </style>
 
@@ -258,10 +276,12 @@
 </div>
 
 <main class="hero">
-  <h1 class="headline reveal">Interfaces for an AI world</h1>
+  <h1 class="headline">Interfaces for an AI world</h1>
   <p class="sub reveal">Cosimo is an applied AI studio turning frontier intelligence into bespoke systems. We transform the most ambitious teams in the world into AI-native operations.</p>
   <div class="ctas reveal">
-    <a class="btn btn--solid" href="mailto:hello@cosimo.studio"><span class="knock">Talk to us&nbsp;&rarr;</span></a>
+    <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Talk to us
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+    </a>
     <a class="btn btn--ghost" href="#manifesto">Our Manifesto
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
     </a>
@@ -276,6 +296,30 @@
 <p class="credo" aria-hidden="true">It is not enough to create. We must care.</p>
 
 <script>
+/* Split the headline into per-letter spans (words kept intact so the line still
+   wraps) for the roll-up entrance. Runs synchronously before first paint, so the
+   un-split text never flashes. */
+(function () {
+  var h = document.querySelector('.headline');
+  if (!h) return;
+  var words = h.textContent.split(' ');
+  h.textContent = '';
+  var i = 0;
+  words.forEach(function (word, wi) {
+    var w = document.createElement('span');
+    w.className = 'word';
+    for (var c = 0; c < word.length; c++) {
+      var s = document.createElement('span');
+      s.className = 'ch';
+      s.textContent = word[c];
+      s.style.setProperty('--i', i++);
+      w.appendChild(s);
+    }
+    h.appendChild(w);
+    if (wi < words.length - 1) h.appendChild(document.createTextNode(' '));
+  });
+})();
+
 /* Kick off the iris the same way /cosimo does: add the class after the first
    paint (two rAFs) so the dot->full expansion is seen, not skipped. Reduced
    motion leaves the default (already-open) state alone. */

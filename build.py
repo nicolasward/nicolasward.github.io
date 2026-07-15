@@ -352,15 +352,14 @@ def build():
             else:
                 shutil.copy2(item, dest)
 
-    # Cosimo teaser pages → /cosimo, /cosimo2 (self-contained dirs, copied as-is)
-    for _cosimo_dir in ("cosimo", "cosimo2"):
-        cosimo_src = ROOT / _cosimo_dir
-        if cosimo_src.exists():
-            shutil.copytree(cosimo_src, OUTPUT_DIR / _cosimo_dir,
-                            ignore=shutil.ignore_patterns(".DS_Store"))
+    # Cosimo teaser page → /cosimo (self-contained directory, copied as-is)
+    cosimo_src = ROOT / "cosimo"
+    if cosimo_src.exists():
+        shutil.copytree(cosimo_src, OUTPUT_DIR / "cosimo",
+                        ignore=shutil.ignore_patterns(".DS_Store"))
 
-    # Cosimo2 teaser → /cosimo2.html (single self-contained file at root; its
-    # grain overlay reuses /grain.png, already emitted with the landing page).
+    # Cosimo2 teaser → /cosimo2.html (single self-contained file at root; the
+    # animated gradient carries its own grain, so no extra assets are needed).
     cosimo2_src = ROOT / "cosimo2.html"
     if cosimo2_src.exists():
         shutil.copy2(cosimo2_src, OUTPUT_DIR / "cosimo2.html")

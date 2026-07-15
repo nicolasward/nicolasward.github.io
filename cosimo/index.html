@@ -228,6 +228,10 @@
   @media (max-width: 760px) {
     .hero { transition: opacity 0.4s ease; }
     html.credo-open .hero { opacity: 0; pointer-events: none; }
+    /* Stack the colophon so it stays legible without running off the edge. */
+    .colophon { white-space: normal; line-height: 1.5; }
+    .colophon .sep { display: none; }
+    .colophon .c-part { display: block; }
   }
 
   /* Colophon — copyright + location, bottom-left. */
@@ -238,15 +242,15 @@
     z-index: 6;
     margin: 0;
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
-    font-size: clamp(0.64rem, 2.2vw, 0.74rem);
+    font-size: clamp(0.8rem, 2.8vw, 0.9rem);
     font-weight: 500;
     letter-spacing: 0.01em;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.72);
     text-shadow: 0 1px 12px rgba(6, 34, 78, 0.4);
     white-space: nowrap;
     pointer-events: none;
   }
-  .colophon .sep { margin: 0 0.45em; opacity: 0.55; }
+  .colophon .sep { margin: 0 0.3em; opacity: 0.7; }
 
   /* Hero headline: each letter rolls up into place, one after another. Words
      are kept intact (inline-block) so the line still wraps; the split into
@@ -311,7 +315,7 @@
 
 <button class="credo-toggle" type="button" aria-label="Reveal studio credo" aria-expanded="false"></button>
 <p class="credo" aria-hidden="true">It is not enough to create. We must care.</p>
-<p class="colophon reveal">&copy; 2026 Cosimo <span class="sep" aria-hidden="true">&middot;</span> Based in London, operating worldwide.</p>
+<p class="colophon reveal"><span class="c-part">&copy; 2026 Cosimo</span><span class="sep" aria-hidden="true">&middot;</span><span class="c-part">Based in London, operating worldwide.</span></p>
 
 <script>
 /* Split the headline into per-letter spans (words kept intact so the line still

@@ -228,10 +228,6 @@
   @media (max-width: 760px) {
     .hero { transition: opacity 0.4s ease; }
     html.credo-open .hero { opacity: 0; pointer-events: none; }
-    /* Stack the colophon so it stays legible without running off the edge. */
-    .colophon { white-space: normal; line-height: 1.5; }
-    .colophon .sep { display: none; }
-    .colophon .c-part { display: block; }
   }
 
   /* Colophon — copyright + location, bottom-left. */
@@ -242,7 +238,7 @@
     z-index: 6;
     margin: 0;
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
-    font-size: clamp(0.8rem, 2.8vw, 0.9rem);
+    font-size: clamp(0.7rem, 2.6vw, 0.9rem);
     font-weight: 500;
     letter-spacing: 0.01em;
     color: rgba(255, 255, 255, 0.72);
@@ -300,8 +296,8 @@
 </div>
 
 <main class="hero">
-  <h1 class="headline">Interfaces for an AI world</h1>
-  <p class="sub reveal">Cosimo is an applied AI studio turning frontier intelligence into bespoke systems. We transform the most ambitious teams in the world into AI-native operations.</p>
+  <h1 class="headline">Interfaces for frontier AI</h1>
+  <p class="sub reveal">Cosimo is an applied AI studio turning frontier intelligence into bespoke systems. We transform the most ambitious creative teams in the world into AI-native operations.</p>
   <div class="ctas reveal">
     <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Talk to us
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
@@ -310,7 +306,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
     </a>
   </div>
-  <p class="availability reveal">First cohort &mdash; closing 10 September</p>
+  <p class="availability reveal">First cohort closing 10 September</p>
 </main>
 
 <button class="credo-toggle" type="button" aria-label="Reveal studio credo" aria-expanded="false"></button>

@@ -3,7 +3,7 @@
 <title>Cosimo</title>
 <meta name="robots" content="noindex">
 
-<!-- js flips the page into "start compressed, then iris open" mode. Without it
+<!-- js flips the page into "start as a dot, then iris open" mode. Without it
      (or under reduced motion) the gradient is simply full-screen from the off. -->
 <script>document.documentElement.classList.add('js');</script>
 
@@ -14,8 +14,8 @@
 <style>
   :root {
     /* Fallback gradient, shown if WebGL is unavailable. Keep it in the
-       same colour family as PALETTE below so the swap is invisible. */
-    --fallback: linear-gradient(135deg, #1B2A6B, #6E2594, #C2185B, #E85D2F);
+       same colour family as the shader palette so the swap is invisible. */
+    --fallback: linear-gradient(160deg, #0B76D6, #3198F4, #64B1F7, #93C9F9);
     --noise-size: 130px;          /* signature grain tile — matches the landing page */
   }
 
@@ -106,18 +106,83 @@
 /* ============================================================
    CONFIG — this is the only part you normally need to touch.
    ============================================================ */
-const PALETTE = [
-  [0.106, 0.165, 0.420],  // deep indigo
-  [0.431, 0.145, 0.580],  // violet
-  [0.761, 0.094, 0.365],  // magenta
-  [0.910, 0.365, 0.184],  // ember orange
-];
-const SPEED = 0.10;   // higher = faster drift. 0.06–0.15 is the tasteful range.
-const SCALE = 1.15;   // higher = more, smaller colour blobs.
-const WARP  = 0.55;   // domain warp strength. This is what makes it liquid.
+/* There is no palette list in this file. There's one hue and a ramp.
+   That IS the finding — see the note below. */
+const HUE     = 208.5;  // ★ MEASURED. Hue p50 208.2, spread 11 deg. One blue.
+const SAT_HSL = 0.90;   // ★ MEASURED, from the p90 of the clean side.
+const LUMAS   = [0.400, 0.535, 0.650, 0.756];   // ★ CONSTRUCTED, not measured.
+                                                //   The top stop is anchored to
+                                                //   the real ink; the rest is
+                                                //   invented. See the note —
+                                                //   this matters.
 
-/* To convert a hex colour: #C2185B -> [0xC2/255, 0x18/255, 0x5B/255]
-   i.e. [0.761, 0.094, 0.357]. Keep values 0–1, not 0–255. */
+const SPEED = 0.07;
+const SCALE = 0.90;
+const WARP  = 0.50;
+
+const GRAIN      = 0.026;  // dither only. This source has no designed grain —
+                           // it's a printed poster, and the noise in the photo
+                           // belongs to the camera and the glass.
+const GRAIN_BOIL = 0;      // 12 for a filmic boil, if you want one.
+
+/*
+   THE HARDEST SOURCE HERE, AND THE ONE THAT GIVES UP THE LEAST.
+
+   This is a printed poster, behind glass, in direct sun. The photograph
+   contains trees, a brick building, sky, a lens flare and a street —
+   all reflected onto the thing being measured. That contamination is
+   ADDITIVE and, worse, SPATIALLY VARYING. There is no single floor to
+   subtract, because every part of the poster is under a different
+   reflection.
+
+   How bad: a probe of the right-hand side returns #AB9AA0 — hue 340,
+   sat 0.09. A warm grey. That is not a washed-out blue, it is a
+   building. Roughly half the poster contains no recoverable colour at
+   all, and everything below was measured on the left side only.
+
+   THE NUMBER THAT DECIDED THIS FILE: corr(sat, luma) = +0.96.
+
+   Saturation RISES with brightness here. Every other source in this set
+   runs the other way — 02 PLUS, the Adriatic water, the amplifye card
+   all have saturation FALLING as things get lighter, because veiling
+   glare and surface scatter and light on ink all ADD light to the
+   highlights and dilute them.
+
+   This inverts because the contamination here mostly SUBTRACTS. Tree
+   reflections are dark and green; where they land they take away both
+   light and chroma together. So the dim blues are dim BECAUSE they're
+   dirty, and the bright blues are simply the ones the glass left alone.
+
+   That correlation is not a property of the poster. It is a portrait of
+   the reflections. And it means the tonal ramp is UNMEASURABLE from this
+   photograph: whatever luma range I extract is mostly a map of what was
+   parked across the street.
+
+   SO THIS SOURCE GIVES A COLOUR, NOT A STRUCTURE.
+
+     MEASURED:    hue 208.5 (p50 208.2, spread 11 degrees — one blue)
+                  sat 0.90  (p90 of the clean side)
+     CONSTRUCTED: the LUMAS ramp. Invented, and marked as such.
+
+   The top stop is the honest anchor: it's built to land on #93C9F9,
+   which is 2.7/255 from #91C8FC — the cleanest blue actually present.
+   Note that "cleanest" means highest SATURATION, not highest luma. The
+   brightest pixels on that poster (luma 0.836, hue 220) are sky
+   reflection, not ink. Anchoring to brightness would have anchored to
+   the sky.
+
+   THE HUE EXCURSIONS ARE ALSO CONTAMINATION, AND THEY NAME THEIR SOURCE:
+       204 at the dark end   — tree reflection, green drags the hue down
+       220 at the light end  — sky reflection, drags it up
+       208 through the bulk  — the poster
+   Reading that as a designed hue ramp would have been reading the
+   foliage.
+
+   WHAT'S LEFT is a monochrome file, same shape as the green CORE panel:
+   one hue, one saturation, a ramp of luminances. Rotate HUE and the
+   whole thing moves with its structure intact — except that here the
+   structure was never the poster's to begin with.
+*/
 
 /* ============================================================
    The shader. Two ideas are doing all the work here:
@@ -137,7 +202,8 @@ precision highp float;
 uniform vec2  u_res;
 uniform float u_time;
 uniform vec3  u_c0, u_c1, u_c2, u_c3;
-uniform float u_scale, u_warp;
+uniform float u_scale, u_warp, u_grain, u_boil;
+uniform float u_rawT;
 
 // -- 2D simplex noise (Ashima / Ian McEwan, MIT licensed) ------------
 vec3 mod289(vec3 x){ return x - floor(x * (1.0/289.0)) * 289.0; }
@@ -193,9 +259,15 @@ void main(){
   col = mix(col, u_c2, smoothstep(-0.50, 0.70, n1));
   col = mix(col, u_c3, smoothstep(-0.30, 0.85, n2) * 0.85);
 
-  // --- Grain / dither. Kills banding. Keep this. ---
-  float grain = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
-  col += (grain - 0.5) * 0.022;
+  /* --- Grain. Not a dither. The subject. ---
+     Scalar, so the same value lands on all three channels: this is
+     luminance noise, which is what the source measured (per-channel
+     sigmas 0.062 / 0.055 / 0.059 — near enough identical). Per-channel
+     grain would add chroma noise, and a monochrome panel has no chroma
+     to speak of. */
+  float tq = u_boil > 0.0 ? floor(u_rawT * u_boil) * 37.0 : 0.0;
+  float grain = fract(sin(dot(gl_FragCoord.xy + tq, vec2(12.9898, 78.233))) * 43758.5453);
+  col += (grain - 0.5) * u_grain;
 
   gl_FragColor = vec4(col, 1.0);
 }`;
@@ -203,6 +275,48 @@ void main(){
 const VERT = `
 attribute vec2 a_pos;
 void main(){ gl_Position = vec4(a_pos, 0.0, 1.0); }`;
+
+/* ============================================================
+   Build a colour at a given hue and a given LUMA.
+
+   HSL lightness is not luminance — HSL is a crude 1970s transform that
+   thinks pure blue and pure yellow are equally light, and they are not
+   even close. So we can't just ask for lightness 0.4 and get luma 0.4.
+
+   But luma IS monotonic in HSL lightness at a fixed hue and saturation.
+   So bisect: guess a lightness, convert, measure the luma, adjust. Forty
+   iterations lands on the target to machine precision.
+
+   This is the mirror of the previous file's isoluminant(). That one held
+   luma constant and let hue roam; this one holds hue constant and walks
+   luma. Same idea from opposite ends.
+   ============================================================ */
+function hslToRgb(h, s, l){
+  if (s === 0) return [l, l, l];
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  const p = 2 * l - q;
+  const f = t => {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1/6) return p + (q - p) * 6 * t;
+    if (t < 1/2) return q;
+    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+    return p;
+  };
+  return [f(h + 1/3), f(h), f(h - 1/3)];
+}
+
+function hueAtLuma(hueDeg, sat, targetLuma){
+  const L = c => 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2];
+  let lo = 0, hi = 1;
+  for (let i = 0; i < 40; i++) {
+    const mid = (lo + hi) / 2;
+    if (L(hslToRgb(hueDeg/360, sat, mid)) < targetLuma) lo = mid; else hi = mid;
+  }
+  return hslToRgb(hueDeg/360, sat, (lo + hi) / 2);
+}
+
+const PALETTE = LUMAS.map(l => hueAtLuma(HUE, SAT_HSL, l));
 
 /* ============================================================
    Boilerplate: compile, link, resize, draw.
@@ -252,6 +366,8 @@ void main(){ gl_Position = vec4(a_pos, 0.0, 1.0); }`;
   gl.uniform3fv(U('u_c3'), PALETTE[3]);
   gl.uniform1f(U('u_scale'), SCALE);
   gl.uniform1f(U('u_warp'), WARP);
+  gl.uniform1f(U('u_grain'), GRAIN);
+  gl.uniform1f(U('u_boil'), GRAIN_BOIL);
 
   function resize(){
     // Cap DPR at 2. A full-screen shader at DPR 3 on a phone is a
@@ -273,6 +389,7 @@ void main(){ gl_Position = vec4(a_pos, 0.0, 1.0); }`;
     // Respect reduced-motion: freeze on a nice static frame rather
     // than removing the gradient entirely.
     gl.uniform1f(uTime, reduced.matches ? 4.0 : (ms / 1000) * SPEED);
+    gl.uniform1f(U('u_rawT'), ms / 1000);   // unscaled, for the grain boil
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     requestAnimationFrame(draw);
   }

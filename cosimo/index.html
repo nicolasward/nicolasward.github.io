@@ -5,7 +5,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <!-- js flips the page into "start as a dot, then iris open" mode. Without it
      (or under reduced motion) the gradient is simply full-screen from the off. -->
@@ -19,6 +19,8 @@
     --ink:     #FFFFFF;
     --ink-dim: rgba(255, 255, 255, 0.90);
     --deep:    #0B4A80;                  /* deep blue drawn from the palette */
+    --mono:    "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    --gutter:  clamp(1.4rem, 4.5vw, 3.4rem);   /* shared page margin */
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -75,26 +77,72 @@
     html.intro .iris { animation: none; clip-path: circle(150vmax at 50% 50%); }
   }
 
+  /* ---------------- Masthead ----------------
+     A publication-style top band: wordmark left, live London dateline right,
+     a hairline beneath. */
+  .masthead {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 6;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: clamp(1rem, 2.6vw, 1.5rem) var(--gutter);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+    color: var(--ink);
+    pointer-events: none;
+  }
+  .mast-name {
+    font-family: "Figtree", system-ui, -apple-system, sans-serif;
+    font-size: clamp(0.92rem, 1.9vw, 1.08rem);
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    text-indent: 0.3em;                 /* balance the trailing track so it optically centres */
+    text-shadow: 0 1px 12px rgba(6, 34, 78, 0.4);
+  }
+  .mast-meta {
+    font-family: var(--mono);
+    font-size: clamp(0.64rem, 1.5vw, 0.76rem);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.72);
+    text-shadow: 0 1px 12px rgba(6, 34, 78, 0.4);
+    white-space: nowrap;
+  }
+  .mast-clock { font-variant-numeric: tabular-nums; }
+
   /* ---------------- Hero ----------------
-     Centred copy over the gradient. Sits above the iris (z-index 2) and reveals
-     after the iris has opened. */
+     Left-anchored copy over the gradient, vertically centred between the
+     masthead and the colophon. Sits above the iris (z-index 2). */
   .hero {
     position: fixed;
     inset: 0;
     z-index: 2;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    text-align: center;
-    padding: clamp(1.5rem, 5vw, 3rem);
+    text-align: left;
+    padding: clamp(4.5rem, 12vh, 7rem) var(--gutter) clamp(3.5rem, 9vh, 5.5rem);
     color: var(--ink);
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  .kicker {
+    margin: 0 0 1.15rem;
+    font-family: var(--mono);
+    font-size: clamp(0.66rem, 1.7vw, 0.78rem);
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72);
+    text-shadow: 0 1px 12px rgba(6, 34, 78, 0.35);
+  }
   .headline {
-    max-width: 18ch;
+    max-width: 16ch;
     text-wrap: balance;                 /* even line lengths, no orphaned word */
     margin: 0 0 1.6rem;
     font-size: clamp(2.5rem, 6.4vw, 5rem);
@@ -119,7 +167,7 @@
     gap: 0.9rem;
     margin-top: 2.7rem;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
   }
   .btn {
     display: inline-flex;
@@ -152,20 +200,20 @@
     align-items: center;
     gap: clamp(0.7rem, 3vw, 1rem);
     margin: 2.7rem 0 0;
-    font-size: clamp(0.62rem, 2.4vw, 0.72rem);
-    font-weight: 500;
-    letter-spacing: 0.22em;
+    font-family: var(--mono);
+    font-size: clamp(0.62rem, 2.2vw, 0.72rem);
+    font-weight: 400;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     white-space: nowrap;
-    color: rgba(255, 255, 255, 0.68);
+    color: rgba(255, 255, 255, 0.64);
     text-shadow: 0 1px 12px rgba(6, 34, 78, 0.3);
   }
-  .availability::before,
-  .availability::after {
+  .availability::before {
     content: "";
-    width: clamp(0.9rem, 4vw, 1.9rem);
+    width: clamp(1.4rem, 5vw, 2.4rem);
     height: 1px;
-    background: rgba(255, 255, 255, 0.38);
+    background: rgba(255, 255, 255, 0.4);
   }
 
   /* ---------------- Credo ----------------
@@ -204,13 +252,13 @@
     z-index: 6;
     margin: 0;
     writing-mode: vertical-rl;
-    font-family: "Figtree", system-ui, -apple-system, sans-serif;
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.2em;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     white-space: nowrap;
-    color: rgba(255, 255, 255, 0.82);
+    color: rgba(255, 255, 255, 0.78);
     text-shadow: 0 1px 12px rgba(6, 34, 78, 0.45);
     pointer-events: none;
     /* Unrolls out of the dot: scaled to nothing at its bottom edge (the dot),
@@ -276,6 +324,8 @@
      way. Each rule keeps its own delay so the animation shorthand's implicit 0s
      can't override it. */
   html.js .reveal { opacity: 0; }
+  html.intro .masthead.reveal     { animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 3.5s both; }
+  html.intro .kicker.reveal       { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 3.3s both; }
   html.intro .sub.reveal          { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 4.15s both; }
   html.intro .ctas.reveal         { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 4.32s both; }
   html.intro .availability.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 4.48s both; }
@@ -295,7 +345,13 @@
   <canvas id="gradient"></canvas>
 </div>
 
+<header class="masthead reveal">
+  <span class="mast-name">Cosimo</span>
+  <span class="mast-meta">London&nbsp;&nbsp;<time class="mast-clock">&mdash;&mdash;:&mdash;&mdash;</time></span>
+</header>
+
 <main class="hero">
+  <p class="kicker reveal">Est. MMXXVI</p>
   <h1 class="headline">Interfaces for frontier AI</h1>
   <p class="sub reveal">Cosimo is an applied AI studio turning frontier intelligence into bespoke systems. We transform the most ambitious creative teams in the world into AI-native operations.</p>
   <div class="ctas reveal">
@@ -347,6 +403,21 @@
   requestAnimationFrame(function () {
     requestAnimationFrame(function () { root.classList.add('intro'); });
   });
+})();
+
+/* Live London dateline in the masthead. */
+(function () {
+  var el = document.querySelector('.mast-clock');
+  if (!el) return;
+  function tick() {
+    try {
+      el.textContent = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hour12: false
+      }).format(new Date());
+    } catch (e) { el.textContent = ''; }
+  }
+  tick();
+  setInterval(tick, 15000);
 })();
 
 /* The bottom-right dot toggles the studio credo up the right edge. */

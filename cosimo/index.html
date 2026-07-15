@@ -1,581 +1,416 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cosimo</title>
-<meta name="theme-color" content="#3FA3DB">
+<meta name="robots" content="noindex">
+
+<!-- js flips the page into "start as a dot, then iris open" mode. Without it
+     (or under reduced motion) the gradient is simply full-screen from the off. -->
 <script>document.documentElement.classList.add('js');</script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
 <style>
-/* ============================================================================
-   COSIMO — teaser page.
-   A dark, smoky, halftone-textured stage; an ethereal aurora drifting behind
-   everything; a giant wordmark cropped by the bottom edge.
-   ========================================================================== */
-:root {
-  --ink:        #FAFCFC;                /* clean white text */
-  --ink-dim:    rgba(250, 252, 252, 0.92);
-  --field:      #3FA3DB;                /* saturated azure (Pelmatech-style) */
-  --frame-margin: 12px;                /* gap from the viewport edge to the frame */
-  --frame-width:  20px;                /* thickness of the white frame band */
-}
-
-* { box-sizing: border-box; }
-
-html, body {
-  height: 100%;
-  margin: 0;
-}
-
-body {
-  font-family: "Figtree", system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background: var(--field);
-  color: var(--ink);
-  overflow: hidden;                     /* single full-viewport scene */
-}
-
-/* ---------------- Background stage ----------------
-   Layers, back to front:
-   1. field  — saturated azure with a static indigo shadow falling from the top
-   2. drift  — huge blurred clouds of warm coral / magenta / indigo, plus a
-               white light, all wandering slowly (the ethereal movement)
-   3. flutes — vertical ribbed-glass texture over everything
-   4. grain  — film noise over everything
-   The stage isolates its blend modes so they never leak into the page. */
-.stage {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  isolation: isolate;
-  background:
-    radial-gradient(130% 90% at 78% -10%, rgba(16, 30, 68, 0.22) 0%, rgba(16, 30, 68, 0) 55%),
-    radial-gradient(120% 100% at 15% 110%, rgba(10, 40, 90, 0.28) 0%, rgba(10, 40, 90, 0) 60%),
-    var(--field);
-}
-
-/* --- 2. drift: the ethereal colour field ---
-   Huge, heavily-blurred clouds — warm coral, hot magenta, deep indigo — plus
-   one white LIGHT (screen-blended so it glows), all wandering on slow,
-   co-prime loops so the composition never repeats. Transform-only animation
-   keeps everything on the compositor. --- */
-.drift {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  will-change: transform, opacity;
-  pointer-events: none;
-}
-.drift--coral {                          /* dominant warm centre cloud — proper orange */
-  width: 85vmax; height: 60vmax;
-  left: 8%; top: 18%;
-  background: radial-gradient(ellipse at 45% 50%, rgba(255,150,82,0.9) 0%, rgba(252,116,70,0.5) 45%, rgba(0,0,0,0) 72%);
-  animation: drift-coral 24s ease-in-out infinite alternate;
-}
-.drift--beige {                          /* warm cream glow — lifts the top-right corner */
-  width: 80vmax; height: 55vmax;
-  right: -18vmax; top: -12vmax;
-  background: radial-gradient(ellipse at 50% 50%, rgba(247,226,188,0.85) 0%, rgba(240,206,158,0.38) 48%, rgba(0,0,0,0) 72%);
-  animation: drift-beige 26s ease-in-out infinite alternate;
-}
-.drift--magenta {                        /* hot magenta, low sweep — brighter */
-  width: 75vmax; height: 48vmax;
-  left: 22%; bottom: -16vmax;
-  background: radial-gradient(ellipse at 50% 45%, rgba(255,64,158,0.8) 0%, rgba(244,54,146,0.38) 48%, rgba(0,0,0,0) 74%);
-  animation: drift-magenta 29s ease-in-out infinite alternate;
-}
-.drift--pink {                           /* bright pink bloom, upper-centre */
-  width: 55vmax; height: 42vmax;
-  left: 38%; top: 24%;
-  background: radial-gradient(ellipse at 50% 50%, rgba(255,112,196,0.8) 0%, rgba(255,92,182,0.34) 48%, rgba(0,0,0,0) 74%);
-  animation: drift-pink 21s ease-in-out infinite alternate;
-}
-.drift--indigo {                         /* soft depth anchor, LOWER right (out of the top corner) */
-  width: 75vmax; height: 52vmax;
-  right: -22vmax; bottom: -18vmax;
-  background: radial-gradient(ellipse at 50% 50%, rgba(26,46,102,0.5) 0%, rgba(28,50,106,0.22) 48%, rgba(0,0,0,0) 72%);
-  animation: drift-indigo 33s ease-in-out infinite alternate;
-}
-.drift--cyan {                           /* bright azure pocket keeps the field luminous */
-  width: 70vmax; height: 55vmax;
-  left: -20vmax; bottom: -12vmax;
-  background: radial-gradient(ellipse at 55% 45%, rgba(120,214,248,0.75) 0%, rgba(90,190,236,0.3) 50%, rgba(0,0,0,0) 74%);
-  animation: drift-cyan 27s ease-in-out infinite alternate;
-}
-.drift--light {                          /* a wandering white glow — the "light" */
-  width: 60vmax; height: 45vmax;
-  left: 30%; top: -10vmax;
-  mix-blend-mode: screen;
-  background: radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0.1) 45%, rgba(0,0,0,0) 70%);
-  animation: drift-light 19s ease-in-out infinite alternate;
-}
-/* Each cloud both WANDERS (translate/rotate) and GLOWS (scale + opacity swell
-   and fade), so the colours pulse like breathing light as they move. The
-   brightness peak coincides with the scale peak mid-cycle — a bloom — then
-   dims toward the ends. Different phases per cloud keep the room alive. */
-@keyframes drift-coral {
-  0%   { transform: translate(0, 0) rotate(-8deg) scale(0.95);  opacity: 0.65; }
-  50%  { transform: translate(9vw, -6vh) rotate(4deg) scale(1.18); opacity: 1; }
-  100% { transform: translate(-6vw, 5vh) rotate(-14deg) scale(0.92); opacity: 0.7; }
-}
-@keyframes drift-magenta {
-  0%   { transform: translate(0, 0) rotate(6deg) scale(1);       opacity: 0.55; }
-  50%  { transform: translate(-10vw, -5vh) rotate(-6deg) scale(1.2); opacity: 1; }
-  100% { transform: translate(7vw, 3vh) rotate(10deg) scale(0.9);  opacity: 0.65; }
-}
-@keyframes drift-indigo {
-  0%   { transform: translate(0, 0) rotate(0deg) scale(1);       opacity: 0.8; }
-  50%  { transform: translate(-7vw, 6vh) rotate(-7deg) scale(1.14); opacity: 1; }
-  100% { transform: translate(4vw, -4vh) rotate(5deg) scale(1.02); opacity: 0.85; }
-}
-@keyframes drift-cyan {
-  0%   { transform: translate(0, 0) rotate(0deg) scale(0.96);    opacity: 0.6; }
-  50%  { transform: translate(8vw, -7vh) rotate(8deg) scale(1.12); opacity: 1; }
-  100% { transform: translate(-5vw, 4vh) rotate(-6deg) scale(0.94); opacity: 0.68; }
-}
-@keyframes drift-light {
-  0%   { transform: translate(0, 0) scale(0.9);        opacity: 0.35; }
-  45%  { transform: translate(14vw, 10vh) scale(1.3);  opacity: 0.9; }
-  100% { transform: translate(-10vw, 4vh) scale(0.85); opacity: 0.45; }
-}
-@keyframes drift-beige {
-  0%   { transform: translate(0, 0) rotate(4deg) scale(0.95);   opacity: 0.6; }
-  50%  { transform: translate(-8vw, 6vh) rotate(-5deg) scale(1.16); opacity: 1; }
-  100% { transform: translate(5vw, -4vh) rotate(7deg) scale(0.94);  opacity: 0.7; }
-}
-@keyframes drift-pink {
-  0%   { transform: translate(0, 0) rotate(-5deg) scale(0.92);  opacity: 0.5; }
-  50%  { transform: translate(10vw, 6vh) rotate(6deg) scale(1.22); opacity: 1; }
-  100% { transform: translate(-7vw, -5vh) rotate(-9deg) scale(0.9); opacity: 0.6; }
-}
-
-/* --- 3. grain: the SAME texture as the light-mode landing page ---
-   The site's grain.png (dark flecks, faint alpha), tiled at the landing
-   page's 130px (110px on mobile), normal blend — laid over everything so
-   the whole scene reads as one printed surface. */
-.tex-grain {
-  position: fixed;
-  inset: 0;
-  z-index: 30;
-  pointer-events: none;
-  background-image: url("/grain.png");
-  background-size: 130px 130px;
-  background-repeat: repeat;
-  opacity: 1;
-  mix-blend-mode: normal;
-}
-
-/* ---------------- Intro ----------------
-   A white screen with a single dot the colour of the field that's about to
-   arrive; the dot irises out to fill the screen, then the white fades to
-   reveal the real (textured) background. Shown only with JS; driven by
-   html.intro (added after first paint); skipped under reduced motion. */
-.intro-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: #ffffff;
-  display: none;
-  overflow: hidden;
-}
-html.js .intro-overlay { display: block; }
-.intro-dot {
-  position: absolute;
-  left: 50%; top: 50%;
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  background: var(--field);            /* the colour about to expand */
-  transform: translate(-50%, -50%) scale(1);
-}
-html.intro .intro-dot { animation: dot-expand 0.9s cubic-bezier(0.7, 0, 0.25, 1) 0.2s both; }
-html.intro .intro-overlay { animation: overlay-out 0.4s ease 1.05s both; }
-@keyframes dot-expand {
-  from { transform: translate(-50%, -50%) scale(1); }
-  to   { transform: translate(-50%, -50%) scale(260); }
-}
-@keyframes overlay-out { to { opacity: 0; visibility: hidden; } }
-
-/* ---------------- Page frame ----------------
-   A thick white rectangular frame, brought in from the edges so a thin band of
-   the coloured stage shows all around it — a frame sitting on the scene, not an
-   edge border. A plain bordered box gives perfectly mitred, fully closed
-   corners, and it's present from first paint (no draw-in). Behind the content
-   (z-index 1). */
-.frame {
-  position: fixed;
-  inset: var(--frame-margin);          /* brought in from the viewport edges */
-  z-index: 1;
-  pointer-events: none;
-  border: var(--frame-width) solid #ffffff;
-}
-@media (prefers-reduced-motion: reduce) {
-  .intro-overlay { display: none !important; }
-}
-
-/* ---------------- Centre copy ---------------- */
-.middle {
-  position: relative;
-  z-index: 5;
-  height: 100vh;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 0 1.5rem;
-  /* sit the copy slightly above centre, like the mockup */
-  padding-bottom: 14vh;
-}
-.logo {
-  width: 5.6rem;
-  height: auto;
-  margin-bottom: 2.6rem;
-  color: var(--ink);
-  filter: drop-shadow(0 1px 8px rgba(16, 38, 84, 0.4));
-}
-/* Build: the circles appear ONE BY ONE, clockwise. Each starts as a point at
-   the rosette centre and grows while it slides out into its slot — rotate(--a)
-   sets its direction, translateX the travel, scale the growth. --i staggers
-   the twelve builds around the ring; the delay is set as a longhand AFTER the
-   shorthand in the same rule (the shorthand's implicit 0s would silently win
-   from a lower-specificity rule). Starts once the wordmark has landed.
-   No-JS shows the finished rosette. */
-.logo circle {
-  transform-origin: 80px 80px;
-  transform: rotate(var(--a)) translateX(25px);
-}
-/* Entrance: the mark whirls in (scale + spin easing to rest) while the inner
-   group spins continuously — so it arrives spinning and never stops. Two
-   elements = two composing rotations. Gated on .ready (paint-safe). */
-html.js .logo { opacity: 0; }
-html.js.ready .logo {
-  animation: logo-in 1.15s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
-}
-@keyframes logo-in {
-  from { opacity: 0; transform: scale(0.35) rotate(-250deg); }
-  55%  { opacity: 1; }
-  to   { opacity: 1; transform: scale(1) rotate(0deg); }
-}
-.logo g {
-  transform-origin: 80px 80px;
-  animation: logo-spin 16s linear infinite;
-}
-@keyframes logo-spin { to { transform: rotate(360deg); } }
-/* Kept for the click easter egg (is-replaying) below. */
-@keyframes logo-grow {
-  from { transform: rotate(var(--a)) translateX(0) scale(0); opacity: 0; }
-  30%  { opacity: 1; }
-  to   { transform: rotate(var(--a)) translateX(25px) scale(1); opacity: 1; }
-}
-
-/* Easter egg: click the rosette and it rewinds — circles peel off in reverse
-   order (anticlockwise), accelerating back into the centre, hold collapsed,
-   then the clockwise build replays (without the entrance's 0.8s handoff).
-   Both rules must match the gated rule's specificity or its delays win. */
-.logo { cursor: pointer; }
-html.js.ready .logo.is-collapsing circle {
-  animation: logo-collapse 0.39s cubic-bezier(0.55, 0, 0.68, 0.19) both;
-  animation-delay: calc((11 - var(--i)) * 63ms);
-}
-html.js.ready .logo.is-replaying circle {
-  animation: logo-grow 0.39s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: calc(var(--i) * 63ms);
-}
-@keyframes logo-collapse {
-  from { transform: rotate(var(--a)) translateX(25px) scale(1); opacity: 1; }
-  70%  { opacity: 1; }
-  to   { transform: rotate(var(--a)) translateX(0) scale(0); opacity: 0; }
-}
-.pitch {
-  max-width: 21em;
-  margin: 0;
-  font-family: "Figtree", system-ui, -apple-system, sans-serif;
-  font-size: clamp(1.02rem, 1.35vw, 1.25rem);
-  font-weight: 500;
-  line-height: 1.5;
-  color: var(--ink-dim);
-  /* a whisper of cool shadow so white copy holds on the palest drift */
-  text-shadow: 0 1px 14px rgba(16, 38, 84, 0.35);
-}
-.statement {
-  margin: 0 0 1.25rem;
-  font-family: "Figtree", system-ui, -apple-system, sans-serif;
-  font-size: clamp(2.2rem, 5vw, 4rem);
-  font-weight: 700;
-  line-height: 1.02;
-  letter-spacing: -0.03em;
-  color: var(--ink);
-  text-shadow: 0 2px 22px rgba(16, 38, 84, 0.4);
-}
-.ctas {
-  display: flex;
-  gap: 0.9rem;
-  margin-top: 2.3rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.82rem 1.45rem;
-  border-radius: 100px;
-  font-family: "Figtree", system-ui, -apple-system, sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
-}
-.btn svg { width: 0.82rem; height: 0.82rem; }
-.btn--ghost { color: var(--ink); border: 1px solid rgba(255, 255, 255, 0.5); }
-.btn--solid { background: #F7F7F5; color: #16233A; border: 1px solid #F7F7F5; }
-@media (hover: hover) {
-  .btn:hover { transform: translateY(-1px); }
-  .btn--ghost:hover { border-color: #ffffff; background: rgba(255, 255, 255, 0.14); }
-  .btn--solid:hover { background: #ffffff; border-color: #ffffff; }
-}
-
-/* Copy entrance: fade up, gated on .ready (each rule holds its own delay so
-   the animation shorthand's implicit 0s can't override it). */
-html.js .reveal { opacity: 0; }
-html.js.ready .statement.reveal { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
-html.js.ready .pitch.reveal     { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.34s both; }
-html.js.ready .ctas.reveal      { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.48s both; }
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: none; }
-}
-
-/* ---------------- Vertical spine labels ----------------
-   Rotated marginalia running up the left edge and down the right. */
-.vlabel {
-  position: fixed;
-  top: 50%;
-  z-index: 6;
-  font-family: "Figtree", system-ui, -apple-system, sans-serif;
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.62);
-  text-shadow: 0 1px 12px rgba(16, 38, 84, 0.4);
-  white-space: nowrap;
-  pointer-events: none;
-  user-select: none;
-  writing-mode: vertical-rl;
-}
-/* sit just inside the frame band (offset = margin + band + a small gap) */
-.vlabel--left  { top: 34%; left: calc(var(--frame-margin) + var(--frame-width) + 0.7rem);  transform: translateY(-50%) rotate(180deg); }   /* reads up, sits high */
-.vlabel--right { top: 66%; right: calc(var(--frame-margin) + var(--frame-width) + 0.7rem); transform: translateY(-50%); }                  /* reads down, sits low */
-html.js .vlabel { opacity: 0; }
-html.js.ready .vlabel { animation: vlabel-in 0.9s ease 0.9s both; }
-@keyframes vlabel-in { from { opacity: 0; } to { opacity: 1; } }
-
-/* ---------------- Giant wordmark ----------------
-   Fills the viewport edge-to-edge and is cropped by the bottom of the screen.
-   Flex space-between letters = exact edge-to-edge fit at any width; slight
-   negative margins push the first/last glyphs past the edges like the mockup. */
-.wordmark {
-  position: fixed;
-  /* Contained INSIDE the frame: inset past the inner border line, no bleed,
-     and lifted off the bottom so the caps sit fully visible above it. */
-  left: 2.3rem; right: 2.3rem;
-  bottom: 2.2rem;
-  z-index: 4;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin: 0;
-  font-weight: 800;
-  font-size: 18vw;
-  line-height: 0.85;              /* trim the below-cap space so the caps sit low */
-  letter-spacing: -0.02em;
-  color: rgba(255, 255, 255, 0.5);
-  user-select: none;
-  pointer-events: none;
-}
-/* Entrance: the letters rise from below the screen one by one, in quick
-   succession from the RIGHT (the trailing O leads, the C lands last), each
-   settling softly. The animation is gated on html.ready — added by JS one
-   frame after the web font has loaded — because a pure load-time CSS
-   animation can finish BEFORE first paint on mobile (the render-blocking
-   font fetch eats the whole animation window) and appear not to run at all.
-   Letters hide below only when JS is present; no-JS just shows them. */
-/* Each letter is an inner <b> that slides up inside its <span> cell. The cell
-   clips only its BOTTOM (clip-path inset with an open, negative top) so the
-   letter is invisible below its resting box — no tops peeking before the
-   slide — while cap tops are never clipped. */
-.wordmark span { display: block; clip-path: inset(-45% -6% 0 -6%); }
-.wordmark b { display: block; font: inherit; }
-html.js .wordmark b {
-  transform: translateY(120%);
-}
-html.js.ready .wordmark b {
-  animation: letter-in 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-/* Per-letter stagger (120ms steps). These MUST match the specificity of the
-   gated shorthand above — the `animation:` shorthand implicitly resets
-   animation-delay to 0s, and a lower-specificity delay rule loses to it,
-   which made all six letters rise as one block. */
-html.js.ready .wordmark span:nth-child(6) b { animation-delay: 0.10s; }
-html.js.ready .wordmark span:nth-child(5) b { animation-delay: 0.16s; }
-html.js.ready .wordmark span:nth-child(4) b { animation-delay: 0.22s; }
-html.js.ready .wordmark span:nth-child(3) b { animation-delay: 0.28s; }
-html.js.ready .wordmark span:nth-child(2) b { animation-delay: 0.34s; }
-html.js.ready .wordmark span:nth-child(1) b { animation-delay: 0.40s; }
-@keyframes letter-in {
-  to { transform: translateY(0); }
-}
-
-/* ---------------- Reduced motion ---------------- */
-@media (prefers-reduced-motion: reduce) {
-  .drift { animation: none; }
-  .wordmark b { animation: none !important; transform: none !important; }
-  .logo { animation: none !important; opacity: 1 !important; transform: none !important; }
-  .logo g { animation: none !important; transform: none !important; }
-  .logo circle {
-    animation: none !important;
-    transform: rotate(var(--a)) translateX(25px) !important;
-    opacity: 1 !important;
+  :root {
+    /* Fallback gradient, shown if WebGL is unavailable. Keep it in the
+       same colour family as the shader palette so the swap is invisible. */
+    --fallback: linear-gradient(160deg, #0B76D6, #3198F4, #64B1F7, #93C9F9);
   }
-  .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
-  .vlabel { animation: none !important; opacity: 1 !important; }
-}
 
-/* ---------------- Mobile ---------------- */
-@media (max-width: 700px) {
-  /* Thinner, tighter frame on phones. */
-  :root { --frame-margin: 8px; --frame-width: 12px; }
-  /* Lighter blur on phones: rasterising 80px blurs tanks mobile frame rates,
-     which is what smeared the letter stagger into a single movement. */
-  .drift { filter: blur(44px); }
-  .tex-grain { background-size: 110px 110px; }   /* finer grain, like the landing page */
-  .middle { padding: 0 2.5rem 20vh; }   /* room for the spine labels inside the frame */
-  .pitch { font-size: 1.02rem; }
-  .wordmark { font-size: 21vw; left: 1.5rem; right: 1.5rem; bottom: 1.6rem; }
-  /* Spine labels stay tucked just inside the frame band (their left/right offset
-     tracks the frame vars automatically). */
-  .vlabel { font-size: 0.56rem; letter-spacing: 0.16em; }
-}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    background: #ffffff;           /* the white the dot sits on before it opens */
+    overflow: hidden;
+  }
+
+  /* ---------------- Iris ----------------
+     The gradient is full-screen and already running from the first frame. A
+     circular window onto it starts as a tiny centre dot and irises out — like
+     the /cosimo intro — until it uncovers the whole (full-size) background that
+     was there all along. Everything outside the circle reads as plain white.
+     Default state is fully open, so no-JS / reduced-motion just see the gradient. */
+  .iris {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    clip-path: circle(150vmax at 50% 50%);   /* default: nothing clipped */
+    will-change: clip-path;
+  }
+  html.intro .iris {
+    animation: iris-open 1.15s cubic-bezier(0.7, 0, 0.25, 1) 0.2s both;
+  }
+  @keyframes iris-open {
+    from { clip-path: circle(1.6vmax at 50% 50%); }   /* a small dot onto the bg */
+    to   { clip-path: circle(75vmax at 50% 50%); }    /* clears the corners at rest */
+  }
+
+  /* The mesh gradient (grain baked into the shader) fills the whole viewport. */
+  #gradient {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--fallback);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.intro .iris { animation: none; clip-path: circle(150vmax at 50% 50%); }
+  }
 </style>
-</head>
 
-<body>
-  <div class="stage" aria-hidden="true">
-    <div class="drift drift--indigo"></div>
-    <div class="drift drift--cyan"></div>
-    <div class="drift drift--beige"></div>
-    <div class="drift drift--coral"></div>
-    <div class="drift drift--magenta"></div>
-    <div class="drift drift--pink"></div>
-    <div class="drift drift--light"></div>
-  </div>
-  <div class="tex-grain" aria-hidden="true"></div>
-  <div class="frame" aria-hidden="true"></div>
-  <div class="intro-overlay" aria-hidden="true"><span class="intro-dot"></span></div>
-
-  <main class="middle">
-    <!-- Spirograph rosette: 12 circles whose centres ride a small ring.
-         Every circle is drawn at the SAME spot (the 0° position) and rotated
-         into place around the rosette centre by --a — so with all rotations
-         at 0 the mark is a single circle, and animating each rotation fans
-         it open into the full weave. -->
-    <svg class="logo" viewBox="0 0 160 160" fill="none" stroke="currentColor"
-         stroke-width="1.3" aria-hidden="true">
-      <g>
-        <circle cx="80" cy="80" r="48.5" style="--a: 0deg;   --i: 0"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 30deg;  --i: 1"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 60deg;  --i: 2"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 90deg;  --i: 3"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 120deg; --i: 4"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 150deg; --i: 5"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 180deg; --i: 6"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 210deg; --i: 7"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 240deg; --i: 8"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 270deg; --i: 9"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 300deg; --i: 10"/>
-        <circle cx="80" cy="80" r="48.5" style="--a: 330deg; --i: 11"/>
-      </g>
-    </svg>
-
-    <h1 class="statement reveal">Making is free.<br>Craft isn&#8217;t.</h1>
-    <p class="pitch reveal">Cosimo is a creative house that sells judgment at fixed prices &mdash; for founders whose reputation has outgrown their craft.</p>
-    <div class="ctas reveal">
-      <a class="btn btn--ghost" href="#manifesto">Manifesto
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
-      </a>
-      <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Let&#8217;s talk
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
-      </a>
-    </div>
-  </main>
-
-  <span class="vlabel vlabel--left" aria-hidden="true">It is not enough to create. We must care.</span>
-  <span class="vlabel vlabel--right" aria-hidden="true">London &bull; Paris &bull; San Francisco</span>
-
-  <div class="wordmark" aria-hidden="true">
-    <span><b>C</b></span><span><b>O</b></span><span><b>S</b></span><span><b>I</b></span><span><b>M</b></span><span><b>O</b></span>
-  </div>
+<div class="iris">
+  <canvas id="gradient"></canvas>
+</div>
 
 <script>
-// Start the entrance only after the page is PAINTED. fonts.ready is not
-// enough — it can resolve before the render-blocking font CSS has even
-// loaded, so on mobile the animation still finished behind the blank first
-// paint. window load (all blocking resources done) + a double rAF (rAF only
-// fires once the browser is producing real frames) guarantees at least one
-// visible frame before the letters start to rise. The timeout is a slow-
-// network cap; it goes through the same rAF gate, so it can't beat paint.
+/* Kick off the iris the same way /cosimo does: add the class after the first
+   paint (two rAFs) so the dot->full expansion is seen, not skipped. Reduced
+   motion leaves the default (already-open) state alone. */
 (function () {
   var root = document.documentElement;
-  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var done = false;
-  function fire() {
-    if (done) return;
-    done = true;
-    if (reduce) { root.classList.add('ready'); return; }   // skip the intro
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        root.classList.add('intro');                        // 1. dot irises the background in (frame is already there)
-        setTimeout(function () { root.classList.add('ready'); }, 1600);      // 2. COSIMO + the rest
-      });
-    });
-  }
-  if (document.readyState === 'complete') fire();
-  else window.addEventListener('load', fire);
-  setTimeout(fire, 3200);
-
-  // Click the rosette: rewind anticlockwise into one point, hold, rebuild.
-  var logo = document.querySelector('.logo');
-  if (logo) logo.addEventListener('click', function () {
-    if (logo._busy || !document.documentElement.classList.contains('ready')) return;
-    logo._busy = true;
-    logo.classList.remove('is-replaying');
-    logo.classList.add('is-collapsing');            /* rewind (~1.1s), hold… */
-    setTimeout(function () {
-      logo.classList.remove('is-collapsing');
-      logo.classList.add('is-replaying');           /* …then rebuild */
-      setTimeout(function () { logo._busy = false; }, 1200);
-    }, 3300);
-  });
-
-  // iOS restores the page from the back-forward cache with all animations
-  // already finished — replay the entrance so returning visitors see it too.
-  window.addEventListener('pageshow', function (e) {
-    if (!e.persisted) return;
-    var root = document.documentElement;
-    root.classList.remove('ready');
-    void root.offsetWidth;                 /* flush, so re-adding restarts */
-    root.classList.add('ready');
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () { root.classList.add('intro'); });
   });
 })();
 </script>
-</body>
-</html>
+
+<script>
+/* ============================================================
+   CONFIG — this is the only part you normally need to touch.
+   ============================================================ */
+/* There is no palette list in this file. There's one hue and a ramp.
+   That IS the finding — see the note below. */
+const HUE     = 208.5;  // ★ MEASURED. Hue p50 208.2, spread 11 deg. One blue.
+const SAT_HSL = 0.90;   // ★ MEASURED, from the p90 of the clean side.
+const LUMAS   = [0.400, 0.535, 0.650, 0.756];   // ★ CONSTRUCTED, not measured.
+                                                //   The top stop is anchored to
+                                                //   the real ink; the rest is
+                                                //   invented. See the note —
+                                                //   this matters.
+
+const SPEED = 0.07;
+const SCALE = 0.90;
+const WARP  = 0.50;
+
+const GRAIN      = 0.100;  // ★ NOT measured from this source — added, to put
+                           //   this file in the CORE/PLUS/PEAK family. It's
+                           //   PLUS's measured 0.093, nudged up 10% because
+                           //   this palette is brighter. That 10% is the whole
+                           //   correction, and it's smaller than it sounds —
+                           //   see the note.
+                           //   0.026 = dither only (what the source justifies)
+                           //   0.070 = PEAK      0.093 = PLUS      0.203 = CORE
+const GRAIN_BOIL = 0;      // 0 matches the family — CORE, PLUS and PEAK are all
+                           //   static, welded to the frame like emulsion.
+                           //   12 = filmic boil, if static reads as a dirty
+                           //   screen over a bright blue.
+
+/*
+   THE HARDEST SOURCE HERE, AND THE ONE THAT GIVES UP THE LEAST.
+
+   This is a printed poster, behind glass, in direct sun. The photograph
+   contains trees, a brick building, sky, a lens flare and a street —
+   all reflected onto the thing being measured. That contamination is
+   ADDITIVE and, worse, SPATIALLY VARYING. There is no single floor to
+   subtract, because every part of the poster is under a different
+   reflection.
+
+   How bad: a probe of the right-hand side returns #AB9AA0 — hue 340,
+   sat 0.09. A warm grey. That is not a washed-out blue, it is a
+   building. Roughly half the poster contains no recoverable colour at
+   all, and everything below was measured on the left side only.
+
+   THE NUMBER THAT DECIDED THIS FILE: corr(sat, luma) = +0.96.
+
+   Saturation RISES with brightness here. Every other source in this set
+   runs the other way — 02 PLUS, the Adriatic water, the amplifye card
+   all have saturation FALLING as things get lighter, because veiling
+   glare and surface scatter and light on ink all ADD light to the
+   highlights and dilute them.
+
+   This inverts because the contamination here mostly SUBTRACTS. Tree
+   reflections are dark and green; where they land they take away both
+   light and chroma together. So the dim blues are dim BECAUSE they're
+   dirty, and the bright blues are simply the ones the glass left alone.
+
+   That correlation is not a property of the poster. It is a portrait of
+   the reflections. And it means the tonal ramp is UNMEASURABLE from this
+   photograph: whatever luma range I extract is mostly a map of what was
+   parked across the street.
+
+   SO THIS SOURCE GIVES A COLOUR, NOT A STRUCTURE.
+
+     MEASURED:    hue 208.5 (p50 208.2, spread 11 degrees — one blue)
+                  sat 0.90  (p90 of the clean side)
+     CONSTRUCTED: the LUMAS ramp. Invented, and marked as such.
+
+   The top stop is the honest anchor: it's built to land on #93C9F9,
+   which is 2.7/255 from #91C8FC — the cleanest blue actually present.
+   Note that "cleanest" means highest SATURATION, not highest luma. The
+   brightest pixels on that poster (luma 0.836, hue 220) are sky
+   reflection, not ink. Anchoring to brightness would have anchored to
+   the sky.
+
+   THE HUE EXCURSIONS ARE ALSO CONTAMINATION, AND THEY NAME THEIR SOURCE:
+       204 at the dark end   — tree reflection, green drags the hue down
+       220 at the light end  — sky reflection, drags it up
+       208 through the bulk  — the poster
+   Reading that as a designed hue ramp would have been reading the
+   foliage.
+
+   WHAT'S LEFT is a monochrome file, same shape as the green CORE panel:
+   one hue, one saturation, a ramp of luminances. Rotate HUE and the
+   whole thing moves with its structure intact — except that here the
+   structure was never the poster's to begin with.
+
+   ------------------------------------------------------------------
+
+   THE GRAIN IS BORROWED, NOT MEASURED.
+
+   Nothing in this source justifies GRAIN 0.100. A poster behind glass
+   has no designed grain: what noise that photograph carries is the
+   camera sensor and the reflections, and reproducing it accurately would
+   be reproducing the phone. The source justifies 0.026 — dither, enough
+   to stop 8-bit banding, and nothing more.
+
+   0.100 is here because this file is joining the CORE/PLUS/PEAK family
+   by choice. It's PLUS's measured 0.093 with a 10% correction. Which
+   needs explaining, because the obvious reasoning is wrong:
+
+   YOU MIGHT EXPECT fixed grain to read much louder on a bright palette
+   than a dark one. It doesn't — and the reason is that these are sRGB
+   values, not linear light. sRGB's gamma curve exists precisely to space
+   its steps perceptually, and it works. Measured in CIE L*, where equal
+   numbers are equal perceived steps, a fixed grain of 0.093 produces:
+
+       sRGB 0.10 -> dL* 11.01        sRGB 0.45 -> dL*  9.48
+       sRGB 0.76 -> dL*  8.61        sRGB 0.90 -> dL*  8.35
+
+   Barely 25% variation across the entire range. And the direction is the
+   opposite of the intuition: grain reads slightly QUIETER as things get
+   brighter, not louder, because L* compresses at the top.
+
+   Across the real palettes: PLUS spans sRGB 0.21-0.45 and averages
+   dL* 10.06. This one spans 0.40-0.76 and averages dL* 9.09. Ratio 0.90.
+   Ten percent. So 0.093 -> 0.100 and the two files carry visually
+   identical grain.
+
+   The general point: gamma encoding already did the perceptual work.
+   Reaching for a big correction here would have been correcting for a
+   problem sRGB solved in 1996.
+*/
+
+/* ============================================================
+   The shader. Two ideas are doing all the work here:
+
+   1. NOISE — smooth pseudo-random values that flow over time.
+      This is what gives organic blobs instead of hard bands.
+   2. DOMAIN WARPING — feeding noise into the *coordinates* of more
+      noise. Cheap trick, enormous payoff: it's the difference
+      between "blurry blobs" and "liquid metal".
+
+   The last line adds grain. Don't remove it. 8-bit colour channels
+   can't represent a smooth gradient across 1000px, so you get visible
+   banding stripes. A tiny bit of noise dithers those away.
+   ============================================================ */
+const FRAG = `
+precision highp float;
+uniform vec2  u_res;
+uniform float u_time;
+uniform vec3  u_c0, u_c1, u_c2, u_c3;
+uniform float u_scale, u_warp, u_grain, u_boil;
+uniform float u_rawT;
+
+// -- 2D simplex noise (Ashima / Ian McEwan, MIT licensed) ------------
+vec3 mod289(vec3 x){ return x - floor(x * (1.0/289.0)) * 289.0; }
+vec2 mod289(vec2 x){ return x - floor(x * (1.0/289.0)) * 289.0; }
+vec3 permute(vec3 x){ return mod289(((x*34.0)+1.0)*x); }
+
+float snoise(vec2 v){
+  const vec4 C = vec4(0.211324865, 0.366025403, -0.577350269, 0.024390243);
+  vec2 i  = floor(v + dot(v, C.yy));
+  vec2 x0 = v - i + dot(i, C.xx);
+  vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+  vec4 x12 = x0.xyxy + C.xxzz;
+  x12.xy -= i1;
+  i = mod289(i);
+  vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0))
+                           + i.x + vec3(0.0, i1.x, 1.0));
+  vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+  m = m*m; m = m*m;
+  vec3 x = 2.0 * fract(p * C.www) - 1.0;
+  vec3 h = abs(x) - 0.5;
+  vec3 ox = floor(x + 0.5);
+  vec3 a0 = x - ox;
+  m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+  vec3 g;
+  g.x  = a0.x  * x0.x  + h.x  * x0.y;
+  g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+  return 130.0 * dot(m, g);
+}
+
+void main(){
+  // Aspect-corrected UVs, so blobs stay round on wide screens.
+  vec2 uv = gl_FragCoord.xy / u_res.xy;
+  uv.x *= u_res.x / u_res.y;
+  uv *= u_scale;
+
+  float t = u_time;
+
+  // --- Domain warp: offset the sampling position using noise. ---
+  vec2 q = vec2(
+    snoise(uv + vec2(0.0, t * 0.6)),
+    snoise(uv + vec2(5.2, 1.3) - t * 0.4)
+  );
+  vec2 p = uv + u_warp * q;
+
+  // --- Three independent noise fields drive the colour mixing. ---
+  float n0 = snoise(p * 0.9 + vec2(t * 0.5, 0.0));
+  float n1 = snoise(p * 1.3 + vec2(-t * 0.35, 2.7));
+  float n2 = snoise(p * 0.7 + vec2(1.9, t * 0.45));
+
+  // smoothstep turns raw noise (-1..1) into soft 0..1 blend masks.
+  vec3 col = u_c0;
+  col = mix(col, u_c1, smoothstep(-0.65, 0.55, n0));
+  col = mix(col, u_c2, smoothstep(-0.50, 0.70, n1));
+  col = mix(col, u_c3, smoothstep(-0.30, 0.85, n2) * 0.85);
+
+  /* --- Grain. Not a dither. The subject. ---
+     Scalar, so the same value lands on all three channels: this is
+     luminance noise, which is what the source measured (per-channel
+     sigmas 0.062 / 0.055 / 0.059 — near enough identical). Per-channel
+     grain would add chroma noise, and a monochrome panel has no chroma
+     to speak of. */
+  float tq = u_boil > 0.0 ? floor(u_rawT * u_boil) * 37.0 : 0.0;
+  float grain = fract(sin(dot(gl_FragCoord.xy + tq, vec2(12.9898, 78.233))) * 43758.5453);
+  col += (grain - 0.5) * u_grain;
+
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
+const VERT = `
+attribute vec2 a_pos;
+void main(){ gl_Position = vec4(a_pos, 0.0, 1.0); }`;
+
+/* ============================================================
+   Build a colour at a given hue and a given LUMA.
+
+   HSL lightness is not luminance — HSL is a crude 1970s transform that
+   thinks pure blue and pure yellow are equally light, and they are not
+   even close. So we can't just ask for lightness 0.4 and get luma 0.4.
+
+   But luma IS monotonic in HSL lightness at a fixed hue and saturation.
+   So bisect: guess a lightness, convert, measure the luma, adjust. Forty
+   iterations lands on the target to machine precision.
+
+   This is the mirror of the previous file's isoluminant(). That one held
+   luma constant and let hue roam; this one holds hue constant and walks
+   luma. Same idea from opposite ends.
+   ============================================================ */
+function hslToRgb(h, s, l){
+  if (s === 0) return [l, l, l];
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  const p = 2 * l - q;
+  const f = t => {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1/6) return p + (q - p) * 6 * t;
+    if (t < 1/2) return q;
+    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+    return p;
+  };
+  return [f(h + 1/3), f(h), f(h - 1/3)];
+}
+
+function hueAtLuma(hueDeg, sat, targetLuma){
+  const L = c => 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2];
+  let lo = 0, hi = 1;
+  for (let i = 0; i < 40; i++) {
+    const mid = (lo + hi) / 2;
+    if (L(hslToRgb(hueDeg/360, sat, mid)) < targetLuma) lo = mid; else hi = mid;
+  }
+  return hslToRgb(hueDeg/360, sat, (lo + hi) / 2);
+}
+
+const PALETTE = LUMAS.map(l => hueAtLuma(HUE, SAT_HSL, l));
+
+/* ============================================================
+   Boilerplate: compile, link, resize, draw.
+   ============================================================ */
+(function init(){
+  const canvas = document.getElementById('gradient');
+  const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
+
+  // No WebGL (old browser, blocked GPU) — the CSS fallback is already
+  // painted underneath, so we just leave it and bail out silently.
+  if (!gl) { canvas.remove(); return; }
+
+  function compile(type, src){
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      console.error(gl.getShaderInfoLog(s));
+      return null;
+    }
+    return s;
+  }
+
+  const vs = compile(gl.VERTEX_SHADER, VERT);
+  const fs = compile(gl.FRAGMENT_SHADER, FRAG);
+  if (!vs || !fs) { canvas.remove(); return; }
+
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vs);
+  gl.attachShader(prog, fs);
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+
+  // One full-screen triangle. Cheaper than two triangles for a quad,
+  // and the fragment shader is where all the actual work happens.
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'a_pos');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  const U = n => gl.getUniformLocation(prog, n);
+  const uRes = U('u_res'), uTime = U('u_time');
+  gl.uniform3fv(U('u_c0'), PALETTE[0]);
+  gl.uniform3fv(U('u_c1'), PALETTE[1]);
+  gl.uniform3fv(U('u_c2'), PALETTE[2]);
+  gl.uniform3fv(U('u_c3'), PALETTE[3]);
+  gl.uniform1f(U('u_scale'), SCALE);
+  gl.uniform1f(U('u_warp'), WARP);
+  gl.uniform1f(U('u_grain'), GRAIN);
+  gl.uniform1f(U('u_boil'), GRAIN_BOIL);
+
+  function resize(){
+    // Cap DPR at 2. A full-screen shader at DPR 3 on a phone is a
+    // battery fire for zero visible gain.
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.floor(canvas.clientWidth  * dpr);
+    const h = Math.floor(canvas.clientHeight * dpr);
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w; canvas.height = h;
+      gl.viewport(0, 0, w, h);
+      gl.uniform2f(uRes, w, h);
+    }
+  }
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function draw(ms){
+    resize();
+    // Respect reduced-motion: freeze on a nice static frame rather
+    // than removing the gradient entirely.
+    gl.uniform1f(uTime, reduced.matches ? 4.0 : (ms / 1000) * SPEED);
+    gl.uniform1f(U('u_rawT'), ms / 1000);   // unscaled, for the grain boil
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+</script>

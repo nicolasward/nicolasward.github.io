@@ -166,7 +166,8 @@
   /* CTAs */
   .ctas {
     display: flex;
-    gap: 0.9rem;
+    align-items: center;
+    gap: clamp(1rem, 3vw, 1.6rem);
     margin-top: 2.7rem;
     flex-wrap: wrap;
     justify-content: flex-start;
@@ -175,24 +176,31 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.85rem 1.5rem;
-    border-radius: 100px;
     font-family: inherit;
     font-size: 1rem;
-    font-weight: 600;
     text-decoration: none;
-    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+    transition: background 0.25s ease, color 0.25s ease, opacity 0.2s ease, transform 0.2s ease;
   }
-  .btn svg { width: 0.82rem; height: 0.82rem; transition: transform 0.2s ease; }
-  /* Knockout CTA: a white pill whose label + arrow are filled with a slowly
-     drifting blue gradient (background-clip: text), so they read as the moving
-     blue background showing through the letters. */
-  .btn--solid { background: #FFFFFF; color: var(--deep); border: 1px solid #FFFFFF; }
-  .btn--ghost { color: var(--ink); border: 1px solid rgba(255, 255, 255, 0.6); }
+  .btn svg { width: 0.8rem; height: 0.8rem; transition: transform 0.2s ease; }
+  /* Primary: a solid white rectangle with bold dark text (Obama-Foundation
+     style) — sharp corners, no icon. */
+  .btn--solid {
+    padding: 0.95rem 1.7rem;
+    background: #FFFFFF;
+    color: var(--deep);
+    font-weight: 700;
+    border-radius: 0;
+  }
+  /* Secondary: text + chevron only — no contour, no fill. */
+  .btn--ghost {
+    padding: 0.5rem 0;
+    color: var(--ink);
+    font-weight: 600;
+  }
   @media (hover: hover) {
-    .btn:hover { transform: translateY(-1px); }
-    .btn--solid:hover svg { transform: translateX(3px); }   /* nudge the chevron */
-    .btn--ghost:hover { border-color: #ffffff; background: rgba(255, 255, 255, 0.16); }
+    .btn--solid:hover { transform: translateY(-1px); }
+    .btn--ghost:hover { opacity: 0.72; }
+    .btn--ghost:hover svg { transform: translateX(3px); }
   }
 
   /* Availability — an understated editorial eyebrow instead of a badge: small,
@@ -351,11 +359,9 @@
   <h1 class="headline">Interfaces for frontier AI</h1>
   <p class="sub reveal">Cosimo is an applied AI studio turning frontier intelligence into bespoke systems. We transform the most ambitious creative teams in the world into AI-native operations.</p>
   <div class="ctas reveal">
-    <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Talk to us
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-    </a>
+    <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Talk to us</a>
     <a class="btn btn--ghost" href="#manifesto">Our Manifesto
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
     </a>
   </div>
   <p class="availability reveal">First cohort closing 10 September</p>

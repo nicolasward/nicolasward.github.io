@@ -230,6 +230,24 @@
     html.credo-open .hero { opacity: 0; pointer-events: none; }
   }
 
+  /* Colophon — copyright + location, bottom-left. */
+  .colophon {
+    position: fixed;
+    left: 1.5rem;
+    bottom: 1.4rem;
+    z-index: 6;
+    margin: 0;
+    font-family: "Figtree", system-ui, -apple-system, sans-serif;
+    font-size: clamp(0.64rem, 2.2vw, 0.74rem);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: rgba(255, 255, 255, 0.6);
+    text-shadow: 0 1px 12px rgba(6, 34, 78, 0.4);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .colophon .sep { margin: 0 0.45em; opacity: 0.55; }
+
   /* Hero headline: each letter rolls up into place, one after another. Words
      are kept intact (inline-block) so the line still wraps; the split into
      per-letter spans is done in JS. */
@@ -261,6 +279,7 @@
   html.intro .sub.reveal          { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 4.15s both; }
   html.intro .ctas.reveal         { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 4.32s both; }
   html.intro .availability.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 4.48s both; }
+  html.intro .colophon.reveal     { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 4.62s both; }
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: none; }
@@ -292,6 +311,7 @@
 
 <button class="credo-toggle" type="button" aria-label="Reveal studio credo" aria-expanded="false"></button>
 <p class="credo" aria-hidden="true">It is not enough to create. We must care.</p>
+<p class="colophon reveal">&copy; 2026 Cosimo <span class="sep" aria-hidden="true">&middot;</span> Based in London, operating worldwide.</p>
 
 <script>
 /* Split the headline into per-letter spans (words kept intact so the line still

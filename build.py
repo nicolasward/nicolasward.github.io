@@ -352,13 +352,14 @@ def build():
             else:
                 shutil.copy2(item, dest)
 
-    # Cosimo teaser page → /cosimo (self-contained directory, copied as-is).
-    # This is the animated blue mesh gradient; it carries its own grain in the
-    # shader, so no extra assets are needed.
-    cosimo_src = ROOT / "cosimo"
-    if cosimo_src.exists():
-        shutil.copytree(cosimo_src, OUTPUT_DIR / "cosimo",
-                        ignore=shutil.ignore_patterns(".DS_Store"))
+    # Cosimo teaser pages → /cosimo, /cosimo2 (self-contained dirs, copied as-is).
+    # Both are the animated blue mesh gradient (grain baked into the shader, so no
+    # extra assets); they differ only in the intro — /cosimo pulses, /cosimo2 drops.
+    for _cosimo_dir in ("cosimo", "cosimo2"):
+        cosimo_src = ROOT / _cosimo_dir
+        if cosimo_src.exists():
+            shutil.copytree(cosimo_src, OUTPUT_DIR / _cosimo_dir,
+                            ignore=shutil.ignore_patterns(".DS_Store"))
 
     # Static images (post cover artwork, etc.) → /images, resized + re-encoded as
     # WebP. image_map rewrites references from the source path to the optimized one.

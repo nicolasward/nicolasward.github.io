@@ -7,16 +7,11 @@
      (or under reduced motion) the gradient is simply full-screen from the off. -->
 <script>document.documentElement.classList.add('js');</script>
 
-<!-- Preload the grain so it dithers the gradient at first paint (matches the
-     landing page's "Hi, I'm Nico." treatment). -->
-<link rel="preload" as="image" href="/grain.png" type="image/png">
-
 <style>
   :root {
     /* Fallback gradient, shown if WebGL is unavailable. Keep it in the
        same colour family as the shader palette so the swap is invisible. */
     --fallback: linear-gradient(160deg, #0B76D6, #3198F4, #64B1F7, #93C9F9);
-    --noise-size: 130px;          /* signature grain tile — matches the landing page */
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -49,7 +44,7 @@
     to   { clip-path: circle(75vmax at 50% 50%); }    /* clears the corners at rest */
   }
 
-  /* The mesh gradient fills the whole viewport. */
+  /* The mesh gradient (grain baked into the shader) fills the whole viewport. */
   #gradient {
     position: absolute;
     inset: 0;
@@ -59,26 +54,6 @@
     background: var(--fallback);
   }
 
-  /* The landing page's signature graininess, laid over the gradient. A tiled
-     dark-fleck PNG — same tile size and treatment as the hero. It lives inside
-     the iris so it's part of the surface the circle uncovers (revealed with the
-     background, not faded in on top). Full-size and unscaled, so it stays crisp
-     at the true tile size. */
-  .grain {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    background-image: url("/grain.png");
-    background-size: var(--noise-size) var(--noise-size);
-    background-repeat: repeat;
-    mix-blend-mode: normal;
-  }
-
-  @media (max-width: 640px) {
-    :root { --noise-size: 110px; }   /* finer grain on mobile, as on the landing page */
-  }
-
   @media (prefers-reduced-motion: reduce) {
     html.intro .iris { animation: none; clip-path: circle(150vmax at 50% 50%); }
   }
@@ -86,7 +61,6 @@
 
 <div class="iris">
   <canvas id="gradient"></canvas>
-  <div class="grain" aria-hidden="true"></div>
 </div>
 
 <script>
@@ -120,10 +94,18 @@ const SPEED = 0.07;
 const SCALE = 0.90;
 const WARP  = 0.50;
 
-const GRAIN      = 0.026;  // dither only. This source has no designed grain —
-                           // it's a printed poster, and the noise in the photo
-                           // belongs to the camera and the glass.
-const GRAIN_BOIL = 0;      // 12 for a filmic boil, if you want one.
+const GRAIN      = 0.100;  // ★ NOT measured from this source — added, to put
+                           //   this file in the CORE/PLUS/PEAK family. It's
+                           //   PLUS's measured 0.093, nudged up 10% because
+                           //   this palette is brighter. That 10% is the whole
+                           //   correction, and it's smaller than it sounds —
+                           //   see the note.
+                           //   0.026 = dither only (what the source justifies)
+                           //   0.070 = PEAK      0.093 = PLUS      0.203 = CORE
+const GRAIN_BOIL = 0;      // 0 matches the family — CORE, PLUS and PEAK are all
+                           //   static, welded to the frame like emulsion.
+                           //   12 = filmic boil, if static reads as a dirty
+                           //   screen over a bright blue.
 
 /*
    THE HARDEST SOURCE HERE, AND THE ONE THAT GIVES UP THE LEAST.
@@ -182,6 +164,42 @@ const GRAIN_BOIL = 0;      // 12 for a filmic boil, if you want one.
    one hue, one saturation, a ramp of luminances. Rotate HUE and the
    whole thing moves with its structure intact — except that here the
    structure was never the poster's to begin with.
+
+   ------------------------------------------------------------------
+
+   THE GRAIN IS BORROWED, NOT MEASURED.
+
+   Nothing in this source justifies GRAIN 0.100. A poster behind glass
+   has no designed grain: what noise that photograph carries is the
+   camera sensor and the reflections, and reproducing it accurately would
+   be reproducing the phone. The source justifies 0.026 — dither, enough
+   to stop 8-bit banding, and nothing more.
+
+   0.100 is here because this file is joining the CORE/PLUS/PEAK family
+   by choice. It's PLUS's measured 0.093 with a 10% correction. Which
+   needs explaining, because the obvious reasoning is wrong:
+
+   YOU MIGHT EXPECT fixed grain to read much louder on a bright palette
+   than a dark one. It doesn't — and the reason is that these are sRGB
+   values, not linear light. sRGB's gamma curve exists precisely to space
+   its steps perceptually, and it works. Measured in CIE L*, where equal
+   numbers are equal perceived steps, a fixed grain of 0.093 produces:
+
+       sRGB 0.10 -> dL* 11.01        sRGB 0.45 -> dL*  9.48
+       sRGB 0.76 -> dL*  8.61        sRGB 0.90 -> dL*  8.35
+
+   Barely 25% variation across the entire range. And the direction is the
+   opposite of the intuition: grain reads slightly QUIETER as things get
+   brighter, not louder, because L* compresses at the top.
+
+   Across the real palettes: PLUS spans sRGB 0.21-0.45 and averages
+   dL* 10.06. This one spans 0.40-0.76 and averages dL* 9.09. Ratio 0.90.
+   Ten percent. So 0.093 -> 0.100 and the two files carry visually
+   identical grain.
+
+   The general point: gamma encoding already did the perceptual work.
+   Reaching for a big correction here would have been correcting for a
+   problem sRGB solved in 1996.
 */
 
 /* ============================================================

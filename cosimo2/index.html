@@ -36,25 +36,34 @@
     clip-path: circle(150vmax at 50% 50%);   /* default: nothing clipped */
     will-change: clip-path;
   }
-  /* The dot drops in from the top, lands at centre, bounces twice, THEN irises
-     out. The drop moves the clip circle's CENTRE (falls ease-in like gravity,
-     rises ease-out) while its radius stays fixed. The open is delayed until the
-     dot has settled and uses forwards-only fill so a backwards fill can't clamp
-     the clip-path and freeze the fall. */
+  /* The dot drops in from the top, then bounces like a rubber ball — five
+     rebounds losing ~half their height each time, and (because a bounce's flight
+     time scales with the square root of its height) each floor contact lands
+     closer to the last, so the bounces visibly speed up before settling. THEN it
+     irises out. Only the clip circle's CENTRE-Y moves; the radius stays fixed.
+     The open is delayed until the dot has settled and uses forwards-only fill so
+     a backwards fill can't clamp the clip-path and freeze the fall. */
   html.intro .iris {
     animation:
-      iris-drop 1.5s 0.2s both,
-      iris-open 1.15s cubic-bezier(0.7, 0, 0.25, 1) 1.7s forwards;
+      iris-drop 1.9s 0.2s both,
+      iris-open 1.15s cubic-bezier(0.7, 0, 0.25, 1) 2.1s forwards;
   }
   @keyframes iris-drop {
-    /* falls = ease-in (accelerate), rises = ease-out (decelerate). The centre
-       Y is a % of viewport height; 50% is the floor the dot rests/opens on. */
-    0%   { clip-path: circle(1.6vmax at 50% -8%);  animation-timing-function: cubic-bezier(0.5, 0, 1, 1); }
-    32%  { clip-path: circle(1.6vmax at 50% 50%);  animation-timing-function: cubic-bezier(0, 0, 0.35, 1); }  /* 1st landing */
-    50%  { clip-path: circle(1.6vmax at 50% 33%);  animation-timing-function: cubic-bezier(0.5, 0, 1, 1); }   /* bounce 1 peak */
-    66%  { clip-path: circle(1.6vmax at 50% 50%);  animation-timing-function: cubic-bezier(0, 0, 0.35, 1); }  /* 2nd landing */
-    80%  { clip-path: circle(1.6vmax at 50% 43%);  animation-timing-function: cubic-bezier(0.5, 0, 1, 1); }   /* bounce 2 peak */
-    92%, 100% { clip-path: circle(1.6vmax at 50% 50%); }   /* settled */
+    /* falls = ease-in (accelerate under gravity), rises = ease-out (decelerate).
+       Centre-Y is a % of viewport height; 50% is the floor it rests/opens on.
+       Floor contacts at 25 / 51 / 70 / 84 / 93 % — the gaps shrink each time. */
+    0%   { clip-path: circle(1.6vmax at 50% -8%);   animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }
+    25%  { clip-path: circle(1.6vmax at 50% 50%);   animation-timing-function: cubic-bezier(0, 0, 0.3, 1); }  /* land */
+    38%  { clip-path: circle(1.6vmax at 50% 33%);   animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }  /* bounce 1 */
+    51%  { clip-path: circle(1.6vmax at 50% 50%);   animation-timing-function: cubic-bezier(0, 0, 0.3, 1); }  /* land */
+    61%  { clip-path: circle(1.6vmax at 50% 41.5%); animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }  /* bounce 2 */
+    70%  { clip-path: circle(1.6vmax at 50% 50%);   animation-timing-function: cubic-bezier(0, 0, 0.3, 1); }  /* land */
+    77%  { clip-path: circle(1.6vmax at 50% 45.5%); animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }  /* bounce 3 */
+    84%  { clip-path: circle(1.6vmax at 50% 50%);   animation-timing-function: cubic-bezier(0, 0, 0.3, 1); }  /* land */
+    89%  { clip-path: circle(1.6vmax at 50% 48%);   animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }  /* bounce 4 */
+    93%  { clip-path: circle(1.6vmax at 50% 50%);   animation-timing-function: cubic-bezier(0, 0, 0.3, 1); }  /* land */
+    96%  { clip-path: circle(1.6vmax at 50% 49%);   animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }  /* bounce 5 */
+    100% { clip-path: circle(1.6vmax at 50% 50%); }   /* settled */
   }
   @keyframes iris-open {
     from { clip-path: circle(1.6vmax at 50% 50%); }   /* a small dot onto the bg */

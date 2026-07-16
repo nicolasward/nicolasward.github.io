@@ -51,62 +51,14 @@
     background: #04101d;           /* dark fallback if WebGL is unavailable */
   }
 
-  /* The UI layer (masthead + hero + footer) sits over the fixed field and
-     fades as one when the field collapses. */
+  /* The UI layer (hero + footer) sits over the fixed field and fades as one
+     when the field collapses. */
   .ui {
     position: relative;
     z-index: 2;
     transition: opacity 0.55s ease;
   }
   html.collapsed .ui { opacity: 0; }
-
-  /* ---------------- Masthead ----------------
-     A publication-style top band: wordmark left, live London dateline right,
-     a hairline beneath. */
-  .masthead {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 6;
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: clamp(1rem, 2.6vw, 1.5rem) var(--gutter);
-    color: var(--ink);
-    pointer-events: none;
-  }
-  .mast-name {
-    font-family: "Figtree", system-ui, -apple-system, sans-serif;
-    font-size: clamp(0.92rem, 1.9vw, 1.08rem);
-    font-weight: 600;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    text-indent: 0.3em;                 /* balance the trailing track so it optically centres */
-    text-shadow: 0 1px 12px rgba(6, 34, 78, 0.4);
-  }
-  .mast-meta {
-    font-family: var(--mono);
-    font-size: clamp(0.64rem, 1.5vw, 0.76rem);
-    font-weight: 400;
-    letter-spacing: 0.06em;
-    color: rgba(255, 255, 255, 0.72);
-    text-shadow: 0 1px 12px rgba(6, 34, 78, 0.4);
-    white-space: nowrap;
-  }
-  .mast-clock { font-variant-numeric: tabular-nums; }
-  /* The cohort dateline takes the top-right slot on mobile (in place of the
-     city/time); on wider screens it lives in the hero instead. */
-  .mast-cohort {
-    display: none;
-    font-family: var(--mono);
-    font-size: clamp(0.6rem, 3vw, 0.76rem);
-    font-weight: 400;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.72);
-    text-shadow: 0 1px 12px rgba(6, 34, 78, 0.4);
-    white-space: nowrap;
-  }
 
   /* ---------------- Hero ----------------
      Left-anchored copy over the gradient, filling the single screen; the footer
@@ -145,10 +97,10 @@
   .headline .p-init {
     font-family: "Pinyon Script", cursive;
     font-weight: 400;
-    font-size: 1.3em;
+    font-size: 2.1em;                   /* a statement: towers over the sans caps */
     line-height: 0;
     letter-spacing: 0;
-    margin-right: 0.03em;
+    margin-right: 0.05em;
   }
   /* The typing caret — appears with the carve, blinks while the tail rotates. */
   .hl-caret {
@@ -189,7 +141,6 @@
     text-decoration: none;
     transition: background 0.25s ease, color 0.25s ease, opacity 0.2s ease, transform 0.2s ease;
   }
-  .btn svg { width: 0.8rem; height: 0.8rem; transition: transform 0.2s ease; }
   /* Primary: a solid white rectangle with bold dark text (Obama-Foundation
      style) — sharp corners, no icon. */
   .btn--solid {
@@ -199,30 +150,8 @@
     font-weight: 700;
     border-radius: 0;
   }
-  /* Secondary: text + chevron only — no contour, no fill. */
-  .btn--ghost {
-    padding: 0.5rem 0;
-    color: var(--ink);
-    font-weight: 600;
-  }
   @media (hover: hover) {
     .btn--solid:hover { transform: translateY(-1px); }
-    .btn--ghost:hover { opacity: 0.72; }
-    .btn--ghost:hover svg { transform: translateX(3px); }
-  }
-
-  /* Availability — an understated editorial eyebrow instead of a badge: small,
-     wide-tracked caps flanked by hairlines. No pill, no status light. */
-  .availability {
-    margin: 2.6rem 0 0;
-    font-family: var(--mono);
-    font-size: clamp(0.62rem, 2.2vw, 0.72rem);
-    font-weight: 400;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    color: rgba(255, 255, 255, 0.66);
-    text-shadow: 0 1px 12px rgba(6, 34, 78, 0.3);
   }
 
   /* ---------------- Credo ----------------
@@ -280,10 +209,6 @@
   html.credo-show .credo { opacity: 1; }
 
   @media (max-width: 760px) {
-    /* Cohort dateline moves into the masthead's top-right slot. */
-    .mast-meta { display: none; }
-    .mast-cohort { display: inline; }
-    .hero .availability { display: none; }
     .cosimo-mark { font-size: 21vw; }   /* matches the old teaser's mobile size */
   }
 
@@ -386,10 +311,8 @@
   /* The rest of the copy fades up, staggered, once the field has bloomed and the
      type is carving in. Delays are relative to html.intro (added at ignition). */
   html.js .reveal { opacity: 0; }
-  html.intro .masthead.reveal     { animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.6s both; }
-  html.intro .sub.reveal          { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.35s both; }
-  html.intro .ctas.reveal         { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.52s both; }
-  html.intro .availability.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.68s both; }
+  html.intro .sub.reveal  { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.35s both; }
+  html.intro .ctas.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.52s both; }
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: none; }
@@ -409,12 +332,6 @@
 </div>
 
 <div class="ui">
-  <header class="masthead reveal">
-    <span class="mast-name">Cosimo</span>
-    <span class="mast-meta">London&nbsp;&nbsp;<time class="mast-clock">&mdash;&mdash;:&mdash;&mdash;</time></span>
-    <span class="mast-cohort">First cohort &middot; 10 Sept</span>
-  </header>
-
   <main class="hero">
     <h1 class="headline" aria-label="Power to designers. Power to the ones who ship. Power to planners. Power to the perfectionists. Power to the people who notice.">
       <span class="hl-sizer" aria-hidden="true">Power to the people who notice.</span>
@@ -423,11 +340,7 @@
     <p class="sub reveal">Cosimo is an applied AI studio based in London. We transform the world&#8217;s most forward-thinking brands into AI-native companies, turning frontier intelligence into tangible outcomes.</p>
     <div class="ctas reveal">
       <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Talk to us</a>
-      <a class="btn btn--ghost" href="#manifesto">Liquid software
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-      </a>
     </div>
-    <p class="availability reveal">First cohort closing 10 September</p>
   </main>
 
   <footer class="bigfoot">
@@ -558,21 +471,6 @@ var fieldAnim = null;
     setTimeout(function(){ root.classList.remove('collapsed'); },  2350);  // the UI returns
     setTimeout(reCarve, 2950);                                   // headline re-carves with the re-ignition
   });
-})();
-
-/* Live London dateline in the masthead. */
-(function () {
-  var el = document.querySelector('.mast-clock');
-  if (!el) return;
-  function tick() {
-    try {
-      el.textContent = new Intl.DateTimeFormat('en-GB', {
-        timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hour12: false
-      }).format(new Date());
-    } catch (e) { el.textContent = ''; }
-  }
-  tick();
-  setInterval(tick, 15000);
 })();
 
 /* Reveal the footer (colophon + the big COSIMO) on downward scroll INTENT.

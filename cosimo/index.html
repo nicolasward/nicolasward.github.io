@@ -71,7 +71,7 @@
     align-items: flex-start;
     justify-content: center;
     text-align: left;
-    padding: clamp(4.5rem, 12vh, 7rem) var(--gutter) clamp(3.5rem, 9vh, 5.5rem);
+    padding: clamp(4.5rem, 12vh, 7rem) var(--gutter) clamp(8rem, 18vh, 11rem);
     color: var(--ink);
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -80,7 +80,7 @@
   .headline {
     display: grid;                      /* the live line overlays an invisible sizer */
     max-width: 24ch;
-    margin: 0 0 1.6rem;
+    margin: 0 0 2.2rem;
     font-size: clamp(2.5rem, 6.4vw, 5rem);
     font-weight: 700;
     line-height: 1.02;
@@ -126,7 +126,7 @@
     display: flex;
     align-items: center;
     gap: clamp(1rem, 3vw, 1.6rem);
-    margin-top: 2.7rem;
+    margin-top: 3.4rem;
     flex-wrap: wrap;
     justify-content: flex-start;
   }
@@ -158,11 +158,16 @@
      each wordmark set to echo its brand's logo. Swap for real SVGs when we
      have the files. */
   .logos {
+    position: absolute;                  /* its own band along the bottom of the screen */
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: clamp(2.2rem, 6vh, 3.6rem);
     display: flex;
     align-items: baseline;
+    justify-content: space-between;      /* stretch the marks across the full width */
     flex-wrap: wrap;
-    gap: 1.2rem clamp(2rem, 4.2vw, 3.6rem);
-    margin-top: clamp(2.6rem, 7vh, 4.2rem);
+    gap: 1rem clamp(1.6rem, 3vw, 2.8rem);
+    font-size: 1rem;                     /* one dial — every mark scales in em */
   }
   .logo {
     color: var(--ink);
@@ -170,13 +175,13 @@
     white-space: nowrap;
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
   }
-  .logo--huel   { font-weight: 800; font-size: 1.55rem; letter-spacing: 0.05em; }
-  .logo--healf  { font-family: Georgia, "Times New Roman", serif; font-weight: 500; font-size: 1.6rem; }
-  .logo--danone { font-weight: 700; font-size: 1.46rem; letter-spacing: 0.09em; }
-  .logo--thorne { font-weight: 500; font-size: 1.35rem; letter-spacing: 0.34em; }
-  .logo--dirtea { font-weight: 700; font-size: 1.4rem;  letter-spacing: 0.22em; }
-  .logo--wild   { font-weight: 800; font-size: 1.62rem; letter-spacing: 0.02em; }
-  .logo--candy  { font-weight: 800; font-size: 1.32rem; letter-spacing: 0.14em; }
+  .logo--huel   { font-weight: 800; font-size: 1.55em; letter-spacing: 0.05em; }
+  .logo--healf  { font-family: Georgia, "Times New Roman", serif; font-weight: 500; font-size: 1.6em; }
+  .logo--danone { font-weight: 700; font-size: 1.46em; letter-spacing: 0.09em; }
+  .logo--thorne { font-weight: 500; font-size: 1.35em; letter-spacing: 0.34em; }
+  .logo--dirtea { font-weight: 700; font-size: 1.4em;  letter-spacing: 0.22em; }
+  .logo--wild   { font-weight: 800; font-size: 1.62em; letter-spacing: 0.02em; }
+  .logo--candy  { font-weight: 800; font-size: 1.32em; letter-spacing: 0.14em; }
 
   /* ---------------- Credo ----------------
      A small white dot at the bottom-right; clicking it reveals the studio credo
@@ -232,6 +237,7 @@
 
   @media (max-width: 760px) {
     .cosimo-mark { font-size: 21vw; }   /* matches the old teaser's mobile size */
+    .logos { font-size: 0.72rem; justify-content: flex-start; bottom: 1.8rem; }
   }
 
   /* Colophon — copyright + location, bottom-left. */

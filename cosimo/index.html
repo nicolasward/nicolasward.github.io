@@ -28,19 +28,50 @@
   html { height: 100%; }
 
   body {
-    background: #04101d;           /* the void the field ignites out of */
+    background: #ffffff;           /* the white the dot drops onto */
     height: 100%;
     overflow: hidden;              /* a single screen — the page never scrolls */
   }
 
   /* ---------------- Field ----------------
-     The WebGL mesh gradient fills the viewport. The ignition (reveal from a
-     point) and the collapse (suck back into the point) are driven inside the
-     shader via u_reveal / u_burst / u_energy — no CSS clip. */
+     The WebGL mesh gradient fills the viewport and is running from the first
+     frame. The entrance is a clip: a dot drops in from the top, bounces like a
+     damped rubber ball, settles centre, then irises open onto the full field
+     (ported from /cosimo2). The credo-dot collapse is still shader-driven
+     (u_reveal / u_burst / u_energy). Default state is fully open, so no-JS /
+     reduced-motion simply see the gradient. */
   .iris {
     position: fixed;
     inset: 0;
     z-index: 0;
+    clip-path: circle(150vmax at 50% 50%);   /* default: nothing clipped */
+    will-change: clip-path;
+  }
+  html.intro .iris {
+    animation:
+      iris-drop 1.9s 0.2s both,
+      iris-open 1.15s cubic-bezier(0.7, 0, 0.25, 1) 2.1s forwards;
+  }
+  @keyframes iris-drop {
+    /* falls = ease-in (accelerate under gravity), rises = ease-out (decelerate).
+       Centre-Y is a % of viewport height; 50% is the floor it rests/opens on.
+       Floor contacts at 25 / 51 / 70 / 84 / 93 % — the gaps shrink each time. */
+    0%   { clip-path: circle(1.6vmax at 50% -8%);   animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }
+    25%  { clip-path: circle(1.6vmax at 50% 50%);   animation-timing-function: cubic-bezier(0, 0, 0.3, 1); }  /* land */
+    38%  { clip-path: circle(1.6vmax at 50% 33%);   animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }  /* bounce 1 */
+    51%  { clip-path: circle(1.6vmax at 50% 50%);   animation-timing-function: cubic-bezier(0, 0, 0.3, 1); }  /* land */
+    61%  { clip-path: circle(1.6vmax at 50% 41.5%); animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }  /* bounce 2 */
+    70%  { clip-path: circle(1.6vmax at 50% 50%);   animation-timing-function: cubic-bezier(0, 0, 0.3, 1); }  /* land */
+    77%  { clip-path: circle(1.6vmax at 50% 45.5%); animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }  /* bounce 3 */
+    84%  { clip-path: circle(1.6vmax at 50% 50%);   animation-timing-function: cubic-bezier(0, 0, 0.3, 1); }  /* land */
+    89%  { clip-path: circle(1.6vmax at 50% 48%);   animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }  /* bounce 4 */
+    93%  { clip-path: circle(1.6vmax at 50% 50%);   animation-timing-function: cubic-bezier(0, 0, 0.3, 1); }  /* land */
+    96%  { clip-path: circle(1.6vmax at 50% 49%);   animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }  /* bounce 5 */
+    100% { clip-path: circle(1.6vmax at 50% 50%); }   /* settled */
+  }
+  @keyframes iris-open {
+    from { clip-path: circle(1.6vmax at 50% 50%); }   /* a small dot onto the bg */
+    to   { clip-path: circle(75vmax at 50% 50%); }    /* clears the corners at rest */
   }
   #gradient {
     position: absolute;
@@ -48,7 +79,7 @@
     display: block;
     width: 100%;
     height: 100%;
-    background: #04101d;           /* dark fallback if WebGL is unavailable */
+    background: var(--fallback);   /* shown if WebGL is unavailable */
   }
 
   /* The UI layer (hero + footer) sits over the fixed field and fades as one
@@ -76,6 +107,9 @@
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* When the footer rolls in, JS lifts the hero by the footer's height —
+       the page gets pushed up a fixed amount, not scrolled. */
+    transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .headline {
     display: grid;                      /* the live line overlays an invisible sizer */
@@ -215,7 +249,7 @@
   html.credo-open .credo-toggle { box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.18); }
   /* The dot is the last thing to arrive, after all the hero copy has settled. */
   html.js .credo-toggle { opacity: 0; }
-  html.intro .credo-toggle { animation: dot-in 0.5s cubic-bezier(0.34, 1.45, 0.5, 1) 3.0s both; }
+  html.intro .credo-toggle { animation: dot-in 0.5s cubic-bezier(0.34, 1.45, 0.5, 1) 4.0s both; }
   @keyframes dot-in {
     from { opacity: 0; transform: scale(0.3); }
     to   { opacity: 1; transform: none; }
@@ -347,9 +381,9 @@
   /* The rest of the copy fades up, staggered, once the field has bloomed and the
      type is carving in. Delays are relative to html.intro (added at ignition). */
   html.js .reveal { opacity: 0; }
-  html.intro .sub.reveal   { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.35s both; }
-  html.intro .ctas.reveal  { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.52s both; }
-  html.intro .logos.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.68s both; }
+  html.intro .sub.reveal   { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.35s both; }
+  html.intro .ctas.reveal  { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.52s both; }
+  html.intro .logos.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.68s both; }
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: none; }
@@ -361,6 +395,8 @@
     .cosimo-mark b { transform: none !important; animation: none !important; }
     .scroll-in { opacity: 1 !important; transform: none !important; }
     .ui { transition: none !important; }
+    .hero { transition: none !important; }
+    html.intro .iris { animation: none; clip-path: circle(150vmax at 50% 50%); }
   }
 </style>
 
@@ -402,8 +438,9 @@
 
 <script>
 /* Shared field state, read every frame by the WebGL draw loop in the next
-   script. The orchestration below animates it (ignition / collapse). */
-var STATE = { reveal: 0, burst: 0, energy: 0 };
+   script. The field is fully revealed from the first frame (the entrance is
+   the CSS iris drop-and-bounce); the credo-dot collapse animates it. */
+var STATE = { reveal: 1, burst: 0, energy: 0 };
 var fieldAnim = null;
 
 /* Split the headline's fixed prefix ("Power to") into per-letter spans (words
@@ -490,14 +527,14 @@ var fieldAnim = null;
     else wait = deleting ? 34 : 58 + Math.random() * 48;   // deletes brisk, types human
     setTimeout(step, wait);
   }
-  setTimeout(step, 2450);                      // starts as the prefix finishes carving
+  setTimeout(step, 3850);                      // starts as the prefix finishes carving
 })();
 
 /* Cinematic sequence.
-   Act I — the field ignites out of a point: it charges (heavy static, a bright
-   core), then detonates, the reveal sweeping outward with a bloom ring, a
-   shockwave and chromatic aberration that settle as the grain resolves.
-   Act II — the headline is carved from the settling light.
+   Act I — a dot drops in from the top of the white page and bounces like a
+   damped rubber ball (pure CSS on the iris clip), then irises open onto the
+   field, which has been running underneath all along.
+   Act II — the headline is carved from the light as the iris settles.
    The dot collapses the whole field back into itself, leaves the credo in the
    void, then re-ignites. Reduced motion skips it all (field simply on). */
 (function () {
@@ -510,12 +547,6 @@ var fieldAnim = null;
 
   if (reduced) { STATE.reveal = 1; STATE.burst = 0; STATE.energy = 0; return; }
 
-  function ignition(e){
-    if (e < 0.5)  return { reveal: 0, burst: 0.22 * (e / 0.5), energy: 0.85 };
-    if (e < 1.95){ var x = (e - 0.5) / 1.45;
-      return { reveal: easeOutExpo(x), burst: flash(x, 0.1, 0.2) * 1.5, energy: 0.85 * (1 - x * 0.85) }; }
-    return { reveal: 1, burst: 0, energy: 0 };
-  }
   function collapse(e){
     if (e < 0.85){ var x = e / 0.85;
       return { reveal: 1 - easeInCubic(x), burst: flash(x, 0.78, 0.16) * 1.3, energy: 0.4 + x * 0.45 }; }
@@ -531,11 +562,11 @@ var fieldAnim = null;
     root.classList.add('carve');
   }
 
-  // Act I + II — the opening.
+  // Act I + II — the opening. The bounce + iris are CSS (html.intro); the
+  // carve starts as the iris sweeps open (bounce 1.9s + open underway).
   requestAnimationFrame(function(){ requestAnimationFrame(function(){
     root.classList.add('intro');
-    play(ignition, 1.95, null);
-    setTimeout(function(){ root.classList.add('carve'); }, 1350);   // type carves as the field settles
+    setTimeout(function(){ root.classList.add('carve'); }, 2750);   // type carves as the iris opens
   }); });
 
   // The dot collapses the field into itself, then it re-ignites.
@@ -559,6 +590,9 @@ var fieldAnim = null;
 (function () {
   var mark = document.querySelector('.cosimo-mark');
   var col  = document.querySelector('.colophon');
+  var hero = document.querySelector('.hero');
+  var foot = document.querySelector('.bigfoot');
+  var hl   = document.querySelector('.headline');
   if (!mark) return;
   var shown = false;
   function show () {
@@ -567,6 +601,13 @@ var fieldAnim = null;
     void mark.offsetWidth;               // reflow so the rise can replay
     mark.classList.add('in');
     if (col) col.classList.add('in');
+    // The footer pushes the page up by its own height — a fixed lift, not a
+    // scroll — capped so the headline can never leave the screen.
+    if (hero && foot && hl) {
+      var headroom = Math.max(0, hl.getBoundingClientRect().top - 24);
+      var lift = Math.min(foot.offsetHeight, headroom);
+      hero.style.transform = 'translateY(-' + Math.round(lift) + 'px)';
+    }
   }
   function hide () {
     if (!shown) return; shown = false;
@@ -574,6 +615,7 @@ var fieldAnim = null;
     void mark.offsetWidth;
     mark.classList.add('out');
     if (col) col.classList.remove('in');
+    if (hero) hero.style.transform = '';
   }
   window.addEventListener('wheel', function (e) {
     if (e.deltaY > 0) show(); else if (e.deltaY < 0) hide();

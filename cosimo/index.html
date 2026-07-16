@@ -139,17 +139,18 @@
     text-decoration: none;
     transition: background 0.25s ease, color 0.25s ease, opacity 0.2s ease, transform 0.2s ease;
   }
-  /* Primary: a solid white rectangle with bold dark text (Obama-Foundation
-     style) — sharp corners, no icon. */
+  .btn svg { width: 0.8rem; height: 0.8rem; transition: transform 0.2s ease; }
+  /* Primary: a solid white pill with bold dark text and a chevron. */
   .btn--solid {
     padding: 0.95rem 1.7rem;
     background: #FFFFFF;
     color: var(--deep);
     font-weight: 700;
-    border-radius: 0;
+    border-radius: 999px;
   }
   @media (hover: hover) {
     .btn--solid:hover { transform: translateY(-1px); }
+    .btn--solid:hover svg { transform: translateX(3px); }
   }
 
   /* ---------------- Logo strip ----------------
@@ -160,7 +161,7 @@
     display: flex;
     align-items: baseline;
     flex-wrap: wrap;
-    gap: 1rem clamp(1.7rem, 3.5vw, 3rem);
+    gap: 1.2rem clamp(2rem, 4.2vw, 3.6rem);
     margin-top: clamp(2.6rem, 7vh, 4.2rem);
   }
   .logo {
@@ -169,13 +170,13 @@
     white-space: nowrap;
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
   }
-  .logo--huel   { font-weight: 800; font-size: 1.1rem;  letter-spacing: 0.05em; }
-  .logo--healf  { font-family: Georgia, "Times New Roman", serif; font-weight: 500; font-size: 1.14rem; }
-  .logo--danone { font-weight: 700; font-size: 1.04rem; letter-spacing: 0.09em; }
-  .logo--thorne { font-weight: 500; font-size: 0.96rem; letter-spacing: 0.34em; }
-  .logo--dirtea { font-weight: 700; font-size: 1rem;    letter-spacing: 0.22em; }
-  .logo--wild   { font-weight: 800; font-size: 1.16rem; letter-spacing: 0.02em; }
-  .logo--candy  { font-weight: 800; font-size: 0.94rem; letter-spacing: 0.14em; }
+  .logo--huel   { font-weight: 800; font-size: 1.55rem; letter-spacing: 0.05em; }
+  .logo--healf  { font-family: Georgia, "Times New Roman", serif; font-weight: 500; font-size: 1.6rem; }
+  .logo--danone { font-weight: 700; font-size: 1.46rem; letter-spacing: 0.09em; }
+  .logo--thorne { font-weight: 500; font-size: 1.35rem; letter-spacing: 0.34em; }
+  .logo--dirtea { font-weight: 700; font-size: 1.4rem;  letter-spacing: 0.22em; }
+  .logo--wild   { font-weight: 800; font-size: 1.62rem; letter-spacing: 0.02em; }
+  .logo--candy  { font-weight: 800; font-size: 1.32rem; letter-spacing: 0.14em; }
 
   /* ---------------- Credo ----------------
      A small white dot at the bottom-right; clicking it reveals the studio credo
@@ -354,13 +355,15 @@
 
 <div class="ui">
   <main class="hero">
-    <h1 class="headline" aria-label="Power to designers. Power to the ones who ship. Power to planners. Power to the perfectionists. Power to the people who notice.">
-      <span class="hl-sizer" aria-hidden="true">Power to the people who notice.</span>
-      <span class="hl-live" aria-hidden="true"><span class="hl-prefix">Power to</span> <span class="hl-tail">the people who notice.</span><span class="hl-caret"></span></span>
+    <h1 class="headline" aria-label="Power to designers. Power to planners. Power to ops teams. Power to marketers. Power to those who ship.">
+      <span class="hl-sizer" aria-hidden="true">Power to those who ship.</span>
+      <span class="hl-live" aria-hidden="true"><span class="hl-prefix">Power to</span> <span class="hl-tail">those who ship.</span><span class="hl-caret"></span></span>
     </h1>
     <p class="sub reveal">Cosimo is an applied AI studio based in London. We transform the world&#8217;s most forward-thinking brands into AI-native companies, turning frontier intelligence into tangible outcomes.</p>
     <div class="ctas reveal">
-      <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Talk to us</a>
+      <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Work with us
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
     </div>
     <div class="logos reveal" aria-label="Brands we work with">
       <span class="logo logo--huel">HUEL</span>
@@ -424,10 +427,10 @@ var fieldAnim = null;
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   var PHRASES = [
     'designers.',
-    'the ones who ship.',
     'planners.',
-    'the perfectionists.',
-    'the people who notice.'
+    'ops teams.',
+    'marketers.',
+    'those who ship.'
   ];
   tail.textContent = '';                       // cleared before first paint
   var pi = 0, ci = 0, deleting = false;

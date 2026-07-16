@@ -28,54 +28,39 @@
   html, body { height: 100%; }
 
   body {
-    background: #ffffff;           /* the white the dot sits on before it opens */
+    background: #04101d;           /* the void the field ignites out of */
     overflow: hidden;
   }
 
-  /* ---------------- Iris ----------------
-     The gradient is full-screen and already running from the first frame. A
-     circular window onto it starts as a tiny centre dot and irises out — like
-     the /cosimo intro — until it uncovers the whole (full-size) background that
-     was there all along. Everything outside the circle reads as plain white.
-     Default state is fully open, so no-JS / reduced-motion just see the gradient. */
+  /* ---------------- Field ----------------
+     The WebGL mesh gradient fills the viewport. The ignition (reveal from a
+     point) and the collapse (suck back into the point) are driven inside the
+     shader via u_reveal / u_burst / u_energy — no CSS clip. */
   .iris {
     position: fixed;
     inset: 0;
     z-index: 0;
-    clip-path: circle(150vmax at 50% 50%);   /* default: nothing clipped */
-    will-change: clip-path;
   }
-  /* The dot first breathes in place (~2s, two gentle pulses), THEN irises out.
-     The pulse fills forwards, ending back at the dot size; the open is delayed
-     until the pulse is done and uses forwards-only fill so it doesn't clamp the
-     clip-path during the pulse (a backwards fill would freeze the breathing). */
-  html.intro .iris {
-    animation:
-      iris-pulse 1s ease-in-out 0.2s 2 both,
-      iris-open 1.15s cubic-bezier(0.7, 0, 0.25, 1) 2.2s forwards;
-  }
-  @keyframes iris-pulse {
-    0%, 100% { clip-path: circle(1.6vmax at 50% 50%); }   /* the resting dot */
-    50%      { clip-path: circle(2.3vmax at 50% 50%); }   /* the breath */
-  }
-  @keyframes iris-open {
-    from { clip-path: circle(1.6vmax at 50% 50%); }   /* a small dot onto the bg */
-    to   { clip-path: circle(75vmax at 50% 50%); }    /* clears the corners at rest */
-  }
-
-  /* The mesh gradient (grain baked into the shader) fills the whole viewport. */
   #gradient {
     position: absolute;
     inset: 0;
     display: block;
     width: 100%;
     height: 100%;
-    background: var(--fallback);
+    background: #04101d;           /* dark fallback if WebGL is unavailable */
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    html.intro .iris { animation: none; clip-path: circle(150vmax at 50% 50%); }
+  /* The UI layer (masthead + hero + colophon) sits above the field and fades as
+     one when the field collapses. Interactive bits re-enable pointer events. */
+  .ui {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    transition: opacity 0.55s ease;
   }
+  .ui .btn { pointer-events: auto; }
+  html.collapsed .ui { opacity: 0; }
 
   /* ---------------- Masthead ----------------
      A publication-style top band: wordmark left, live London dateline right,
@@ -241,42 +226,37 @@
   html.credo-open .credo-toggle { box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.18); }
   /* The dot is the last thing to arrive, after all the hero copy has settled. */
   html.js .credo-toggle { opacity: 0; }
-  html.intro .credo-toggle { animation: dot-in 0.5s cubic-bezier(0.34, 1.45, 0.5, 1) 4.95s both; }
+  html.intro .credo-toggle { animation: dot-in 0.5s cubic-bezier(0.34, 1.45, 0.5, 1) 3.0s both; }
   @keyframes dot-in {
     from { opacity: 0; transform: scale(0.3); }
     to   { opacity: 1; transform: none; }
   }
+  /* The credo — the line that remains when the field collapses to a point. It
+     fades in, centred, during the void, then dissolves as the field re-ignites. */
   .credo {
     position: fixed;
-    right: 1.55rem;
-    bottom: 3.1rem;                     /* rises from just above the dot */
-    z-index: 6;
+    inset: 0;
+    z-index: 7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 0;
-    writing-mode: vertical-rl;
+    padding: 0 2rem;
+    text-align: center;
     font-family: var(--mono);
-    font-size: 0.7rem;
+    font-size: clamp(0.9rem, 2.6vw, 1.15rem);
     font-weight: 400;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    color: rgba(255, 255, 255, 0.78);
-    text-shadow: 0 1px 12px rgba(6, 34, 78, 0.45);
+    letter-spacing: 0.06em;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 1px 24px rgba(0, 0, 0, 0.55);
     pointer-events: none;
-    /* Unrolls out of the dot: scaled to nothing at its bottom edge (the dot),
-       then grows upward so the phrase rolls out. */
-    transform-origin: 50% 100%;
-    transform: scaleY(0);
     opacity: 0;
-    transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.25s ease;
+    transition: opacity 0.6s ease;
   }
-  html.credo-open .credo { opacity: 1; transform: scaleY(1); }
+  html.credo-show .credo { opacity: 1; }
 
-  /* On narrow screens the credo would cross the copy, so opening it fades the
-     hero out (giving the credo the stage) rather than shoving the copy aside.
-     Closing the credo brings the hero back. */
   @media (max-width: 760px) {
-    .hero { transition: opacity 0.4s ease; }
-    html.credo-open .hero { opacity: 0; pointer-events: none; }
     /* Cohort dateline moves into the masthead's top-right slot. */
     .mast-meta { display: none; }
     .mast-cohort { display: inline; }
@@ -301,47 +281,53 @@
   }
   .colophon .sep { margin: 0 0.3em; opacity: 0.7; }
 
-  /* Hero headline: each letter rolls up into place, one after another. Words
-     are kept intact (inline-block) so the line still wraps; the split into
-     per-letter spans is done in JS. */
-  .headline { perspective: 720px; }
+  /* Act II — type carved from light. Each glyph condenses out of the field: it
+     starts as a soft, blurred bloom of light and resolves to a solid letter,
+     one after another. Words stay intact (inline-block) so the line still wraps;
+     the per-letter split is done in JS. Gated on html.carve so it can replay. */
   .headline .word { display: inline-block; }
   .headline .ch {
     display: inline-block;
-    transform-origin: 50% 100%;         /* hinge at the baseline, so it turns up */
-    backface-visibility: hidden;
-    will-change: transform, opacity;
+    will-change: transform, filter, opacity;
   }
-  html.js .headline .ch { opacity: 0; transform: rotateX(-90deg); }
-  /* Starts at 3.4s — just after the iris has finished opening (~3.35s) — so the
-     letters roll up onto the fully-revealed background, not before. */
-  html.intro .headline .ch {
-    animation: letter-roll 0.46s cubic-bezier(0.2, 0.75, 0.25, 1) both;
-    animation-delay: calc(3.4s + var(--i) * 0.03s);
+  html.js .headline .ch { opacity: 0; }
+  html.carve .headline .ch {
+    animation: carve 0.62s cubic-bezier(0.2, 0.8, 0.25, 1) both;
+    animation-delay: calc(var(--i) * 0.035s);
   }
-  @keyframes letter-roll {
-    0%   { opacity: 0; transform: rotateX(-90deg); }
-    55%  { opacity: 1; }
-    100% { opacity: 1; transform: rotateX(0deg); }
+  @keyframes carve {
+    0% {
+      opacity: 0;
+      filter: blur(14px);
+      transform: translateY(0.22em) scale(1.06);
+      text-shadow: 0 0 26px rgba(255, 255, 255, 0.9), 0 0 62px rgba(150, 205, 255, 0.7);
+    }
+    55% { opacity: 1; }
+    100% {
+      opacity: 1;
+      filter: blur(0);
+      transform: none;
+      text-shadow: 0 2px 30px rgba(6, 34, 78, 0.4);
+    }
   }
 
-  /* The rest of the copy fades up, staggered, once the headline is well on its
-     way. Each rule keeps its own delay so the animation shorthand's implicit 0s
-     can't override it. */
+  /* The rest of the copy fades up, staggered, once the field has bloomed and the
+     type is carving in. Delays are relative to html.intro (added at ignition). */
   html.js .reveal { opacity: 0; }
-  html.intro .masthead.reveal     { animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 3.5s both; }
-  html.intro .sub.reveal          { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 4.15s both; }
-  html.intro .ctas.reveal         { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 4.32s both; }
-  html.intro .availability.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 4.48s both; }
-  html.intro .colophon.reveal     { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 4.62s both; }
+  html.intro .masthead.reveal     { animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.6s both; }
+  html.intro .sub.reveal          { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.35s both; }
+  html.intro .ctas.reveal         { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.52s both; }
+  html.intro .availability.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.68s both; }
+  html.intro .colophon.reveal     { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.82s both; }
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1 !important; animation: none !important; transform: none !important; }
-    .headline .ch { opacity: 1 !important; transform: none !important; animation: none !important; }
+    .headline .ch { opacity: 1 !important; transform: none !important; filter: none !important; animation: none !important; }
     .credo-toggle { opacity: 1 !important; transform: none !important; animation: none !important; }
+    .ui { transition: none !important; }
   }
 </style>
 
@@ -349,31 +335,39 @@
   <canvas id="gradient"></canvas>
 </div>
 
-<header class="masthead reveal">
-  <span class="mast-name">Cosimo</span>
-  <span class="mast-meta">London&nbsp;&nbsp;<time class="mast-clock">&mdash;&mdash;:&mdash;&mdash;</time></span>
-  <span class="mast-cohort">First cohort &middot; 10 Sept</span>
-</header>
+<div class="ui">
+  <header class="masthead reveal">
+    <span class="mast-name">Cosimo</span>
+    <span class="mast-meta">London&nbsp;&nbsp;<time class="mast-clock">&mdash;&mdash;:&mdash;&mdash;</time></span>
+    <span class="mast-cohort">First cohort &middot; 10 Sept</span>
+  </header>
 
-<main class="hero">
-  <h1 class="headline">Interfaces for frontier AI</h1>
-  <p class="sub reveal">Cosimo is an applied AI studio turning frontier intelligence into bespoke systems. We transform the most ambitious creative teams in the world into AI-native operations.</p>
-  <div class="ctas reveal">
-    <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Talk to us</a>
-    <a class="btn btn--ghost" href="#manifesto">Our Manifesto
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-    </a>
-  </div>
-  <p class="availability reveal">First cohort closing 10 September</p>
-</main>
+  <main class="hero">
+    <h1 class="headline">Interfaces for frontier AI</h1>
+    <p class="sub reveal">Cosimo is an applied AI studio turning frontier intelligence into bespoke systems. We transform the most ambitious creative teams in the world into AI-native operations.</p>
+    <div class="ctas reveal">
+      <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Talk to us</a>
+      <a class="btn btn--ghost" href="#manifesto">Our Manifesto
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+    <p class="availability reveal">First cohort closing 10 September</p>
+  </main>
 
-<button class="credo-toggle" type="button" aria-label="Reveal studio credo" aria-expanded="false"></button>
+  <p class="colophon reveal"><span class="c-part">&copy; 2026 Cosimo</span><span class="sep" aria-hidden="true">&middot;</span><span class="c-part">Based in London, operating worldwide.</span></p>
+</div>
+
+<button class="credo-toggle" type="button" aria-label="Collapse the field"></button>
 <p class="credo" aria-hidden="true">It is not enough to create. We must care.</p>
-<p class="colophon reveal"><span class="c-part">&copy; 2026 Cosimo</span><span class="sep" aria-hidden="true">&middot;</span><span class="c-part">Based in London, operating worldwide.</span></p>
 
 <script>
+/* Shared field state, read every frame by the WebGL draw loop in the next
+   script. The orchestration below animates it (ignition / collapse). */
+var STATE = { reveal: 0, burst: 0, energy: 0 };
+var fieldAnim = null;
+
 /* Split the headline into per-letter spans (words kept intact so the line still
-   wraps) for the roll-up entrance. Runs synchronously before first paint, so the
+   wraps) for the carve entrance. Runs synchronously before first paint, so the
    un-split text never flashes. */
 (function () {
   var h = document.querySelector('.headline');
@@ -396,14 +390,62 @@
   });
 })();
 
-/* Kick off the iris the same way /cosimo does: add the class after the first
-   paint (two rAFs) so the dot->full expansion is seen, not skipped. Reduced
-   motion leaves the default (already-open) state alone. */
+/* Cinematic sequence.
+   Act I — the field ignites out of a point: it charges (heavy static, a bright
+   core), then detonates, the reveal sweeping outward with a bloom ring, a
+   shockwave and chromatic aberration that settle as the grain resolves.
+   Act II — the headline is carved from the settling light.
+   The dot collapses the whole field back into itself, leaves the credo in the
+   void, then re-ignites. Reduced motion skips it all (field simply on). */
 (function () {
   var root = document.documentElement;
-  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  requestAnimationFrame(function () {
-    requestAnimationFrame(function () { root.classList.add('intro'); });
+  var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function easeOutExpo(x){ return x >= 1 ? 1 : 1 - Math.pow(2, -10 * x); }
+  function easeInCubic(x){ return x * x * x; }
+  function flash(x, c, w){ return Math.exp(-Math.pow((x - c) / w, 2)); }
+
+  if (reduced) { STATE.reveal = 1; STATE.burst = 0; STATE.energy = 0; return; }
+
+  function ignition(e){
+    if (e < 0.5)  return { reveal: 0, burst: 0.22 * (e / 0.5), energy: 0.85 };
+    if (e < 1.95){ var x = (e - 0.5) / 1.45;
+      return { reveal: easeOutExpo(x), burst: flash(x, 0.1, 0.2) * 1.5, energy: 0.85 * (1 - x * 0.85) }; }
+    return { reveal: 1, burst: 0, energy: 0 };
+  }
+  function collapse(e){
+    if (e < 0.85){ var x = e / 0.85;
+      return { reveal: 1 - easeInCubic(x), burst: flash(x, 0.78, 0.16) * 1.3, energy: 0.4 + x * 0.45 }; }
+    if (e < 2.2)  return { reveal: 0, burst: 0, energy: 0.32 };
+    if (e < 3.95){ var y = (e - 2.2) / 1.6;
+      return { reveal: easeOutExpo(y), burst: flash(y, 0.1, 0.2) * 1.45, energy: 0.8 * (1 - y * 0.85) }; }
+    return { reveal: 1, burst: 0, energy: 0 };
+  }
+  function play(fn, dur, onDone){ fieldAnim = { t0: performance.now(), fn: fn, dur: dur, onDone: onDone }; }
+  function reCarve(){
+    root.classList.remove('carve');
+    void document.querySelector('.headline').offsetWidth;   // reflow so the animation restarts
+    root.classList.add('carve');
+  }
+
+  // Act I + II — the opening.
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){
+    root.classList.add('intro');
+    play(ignition, 1.95, null);
+    setTimeout(function(){ root.classList.add('carve'); }, 1350);   // type carves as the field settles
+  }); });
+
+  // The dot collapses the field into itself, then it re-ignites.
+  var dot = document.querySelector('.credo-toggle');
+  var busy = false;
+  if (dot) dot.addEventListener('click', function(){
+    if (busy) return; busy = true;
+    root.classList.add('collapsed');                            // the UI fades as the field sucks in
+    play(collapse, 3.95, function(){ busy = false; });
+    setTimeout(function(){ root.classList.add('credo-show'); },    950);   // the line that remains
+    setTimeout(function(){ root.classList.remove('credo-show'); }, 2150);
+    setTimeout(function(){ root.classList.remove('collapsed'); },  2350);  // the UI returns
+    setTimeout(reCarve, 2950);                                   // headline re-carves with the re-ignition
   });
 })();
 
@@ -420,17 +462,6 @@
   }
   tick();
   setInterval(tick, 15000);
-})();
-
-/* The bottom-right dot toggles the studio credo up the right edge. */
-(function () {
-  var root = document.documentElement;
-  var toggle = document.querySelector('.credo-toggle');
-  if (!toggle) return;
-  toggle.addEventListener('click', function () {
-    var open = root.classList.toggle('credo-open');
-    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
 })();
 </script>
 
@@ -580,6 +611,8 @@ uniform float u_time;
 uniform vec3  u_c0, u_c1, u_c2, u_c3;
 uniform float u_scale, u_warp, u_grain, u_boil;
 uniform float u_rawT;
+uniform float u_reveal, u_burst, u_energy;
+uniform vec3  u_void;
 
 // -- 2D simplex noise (Ashima / Ian McEwan, MIT licensed) ------------
 vec3 mod289(vec3 x){ return x - floor(x * (1.0/289.0)) * 289.0; }
@@ -609,41 +642,61 @@ float snoise(vec2 v){
   return 130.0 * dot(m, g);
 }
 
-void main(){
-  // Aspect-corrected UVs, so blobs stay round on wide screens.
-  vec2 uv = gl_FragCoord.xy / u_res.xy;
-  uv.x *= u_res.x / u_res.y;
-  uv *= u_scale;
-
+// The colour field: domain-warped simplex noise mixed across the luma ramp.
+vec3 field(vec2 uv){
   float t = u_time;
-
-  // --- Domain warp: offset the sampling position using noise. ---
   vec2 q = vec2(
     snoise(uv + vec2(0.0, t * 0.6)),
     snoise(uv + vec2(5.2, 1.3) - t * 0.4)
   );
   vec2 p = uv + u_warp * q;
-
-  // --- Three independent noise fields drive the colour mixing. ---
   float n0 = snoise(p * 0.9 + vec2(t * 0.5, 0.0));
   float n1 = snoise(p * 1.3 + vec2(-t * 0.35, 2.7));
   float n2 = snoise(p * 0.7 + vec2(1.9, t * 0.45));
-
-  // smoothstep turns raw noise (-1..1) into soft 0..1 blend masks.
   vec3 col = u_c0;
   col = mix(col, u_c1, smoothstep(-0.65, 0.55, n0));
   col = mix(col, u_c2, smoothstep(-0.50, 0.70, n1));
   col = mix(col, u_c3, smoothstep(-0.30, 0.85, n2) * 0.85);
+  return col;
+}
 
-  /* --- Grain. Not a dither. The subject. ---
-     Scalar, so the same value lands on all three channels: this is
-     luminance noise, which is what the source measured (per-channel
-     sigmas 0.062 / 0.055 / 0.059 — near enough identical). Per-channel
-     grain would add chroma noise, and a monochrome panel has no chroma
-     to speak of. */
+void main(){
+  vec2 sc  = gl_FragCoord.xy / u_res.xy;               // 0..1
+  vec2 cen = sc - 0.5; cen.x *= u_res.x / u_res.y;     // aspect-corrected, centred
+  float dist = length(cen);
+  float maxR = length(vec2(0.5 * u_res.x / u_res.y, 0.5));
+  float rd  = dist / maxR;                             // 0 centre .. 1 corner
+  vec2  dir = cen / max(dist, 1e-4);
+
+  // Ignition / collapse: a reveal front sweeps out from (or back into) the point.
+  float rf   = u_reveal * 1.18;
+  float edge = 0.06;
+  float mask = smoothstep(rf + edge, rf - edge, rd);   // 1 inside, 0 in the void
+  float ring = exp(-pow((rd - rf) / 0.07, 2.0));       // glow riding the front
+
+  // Sampling coordinates, shoved outward by the shockwave at the front.
+  vec2 uv = sc; uv.x *= u_res.x / u_res.y; uv *= u_scale;
+  uv += dir * (u_burst * ring * 0.12);
+
+  vec3 col;
+  if (u_burst > 0.003) {
+    // Chromatic aberration, growing toward the edges, only while bursting.
+    float ca = u_burst * (0.003 + rd * 0.02);
+    vec2 off = dir * ca;
+    col.r = field(uv + off).r;
+    col.g = field(uv).g;
+    col.b = field(uv - off).b;
+  } else {
+    col = field(uv);
+  }
+
+  col = mix(u_void, col, mask);                         // the void outside the reveal
+  col += ring * u_burst * 1.6 * vec3(0.72, 0.86, 1.0);  // bloom across the front
+
+  // Grain — heavy charged static while igniting, fine film grain at rest.
   float tq = u_boil > 0.0 ? floor(u_rawT * u_boil) * 37.0 : 0.0;
   float grain = fract(sin(dot(gl_FragCoord.xy + tq, vec2(12.9898, 78.233))) * 43758.5453);
-  col += (grain - 0.5) * u_grain;
+  col += (grain - 0.5) * u_grain * (1.0 + u_energy * 3.0);
 
   gl_FragColor = vec4(col, 1.0);
 }`;
@@ -744,6 +797,8 @@ const PALETTE = LUMAS.map(l => hueAtLuma(HUE, SAT_HSL, l));
   gl.uniform1f(U('u_warp'), WARP);
   gl.uniform1f(U('u_grain'), GRAIN);
   gl.uniform1f(U('u_boil'), GRAIN_BOIL);
+  gl.uniform3f(U('u_void'), 0.016, 0.043, 0.078);   // deep near-black blue
+  const uReveal = U('u_reveal'), uBurst = U('u_burst'), uEnergy = U('u_energy'), uRawT = U('u_rawT');
 
   function resize(){
     // Cap DPR at 2. A full-screen shader at DPR 3 on a phone is a
@@ -762,10 +817,20 @@ const PALETTE = LUMAS.map(l => hueAtLuma(HUE, SAT_HSL, l));
 
   function draw(ms){
     resize();
+    // Sample the ignition/collapse timeline (driven by the orchestration script).
+    if (fieldAnim) {
+      var e = (ms - fieldAnim.t0) / 1000;
+      var s = fieldAnim.fn(e);
+      STATE.reveal = s.reveal; STATE.burst = s.burst; STATE.energy = s.energy;
+      if (e >= fieldAnim.dur) { var done = fieldAnim.onDone; fieldAnim = null; if (done) done(); }
+    }
     // Respect reduced-motion: freeze on a nice static frame rather
     // than removing the gradient entirely.
     gl.uniform1f(uTime, reduced.matches ? 4.0 : (ms / 1000) * SPEED);
-    gl.uniform1f(U('u_rawT'), ms / 1000);   // unscaled, for the grain boil
+    gl.uniform1f(uRawT, ms / 1000);   // unscaled, for the grain boil
+    gl.uniform1f(uReveal, STATE.reveal);
+    gl.uniform1f(uBurst,  STATE.burst);
+    gl.uniform1f(uEnergy, STATE.energy);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     requestAnimationFrame(draw);
   }

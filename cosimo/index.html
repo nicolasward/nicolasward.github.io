@@ -25,11 +25,11 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  html, body { height: 100%; }
+  html { height: 100%; }
 
   body {
     background: #04101d;           /* the void the field ignites out of */
-    overflow: hidden;
+    overflow-x: hidden;            /* scrolls down to the footer */
   }
 
   /* ---------------- Field ----------------
@@ -50,16 +50,13 @@
     background: #04101d;           /* dark fallback if WebGL is unavailable */
   }
 
-  /* The UI layer (masthead + hero + colophon) sits above the field and fades as
-     one when the field collapses. Interactive bits re-enable pointer events. */
+  /* The UI layer (masthead + hero + footer) scrolls over the fixed field and
+     fades as one when the field collapses. */
   .ui {
-    position: fixed;
-    inset: 0;
+    position: relative;
     z-index: 2;
-    pointer-events: none;
     transition: opacity 0.55s ease;
   }
-  .ui .btn { pointer-events: auto; }
   html.collapsed .ui { opacity: 0; }
 
   /* ---------------- Masthead ----------------
@@ -111,12 +108,11 @@
   }
 
   /* ---------------- Hero ----------------
-     Left-anchored copy over the gradient, vertically centred between the
-     masthead and the colophon. Sits above the iris (z-index 2). */
+     Left-anchored copy over the gradient, filling the first screen; the footer
+     scrolls up beneath it. */
   .hero {
-    position: fixed;
-    inset: 0;
-    z-index: 2;
+    position: relative;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -261,14 +257,11 @@
     .mast-meta { display: none; }
     .mast-cohort { display: inline; }
     .hero .availability { display: none; }
+    .cosimo-mark { font-size: 21vw; }   /* matches the old teaser's mobile size */
   }
 
   /* Colophon — copyright + location, bottom-left. */
   .colophon {
-    position: fixed;
-    left: 1.5rem;
-    bottom: 1.4rem;
-    z-index: 6;
     margin: 0;
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
     font-size: clamp(0.7rem, 2.6vw, 0.9rem);
@@ -277,9 +270,48 @@
     color: rgba(255, 255, 255, 0.72);
     text-shadow: 0 1px 12px rgba(6, 34, 78, 0.4);
     white-space: nowrap;
-    pointer-events: none;
   }
   .colophon .sep { margin: 0 0.3em; opacity: 0.7; }
+
+  /* ---------------- Footer ----------------
+     A new full-width section, revealed on downward scroll: a giant all-caps
+     COSIMO spanning the page, its letters rising into place. */
+  .bigfoot {
+    position: relative;
+    min-height: 82vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: clamp(1.6rem, 5vh, 3rem);
+    padding: 8rem var(--gutter) clamp(1rem, 3vh, 2.2rem);
+  }
+  .cosimo-mark {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin: 0;
+    font-family: "Figtree", system-ui, -apple-system, sans-serif;
+    font-weight: 800;                /* same wordmark face as the old teaser */
+    font-size: 18vw;                 /* spans the page width */
+    line-height: 0.85;               /* trim below-cap space so caps sit low */
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    user-select: none;
+  }
+  .cosimo-mark span { display: block; clip-path: inset(-35% -8% 0 -8%); }  /* clip only the bottom */
+  .cosimo-mark b { display: block; font: inherit; }
+  html.js .cosimo-mark b { transform: translateY(115%); }               /* hidden below until revealed */
+  .cosimo-mark.in b { animation: mark-rise 0.75s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .cosimo-mark.in span:nth-child(1) b { animation-delay: 0.02s; }
+  .cosimo-mark.in span:nth-child(2) b { animation-delay: 0.09s; }
+  .cosimo-mark.in span:nth-child(3) b { animation-delay: 0.16s; }
+  .cosimo-mark.in span:nth-child(4) b { animation-delay: 0.23s; }
+  .cosimo-mark.in span:nth-child(5) b { animation-delay: 0.30s; }
+  .cosimo-mark.in span:nth-child(6) b { animation-delay: 0.37s; }
+  @keyframes mark-rise { to { transform: translateY(0); } }
+
+  .scroll-in { opacity: 0; transform: translateY(16px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+  .scroll-in.in { opacity: 1; transform: none; }
 
   /* Act II — type carved from light. Each glyph condenses out of the field: it
      starts as a soft, blurred bloom of light and resolves to a solid letter,
@@ -318,7 +350,6 @@
   html.intro .sub.reveal          { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.35s both; }
   html.intro .ctas.reveal         { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.52s both; }
   html.intro .availability.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.68s both; }
-  html.intro .colophon.reveal     { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.82s both; }
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: none; }
@@ -327,6 +358,8 @@
     .reveal { opacity: 1 !important; animation: none !important; transform: none !important; }
     .headline .ch { opacity: 1 !important; transform: none !important; filter: none !important; animation: none !important; }
     .credo-toggle { opacity: 1 !important; transform: none !important; animation: none !important; }
+    .cosimo-mark b { transform: none !important; animation: none !important; }
+    .scroll-in { opacity: 1 !important; transform: none !important; }
     .ui { transition: none !important; }
   }
 </style>
@@ -347,14 +380,17 @@
     <p class="sub reveal">Cosimo is an applied AI studio turning frontier intelligence into bespoke systems. We transform the most ambitious creative teams in the world into AI-native operations.</p>
     <div class="ctas reveal">
       <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Talk to us</a>
-      <a class="btn btn--ghost" href="#manifesto">Our Manifesto
+      <a class="btn btn--ghost" href="#manifesto">Liquid software
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
       </a>
     </div>
     <p class="availability reveal">First cohort closing 10 September</p>
   </main>
 
-  <p class="colophon reveal"><span class="c-part">&copy; 2026 Cosimo</span><span class="sep" aria-hidden="true">&middot;</span><span class="c-part">Based in London, operating worldwide.</span></p>
+  <footer class="bigfoot">
+    <p class="colophon scroll-in"><span class="c-part">&copy; 2026 Cosimo</span><span class="sep" aria-hidden="true">&middot;</span><span class="c-part">Based in London, operating worldwide.</span></p>
+    <div class="cosimo-mark" aria-hidden="true"><span><b>C</b></span><span><b>O</b></span><span><b>S</b></span><span><b>I</b></span><span><b>M</b></span><span><b>O</b></span></div>
+  </footer>
 </div>
 
 <button class="credo-toggle" type="button" aria-label="Collapse the field"></button>
@@ -462,6 +498,17 @@ var fieldAnim = null;
   }
   tick();
   setInterval(tick, 15000);
+})();
+
+/* Reveal the footer (colophon + the big COSIMO) as it scrolls into view. */
+(function () {
+  var els = document.querySelectorAll('.scroll-in, .cosimo-mark');
+  if (!els.length) return;
+  if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('in'); }); return; }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.25 });
+  els.forEach(function (e) { io.observe(e); });
 })();
 </script>
 

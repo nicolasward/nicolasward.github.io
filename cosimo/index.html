@@ -29,7 +29,8 @@
 
   body {
     background: #04101d;           /* the void the field ignites out of */
-    overflow-x: hidden;            /* scrolls down to the footer */
+    height: 100%;
+    overflow: hidden;              /* a single screen — the page never scrolls */
   }
 
   /* ---------------- Field ----------------
@@ -50,7 +51,7 @@
     background: #04101d;           /* dark fallback if WebGL is unavailable */
   }
 
-  /* The UI layer (masthead + hero + footer) scrolls over the fixed field and
+  /* The UI layer (masthead + hero + footer) sits over the fixed field and
      fades as one when the field collapses. */
   .ui {
     position: relative;
@@ -108,8 +109,8 @@
   }
 
   /* ---------------- Hero ----------------
-     Left-anchored copy over the gradient, filling the first screen; the footer
-     scrolls up beneath it. */
+     Left-anchored copy over the gradient, filling the single screen; the footer
+     rolls in over it on downward scroll intent. */
   .hero {
     position: relative;
     min-height: 100dvh;
@@ -125,7 +126,7 @@
     -moz-osx-font-smoothing: grayscale;
   }
   .headline {
-    max-width: 16ch;
+    max-width: 24ch;
     text-wrap: balance;                 /* even line lengths, no orphaned word */
     margin: 0 0 1.6rem;
     font-size: clamp(2.5rem, 6.4vw, 5rem);
@@ -274,16 +275,20 @@
   .colophon .sep { margin: 0 0.3em; opacity: 0.7; }
 
   /* ---------------- Footer ----------------
-     A new full-width section, revealed on downward scroll: a giant all-caps
-     COSIMO spanning the page, its letters rising into place. */
+     Pinned to the bottom of the (non-scrolling) viewport: a giant all-caps
+     COSIMO spanning the page. Downward scroll INTENT (wheel / swipe / keys)
+     rolls the letters up into place; upward intent rolls them back out. The
+     page itself never moves. */
   .bigfoot {
-    position: relative;
-    min-height: 82vh;
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 5;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     gap: clamp(1.6rem, 5vh, 3rem);
-    padding: 8rem var(--gutter) clamp(1rem, 3vh, 2.2rem);
+    padding: 0 var(--gutter) clamp(1rem, 3vh, 2.2rem);
+    pointer-events: none;          /* never block the hero CTAs beneath */
   }
   .cosimo-mark {
     display: flex;
@@ -309,6 +314,15 @@
   .cosimo-mark.in span:nth-child(5) b { animation-delay: 0.30s; }
   .cosimo-mark.in span:nth-child(6) b { animation-delay: 0.37s; }
   @keyframes mark-rise { to { transform: translateY(0); } }
+  /* Upward scroll intent: the letters sink back below the clip, same stagger. */
+  .cosimo-mark.out b { animation: mark-sink 0.55s cubic-bezier(0.55, 0, 0.75, 0.4) both; }
+  .cosimo-mark.out span:nth-child(1) b { animation-delay: 0.02s; }
+  .cosimo-mark.out span:nth-child(2) b { animation-delay: 0.07s; }
+  .cosimo-mark.out span:nth-child(3) b { animation-delay: 0.12s; }
+  .cosimo-mark.out span:nth-child(4) b { animation-delay: 0.17s; }
+  .cosimo-mark.out span:nth-child(5) b { animation-delay: 0.22s; }
+  .cosimo-mark.out span:nth-child(6) b { animation-delay: 0.27s; }
+  @keyframes mark-sink { from { transform: translateY(0); } to { transform: translateY(115%); } }
 
   .scroll-in { opacity: 0; transform: translateY(16px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
   .scroll-in.in { opacity: 1; transform: none; }
@@ -325,7 +339,7 @@
   html.js .headline .ch { opacity: 0; }
   html.carve .headline .ch {
     animation: carve 0.62s cubic-bezier(0.2, 0.8, 0.25, 1) both;
-    animation-delay: calc(var(--i) * 0.035s);
+    animation-delay: calc(var(--i) * 0.016s);   /* ~60 letters on the old 24-letter clock */
   }
   @keyframes carve {
     0% {
@@ -376,7 +390,7 @@
   </header>
 
   <main class="hero">
-    <h1 class="headline">Interfaces for frontier AI</h1>
+    <h1 class="headline">We turn the world&#8217;s best brands into AI-native operations.</h1>
     <p class="sub reveal">Cosimo is an applied AI studio turning frontier intelligence into bespoke systems. We transform the most ambitious creative teams in the world into AI-native operations.</p>
     <div class="ctas reveal">
       <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Talk to us</a>
@@ -500,15 +514,44 @@ var fieldAnim = null;
   setInterval(tick, 15000);
 })();
 
-/* Reveal the footer (colophon + the big COSIMO) as it scrolls into view. */
+/* Reveal the footer (colophon + the big COSIMO) on downward scroll INTENT.
+   The page itself never scrolls: a wheel-down / swipe-up / key-down gesture
+   rolls the letters up into place exactly as the old scrolled-to reveal did,
+   and the opposite gesture rolls them back out. */
 (function () {
-  var els = document.querySelectorAll('.scroll-in, .cosimo-mark');
-  if (!els.length) return;
-  if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('in'); }); return; }
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, { threshold: 0.25 });
-  els.forEach(function (e) { io.observe(e); });
+  var mark = document.querySelector('.cosimo-mark');
+  var col  = document.querySelector('.colophon');
+  if (!mark) return;
+  var shown = false;
+  function show () {
+    if (shown) return; shown = true;
+    mark.classList.remove('out');
+    void mark.offsetWidth;               // reflow so the rise can replay
+    mark.classList.add('in');
+    if (col) col.classList.add('in');
+  }
+  function hide () {
+    if (!shown) return; shown = false;
+    mark.classList.remove('in');
+    void mark.offsetWidth;
+    mark.classList.add('out');
+    if (col) col.classList.remove('in');
+  }
+  window.addEventListener('wheel', function (e) {
+    if (e.deltaY > 0) show(); else if (e.deltaY < 0) hide();
+  }, { passive: true });
+  var y0 = null;
+  window.addEventListener('touchstart', function (e) { y0 = e.touches[0].clientY; }, { passive: true });
+  window.addEventListener('touchmove', function (e) {
+    if (y0 === null) return;
+    var dy = y0 - e.touches[0].clientY;          // finger up = scroll down
+    if (dy > 24) { show(); y0 = null; }
+    else if (dy < -24) { hide(); y0 = null; }
+  }, { passive: true });
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === 'End' || e.key === ' ') show();
+    else if (e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'Home') hide();
+  });
 })();
 </script>
 

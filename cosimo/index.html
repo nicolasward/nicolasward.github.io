@@ -5,7 +5,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Bonheur+Royale&display=swap" rel="stylesheet">
 
 <!-- js flips the page into "start as a dot, then iris open" mode. Without it
      (or under reduced motion) the gradient is simply full-screen from the off. -->
@@ -85,7 +85,6 @@
     font-weight: 700;
     line-height: 1.02;
     letter-spacing: -0.032em;
-    text-shadow: 0 2px 30px rgba(6, 34, 78, 0.4);
   }
   /* The sizer holds the longest phrase, invisible, so the headline's box never
      changes height while the tail types and deletes — no layout jitter. */
@@ -95,7 +94,7 @@
      drop cap. line-height 0 keeps the larger glyph from inflating the line
      box; its flourish is allowed to spill below the baseline. */
   .headline .p-init {
-    font-family: "Pinyon Script", cursive;
+    font-family: "Bonheur Royale", cursive;
     font-weight: 400;
     font-size: 2.1em;                   /* a statement: towers over the sans caps */
     line-height: 0;
@@ -120,7 +119,6 @@
     font-weight: 500;
     line-height: 1.5;
     color: var(--ink-dim);
-    text-shadow: 0 1px 16px rgba(6, 34, 78, 0.34);
   }
 
   /* CTAs */
@@ -154,6 +152,31 @@
     .btn--solid:hover { transform: translateY(-1px); }
   }
 
+  /* ---------------- Logo strip ----------------
+     Typographic stand-ins for the partner marks — one white horizontal strip,
+     each wordmark set to echo its brand's logo. Swap for real SVGs when we
+     have the files. */
+  .logos {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 1rem clamp(1.7rem, 3.5vw, 3rem);
+    margin-top: clamp(2.6rem, 7vh, 4.2rem);
+  }
+  .logo {
+    color: var(--ink);
+    opacity: 0.85;
+    white-space: nowrap;
+    font-family: "Figtree", system-ui, -apple-system, sans-serif;
+  }
+  .logo--huel   { font-weight: 800; font-size: 1.1rem;  letter-spacing: 0.05em; }
+  .logo--healf  { font-family: Georgia, "Times New Roman", serif; font-weight: 500; font-size: 1.14rem; }
+  .logo--danone { font-weight: 700; font-size: 1.04rem; letter-spacing: 0.09em; }
+  .logo--thorne { font-weight: 500; font-size: 0.96rem; letter-spacing: 0.34em; }
+  .logo--dirtea { font-weight: 700; font-size: 1rem;    letter-spacing: 0.22em; }
+  .logo--wild   { font-weight: 800; font-size: 1.16rem; letter-spacing: 0.02em; }
+  .logo--candy  { font-weight: 800; font-size: 0.94rem; letter-spacing: 0.14em; }
+
   /* ---------------- Credo ----------------
      A small white dot at the bottom-right; clicking it reveals the studio credo
      running vertically up the right edge. */
@@ -168,7 +191,6 @@
     border: none;
     border-radius: 50%;
     background: #ffffff;
-    box-shadow: 0 2px 12px rgba(6, 34, 78, 0.35);
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
@@ -201,7 +223,6 @@
     letter-spacing: 0.06em;
     line-height: 1.5;
     color: rgba(255, 255, 255, 0.92);
-    text-shadow: 0 1px 24px rgba(0, 0, 0, 0.55);
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.6s ease;
@@ -220,7 +241,6 @@
     font-weight: 500;
     letter-spacing: 0.01em;
     color: rgba(255, 255, 255, 0.72);
-    text-shadow: 0 1px 12px rgba(6, 34, 78, 0.4);
     white-space: nowrap;
   }
   .colophon .sep { margin: 0 0.3em; opacity: 0.7; }
@@ -304,15 +324,16 @@
       opacity: 1;
       filter: blur(0);
       transform: none;
-      text-shadow: 0 2px 30px rgba(6, 34, 78, 0.4);
+      text-shadow: none;
     }
   }
 
   /* The rest of the copy fades up, staggered, once the field has bloomed and the
      type is carving in. Delays are relative to html.intro (added at ignition). */
   html.js .reveal { opacity: 0; }
-  html.intro .sub.reveal  { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.35s both; }
-  html.intro .ctas.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.52s both; }
+  html.intro .sub.reveal   { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.35s both; }
+  html.intro .ctas.reveal  { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.52s both; }
+  html.intro .logos.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.68s both; }
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: none; }
@@ -340,6 +361,15 @@
     <p class="sub reveal">Cosimo is an applied AI studio based in London. We transform the world&#8217;s most forward-thinking brands into AI-native companies, turning frontier intelligence into tangible outcomes.</p>
     <div class="ctas reveal">
       <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Talk to us</a>
+    </div>
+    <div class="logos reveal" aria-label="Brands we work with">
+      <span class="logo logo--huel">HUEL</span>
+      <span class="logo logo--healf">healf</span>
+      <span class="logo logo--danone">DANONE</span>
+      <span class="logo logo--thorne">THORNE</span>
+      <span class="logo logo--dirtea">DIRTEA</span>
+      <span class="logo logo--wild">Wild</span>
+      <span class="logo logo--candy">CANDY KITTENS</span>
     </div>
   </main>
 

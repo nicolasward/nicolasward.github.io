@@ -5,7 +5,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Pinyon+Script&display=swap" rel="stylesheet">
 
 <!-- js flips the page into "start as a dot, then iris open" mode. Without it
      (or under reduced motion) the gradient is simply full-screen from the off. -->
@@ -126,8 +126,8 @@
     -moz-osx-font-smoothing: grayscale;
   }
   .headline {
+    display: grid;                      /* the live line overlays an invisible sizer */
     max-width: 24ch;
-    text-wrap: balance;                 /* even line lengths, no orphaned word */
     margin: 0 0 1.6rem;
     font-size: clamp(2.5rem, 6.4vw, 5rem);
     font-weight: 700;
@@ -135,6 +135,32 @@
     letter-spacing: -0.032em;
     text-shadow: 0 2px 30px rgba(6, 34, 78, 0.4);
   }
+  /* The sizer holds the longest phrase, invisible, so the headline's box never
+     changes height while the tail types and deletes — no layout jitter. */
+  .headline > span { grid-area: 1 / 1; }
+  .hl-sizer { visibility: hidden; }
+  /* The swash initial — a script P set against the sans, like an illuminated
+     drop cap. line-height 0 keeps the larger glyph from inflating the line
+     box; its flourish is allowed to spill below the baseline. */
+  .headline .p-init {
+    font-family: "Pinyon Script", cursive;
+    font-weight: 400;
+    font-size: 1.3em;
+    line-height: 0;
+    letter-spacing: 0;
+    margin-right: 0.03em;
+  }
+  /* The typing caret — appears with the carve, blinks while the tail rotates. */
+  .hl-caret {
+    display: inline-block;
+    width: 0.05em;
+    height: 0.78em;
+    margin-left: 0.08em;
+    background: currentColor;
+    opacity: 0;
+  }
+  html.carve .hl-caret { opacity: 1; animation: caret-blink 1.06s steps(1, end) infinite; }
+  @keyframes caret-blink { 50% { opacity: 0; } }
   .sub {
     max-width: 40rem;
     margin: 0;
@@ -339,7 +365,7 @@
   html.js .headline .ch { opacity: 0; }
   html.carve .headline .ch {
     animation: carve 0.62s cubic-bezier(0.2, 0.8, 0.25, 1) both;
-    animation-delay: calc(var(--i) * 0.016s);   /* ~60 letters on the old 24-letter clock */
+    animation-delay: calc(var(--i) * 0.035s);   /* only "Power to" carves — 7 letters */
   }
   @keyframes carve {
     0% {
@@ -390,8 +416,11 @@
   </header>
 
   <main class="hero">
-    <h1 class="headline">We turn the world&#8217;s best brands into AI-native operations.</h1>
-    <p class="sub reveal">Cosimo is an applied AI studio turning frontier intelligence into bespoke systems. We transform the most ambitious creative teams in the world into AI-native operations.</p>
+    <h1 class="headline" aria-label="Power to designers. Power to the ones who ship. Power to planners. Power to the perfectionists. Power to the people who notice.">
+      <span class="hl-sizer" aria-hidden="true">Power to the people who notice.</span>
+      <span class="hl-live" aria-hidden="true"><span class="hl-prefix">Power to</span> <span class="hl-tail">the people who notice.</span><span class="hl-caret"></span></span>
+    </h1>
+    <p class="sub reveal">Cosimo is an applied AI studio based in London. We transform the world&#8217;s most forward-thinking brands into AI-native companies, turning frontier intelligence into tangible outcomes.</p>
     <div class="ctas reveal">
       <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Talk to us</a>
       <a class="btn btn--ghost" href="#manifesto">Liquid software
@@ -416,11 +445,12 @@
 var STATE = { reveal: 0, burst: 0, energy: 0 };
 var fieldAnim = null;
 
-/* Split the headline into per-letter spans (words kept intact so the line still
-   wraps) for the carve entrance. Runs synchronously before first paint, so the
-   un-split text never flashes. */
+/* Split the headline's fixed prefix ("Power to") into per-letter spans (words
+   kept intact so the line still wraps) for the carve entrance. Runs
+   synchronously before first paint, so the un-split text never flashes. The
+   rotating tail is NOT split — it's driven by the typewriter below. */
 (function () {
-  var h = document.querySelector('.headline');
+  var h = document.querySelector('.headline .hl-prefix');
   if (!h) return;
   var words = h.textContent.split(' ');
   h.textContent = '';
@@ -438,6 +468,37 @@ var fieldAnim = null;
     h.appendChild(w);
     if (wi < words.length - 1) h.appendChild(document.createTextNode(' '));
   });
+  var first = h.querySelector('.ch');
+  if (first) first.classList.add('p-init');   // the script-face swash initial
+})();
+
+/* The typewriter: "Power to" stays; the tail is typed out, held, backspaced
+   and retyped from a rotating list of phrases. Reduced motion (or no JS)
+   keeps the static markup line instead. */
+(function () {
+  var tail = document.querySelector('.hl-tail');
+  if (!tail) return;
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var PHRASES = [
+    'designers.',
+    'the ones who ship.',
+    'planners.',
+    'the perfectionists.',
+    'the people who notice.'
+  ];
+  tail.textContent = '';                       // cleared before first paint
+  var pi = 0, ci = 0, deleting = false;
+  function step () {
+    var phrase = PHRASES[pi];
+    ci += deleting ? -1 : 1;
+    tail.textContent = phrase.slice(0, ci);
+    var wait;
+    if (!deleting && ci === phrase.length) { deleting = true; wait = 1700; }          // hold the finished line
+    else if (deleting && ci === 0) { deleting = false; pi = (pi + 1) % PHRASES.length; wait = 420; }
+    else wait = deleting ? 34 : 58 + Math.random() * 48;   // deletes brisk, types human
+    setTimeout(step, wait);
+  }
+  setTimeout(step, 2450);                      // starts as the prefix finishes carving
 })();
 
 /* Cinematic sequence.

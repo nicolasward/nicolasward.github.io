@@ -916,9 +916,11 @@ const PALETTE = LUMAS.map(l => hueAtLuma(HUE, SAT_HSL, l));
 
 /* The four background palettes the white dot cycles through. The live blue is
    PALETTE (above); the other three are ported from the design-elements mesh
-   studies — a monochrome green, an orange path and the "plus" blue path — each
-   with its own measured grain. buildConst holds one hue and one saturation;
-   buildPath walks a hue/sat ramp against the luma ramp. */
+   studies — a monochrome green, an orange path and the "plus" blue path. Their
+   source files each carried a different measured grain, but here we deliberately
+   run them ALL at the live blue's GRAIN so the four backgrounds feel like one
+   surface, only the colour changing. buildConst holds one hue and one
+   saturation; buildPath walks a hue/sat ramp against the luma ramp. */
 function buildConst(hue, sat, lumas){
   return lumas.map(function(l){ return hueAtLuma(hue, sat, l); });
 }
@@ -935,7 +937,7 @@ const PALETTES = [
   buildPath([9.6, 13.2], [0.79, 0.56], [0.150, 0.271, 0.326, 0.596], 0.6),     // orange
   buildPath([219.9, 220.7], [0.48, 0.21], [0.208, 0.274, 0.357, 0.447], 1.5)   // "plus" blue
 ];
-const GRAINS = [0.100, 0.203, 0.070, 0.093];
+const GRAINS = [GRAIN, GRAIN, GRAIN, GRAIN];   // all share the live blue's grain
 
 /* ============================================================
    Boilerplate: compile, link, resize, draw.

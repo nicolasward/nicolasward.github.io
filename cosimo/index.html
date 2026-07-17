@@ -89,7 +89,6 @@
     z-index: 2;
     transition: opacity 0.55s ease;
   }
-  html.collapsed .ui { opacity: 0; }
 
   /* ---------------- Hero ----------------
      Left-anchored copy over the gradient, filling the single screen; the footer
@@ -140,13 +139,12 @@
     padding-right: 0.6em;
     margin-right: calc(0.05em - 0.6em);
   }
-  /* The typing caret — appears with the carve, blinks while the tail rotates. */
+  /* The typing caret — a blinking underscore sitting on the baseline. Appears
+     with the carve and blinks while the tail rotates. */
   .hl-caret {
     display: inline-block;
-    width: 0.05em;
-    height: 0.78em;
-    margin-left: 0.08em;
-    background: currentColor;
+    margin-left: 0.03em;
+    font-weight: 700;
     opacity: 0;
   }
   html.carve .hl-caret { opacity: 1; animation: caret-blink 1.06s steps(1, end) infinite; }
@@ -156,12 +154,18 @@
   .hl-tail .tch { visibility: hidden; }
   .hl-tail .tch.on { visibility: visible; }
   .sub {
-    max-width: 40rem;
+    max-width: 34rem;
     margin: 0;
-    font-size: clamp(1.18rem, 3.4vw, 1.5rem);
+    font-size: clamp(1.12rem, 3.2vw, 1.42rem);
     font-weight: 500;
     line-height: 1.5;
     color: var(--ink-dim);
+  }
+  .sub--note {
+    margin-top: 1.1rem;
+    font-size: clamp(0.92rem, 2.4vw, 1.05rem);
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.66);
   }
 
   /* CTAs */
@@ -226,9 +230,38 @@
   .logo--wild   { font-weight: 800; font-size: 1.62em; letter-spacing: 0.02em; }
   .logo--candy  { font-weight: 800; font-size: 1.32em; letter-spacing: 0.14em; }
 
-  /* ---------------- Credo ----------------
-     A small white dot at the bottom-right; clicking it reveals the studio credo
-     running vertically up the right edge. */
+  /* ---------------- Services object ----------------
+     A 3D drink-can (three.js) on the right, slowly turning, ringed by callout
+     labels for each service. Decorative — sits above the field, below the copy,
+     and never intercepts pointer events. Hidden on narrow screens. */
+  .can-stage {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 46vw;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .can-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .can-lines  { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .can-line   { stroke: rgba(255, 255, 255, 0.45); stroke-width: 1; }
+  .can-dot    { fill: #ffffff; }
+  .can-labels { position: absolute; inset: 0; }
+  .can-label {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-family: var(--mono);
+    font-size: clamp(0.62rem, 1.1vw, 0.78rem);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+    white-space: nowrap;
+  }
+  html.js .can-stage     { opacity: 0; }
+  html.intro .can-stage  { opacity: 1; transition: opacity 1.2s ease 2.9s; }
+
+  /* ---------------- Theme dot ----------------
+     A small white dot at the bottom-right; clicking it cycles the background
+     palette (the crossfade lives in the WebGL loop). */
   .credo-toggle {
     position: fixed;
     right: 1.5rem;
@@ -246,7 +279,6 @@
   @media (hover: hover) {
     .credo-toggle:hover { transform: scale(1.15); }
   }
-  html.credo-open .credo-toggle { box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.18); }
   /* The dot is the last thing to arrive, after all the hero copy has settled. */
   html.js .credo-toggle { opacity: 0; }
   html.intro .credo-toggle { animation: dot-in 0.5s cubic-bezier(0.34, 1.45, 0.5, 1) 4.0s both; }
@@ -254,34 +286,11 @@
     from { opacity: 0; transform: scale(0.3); }
     to   { opacity: 1; transform: none; }
   }
-  /* The credo — the line that remains when the field collapses to a point. It
-     fades in, centred, during the void, then dissolves as the field re-ignites. */
-  .credo {
-    position: fixed;
-    inset: 0;
-    z-index: 7;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    padding: 0 2rem;
-    text-align: center;
-    font-family: var(--mono);
-    font-size: clamp(0.9rem, 2.6vw, 1.15rem);
-    font-weight: 400;
-    letter-spacing: 0.06em;
-    line-height: 1.5;
-    color: rgba(255, 255, 255, 0.92);
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.6s ease;
-  }
-  html.credo-show .credo { opacity: 1; }
-
   @media (max-width: 760px) {
     .cosimo-mark { font-size: 21vw; }   /* matches the old teaser's mobile size */
     .logos { font-size: 0.72rem; justify-content: flex-start; bottom: 1.8rem; }
   }
+  @media (max-width: 900px) { .can-stage { display: none; } }
 
   /* Colophon — copyright + location, bottom-left. */
   .colophon {
@@ -404,13 +413,20 @@
   <canvas id="gradient"></canvas>
 </div>
 
+<div class="can-stage" aria-hidden="true">
+  <canvas class="can-canvas"></canvas>
+  <svg class="can-lines"></svg>
+  <div class="can-labels"></div>
+</div>
+
 <div class="ui">
   <main class="hero">
     <h1 class="headline" aria-label="Power to designers. Power to planners. Power to ops teams. Power to marketers. Power to those who ship.">
       <span class="hl-sizer" aria-hidden="true">Power to those who ship.</span>
-      <span class="hl-live" aria-hidden="true"><span class="hl-prefix">Power to</span> <span class="hl-tail">those who ship.</span><span class="hl-caret"></span></span>
+      <span class="hl-live" aria-hidden="true"><span class="hl-prefix">Power to</span> <span class="hl-tail">those who ship.</span><span class="hl-caret" aria-hidden="true">_</span></span>
     </h1>
-    <p class="sub reveal">Cosimo is an applied AI studio based in London. We transform the world&#8217;s most forward-thinking brands into AI-native companies, turning frontier intelligence into tangible outcomes.</p>
+    <p class="sub reveal">Cosimo is an applied AI studio run by engineers, designers, and product leaders. We make the world&#8217;s most iconic brands AI-native.</p>
+    <p class="sub sub--note reveal">Currently taking on a limited number of clients. London-based, operating worldwide.</p>
     <div class="ctas reveal">
       <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Work with us
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
@@ -433,8 +449,7 @@
   </footer>
 </div>
 
-<button class="credo-toggle" type="button" aria-label="Collapse the field"></button>
-<p class="credo" aria-hidden="true">It is not enough to create. We must care.</p>
+<button class="credo-toggle" type="button" aria-label="Change the colour theme" title="Change the colour theme"></button>
 
 <script>
 /* Shared field state, read every frame by the WebGL draw loop in the next
@@ -442,6 +457,7 @@
    the CSS iris drop-and-bounce); the credo-dot collapse animates it. */
 var STATE = { reveal: 1, burst: 0, energy: 0 };
 var fieldAnim = null;
+var PALETTE_CTRL = { next: null };   // assigned by the WebGL init; called by the dot
 
 /* Split the headline's fixed prefix ("Power to") into per-letter spans (words
    kept intact so the line still wraps) for the carve entrance. Runs
@@ -530,37 +546,14 @@ var fieldAnim = null;
   setTimeout(step, 3850);                      // starts as the prefix finishes carving
 })();
 
-/* Cinematic sequence.
+/* Opening sequence.
    Act I — a dot drops in from the top of the white page and bounces like a
    damped rubber ball (pure CSS on the iris clip), then irises open onto the
    field, which has been running underneath all along.
    Act II — the headline is carved from the light as the iris settles.
-   The dot collapses the whole field back into itself, leaves the credo in the
-   void, then re-ignites. Reduced motion skips it all (field simply on). */
+   The white dot then cycles the background palette on each click. */
 (function () {
   var root = document.documentElement;
-  var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  function easeOutExpo(x){ return x >= 1 ? 1 : 1 - Math.pow(2, -10 * x); }
-  function easeInCubic(x){ return x * x * x; }
-  function flash(x, c, w){ return Math.exp(-Math.pow((x - c) / w, 2)); }
-
-  if (reduced) { STATE.reveal = 1; STATE.burst = 0; STATE.energy = 0; return; }
-
-  function collapse(e){
-    if (e < 0.85){ var x = e / 0.85;
-      return { reveal: 1 - easeInCubic(x), burst: flash(x, 0.78, 0.16) * 1.3, energy: 0.4 + x * 0.45 }; }
-    if (e < 2.2)  return { reveal: 0, burst: 0, energy: 0.32 };
-    if (e < 3.95){ var y = (e - 2.2) / 1.6;
-      return { reveal: easeOutExpo(y), burst: flash(y, 0.1, 0.2) * 1.45, energy: 0.8 * (1 - y * 0.85) }; }
-    return { reveal: 1, burst: 0, energy: 0 };
-  }
-  function play(fn, dur, onDone){ fieldAnim = { t0: performance.now(), fn: fn, dur: dur, onDone: onDone }; }
-  function reCarve(){
-    root.classList.remove('carve');
-    void document.querySelector('.headline').offsetWidth;   // reflow so the animation restarts
-    root.classList.add('carve');
-  }
 
   // Act I + II — the opening. The bounce + iris are CSS (html.intro); the
   // carve starts as the iris sweeps open (bounce 1.9s + open underway).
@@ -569,17 +562,12 @@ var fieldAnim = null;
     setTimeout(function(){ root.classList.add('carve'); }, 2750);   // type carves as the iris opens
   }); });
 
-  // The dot collapses the field into itself, then it re-ignites.
+  // The white dot cycles the background palette (live blue -> green -> orange
+  // -> plus -> …). The colour crossfade and the liquid warp-bump are driven by
+  // the WebGL loop; here we just advance the palette on each click.
   var dot = document.querySelector('.credo-toggle');
-  var busy = false;
   if (dot) dot.addEventListener('click', function(){
-    if (busy) return; busy = true;
-    root.classList.add('collapsed');                            // the UI fades as the field sucks in
-    play(collapse, 3.95, function(){ busy = false; });
-    setTimeout(function(){ root.classList.add('credo-show'); },    950);   // the line that remains
-    setTimeout(function(){ root.classList.remove('credo-show'); }, 2150);
-    setTimeout(function(){ root.classList.remove('collapsed'); },  2350);  // the UI returns
-    setTimeout(reCarve, 2950);                                   // headline re-carves with the re-ignition
+    if (PALETTE_CTRL.next) PALETTE_CTRL.next();
   });
 })();
 
@@ -917,6 +905,29 @@ function hueAtLuma(hueDeg, sat, targetLuma){
 
 const PALETTE = LUMAS.map(l => hueAtLuma(HUE, SAT_HSL, l));
 
+/* The four background palettes the white dot cycles through. The live blue is
+   PALETTE (above); the other three are ported from the design-elements mesh
+   studies — a monochrome green, an orange path and the "plus" blue path — each
+   with its own measured grain. buildConst holds one hue and one saturation;
+   buildPath walks a hue/sat ramp against the luma ramp. */
+function buildConst(hue, sat, lumas){
+  return lumas.map(function(l){ return hueAtLuma(hue, sat, l); });
+}
+function buildPath(hue, sat, lumas, curve){
+  var n = lumas.length - 1;
+  return lumas.map(function(l, i){
+    var t = Math.pow(i / n, curve);
+    return hueAtLuma(hue[0] + (hue[1]-hue[0])*t, sat[0] + (sat[1]-sat[0])*t, l);
+  });
+}
+const PALETTES = [
+  PALETTE,                                                                     // live blue (poster)
+  buildConst(145, 0.30, [0.277, 0.363, 0.423, 0.476]),                         // monochrome green
+  buildPath([9.6, 13.2], [0.79, 0.56], [0.150, 0.271, 0.326, 0.596], 0.6),     // orange
+  buildPath([219.9, 220.7], [0.48, 0.21], [0.208, 0.274, 0.357, 0.447], 1.5)   // "plus" blue
+];
+const GRAINS = [0.100, 0.203, 0.070, 0.093];
+
 /* ============================================================
    Boilerplate: compile, link, resize, draw.
    ============================================================ */
@@ -959,16 +970,30 @@ const PALETTE = LUMAS.map(l => hueAtLuma(HUE, SAT_HSL, l));
 
   const U = n => gl.getUniformLocation(prog, n);
   const uRes = U('u_res'), uTime = U('u_time');
-  gl.uniform3fv(U('u_c0'), PALETTE[0]);
-  gl.uniform3fv(U('u_c1'), PALETTE[1]);
-  gl.uniform3fv(U('u_c2'), PALETTE[2]);
-  gl.uniform3fv(U('u_c3'), PALETTE[3]);
+  const uC = [U('u_c0'), U('u_c1'), U('u_c2'), U('u_c3')];
+  const uGrain = U('u_grain'), uWarp = U('u_warp');
+  function applyPalette(pal, grain){
+    for (var i = 0; i < 4; i++) gl.uniform3fv(uC[i], pal[i]);
+    gl.uniform1f(uGrain, grain);
+  }
+  applyPalette(PALETTES[0], GRAINS[0]);
   gl.uniform1f(U('u_scale'), SCALE);
-  gl.uniform1f(U('u_warp'), WARP);
-  gl.uniform1f(U('u_grain'), GRAIN);
+  gl.uniform1f(uWarp, WARP);
   gl.uniform1f(U('u_boil'), GRAIN_BOIL);
   gl.uniform3f(U('u_void'), 0.016, 0.043, 0.078);   // deep near-black blue
   const uReveal = U('u_reveal'), uBurst = U('u_burst'), uEnergy = U('u_energy'), uRawT = U('u_rawT');
+
+  /* Palette crossfade, advanced by the white dot. Colours and grain ease from
+     the current palette to the next while the warp briefly bulges — the field
+     liquifies, reshuffles and settles into the new colour. */
+  var curIdx = 0, sw = null;
+  PALETTE_CTRL.next = function(){
+    if (sw) return;                                  // ignore clicks mid-transition
+    var from = PALETTES[curIdx], fromG = GRAINS[curIdx];
+    curIdx = (curIdx + 1) % PALETTES.length;
+    sw = { from: from, to: PALETTES[curIdx], fromG: fromG, toG: GRAINS[curIdx],
+           t0: performance.now(), dur: 1000 };
+  };
 
   function resize(){
     // Cap DPR at 2. A full-screen shader at DPR 3 on a phone is a
@@ -994,6 +1019,19 @@ const PALETTE = LUMAS.map(l => hueAtLuma(HUE, SAT_HSL, l));
       STATE.reveal = s.reveal; STATE.burst = s.burst; STATE.energy = s.energy;
       if (e >= fieldAnim.dur) { var done = fieldAnim.onDone; fieldAnim = null; if (done) done(); }
     }
+    // Palette crossfade + liquid warp-bump (driven by the white dot).
+    if (sw) {
+      var pu = (ms - sw.t0) / sw.dur; if (pu > 1) pu = 1;
+      var pe = pu < 0.5 ? 4*pu*pu*pu : 1 - Math.pow(-2*pu + 2, 3) / 2;   // easeInOutCubic
+      for (var ci = 0; ci < 4; ci++) {
+        var a = sw.from[ci], b = sw.to[ci];
+        gl.uniform3f(uC[ci], a[0]+(b[0]-a[0])*pe, a[1]+(b[1]-a[1])*pe, a[2]+(b[2]-a[2])*pe);
+      }
+      gl.uniform1f(uGrain, sw.fromG + (sw.toG - sw.fromG) * pe);
+      var bump = Math.exp(-Math.pow((pu - 0.5) / 0.28, 2));             // peaks mid-transition
+      gl.uniform1f(uWarp, WARP * (1 + bump * 0.55));
+      if (pu >= 1) { sw = null; gl.uniform1f(uWarp, WARP); }
+    }
     // Respect reduced-motion: freeze on a nice static frame rather
     // than removing the gradient entirely.
     gl.uniform1f(uTime, reduced.matches ? 4.0 : (ms / 1000) * SPEED);
@@ -1006,4 +1044,125 @@ const PALETTE = LUMAS.map(l => hueAtLuma(HUE, SAT_HSL, l));
   }
   requestAnimationFrame(draw);
 })();
+</script>
+
+<!-- ============================================================
+     Services object — a 3D drink-can (three.js) on the right, slowly turning,
+     ringed by service callouts. FIRST-PASS PROTOTYPE. three.js is pulled from
+     a pinned CDN; vendor it into the repo if we want the page self-contained.
+     ============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" defer></script>
+<script>
+window.addEventListener('load', function () {
+  var stage = document.querySelector('.can-stage');
+  var THREE = window.THREE;
+  if (!stage || !THREE) return;              // three.js unavailable — skip silently
+
+  var canvas = stage.querySelector('.can-canvas');
+  var svg    = stage.querySelector('.can-lines');
+  var wrap   = stage.querySelector('.can-labels');
+
+  var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+
+  var scene  = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+  camera.position.set(0, 0, 3.6);
+
+  /* Soft studio reflection: a vertical gradient used as the scene environment,
+     so the metal reads as lit aluminium rather than flat plastic. */
+  function envTexture(){
+    var c = document.createElement('canvas'); c.width = 16; c.height = 256;
+    var ctx = c.getContext('2d');
+    var g = ctx.createLinearGradient(0, 0, 0, 256);
+    g.addColorStop(0.0, '#eaf3ff');
+    g.addColorStop(0.5, '#6fa6e6');
+    g.addColorStop(1.0, '#0e2c52');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, 16, 256);
+    var t = new THREE.CanvasTexture(c);
+    t.mapping = THREE.EquirectangularReflectionMapping;
+    return t;
+  }
+  var pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromEquirectangular(envTexture()).texture;
+
+  // Lights add shape and a moving highlight on top of the environment.
+  scene.add(new THREE.HemisphereLight(0xdfefff, 0x0b2f57, 0.5));
+  var key = new THREE.DirectionalLight(0xffffff, 1.8); key.position.set(-2.2, 2.6, 3.2); scene.add(key);
+  var rim = new THREE.DirectionalLight(0x9fd0ff, 1.1); rim.position.set(2.6, 0.8, -2.2); scene.add(rim);
+
+  // The can: a lathed profile (rounded shoulders, a small top rim) revolved.
+  var profile = [
+    [0.00, -0.50], [0.30, -0.50], [0.34, -0.45], [0.34, 0.40],
+    [0.315, 0.455], [0.30, 0.50], [0.275, 0.505], [0.00, 0.505]
+  ].map(function (v) { return new THREE.Vector2(v[0], v[1]); });
+  var geo = new THREE.LatheGeometry(profile, 120);
+  geo.computeVertexNormals();
+  var mat = new THREE.MeshPhysicalMaterial({
+    color: 0x2f7fd6, metalness: 0.5, roughness: 0.28,
+    clearcoat: 0.7, clearcoatRoughness: 0.3, envMapIntensity: 1.0
+  });
+  var can = new THREE.Mesh(geo, mat);
+  var group = new THREE.Group(); group.add(can); scene.add(group);
+
+  // Service callouts — ringed around the can, joined by hairlines to its edge.
+  var SERVICES = [
+    { t: 'Creative production', x: 0.22, y: 0.15 },
+    { t: 'Customer experience', x: 0.80, y: 0.21 },
+    { t: 'Demand forecasting',  x: 0.90, y: 0.50 },
+    { t: 'Analytics',           x: 0.80, y: 0.79 },
+    { t: 'Automations',         x: 0.20, y: 0.85 },
+    { t: 'A/B testing',         x: 0.11, y: 0.51 }
+  ];
+  var NS = 'http://www.w3.org/2000/svg';
+  var labelEls = [], lineEls = [], dotEls = [];
+  SERVICES.forEach(function (s) {
+    var d = document.createElement('div'); d.className = 'can-label'; d.textContent = s.t; wrap.appendChild(d); labelEls.push(d);
+    var l = document.createElementNS(NS, 'line');   l.setAttribute('class', 'can-line'); svg.appendChild(l); lineEls.push(l);
+    var c = document.createElementNS(NS, 'circle'); c.setAttribute('class', 'can-dot'); c.setAttribute('r', '2.4'); svg.appendChild(c); dotEls.push(c);
+  });
+
+  function layout(w, h){
+    var cx = w / 2, cy = h / 2, r = Math.min(w, h) * 0.22;   // callout ring radius
+    SERVICES.forEach(function (s, i){
+      var lx = s.x * w, ly = s.y * h;
+      var ang = Math.atan2(ly - cy, lx - cx);
+      var ex = cx + Math.cos(ang) * r, ey = cy + Math.sin(ang) * r;      // point on the can
+      var bx = lx - Math.cos(ang) * 12, by = ly - Math.sin(ang) * 12;    // stop short of the label
+      lineEls[i].setAttribute('x1', ex); lineEls[i].setAttribute('y1', ey);
+      lineEls[i].setAttribute('x2', bx); lineEls[i].setAttribute('y2', by);
+      dotEls[i].setAttribute('cx', ex); dotEls[i].setAttribute('cy', ey);
+      labelEls[i].style.left = lx + 'px'; labelEls[i].style.top = ly + 'px';
+    });
+  }
+
+  function resize(){
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    layout(w, h);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var t0 = performance.now();
+  function frame(now){
+    var t = (now - t0) / 1000;
+    if (!reduced) {
+      group.rotation.y = t * 0.4;
+      group.position.y = Math.sin(t * 0.8) * 0.025;
+      can.rotation.z   = 0.05 + Math.sin(t * 0.5) * 0.015;
+    } else {
+      group.rotation.y = -0.5;                // a nice static three-quarter view
+    }
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+});
 </script>

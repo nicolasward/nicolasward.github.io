@@ -241,20 +241,30 @@
     z-index: 1;
     pointer-events: none;
   }
-  .can-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-  .can-lines  { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-  .can-line   { stroke: rgba(255, 255, 255, 0.45); stroke-width: 1; }
-  .can-dot    { fill: #ffffff; }
-  .can-labels { position: absolute; inset: 0; }
-  .can-label {
+  .can-canvas {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    display: block;
+    pointer-events: auto;            /* the can is draggable / tappable */
+    cursor: grab;
+    touch-action: pan-y;
+  }
+  .can-canvas:active { cursor: grabbing; }
+  /* The caption reveals whichever service is currently facing the viewer. */
+  .can-caption {
     position: absolute;
-    transform: translate(-50%, -50%);
+    left: 50%; bottom: 11%;
+    transform: translateX(-50%);
     font-family: var(--mono);
-    font-size: clamp(0.62rem, 1.1vw, 0.78rem);
-    letter-spacing: 0.08em;
+    font-size: clamp(0.78rem, 1.5vw, 1.02rem);
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.9);
+    color: #ffffff;
     white-space: nowrap;
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.28s ease;
   }
   html.js .can-stage     { opacity: 0; }
   html.intro .can-stage  { opacity: 1; transition: opacity 1.2s ease 2.9s; }
@@ -413,10 +423,9 @@
   <canvas id="gradient"></canvas>
 </div>
 
-<div class="can-stage" aria-hidden="true">
+<div class="can-stage">
   <canvas class="can-canvas"></canvas>
-  <svg class="can-lines"></svg>
-  <div class="can-labels"></div>
+  <div class="can-caption" aria-hidden="true"></div>
 </div>
 
 <div class="ui">
@@ -1047,40 +1056,53 @@ const GRAINS = [0.100, 0.203, 0.070, 0.093];
 </script>
 
 <!-- ============================================================
-     Services object — a 3D drink-can (three.js) on the right, slowly turning,
-     ringed by service callouts. FIRST-PASS PROTOTYPE. three.js is pulled from
-     a pinned CDN; vendor it into the repo if we want the page self-contained.
+     Services object — a realistic 3D drink-can (three.js) on the right. Six
+     services are printed around the can's label; spinning brings each to the
+     front and the caption reveals it. Drag to spin, tap to advance; it also
+     auto-cycles when idle. FIRST-PASS PROTOTYPE, three.js from a pinned CDN.
      ============================================================ -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" defer></script>
 <script>
 window.addEventListener('load', function () {
   var stage = document.querySelector('.can-stage');
   var THREE = window.THREE;
-  if (!stage || !THREE) return;              // three.js unavailable — skip silently
+  if (!stage || !THREE) return;                 // three.js unavailable — skip silently
 
-  var canvas = stage.querySelector('.can-canvas');
-  var svg    = stage.querySelector('.can-lines');
-  var wrap   = stage.querySelector('.can-labels');
+  var canvas  = stage.querySelector('.can-canvas');
+  var caption = stage.querySelector('.can-caption');
+
+  var SERVICES = ['Creative production', 'Customer experience', 'Demand forecasting',
+                  'Analytics', 'Automations', 'A/B testing'];
+  var N = SERVICES.length;
 
   var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 1.1;
+  var maxAniso = renderer.capabilities.getMaxAnisotropy();
 
   var scene  = new THREE.Scene();
-  var camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
-  camera.position.set(0, 0, 3.6);
+  var camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
+  camera.position.set(0, 0.28, 3.6);
+  camera.lookAt(0, 0, 0);
 
-  /* Soft studio reflection: a vertical gradient used as the scene environment,
-     so the metal reads as lit aluminium rather than flat plastic. */
+  /* Studio environment: a vertical gradient plus two soft vertical highlight
+     bars, so the aluminium catches moving streaks of light as it turns. */
   function envTexture(){
-    var c = document.createElement('canvas'); c.width = 16; c.height = 256;
-    var ctx = c.getContext('2d');
-    var g = ctx.createLinearGradient(0, 0, 0, 256);
-    g.addColorStop(0.0, '#eaf3ff');
-    g.addColorStop(0.5, '#6fa6e6');
-    g.addColorStop(1.0, '#0e2c52');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, 16, 256);
+    var w = 256, h = 256, c = document.createElement('canvas'); c.width = w; c.height = h;
+    var x = c.getContext('2d');
+    var g = x.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0.0, '#f3f8ff'); g.addColorStop(0.45, '#8fb6e8'); g.addColorStop(1.0, '#0c2748');
+    x.fillStyle = g; x.fillRect(0, 0, w, h);
+    function bar(cx, wd, a){
+      var gg = x.createLinearGradient(cx - wd, 0, cx + wd, 0);
+      gg.addColorStop(0, 'rgba(255,255,255,0)');
+      gg.addColorStop(0.5, 'rgba(255,255,255,' + a + ')');
+      gg.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = gg; x.fillRect(cx - wd, 0, 2 * wd, h);
+    }
+    bar(w * 0.22, w * 0.06, 0.85);
+    bar(w * 0.63, w * 0.09, 0.55);
     var t = new THREE.CanvasTexture(c);
     t.mapping = THREE.EquirectangularReflectionMapping;
     return t;
@@ -1088,78 +1110,132 @@ window.addEventListener('load', function () {
   var pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromEquirectangular(envTexture()).texture;
 
-  // Lights add shape and a moving highlight on top of the environment.
-  scene.add(new THREE.HemisphereLight(0xdfefff, 0x0b2f57, 0.5));
-  var key = new THREE.DirectionalLight(0xffffff, 1.8); key.position.set(-2.2, 2.6, 3.2); scene.add(key);
-  var rim = new THREE.DirectionalLight(0x9fd0ff, 1.1); rim.position.set(2.6, 0.8, -2.2); scene.add(rim);
+  scene.add(new THREE.HemisphereLight(0xeaf3ff, 0x0a2748, 0.35));
+  var key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(-2.2, 2.8, 3.0); scene.add(key);
+  var rim = new THREE.DirectionalLight(0xbfe0ff, 1.2); rim.position.set(2.8, 0.6, -2.0); scene.add(rim);
 
-  // The can: a lathed profile (rounded shoulders, a small top rim) revolved.
+  /* Can label textures. The body is a blue print band with the six service
+     names spaced around it; top and bottom are bare aluminium. Three canvases
+     drive albedo, metalness and roughness so the metal and the matte print
+     read differently. Canvas top maps to the lid (v = 1). */
+  function drawWrapped(x, text, cx, cy, maxw, lh){
+    x.font = "700 62px 'Figtree', Arial, sans-serif";
+    var words = text.split(' '), lines = [], cur = '';
+    for (var i = 0; i < words.length; i++){
+      var tt = cur ? cur + ' ' + words[i] : words[i];
+      if (x.measureText(tt).width > maxw && cur){ lines.push(cur); cur = words[i]; }
+      else cur = tt;
+    }
+    if (cur) lines.push(cur);
+    var y0 = cy - (lines.length - 1) * lh / 2;
+    for (var j = 0; j < lines.length; j++) x.fillText(lines[j], cx, y0 + j * lh);
+  }
+  function label(kind){
+    var w = 2400, h = 1200, c = document.createElement('canvas'); c.width = w; c.height = h;
+    var x = c.getContext('2d');
+    var topEnd = 0.30 * h, botStart = 0.80 * h;
+    if (kind === 'map'){
+      x.fillStyle = '#dfe3e8'; x.fillRect(0, 0, w, h);
+      var sg = x.createLinearGradient(0, 0, w, 0);
+      sg.addColorStop(0, '#cbd0d7'); sg.addColorStop(0.5, '#eef1f4'); sg.addColorStop(1, '#cbd0d7');
+      x.fillStyle = sg; x.fillRect(0, 0, w, topEnd); x.fillRect(0, botStart, w, h - botStart);
+      x.fillStyle = '#1f6fd0'; x.fillRect(0, topEnd, w, botStart - topEnd);            // blue label
+      x.fillStyle = 'rgba(255,255,255,0.85)'; x.fillRect(0, topEnd, w, 5); x.fillRect(0, botStart - 5, w, 5);
+      x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#ffffff';
+      for (var i = 0; i < N; i++){
+        drawWrapped(x, SERVICES[i].toUpperCase(), ((i + 0.5) / N) * w, (topEnd + botStart) / 2, (w / N) * 0.82, 74);
+      }
+    } else if (kind === 'metal'){
+      x.fillStyle = '#ffffff'; x.fillRect(0, 0, w, h);                                  // metal = 1
+      x.fillStyle = '#1c1c1c'; x.fillRect(0, topEnd, w, botStart - topEnd);             // print ~0.11
+    } else {
+      x.fillStyle = '#2e2e2e'; x.fillRect(0, 0, w, h);                                  // shiny metal
+      x.fillStyle = '#8f8f8f'; x.fillRect(0, topEnd, w, botStart - topEnd);             // matte print
+    }
+    var t = new THREE.CanvasTexture(c);
+    t.anisotropy = maxAniso; t.wrapS = THREE.RepeatWrapping;
+    if (kind === 'map') t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }
+
+  // Lathed can profile: base dome, straight body, shoulder taper, rim, recessed lid.
   var profile = [
-    [0.00, -0.50], [0.30, -0.50], [0.34, -0.45], [0.34, 0.40],
-    [0.315, 0.455], [0.30, 0.50], [0.275, 0.505], [0.00, 0.505]
-  ].map(function (v) { return new THREE.Vector2(v[0], v[1]); });
-  var geo = new THREE.LatheGeometry(profile, 120);
+    [0.00, -0.50], [0.11, -0.50], [0.25, -0.485], [0.29, -0.45], [0.30, -0.42],
+    [0.30, 0.40], [0.29, 0.44], [0.24, 0.478], [0.205, 0.492],
+    [0.205, 0.505], [0.183, 0.508], [0.172, 0.498], [0.00, 0.500]
+  ].map(function (v){ return new THREE.Vector2(v[0], v[1]); });
+  var geo = new THREE.LatheGeometry(profile, 160);
   geo.computeVertexNormals();
   var mat = new THREE.MeshPhysicalMaterial({
-    color: 0x2f7fd6, metalness: 0.5, roughness: 0.28,
-    clearcoat: 0.7, clearcoatRoughness: 0.3, envMapIntensity: 1.0
+    map: label('map'), metalnessMap: label('metal'), roughnessMap: label('rough'),
+    metalness: 1.0, roughness: 1.0, clearcoat: 0.35, clearcoatRoughness: 0.35,
+    envMapIntensity: 1.15
   });
   var can = new THREE.Mesh(geo, mat);
+  can.rotation.z = 0.04;                          // a touch of tilt, more lifelike
   var group = new THREE.Group(); group.add(can); scene.add(group);
 
-  // Service callouts — ringed around the can, joined by hairlines to its edge.
-  var SERVICES = [
-    { t: 'Creative production', x: 0.22, y: 0.15 },
-    { t: 'Customer experience', x: 0.80, y: 0.21 },
-    { t: 'Demand forecasting',  x: 0.90, y: 0.50 },
-    { t: 'Analytics',           x: 0.80, y: 0.79 },
-    { t: 'Automations',         x: 0.20, y: 0.85 },
-    { t: 'A/B testing',         x: 0.11, y: 0.51 }
-  ];
-  var NS = 'http://www.w3.org/2000/svg';
-  var labelEls = [], lineEls = [], dotEls = [];
-  SERVICES.forEach(function (s) {
-    var d = document.createElement('div'); d.className = 'can-label'; d.textContent = s.t; wrap.appendChild(d); labelEls.push(d);
-    var l = document.createElementNS(NS, 'line');   l.setAttribute('class', 'can-line'); svg.appendChild(l); lineEls.push(l);
-    var c = document.createElementNS(NS, 'circle'); c.setAttribute('class', 'can-dot'); c.setAttribute('r', '2.4'); svg.appendChild(c); dotEls.push(c);
-  });
-
-  function layout(w, h){
-    var cx = w / 2, cy = h / 2, r = Math.min(w, h) * 0.22;   // callout ring radius
-    SERVICES.forEach(function (s, i){
-      var lx = s.x * w, ly = s.y * h;
-      var ang = Math.atan2(ly - cy, lx - cx);
-      var ex = cx + Math.cos(ang) * r, ey = cy + Math.sin(ang) * r;      // point on the can
-      var bx = lx - Math.cos(ang) * 12, by = ly - Math.sin(ang) * 12;    // stop short of the label
-      lineEls[i].setAttribute('x1', ex); lineEls[i].setAttribute('y1', ey);
-      lineEls[i].setAttribute('x2', bx); lineEls[i].setAttribute('y2', by);
-      dotEls[i].setAttribute('cx', ex); dotEls[i].setAttribute('cy', ey);
-      labelEls[i].style.left = lx + 'px'; labelEls[i].style.top = ly + 'px';
-    });
+  /* Rotation state. Station i (service i) faces the viewer at
+     rotY = -(i + 0.5)/N * 2π — the same meridian its text is printed on. */
+  var TWO = Math.PI * 2;
+  function stationRot(i){ return -((i + 0.5) / N) * TWO; }
+  function nearestTargetFor(i){                   // the multiple of 2π nearest current rotation
+    var base = stationRot(i);
+    return base + Math.round((group.rotation.y - base) / TWO) * TWO;
   }
+  var idx = 0, targetY = stationRot(0), dragging = false, userT = 0;
+  group.rotation.y = targetY;
+
+  function setCaption(i){
+    caption.style.opacity = 0;
+    setTimeout(function (){ caption.textContent = SERVICES[i]; caption.style.opacity = 1; }, 160);
+  }
+  function poke(){ userT = performance.now(); }
+  function advance(dir){                           // keep spinning one direction
+    idx = ((idx + dir) % N + N) % N;
+    targetY += dir * (-TWO / N);
+    setCaption(idx); poke();
+  }
+  function snapNearest(){                           // after a free drag, settle on a station
+    var i = Math.round(-group.rotation.y / TWO * N - 0.5);
+    idx = ((i % N) + N) % N;
+    targetY = nearestTargetFor(idx);
+    setCaption(idx);
+  }
+  setCaption(idx);
+
+  // Interaction: drag to spin freely, tap to advance to the next service.
+  var lastX = 0, moved = 0;
+  canvas.addEventListener('pointerdown', function (e){
+    dragging = true; lastX = e.clientX; moved = 0; poke();
+    try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+  canvas.addEventListener('pointermove', function (e){
+    if (!dragging) return;
+    var dx = e.clientX - lastX; lastX = e.clientX; moved += Math.abs(dx);
+    group.rotation.y += dx * 0.008; poke();
+  });
+  function endDrag(){
+    if (!dragging) return; dragging = false;
+    if (moved < 6) advance(1); else snapNearest();
+  }
+  canvas.addEventListener('pointerup', endDrag);
+  canvas.addEventListener('pointercancel', endDrag);
 
   function resize(){
     var w = stage.clientWidth, h = stage.clientHeight;
     if (!w || !h) return;
     renderer.setSize(w, h, false);
     camera.aspect = w / h; camera.updateProjectionMatrix();
-    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
-    layout(w, h);
   }
-  window.addEventListener('resize', resize);
-  resize();
+  window.addEventListener('resize', resize); resize();
 
   var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var t0 = performance.now();
+  var AUTO = 3600;                                 // idle time before auto-advancing
   function frame(now){
-    var t = (now - t0) / 1000;
-    if (!reduced) {
-      group.rotation.y = t * 0.4;
-      group.position.y = Math.sin(t * 0.8) * 0.025;
-      can.rotation.z   = 0.05 + Math.sin(t * 0.5) * 0.015;
-    } else {
-      group.rotation.y = -0.5;                // a nice static three-quarter view
-    }
+    if (!dragging) group.rotation.y += (targetY - group.rotation.y) * 0.10;   // ease to target
+    if (!reduced && !dragging && (now - userT) > AUTO && Math.abs(targetY - group.rotation.y) < 0.02) advance(1);
+    group.position.y = reduced ? 0 : Math.sin(now / 1000 * 0.7) * 0.02;
     renderer.render(scene, camera);
     requestAnimationFrame(frame);
   }

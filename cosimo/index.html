@@ -233,17 +233,25 @@
     font-size: clamp(0.5rem, 1vw, 0.66rem); letter-spacing: 0.22em; text-transform: uppercase;
     color: rgba(255, 255, 255, 0.72); white-space: nowrap;
   }
+  /* Title + description stack in the top-right corner, right-aligned. Wrapping
+     them means the description sits under the title naturally, whatever the
+     title wraps to — no hand-tuned vertical offsets. */
+  .frame-head {
+    position: absolute; top: 3%; right: 5%;
+    display: flex; flex-direction: column; align-items: flex-end;
+    gap: 0.5rem; text-align: right; max-width: 62%;
+  }
   .frame-name {
-    position: absolute; left: 5%; bottom: 15%;
+    margin: 0;
     font-family: "Figtree", system-ui, sans-serif; font-weight: 700;
-    font-size: clamp(1.4rem, 3.2vw, 2.4rem); letter-spacing: -0.01em; line-height: 1.02; max-width: 82%;
+    font-size: clamp(1.4rem, 3.2vw, 2.4rem); letter-spacing: -0.01em; line-height: 1.02;
   }
   .frame-desc {
-    position: absolute; left: 5%; bottom: 10.5%;
-    font-size: clamp(0.6rem, 1.2vw, 0.75rem); letter-spacing: 0.03em;
-    color: rgba(255, 255, 255, 0.72); max-width: 72%;
+    margin: 0;
+    font-size: clamp(0.78rem, 1.6vw, 1rem); letter-spacing: 0.02em; line-height: 1.45;
+    color: rgba(255, 255, 255, 0.78);
   }
-  .frame-code { position: absolute; left: 5%; bottom: 4.5%; display: flex; align-items: flex-end; gap: 0.7rem; }
+  .frame-code { position: absolute; right: 5%; bottom: 4.5%; display: flex; align-items: flex-end; gap: 0.7rem; }
   .frame-bars { display: flex; align-items: stretch; gap: 2px; height: 30px; }
   .frame-bars i { display: block; background: var(--ink); }
   .frame-vol { font-size: 0.7rem; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.82); }
@@ -485,8 +493,10 @@
         <div class="frame-text">
           <div class="frame-num">#01</div>
           <div class="frame-side">Refresh your business identity</div>
-          <div class="frame-name">Creative production</div>
-          <div class="frame-desc">Concept, art direction, content at scale.</div>
+          <div class="frame-head">
+            <div class="frame-name">Creative production</div>
+            <div class="frame-desc">Concept, art direction, content at scale.</div>
+          </div>
           <div class="frame-code"><span class="frame-bars"></span></div>
         </div>
       </div>

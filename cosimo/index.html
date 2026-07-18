@@ -1202,7 +1202,7 @@ if (stage && scroller && canvas && frame) {
   const letters = mark ? Array.prototype.slice.call(mark.querySelectorAll('b')) : [];
   const hero   = document.querySelector('.hero');
   const colo   = document.querySelector('.colophon');
-  let curIdx = -1, markState = '';
+  let curIdx = -1, markState = '', markAt = 0, lastOp = 0;
   function barcode(seed){
     let st = seed * 9301 + 49297;
     const rnd = () => { st = (st * 9301 + 49297) % 233280; return st / 233280; };
@@ -1327,31 +1327,35 @@ if (stage && scroller && canvas && frame) {
     // UPWARD exit is scrubbed by scroll (reverse). Same on mobile — this drives
     // every screen size.
     if (letters.length){
-      const T = 0.8;
+      const T = 0.8, RISE_MS = 1150;             // 0.75s rise + the 0.37s stagger tail
       if (op >= T){
         if (markState !== 'in'){
-          markState = 'in';
+          markState = 'in'; markAt = t;
           // NOTE: do NOT clear the inline transforms here. A CSS animation
           // outranks inline styles, so mark-rise interpolates from wherever the
           // letters currently are up to 0 — clearing them first made the letters
           // snap back to hidden, which is what caused the "enters twice" blink.
           mark.classList.add('in');
         }
-      } else if (markState !== ''){
-        // Only scrub once the letters have actually been revealed. Scrubbing
-        // before the first entrance was raising them early, so the triggered
-        // animation then looked like a second entrance.
+      } else if (markState !== '' && !(markState === 'in' && t - markAt < RISE_MS)){
+        // The entrance is a FIXED animation: it is latched for its full duration
+        // so a nudge of scroll can't interrupt it, and only scrolling UP scrubs
+        // the letters back out. Scrolling down leaves them where they are, so the
+        // rise is always performed by the animation, never by the scrollbar.
         if (markState === 'in'){ markState = 'out'; mark.classList.remove('in'); }
-        const base = clamp(op / T, 0, 1);        // 1 at the threshold, 0 at the top
-        const span = 0.55;
-        for (let i = 0; i < letters.length; i++){
-          const start = (i / (letters.length - 1)) * span;
-          const local = smoother(clamp((base - start) / (1 - span), 0, 1));
-          letters[i].style.transform = 'translateY(' + ((1 - local) * 115).toFixed(1) + '%)';
+        if (op < lastOp){                        // exit only — scroll-dependent
+          const base = clamp(op / T, 0, 1);      // 1 at the threshold, 0 at the top
+          const span = 0.55;
+          for (let i = 0; i < letters.length; i++){
+            const start = (i / (letters.length - 1)) * span;
+            const local = smoother(clamp((base - start) / (1 - span), 0, 1));
+            letters[i].style.transform = 'translateY(' + ((1 - local) * 115).toFixed(1) + '%)';
+          }
         }
       }
       // markState === '' -> never reached the end yet; the letters stay hidden.
     }
+    lastOp = op;
     // Mobile: the colophon shows only at the very end, not during the scroll.
     if (mobile && colo) colo.style.opacity = String(smoother(clamp((op - 0.6) / 0.3, 0, 1)));
 

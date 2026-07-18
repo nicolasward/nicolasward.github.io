@@ -235,12 +235,6 @@
   .num-roll { display: block; height: 1em; overflow: hidden; }   /* a one-digit window */
   .num-col  { display: block; transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1); }
   .num-col b { display: block; height: 1em; line-height: 1; font: inherit; }
-  .frame-side {
-    position: absolute; top: 50%; right: 2.4%;
-    transform-origin: right center; transform: translateY(-50%) rotate(90deg);
-    font-size: clamp(0.5rem, 1vw, 0.66rem); letter-spacing: 0.22em; text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.72); white-space: nowrap;
-  }
   /* Title + description stack in the top-left corner, left-aligned. Wrapping
      them means the description sits under the title naturally, whatever the
      title wraps to — no hand-tuned vertical offsets. */
@@ -351,13 +345,11 @@
      A stack of bars, one per service: shows where you are in the sequence and
      jumps straight there when clicked. Faded in/out with the card frame. */
   .progress {
-    position: fixed;
-    right: 0.85rem; top: 50%;
+    position: absolute;                 /* inside the card now, on its right edge */
+    right: 2.4%; top: 50%;
     transform: translateY(-50%);
-    z-index: 6;
+    z-index: 2;
     display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem;
-    opacity: 0;
-    transition: opacity 0.4s ease;
   }
   .progress button {
     display: block; padding: 0; margin: 0; border: 0;
@@ -523,11 +515,11 @@
 
     <div class="can-stage">
       <canvas class="can-canvas"></canvas>
-      <div class="frame" aria-hidden="true">
-        <svg class="frame-border"><path class="frame-outline" d=""/></svg>
-        <div class="frame-num"><span class="num-hash">#0</span><span class="num-roll"><span class="num-col"><b>1</b><b>2</b><b>3</b><b>4</b><b>5</b><b>6</b></span></span></div>
-        <div class="frame-text">
-          <div class="frame-side">Refresh your business identity</div>
+      <div class="frame">
+        <svg class="frame-border" aria-hidden="true"><path class="frame-outline" d=""/></svg>
+        <div class="frame-num" aria-hidden="true"><span class="num-hash">#0</span><span class="num-roll"><span class="num-col"><b>1</b><b>2</b><b>3</b><b>4</b><b>5</b><b>6</b></span></span></div>
+        <nav class="progress" aria-label="Services"></nav>
+        <div class="frame-text" aria-hidden="true">
           <div class="frame-head">
             <div class="frame-name">Creative production</div>
             <div class="frame-desc">Concept, art direction, content at scale.</div>
@@ -561,7 +553,6 @@
 
 <button class="credo-toggle" type="button" aria-label="Change the colour theme" title="Change the colour theme"></button>
 <div class="scroll-cue" aria-hidden="true"><span>Scroll</span><span class="scroll-cue-line"></span></div>
-<nav class="progress" aria-label="Services"></nav>
 
 <script>
 /* Shared field state, read every frame by the WebGL draw loop in the next
@@ -1125,12 +1116,12 @@ const frame    = stage && stage.querySelector('.frame');
 
 if (stage && scroller && canvas && frame) {
   const SERVICES = [
-    { name: 'Creative production', desc: 'Concept, art direction, content at scale.',  side: 'Refresh your business identity' },
-    { name: 'Customer experience', desc: 'Journeys, support, retention, loyalty.',     side: 'Every touchpoint, considered' },
-    { name: 'Demand forecasting',  desc: 'Predict demand, plan stock and spend.',      side: 'Plan with confidence' },
-    { name: 'Analytics',           desc: 'Dashboards, attribution, clear decisions.',  side: 'See the whole picture' },
-    { name: 'Automations',         desc: 'Workflows that run themselves.',             side: 'Let the busywork disappear' },
-    { name: 'A/B testing',         desc: 'Experiment, measure, compound the wins.',    side: 'Ship, measure, repeat' }
+    { name: 'Creative production', desc: 'Concept, art direction, content at scale.' },
+    { name: 'Customer experience', desc: 'Journeys, support, retention, loyalty.' },
+    { name: 'Demand forecasting',  desc: 'Predict demand, plan stock and spend.' },
+    { name: 'Analytics',           desc: 'Dashboards, attribution, clear decisions.' },
+    { name: 'Automations',         desc: 'Workflows that run themselves.' },
+    { name: 'A/B testing',         desc: 'Experiment, measure, compound the wins.' }
   ];
   const N = SERVICES.length;
   const TWO = Math.PI * 2;
@@ -1253,7 +1244,6 @@ if (stage && scroller && canvas && frame) {
   const numCol = frame.querySelector('.num-col');
   const elName = frame.querySelector('.frame-name');
   const elDesc = frame.querySelector('.frame-desc');
-  const elSide = frame.querySelector('.frame-side');
   const elBars = frame.querySelector('.frame-bars');
   const elText = frame.querySelector('.frame-text');
   const concl  = document.querySelector('.conclusion');
@@ -1321,7 +1311,6 @@ if (stage && scroller && canvas && frame) {
     if (fresh) setCipher(elName);
     pendingScramble = fresh;                   // decrypt plays once the card is visible again
     elDesc.textContent = svc.desc;
-    elSide.textContent = svc.side;
     elBars.innerHTML   = barcode(i + 1);
     curIdx = i;
   }
@@ -1455,9 +1444,8 @@ if (stage && scroller && canvas && frame) {
     const dist = Math.abs(sv - (nearest + 0.5));
     const fp = smoother(clamp(1 - dist / 0.42, 0, 1));
     elText.style.opacity = String(fp * clamp((border - 0.6) / 0.4, 0, 1) * (1 - undraw));
-    if (prog){                                        // progress bars follow the frame
+    if (prog){                       // the rail rides the frame's own opacity now
       const vis = clamp(border * 6, 0, 1);
-      prog.style.opacity = String(vis);
       prog.style.pointerEvents = vis > 0.6 ? 'auto' : 'none';
       const active = op > 0.05 ? -1 : nearest;
       for (let i = 0; i < progBtns.length; i++) progBtns[i].classList.toggle('on', i === active);

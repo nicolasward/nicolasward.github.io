@@ -1238,6 +1238,14 @@ if (stage && scroller && canvas && frame) {
   // and then locks in, left to right.
   const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/#$%&*+=<>';
   let scrambleTimer = 0, pendingScramble = false;
+  function scrambled(text){                  // the pre-decrypt state
+    let out = '';
+    for (let i = 0; i < text.length; i++){
+      const ch = text[i];
+      out += (ch === ' ') ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0];
+    }
+    return out;
+  }
   function scrambleTo(el, text){
     clearInterval(scrambleTimer);
     let step = 0;
@@ -1263,8 +1271,9 @@ if (stage && scroller && canvas && frame) {
   function setService(i){
     const svc = SERVICES[i];
     if (numCol) numCol.style.transform = 'translateY(' + (-i) + 'em)';   // roll the units digit
-    elName.textContent = svc.name;
-    pendingScramble = true;                    // played once the card is visible again
+    clearInterval(scrambleTimer);              // stop any decrypt still running
+    elName.textContent = scrambled(svc.name);  // fades in already scrambled, then resolves
+    pendingScramble = true;                    // decrypt plays once the card is visible again
     elDesc.textContent = svc.desc;
     elSide.textContent = svc.side;
     elBars.innerHTML   = barcode(i + 1);

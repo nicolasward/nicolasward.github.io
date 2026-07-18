@@ -1300,10 +1300,13 @@ if (stage && scroller && canvas && frame) {
       hero.style.transform = 'translateX(' + (-hf * 5) + 'vw)';
     }
     if (concl) concl.style.opacity = String(smoother(clamp((op - 0.32) / 0.42, 0, 1)));
-    // COSIMO: the DOWNWARD entrance plays as a self-contained staggered animation
-    // once you reach the end; the UPWARD exit is scrubbed by scroll (reverse).
+    // COSIMO: the DOWNWARD entrance plays as a self-contained staggered animation,
+    // triggered only after the conclusion title + button have fully faded in
+    // (they finish at op 0.74), so the letters are the last thing to land. The
+    // UPWARD exit is scrubbed by scroll (reverse). Same on mobile — this drives
+    // every screen size.
     if (letters.length){
-      const T = 0.5;
+      const T = 0.8;
       if (op >= T){
         if (markState !== 'in'){                 // trigger the staggered rise once
           markState = 'in';

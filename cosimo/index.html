@@ -224,7 +224,7 @@
   .frame-border { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
   .frame-border rect { fill: none; stroke: rgba(255, 255, 255, 0.85); stroke-width: 1.25; }
   .frame-num {
-    position: absolute; top: 3%; left: 5%;
+    position: absolute; top: 3%; right: 5%;
     font-weight: 500; font-size: clamp(1.3rem, 2.8vw, 2.2rem); letter-spacing: 0.02em;
   }
   .frame-side {
@@ -233,13 +233,13 @@
     font-size: clamp(0.5rem, 1vw, 0.66rem); letter-spacing: 0.22em; text-transform: uppercase;
     color: rgba(255, 255, 255, 0.72); white-space: nowrap;
   }
-  /* Title + description stack in the top-right corner, right-aligned. Wrapping
+  /* Title + description stack in the top-left corner, left-aligned. Wrapping
      them means the description sits under the title naturally, whatever the
      title wraps to — no hand-tuned vertical offsets. */
   .frame-head {
-    position: absolute; top: 3%; right: 5%;
-    display: flex; flex-direction: column; align-items: flex-end;
-    gap: 0.5rem; text-align: right; max-width: 62%;
+    position: absolute; top: 3%; left: 5%;
+    display: flex; flex-direction: column; align-items: flex-start;
+    gap: 0.5rem; text-align: left; max-width: 62%;
   }
   .frame-name {
     margin: 0;

@@ -296,7 +296,7 @@
       color: var(--ink);
     }
     .bigfoot { position: static; padding-top: 2.5rem; }
-    .cosimo-mark { transform: none; }
+    .cosimo-mark { transform: none; -webkit-mask: none; mask: none; }
     .conclusion { display: none; }
     .colophon {
       position: static; transform: none; opacity: 1 !important;
@@ -320,16 +320,17 @@
      bottom to top. */
   .colophon {
     position: fixed;
-    right: 1.1rem; bottom: 3.4rem;
+    right: 1.55rem; bottom: 3.9rem;   /* spine just left of the dot, starting above it */
     z-index: 6;
     transform-origin: right bottom;
     transform: rotate(-90deg);
     margin: 0;
+    line-height: 1;
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 500;
-    letter-spacing: 0.02em;
-    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 0.03em;
+    color: rgba(255, 255, 255, 0.58);
     white-space: nowrap;
     pointer-events: none;
   }
@@ -408,7 +409,9 @@
     letter-spacing: -0.02em;
     color: var(--ink);
     user-select: none;
-    transform: translateY(52%);       /* only the top half of each letter shows above the fold */
+    transform: translateY(45%);       /* tops show; the rest is hinted below the fold */
+    -webkit-mask-image: linear-gradient(to bottom, #000 40%, rgba(0,0,0,0) 58%);
+            mask-image: linear-gradient(to bottom, #000 40%, rgba(0,0,0,0) 58%);
   }
   .cosimo-mark span { display: block; clip-path: inset(-35% -8% 0 -8%); }  /* clip only the bottom */
   .cosimo-mark b { display: block; font: inherit; }
@@ -484,7 +487,7 @@
           <div class="frame-side">Refresh your business identity</div>
           <div class="frame-name">Creative production</div>
           <div class="frame-desc">Concept, art direction, content at scale.</div>
-          <div class="frame-code"><span class="frame-bars"></span><span class="frame-vol">330ML</span></div>
+          <div class="frame-code"><span class="frame-bars"></span></div>
         </div>
       </div>
     </div>
@@ -598,9 +601,9 @@ var PALETTE_CTRL = { next: null };   // assigned by the WebGL init; called by th
     root.classList.add('intro');
   }); });
 
-  // The cue disappears for good once the user scrolls.
-  window.addEventListener('scroll', function once(){
-    root.classList.add('scrolled'); window.removeEventListener('scroll', once);
+  // The cue shows whenever we're at the top of the page, and hides once scrolled.
+  window.addEventListener('scroll', function () {
+    root.classList.toggle('scrolled', window.scrollY > 40);
   }, { passive: true });
 
   // The white dot cycles the background palette (live blue -> green -> orange

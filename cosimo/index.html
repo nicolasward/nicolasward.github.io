@@ -1194,8 +1194,9 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
   const elText = frame.querySelector('.frame-text');
   const concl  = document.querySelector('.conclusion');
   const mark   = document.querySelector('.cosimo-mark');
+  const letters = mark ? Array.prototype.slice.call(mark.querySelectorAll('b')) : [];
   const hero   = document.querySelector('.hero');
-  let curIdx = -1, footIn = false;
+  let curIdx = -1;
   function barcode(seed){
     let st = seed * 9301 + 49297;
     const rnd = () => { st = (st * 9301 + 49297) % 233280; return st / 233280; };
@@ -1289,13 +1290,17 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
       hero.style.transform = 'translateX(' + (-hf * 5) + 'vw)';
     }
     if (concl) concl.style.opacity = String(smoother(clamp((op - 0.32) / 0.42, 0, 1)));
-    // The half-height COSIMO rises in (staggered) when the outro is reached, and
-    // sinks back out in reverse order on the way up.
-    const showFoot = op > 0.5;
-    if (showFoot !== footIn){
-      footIn = showFoot;
-      mark.classList.toggle('in', showFoot);
-      mark.classList.toggle('out', !showFoot);
+    // The half-height COSIMO is scrubbed directly by scroll: each letter rises as
+    // you scroll into the outro (staggered C->O) and lowers again on the way up
+    // (the higher-staggered letters leave first, so the exit is the reverse).
+    if (letters.length){
+      const base = clamp((op - 0.4) / 0.55, 0, 1);
+      const span = 0.55;                       // how far the stagger spreads across the window
+      for (let i = 0; i < letters.length; i++){
+        const start = (i / (letters.length - 1)) * span;
+        const local = smoother(clamp((base - start) / (1 - span), 0, 1));
+        letters[i].style.transform = 'translateY(' + ((1 - local) * 115).toFixed(1) + '%)';
+      }
     }
 
     renderer.render(scene, camera);

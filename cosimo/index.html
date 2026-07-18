@@ -296,10 +296,11 @@
       color: var(--ink);
     }
     .bigfoot { position: static; padding-top: 2.5rem; }
-    .cosimo-mark { transform: none; -webkit-mask: none; mask: none; }
+    .cosimo-mark { transform: none; }
+    html.js .cosimo-mark b { transform: translateY(115%); }
     .conclusion { display: none; }
     .colophon {
-      position: static; transform: none; opacity: 1 !important;
+      position: static; left: auto; transform: none; opacity: 1 !important;
       text-align: center; padding: 1.5rem var(--gutter) 2.5rem;
       font-size: 0.8rem; color: rgba(255, 255, 255, 0.7);
     }
@@ -320,9 +321,10 @@
      bottom to top. */
   .colophon {
     position: fixed;
-    right: 1.55rem; bottom: 3.9rem;   /* spine just left of the dot, starting above it */
+    left: calc(100vw - 1.85rem);      /* spine ~1.85rem from the right edge */
+    bottom: 3.4rem;                    /* the © end sits just above the dot; the line grows up */
     z-index: 6;
-    transform-origin: right bottom;
+    transform-origin: left bottom;
     transform: rotate(-90deg);
     margin: 0;
     line-height: 1;
@@ -357,8 +359,8 @@
 
   /* ---------------- Scroll cue ----------------
      A small "Scroll" label with a travelling tick, so the pinned can reads as
-     something to scroll through, not a static image. Fades in after the intro
-     and disappears for good on the first scroll. */
+     something to scroll through, not a static image. Appears after the intro,
+     shows at the top of the page, and hides while scrolled. */
   .scroll-cue {
     position: fixed;
     left: 50%; bottom: 1.5rem;
@@ -378,8 +380,8 @@
     animation: cue 1.9s cubic-bezier(0.6, 0, 0.4, 1) infinite;
   }
   @keyframes cue { 0% { transform: translateY(-110%); } 65%, 100% { transform: translateY(230%); } }
-  html.intro .scroll-cue { opacity: 1; transition: opacity 0.8s ease 4.8s; }
-  html.scrolled .scroll-cue { opacity: 0 !important; transition: opacity 0.4s ease; }
+  .scroll-cue { transition: opacity 0.5s ease; }
+  html.cue-on:not(.scrolled) .scroll-cue { opacity: 1; }
   @media (max-width: 900px) { .scroll-cue { display: none; } }
 
   /* ---------------- Footer ----------------
@@ -409,13 +411,10 @@
     letter-spacing: -0.02em;
     color: var(--ink);
     user-select: none;
-    transform: translateY(45%);       /* tops show; the rest is hinted below the fold */
-    -webkit-mask-image: linear-gradient(to bottom, #000 40%, rgba(0,0,0,0) 58%);
-            mask-image: linear-gradient(to bottom, #000 40%, rgba(0,0,0,0) 58%);
+    transform: translateY(115%);      /* the full letters live below the fold; scroll reveals them */
   }
   .cosimo-mark span { display: block; clip-path: inset(-35% -8% 0 -8%); }  /* clip only the bottom */
   .cosimo-mark b { display: block; font: inherit; }
-  html.js .cosimo-mark b { transform: translateY(115%); }               /* hidden below until revealed */
   .cosimo-mark.in b { animation: mark-rise 0.75s cubic-bezier(0.16, 1, 0.3, 1) both; }
   .cosimo-mark.in span:nth-child(1) b { animation-delay: 0.02s; }
   .cosimo-mark.in span:nth-child(2) b { animation-delay: 0.09s; }
@@ -601,7 +600,9 @@ var PALETTE_CTRL = { next: null };   // assigned by the WebGL init; called by th
     root.classList.add('intro');
   }); });
 
-  // The cue shows whenever we're at the top of the page, and hides once scrolled.
+  // The cue appears after the intro, shows at the top, hides while scrolled
+  // (and reappears on return to the top).
+  setTimeout(function () { root.classList.add('cue-on'); }, 4600);
   window.addEventListener('scroll', function () {
     root.classList.toggle('scrolled', window.scrollY > 40);
   }, { passive: true });
@@ -1194,7 +1195,7 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
   const concl  = document.querySelector('.conclusion');
   const mark   = document.querySelector('.cosimo-mark');
   const hero   = document.querySelector('.hero');
-  let curIdx = -1, footIn = false;
+  let curIdx = -1;
   function barcode(seed){
     let st = seed * 9301 + 49297;
     const rnd = () => { st = (st * 9301 + 49297) % 233280; return st / 233280; };
@@ -1258,9 +1259,11 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     // ---- the can: tumble through the services, then rise out of shot in the outro ----
     if (ready){
       group.quaternion.copy(poseQ(sv));
-      const ex = smoother(op);                      // exit amount
-      group.position.y = (reduced ? 0 : Math.sin(t * 0.0011) * 0.02) + ex * 3.6;
-      group.scale.setScalar(1 - 0.5 * ex);
+      const en = smoother(clamp(sv / 0.5, 0, 1));    // arrival across the first half-service of scroll
+      const ex = smoother(op);                        // exit in the outro
+      const bob = reduced ? 0 : Math.sin(t * 0.0011) * 0.02;
+      group.position.y = (1 - en) * -3.8 + ex * 3.6 + bob;   // flies up from below, later rises out of shot
+      group.scale.setScalar((0.72 + 0.28 * en) * (1 - 0.5 * ex));
     }
 
     // ---- the frame: draws once on entry, holds, then UNDRAWS through the outro ----
@@ -1281,8 +1284,12 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
       hero.style.transform = 'translateX(' + (-hf * 5) + 'vw)';
     }
     if (concl) concl.style.opacity = String(smoother(clamp((op - 0.32) / 0.42, 0, 1)));
-    const showFoot = op > 0.5;
-    if (showFoot !== footIn){ footIn = showFoot; if (mark) mark.classList.toggle('in', showFoot); }
+    // The full COSIMO lives below the fold; the deeper into the outro, the more
+    // of the letters rise into view (so overscrolling reveals more of them).
+    if (mark){
+      const rev = smoother(clamp((op - 0.4) / 0.6, 0, 1));
+      mark.style.transform = 'translateY(' + (115 - rev * 96).toFixed(2) + '%)';   // 115% hidden -> ~19% shown
+    }
 
     renderer.render(scene, camera);
     requestAnimationFrame(tick);

@@ -1272,13 +1272,20 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     if (ready){
       group.quaternion.copy(poseQ(sv));
       const en = smoother(clamp(sv / 0.6, 0, 1));    // a controlled arrival over the first ~0.6 of a service
-      if (en < 1){                                    // arrive in a front flip — the mirror of the exit backflip
-        _spinQ.setFromAxisAngle(_flip, (en - 1) * TWO * 1.5);
+      if (en < 1){                                    // arrive in a single front flip (mirror of the exit)
+        _spinQ.setFromAxisAngle(_flip, (en - 1) * TWO * 1.0);
         group.quaternion.premultiply(_spinQ);
       }
-      const ex = smoother(clamp(op / 0.5, 0, 1));     // exits over the first half of the outro
-      if (ex > 0){                                     // leave in a backflip, not just a fly-out
-        _spinQ.setFromAxisAngle(_flip, -ex * TWO * 1.5);   // ~1.5 backward tumbles
+      // Exit backflip. It begins during the TAIL of the last service and carries
+      // continuously into the outro, so there is no frozen gap after the 6th
+      // service settles. exr rises 0 -> 0.5 across sv 5.8..6, then 0.5 -> 1 across
+      // op 0..0.3 — one seamless ramp through the boundary.
+      const exr = (op > 0)
+        ? 0.5 + 0.5 * clamp(op / 0.3, 0, 1)
+        : 0.5 * clamp((sv - (N - 0.2)) / 0.2, 0, 1);
+      const ex = smoother(exr);
+      if (ex > 0){                                     // leave in a backflip
+        _spinQ.setFromAxisAngle(_flip, -ex * TWO * 1.5);
         group.quaternion.premultiply(_spinQ);
       }
       const bob = reduced ? 0 : Math.sin(t * 0.0011) * 0.02;

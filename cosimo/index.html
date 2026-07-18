@@ -439,17 +439,23 @@
       text-align: left;
       padding: 0 var(--gutter) 7vh;
     }
-    .headline { max-width: none; justify-items: start; margin: 0; font-size: clamp(2.5rem, 12vw, 4rem); }
+    /* No typewriter on mobile, so drop the sizer and let the line size itself —
+       tuned to keep "Power to humans." on ONE line. */
+    .hl-sizer { display: none; }
+    .headline { max-width: none; justify-items: start; margin: 0; font-size: clamp(1.8rem, 8.2vw, 2.6rem); }
+    .headline .p-init { font-size: 1.75em; }
     .hero .sub, .hero .ctas { display: none; }       /* sub copy moves to the outro; no CTA up top */
     .hl-caret { display: none; }
     .services-mobile { display: none; }
     .concl-sub { display: block; }                   /* the sub copy, under the conclusion title */
     .conclusion { align-items: flex-start; text-align: left; }
-    .colophon {                                      /* plain horizontal line at the page foot */
-      position: static; left: auto; right: auto; bottom: auto;
+    /* FIXED, not static: a static colophon added page height below the scroller,
+       which pushed the pinned COSIMO up off the bottom edge at full scroll. */
+    .colophon {
+      position: fixed; left: var(--gutter); right: auto; bottom: 1rem; top: auto;
       transform: none; opacity: 1 !important;
-      text-align: left; padding: 1.5rem var(--gutter) 2.5rem;
-      font-size: 0.8rem; color: rgba(255, 255, 255, 0.7);
+      text-align: left; padding: 0;
+      font-size: 0.72rem; color: rgba(255, 255, 255, 0.6);
     }
   }
 </style>
@@ -1085,6 +1091,8 @@ if (stage && scroller && canvas && frame) {
   const N = SERVICES.length;
   const TWO = Math.PI * 2;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const mobile  = matchMedia('(max-width: 900px)').matches;
+  const bootT   = performance.now();   // mobile: the can flies in on a timer, not on scroll
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const smoother = t => { t = clamp(t, 0, 1); return t * t * t * (t * (t * 6 - 15) + 10); };
 
@@ -1260,7 +1268,11 @@ if (stage && scroller && canvas && frame) {
     // ---- the can: tumble through the services, then rise out of shot in the outro ----
     if (ready){
       group.quaternion.copy(poseQ(sv));
-      const en = smoother(clamp(sv / 0.6, 0, 1));    // a controlled arrival over the first ~0.6 of a service
+      // Desktop: the can arrives as you begin scrolling. Mobile: the landing screen
+      // would otherwise be bare, so it flies in on its own once the field opens.
+      const en = mobile
+        ? smoother(clamp((t - bootT - 2400) / 1200, 0, 1))
+        : smoother(clamp(sv / 0.6, 0, 1));
       if (en < 1){                                    // arrive in a single front flip (mirror of the exit)
         _spinQ.setFromAxisAngle(_flip, (en - 1) * TWO * 1.0);
         group.quaternion.premultiply(_spinQ);

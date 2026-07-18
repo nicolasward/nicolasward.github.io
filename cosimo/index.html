@@ -297,7 +297,6 @@
     }
     .bigfoot { position: static; padding-top: 2.5rem; }
     .cosimo-mark { transform: none; }
-    html.js .cosimo-mark b { transform: translateY(115%); }
     .conclusion { display: none; }
     .colophon {
       position: static; left: auto; transform: none; opacity: 1 !important;
@@ -321,15 +320,15 @@
      bottom to top. */
   .colophon {
     position: fixed;
-    left: calc(100vw - 1.85rem);      /* spine ~1.85rem from the right edge */
-    bottom: 3.4rem;                    /* the © end sits just above the dot; the line grows up */
+    left: calc(100vw - 1.6rem);       /* column centred over the dot */
+    bottom: 2.9rem;                    /* the © end sits just above the dot; the line grows up */
     z-index: 6;
     transform-origin: left bottom;
     transform: rotate(-90deg);
     margin: 0;
     line-height: 1;
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
-    font-size: 0.68rem;
+    font-size: 0.875rem;
     font-weight: 500;
     letter-spacing: 0.03em;
     color: rgba(255, 255, 255, 0.58);
@@ -411,10 +410,11 @@
     letter-spacing: -0.02em;
     color: var(--ink);
     user-select: none;
-    transform: translateY(115%);      /* the full letters live below the fold; scroll reveals them */
+    transform: translateY(52%);       /* only the top half of each letter shows above the fold */
   }
   .cosimo-mark span { display: block; clip-path: inset(-35% -8% 0 -8%); }  /* clip only the bottom */
   .cosimo-mark b { display: block; font: inherit; }
+  html.js .cosimo-mark b { transform: translateY(115%); }               /* hidden below until revealed */
   .cosimo-mark.in b { animation: mark-rise 0.75s cubic-bezier(0.16, 1, 0.3, 1) both; }
   .cosimo-mark.in span:nth-child(1) b { animation-delay: 0.02s; }
   .cosimo-mark.in span:nth-child(2) b { animation-delay: 0.09s; }
@@ -425,12 +425,12 @@
   @keyframes mark-rise { to { transform: translateY(0); } }
   /* Upward scroll intent: the letters sink back below the clip, same stagger. */
   .cosimo-mark.out b { animation: mark-sink 0.55s cubic-bezier(0.55, 0, 0.75, 0.4) both; }
-  .cosimo-mark.out span:nth-child(1) b { animation-delay: 0.02s; }
-  .cosimo-mark.out span:nth-child(2) b { animation-delay: 0.07s; }
-  .cosimo-mark.out span:nth-child(3) b { animation-delay: 0.12s; }
-  .cosimo-mark.out span:nth-child(4) b { animation-delay: 0.17s; }
-  .cosimo-mark.out span:nth-child(5) b { animation-delay: 0.22s; }
-  .cosimo-mark.out span:nth-child(6) b { animation-delay: 0.27s; }
+  .cosimo-mark.out span:nth-child(6) b { animation-delay: 0.02s; }
+  .cosimo-mark.out span:nth-child(5) b { animation-delay: 0.09s; }
+  .cosimo-mark.out span:nth-child(4) b { animation-delay: 0.16s; }
+  .cosimo-mark.out span:nth-child(3) b { animation-delay: 0.23s; }
+  .cosimo-mark.out span:nth-child(2) b { animation-delay: 0.30s; }
+  .cosimo-mark.out span:nth-child(1) b { animation-delay: 0.37s; }
   @keyframes mark-sink { from { transform: translateY(0); } to { transform: translateY(115%); } }
 
   .scroll-in { opacity: 0; transform: translateY(16px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -1195,7 +1195,7 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
   const concl  = document.querySelector('.conclusion');
   const mark   = document.querySelector('.cosimo-mark');
   const hero   = document.querySelector('.hero');
-  let curIdx = -1;
+  let curIdx = -1, footIn = false;
   function barcode(seed){
     let st = seed * 9301 + 49297;
     const rnd = () => { st = (st * 9301 + 49297) % 233280; return st / 233280; };
@@ -1240,6 +1240,7 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     { axis: AX(0.3, 1, 0.2),turns:  1 }    // mostly-horizontal diagonal
   ];
   const _qb = new THREE.Quaternion(), _qt = new THREE.Quaternion();
+  const _spinQ = new THREE.Quaternion(), _up = new THREE.Vector3(0, 1, 0);
   function poseQ(sv){
     if (sv <= 0.5) return REST[0];
     if (sv >= N - 0.5) return REST[N - 1];
@@ -1259,11 +1260,15 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     // ---- the can: tumble through the services, then rise out of shot in the outro ----
     if (ready){
       group.quaternion.copy(poseQ(sv));
-      const en = smoother(clamp(sv / 0.5, 0, 1));    // arrival across the first half-service of scroll
+      const en = smoother(clamp(sv / 0.6, 0, 1));    // a controlled arrival over the first ~0.6 of a service
+      if (en < 1){                                    // spin around the vertical axis as it flies in
+        _spinQ.setFromAxisAngle(_up, (1 - en) * TWO * 1.25);
+        group.quaternion.premultiply(_spinQ);
+      }
       const ex = smoother(op);                        // exit in the outro
       const bob = reduced ? 0 : Math.sin(t * 0.0011) * 0.02;
-      group.position.y = (1 - en) * -3.8 + ex * 3.6 + bob;   // flies up from below, later rises out of shot
-      group.scale.setScalar((0.72 + 0.28 * en) * (1 - 0.5 * ex));
+      group.position.y = (1 - en) * -3.2 + ex * 3.6 + bob;   // rises up into place, later rises out of shot
+      group.scale.setScalar((0.7 + 0.3 * en) * (1 - 0.5 * ex));
     }
 
     // ---- the frame: draws once on entry, holds, then UNDRAWS through the outro ----
@@ -1284,11 +1289,13 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
       hero.style.transform = 'translateX(' + (-hf * 5) + 'vw)';
     }
     if (concl) concl.style.opacity = String(smoother(clamp((op - 0.32) / 0.42, 0, 1)));
-    // The full COSIMO lives below the fold; the deeper into the outro, the more
-    // of the letters rise into view (so overscrolling reveals more of them).
-    if (mark){
-      const rev = smoother(clamp((op - 0.4) / 0.6, 0, 1));
-      mark.style.transform = 'translateY(' + (115 - rev * 96).toFixed(2) + '%)';   // 115% hidden -> ~19% shown
+    // The half-height COSIMO rises in (staggered) when the outro is reached, and
+    // sinks back out in reverse order on the way up.
+    const showFoot = op > 0.5;
+    if (showFoot !== footIn){
+      footIn = showFoot;
+      mark.classList.toggle('in', showFoot);
+      mark.classList.toggle('out', !showFoot);
     }
 
     renderer.render(scene, camera);

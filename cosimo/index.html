@@ -342,6 +342,28 @@
   .concl-title { margin: 0; font-family: "Figtree", system-ui, sans-serif; font-weight: 700; font-size: clamp(2.6rem, 6.2vw, 5rem); letter-spacing: -0.03em; line-height: 1.0; max-width: 15ch; text-wrap: balance; }
   .concl-sub { display: none; margin: 0; font-family: "Figtree", system-ui, sans-serif; font-size: 1rem; font-weight: 500; line-height: 1.5; color: var(--ink-dim); max-width: 34ch; }
 
+  /* ---------------- Progress ----------------
+     A stack of bars, one per service: shows where you are in the sequence and
+     jumps straight there when clicked. Faded in/out with the card frame. */
+  .progress {
+    position: fixed;
+    right: 0.85rem; top: 50%;
+    transform: translateY(-50%);
+    z-index: 6;
+    display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .progress button {
+    display: block; padding: 0; margin: 0; border: 0;
+    width: 18px; height: 2px; border-radius: 2px;
+    background: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
+  }
+  .progress button.on { width: 32px; background: #ffffff; }
+  @media (hover: hover) { .progress button:hover { background: rgba(255, 255, 255, 0.85); } }
+
   /* ---------------- Scroll cue ----------------
      A small "Scroll" label with a travelling tick, so the pinned can reads as
      something to scroll through, not a static image. Appears after the intro,
@@ -534,6 +556,7 @@
 
 <button class="credo-toggle" type="button" aria-label="Change the colour theme" title="Change the colour theme"></button>
 <div class="scroll-cue" aria-hidden="true"><span>Scroll</span><span class="scroll-cue-line"></span></div>
+<nav class="progress" aria-label="Services"></nav>
 
 <script>
 /* Shared field state, read every frame by the WebGL draw loop in the next
@@ -1236,14 +1259,20 @@ if (stage && scroller && canvas && frame) {
   let curIdx = -1, markState = '', markAt = 0, lastOp = 0;
   // Titles "decrypt" into place: each character flickers through random glyphs
   // and then locks in, left to right.
-  const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/#$%&*+=<>';
   let scrambleTimer = 0, pendingScramble = false;
-  function scrambled(text){                  // the pre-decrypt state
-    let out = '';
-    for (let i = 0; i < text.length; i++){
-      const ch = text[i];
-      out += (ch === ' ') ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0];
+  const decrypted = [];                      // services already decrypted once
+  /* The cipher is a PERMUTATION of the title's own characters, with spaces left
+     in place. Same glyphs and same word lengths means the scrambled line is
+     always exactly as wide as the final one, so it can never spill onto a
+     second line and then snap back. */
+  function cipher(text, from){
+    const pool = [];
+    for (let i = from; i < text.length; i++) if (text[i] !== ' ') pool.push(text[i]);
+    for (let i = pool.length - 1; i > 0; i--){        // Fisher-Yates
+      const j = (Math.random() * (i + 1)) | 0, t = pool[i]; pool[i] = pool[j]; pool[j] = t;
     }
+    let out = text.slice(0, from), k = 0;
+    for (let i = from; i < text.length; i++) out += (text[i] === ' ') ? ' ' : pool[k++];
     return out;
   }
   function scrambleTo(el, text){
@@ -1251,13 +1280,8 @@ if (stage && scroller && canvas && frame) {
     let step = 0;
     scrambleTimer = setInterval(function (){
       step++;
-      const locked = step * 0.62;              // roughly one character every 53ms
-      let out = '';
-      for (let i = 0; i < text.length; i++){
-        const ch = text[i];
-        out += (ch === ' ' || i < locked) ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0];
-      }
-      el.textContent = out;
+      const locked = Math.min(text.length, Math.floor(step * 0.62));   // ~1 character every 53ms
+      el.textContent = cipher(text, locked);
       if (locked >= text.length){ clearInterval(scrambleTimer); el.textContent = text; }
     }, 33);
   }
@@ -1272,8 +1296,9 @@ if (stage && scroller && canvas && frame) {
     const svc = SERVICES[i];
     if (numCol) numCol.style.transform = 'translateY(' + (-i) + 'em)';   // roll the units digit
     clearInterval(scrambleTimer);              // stop any decrypt still running
-    elName.textContent = scrambled(svc.name);  // fades in already scrambled, then resolves
-    pendingScramble = true;                    // decrypt plays once the card is visible again
+    const fresh = decrypted.indexOf(i) === -1; // only the FIRST pass decrypts
+    elName.textContent = fresh ? cipher(svc.name, 0) : svc.name;
+    pendingScramble = fresh;                   // decrypt plays once the card is visible again
     elDesc.textContent = svc.desc;
     elSide.textContent = svc.side;
     elBars.innerHTML   = barcode(i + 1);
@@ -1327,6 +1352,27 @@ if (stage && scroller && canvas && frame) {
     return _qt.multiply(REST[i]);   // one clean axis, REST[i] -> REST[i+1]
   }
 
+  // ---------- progress bars ----------
+  const prog = document.querySelector('.progress');
+  const progBtns = [];
+  function scrollToService(i){
+    const total = scroller.offsetHeight - window.innerHeight;
+    if (total <= 0) return;
+    const top = scroller.getBoundingClientRect().top + window.scrollY;
+    // anchor i sits at pr = (i + 0.5) / (N + 1)
+    window.scrollTo({ top: top + ((i + 0.5) / (N + 1)) * total, behavior: 'smooth' });
+  }
+  if (prog){
+    for (let i = 0; i < N; i++){
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', SERVICES[i].name);
+      b.addEventListener('click', function (){ scrollToService(i); });
+      prog.appendChild(b);
+      progBtns.push(b);
+    }
+  }
+
   // Timeline: the scroll is split into N service segments + 1 outro segment.
   const SVC = N / (N + 1);                          // fraction of scroll spent on services
   function tick(t){
@@ -1373,8 +1419,16 @@ if (stage && scroller && canvas && frame) {
     const dist = Math.abs(sv - (nearest + 0.5));
     const fp = smoother(clamp(1 - dist / 0.42, 0, 1));
     elText.style.opacity = String(fp * clamp((border - 0.6) / 0.4, 0, 1) * (1 - undraw));
+    if (prog){                                        // progress bars follow the frame
+      const vis = clamp(border * 6, 0, 1);
+      prog.style.opacity = String(vis);
+      prog.style.pointerEvents = vis > 0.6 ? 'auto' : 'none';
+      const active = op > 0.05 ? -1 : nearest;
+      for (let i = 0; i < progBtns.length; i++) progBtns[i].classList.toggle('on', i === active);
+    }
     if (pendingScramble && fp > 0.2 && curIdx >= 0){   // decrypt as the card comes into view
       pendingScramble = false;
+      decrypted.push(curIdx);                          // ...once only
       scrambleTo(elName, SERVICES[curIdx].name);
     }
 

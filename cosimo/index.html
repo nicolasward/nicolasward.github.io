@@ -449,14 +449,12 @@
     .services-mobile { display: none; }
     .concl-sub { display: block; }                   /* the sub copy, under the conclusion title */
     .conclusion { align-items: flex-start; text-align: left; }
-    /* FIXED, not static: a static colophon added page height below the scroller,
-       which pushed the pinned COSIMO up off the bottom edge at full scroll. */
-    .colophon {
-      position: fixed; left: var(--gutter); right: auto; bottom: 1rem; top: auto;
-      transform: none; opacity: 1 !important;
-      text-align: left; padding: 0;
-      font-size: 0.72rem; color: rgba(255, 255, 255, 0.6);
-    }
+    /* The colophon keeps the desktop vertical treatment on mobile (aligned to the
+       dot's column, reading bottom-to-top) so it can't clash with the COSIMO
+       letters. It stays fixed — a static one added page height below the
+       scroller, which pushed the pinned COSIMO off the bottom edge. JS fades it
+       in only at the very end, so the transition is dropped here. */
+    .colophon { transition: none; }
   }
 </style>
 
@@ -1193,6 +1191,7 @@ if (stage && scroller && canvas && frame) {
   const mark   = document.querySelector('.cosimo-mark');
   const letters = mark ? Array.prototype.slice.call(mark.querySelectorAll('b')) : [];
   const hero   = document.querySelector('.hero');
+  const colo   = document.querySelector('.colophon');
   let curIdx = -1, markState = '';
   function barcode(seed){
     let st = seed * 9301 + 49297;
@@ -1320,13 +1319,19 @@ if (stage && scroller && canvas && frame) {
     if (letters.length){
       const T = 0.8;
       if (op >= T){
-        if (markState !== 'in'){                 // trigger the staggered rise once
+        if (markState !== 'in'){
           markState = 'in';
-          for (let i = 0; i < letters.length; i++) letters[i].style.transform = '';
+          // NOTE: do NOT clear the inline transforms here. A CSS animation
+          // outranks inline styles, so mark-rise interpolates from wherever the
+          // letters currently are up to 0 — clearing them first made the letters
+          // snap back to hidden, which is what caused the "enters twice" blink.
           mark.classList.add('in');
         }
-      } else {
-        if (markState !== 'out'){ markState = 'out'; mark.classList.remove('in'); }
+      } else if (markState !== ''){
+        // Only scrub once the letters have actually been revealed. Scrubbing
+        // before the first entrance was raising them early, so the triggered
+        // animation then looked like a second entrance.
+        if (markState === 'in'){ markState = 'out'; mark.classList.remove('in'); }
         const base = clamp(op / T, 0, 1);        // 1 at the threshold, 0 at the top
         const span = 0.55;
         for (let i = 0; i < letters.length; i++){
@@ -1335,7 +1340,10 @@ if (stage && scroller && canvas && frame) {
           letters[i].style.transform = 'translateY(' + ((1 - local) * 115).toFixed(1) + '%)';
         }
       }
+      // markState === '' -> never reached the end yet; the letters stay hidden.
     }
+    // Mobile: the colophon shows only at the very end, not during the scroll.
+    if (mobile && colo) colo.style.opacity = String(smoother(clamp((op - 0.6) / 0.3, 0, 1)));
 
     renderer.render(scene, camera);
     requestAnimationFrame(tick);

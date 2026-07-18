@@ -180,31 +180,24 @@
   .btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;             /* label + dot centre together in the pill */
+    gap: 0.55rem;
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
     font-size: 1rem;
     text-decoration: none;
     transition: background 0.25s ease, color 0.25s ease, opacity 0.2s ease, transform 0.2s ease;
   }
-  /* The chevron is a dot. It rests just right of the label and, on hover, hops up
-     and over to sit BEHIND the text — clipped to the pill so it never escapes. */
-  .btn-label { position: relative; z-index: 2; }
+  /* The chevron is a dot, sitting inline after the label so the pair centres in
+     the pill. On hover the label decrypts (wired up in the module below). */
   .btn-dot {
-    position: absolute; z-index: -1;      /* behind the label's own text */
-    top: 50%; left: calc(100% + 0.7rem);
-    width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px;
+    flex: none;
+    width: 9px; height: 9px;
     border-radius: 50%;
     background: currentColor;
-  }
-  @keyframes dot-hop {
-    0%   { top: 50%;  left: calc(100% + 0.7rem); }
-    45%  { top: -22%; left: 78%; }
-    100% { top: 50%;  left: 50%; }
   }
   /* Primary: a solid white pill with bold dark text and a chevron. */
   .btn--solid {
     position: relative;
-    overflow: hidden;                     /* keeps the hop inside the rounded button */
     padding: 0.95rem 1.7rem;
     background: #FFFFFF;
     color: var(--deep);
@@ -213,7 +206,6 @@
   }
   @media (hover: hover) {
     .btn--solid:hover { transform: translateY(-1px); }
-    .btn--solid:hover .btn-dot { animation: dot-hop 0.5s cubic-bezier(0.34, 1.25, 0.5, 1) forwards; }
   }
 
 
@@ -541,7 +533,7 @@
     <div class="hero-sub">
       <p class="sub reveal">Cosimo is an applied AI studio based in London.<br>We build personalised instruments for the world&#8217;s most ambitious brands, transforming them into AI-native companies. Currently taking on a limited number of clients.</p>
       <div class="ctas reveal">
-        <a class="btn btn--solid" href="mailto:hello@cosimo.studio"><span class="btn-label">Work with us<span class="btn-dot" aria-hidden="true"></span></span></a>
+        <a class="btn btn--solid" href="mailto:hello@cosimo.studio"><span class="btn-label">Work with us</span><span class="btn-dot" aria-hidden="true"></span></a>
       </div>
     </div>
     <h1 class="headline" aria-label="Power to designers. Power to planners. Power to ops teams. Power to marketers. Power to humans.">
@@ -568,7 +560,7 @@
     <div class="conclusion" aria-hidden="true">
       <h2 class="concl-title">Let&#8217;s make you AI-native.</h2>
       <p class="concl-sub">Cosimo is an applied AI studio based in London.<br>We build personalised instruments for the world&#8217;s most ambitious brands, transforming them into AI-native companies. Currently taking on a limited number of clients.</p>
-      <a class="btn btn--solid" href="mailto:hello@cosimo.studio"><span class="btn-label">Start a project<span class="btn-dot" aria-hidden="true"></span></span></a>
+      <a class="btn btn--solid" href="mailto:hello@cosimo.studio"><span class="btn-label">Start a project</span><span class="btn-dot" aria-hidden="true"></span></a>
     </div>
     <ul class="services-mobile" aria-label="Services">
       <li><span class="sm-num">01</span><span class="sm-name">Creative production</span><span class="sm-desc">Concept, art direction, content at scale.</span></li>
@@ -1379,6 +1371,21 @@ if (stage && scroller && canvas && frame) {
     const armConcl = function (){ lockText(conclTitle, conclText); setCipher(conclTitle); };
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(armConcl); else armConcl();
   }
+
+  // Buttons decrypt their label on hover (pointer devices only). Widths are
+  // frozen after the webfont lands, same as the card titles.
+  const armButtons = function (){
+    if (!(window.matchMedia && matchMedia('(hover: hover)').matches)) return;
+    const labels = document.querySelectorAll('.btn-label');
+    for (let i = 0; i < labels.length; i++){
+      (function (el){
+        lockText(el, el.textContent.trim());
+        const btn = el.parentNode;
+        btn.addEventListener('mouseenter', function (){ decrypt(el); });
+      })(labels[i]);
+    }
+  };
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(armButtons); else armButtons();
   // Re-measure the current card once the webfont has landed.
   if (document.fonts && document.fonts.ready){
     document.fonts.ready.then(function (){ if (curIdx >= 0) setService(curIdx); });

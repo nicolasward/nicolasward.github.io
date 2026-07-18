@@ -146,6 +146,18 @@
      them, so wrap points never shift mid-word (no line jumping). */
   .hl-typed .tch { visibility: hidden; }
   .hl-typed .tch.on { visibility: visible; }
+  /* On the landing screen the subheader sits opposite the title, in the column
+     the can later takes over; JS clears it as the can flies in. The wrapper is
+     what fades — the inner .sub keeps its own intro animation, which would
+     otherwise outrank an inline opacity. */
+  .hero-sub {
+    position: absolute;
+    top: 50%; right: 2.5vw;
+    width: 46vw;
+    transform: translateY(-50%);
+    padding: 0 7%;
+    z-index: 3;
+  }
   .sub {
     max-width: 34rem;
     margin: 0;
@@ -474,10 +486,13 @@
     .hl-sizer { display: none; }
     .headline { max-width: none; justify-items: start; margin: 0; font-size: clamp(2rem, 9.4vw, 3rem); }
     .headline .p-init { font-size: 1.75em; }
-    .hero .sub, .hero .ctas { display: none; }       /* sub copy moves to the outro; no CTA up top */
+    .hero .ctas { display: none; }                   /* no CTA up top on mobile */
+    .hero-sub {                                      /* sits directly above the title */
+      position: static; top: auto; right: auto; width: auto;
+      transform: none; padding: 0; margin-bottom: 1.4rem;
+    }
     .hl-caret { display: none; }
     .services-mobile { display: none; }
-    .concl-sub { display: block; }                   /* the sub copy, under the conclusion title */
     .conclusion { align-items: flex-start; text-align: left; }
     /* The colophon keeps the desktop vertical treatment on mobile (aligned to the
        dot's column, reading bottom-to-top) so it can't clash with the COSIMO
@@ -495,11 +510,11 @@
 <div class="scroller">
   <div class="pin">
   <main class="hero">
+    <div class="hero-sub"><p class="sub reveal">Cosimo is an applied AI studio based in London.<br>We build personalised instruments for the world&#8217;s most ambitious brands, transforming them into AI-native companies. Currently taking on a limited number of clients.</p></div>
     <h1 class="headline" aria-label="Power to designers. Power to planners. Power to ops teams. Power to marketers. Power to humans.">
       <span class="hl-sizer" aria-hidden="true">Power to designers.</span>
       <span class="hl-live" aria-hidden="true"><span class="p-init">P</span><span class="hl-typed"></span><span class="hl-caret" aria-hidden="true">_</span></span>
     </h1>
-    <p class="sub reveal">Cosimo is an applied AI studio based in London.<br>We build personalised instruments for the world&#8217;s most ambitious brands, transforming them into AI-native companies. Currently taking on a limited number of clients.</p>
     <div class="ctas reveal">
       <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Work with us
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
@@ -1117,7 +1132,6 @@ if (stage && scroller && canvas && frame) {
   const TWO = Math.PI * 2;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const mobile  = matchMedia('(max-width: 900px)').matches;
-  const bootT   = performance.now();   // mobile: the can flies in on a timer, not on scroll
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const smoother = t => { t = clamp(t, 0, 1); return t * t * t * (t * (t * 6 - 15) + 10); };
 
@@ -1261,6 +1275,7 @@ if (stage && scroller && canvas && frame) {
   const mark   = document.querySelector('.cosimo-mark');
   const letters = mark ? Array.prototype.slice.call(mark.querySelectorAll('b')) : [];
   const hero   = document.querySelector('.hero');
+  const heroSub = document.querySelector('.hero-sub');
   const colo   = document.querySelector('.colophon');
   let curIdx = -1, markState = '', markAt = 0, lastOp = 0;
   // Titles "decrypt" into place: each character flickers through random glyphs
@@ -1420,11 +1435,9 @@ if (stage && scroller && canvas && frame) {
     // ---- the can: tumble through the services, then rise out of shot in the outro ----
     if (ready){
       group.quaternion.copy(poseQ(sv));
-      // Desktop: the can arrives as you begin scrolling. Mobile: the landing screen
-      // would otherwise be bare, so it flies in on its own once the field opens.
-      const en = mobile
-        ? smoother(clamp((t - bootT - 2400) / 1200, 0, 1))
-        : smoother(clamp(sv / 0.6, 0, 1));
+      // The can arrives as you begin scrolling — on both desktop and mobile, now
+      // that the landing screen carries the subheader rather than being bare.
+      const en = smoother(clamp(sv / 0.6, 0, 1));
       if (en < 1){                                    // arrive in a single front flip (mirror of the exit)
         _spinQ.setFromAxisAngle(_flip, (en - 1) * TWO * 1.0);
         group.quaternion.premultiply(_spinQ);
@@ -1445,6 +1458,9 @@ if (stage && scroller && canvas && frame) {
       group.position.y = (1 - en) * -5.0 + ex * 3.4 + bob * en;   // parked well clear below (no tip peeking), bobs only once arrived
       group.scale.setScalar((0.7 + 0.3 * en) * (1 - 0.62 * ex));
     }
+
+    // The landing subheader clears as the can flies into its column.
+    if (heroSub) heroSub.style.opacity = String(1 - smoother(clamp(sv / 0.4, 0, 1)));
 
     // ---- the frame: draws once on entry, holds, then UNDRAWS through the outro ----
     const undraw = smoother(clamp(op / 0.4, 0, 1));

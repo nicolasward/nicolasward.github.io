@@ -194,7 +194,7 @@
      narrow screens. */
   .can-stage {
     position: absolute;
-    top: 0; right: 0; bottom: 0;
+    top: 0; right: 2.5vw; bottom: 0;    /* nudged in from the right edge */
     width: 46vw;
     z-index: 1;
     pointer-events: none;
@@ -461,7 +461,8 @@
      sits left-aligned at the base, and the sub copy is deferred to the outro
      under the conclusion title. */
   @media (max-width: 900px) {
-    .can-stage { width: 100%; bottom: 24vh; }        /* full-width, centred; room for the hero below */
+    .can-stage { width: 100%; right: 0; bottom: 20vh; }   /* full-width; taller, with room for the hero below */
+    .frame { inset: 3.5% 6%; }                            /* a longer card on mobile */
     .hero {
       justify-content: flex-end;
       align-items: flex-start;
@@ -471,7 +472,7 @@
     /* No typewriter on mobile, so drop the sizer and let the line size itself —
        tuned to keep "Power to humans." on ONE line. */
     .hl-sizer { display: none; }
-    .headline { max-width: none; justify-items: start; margin: 0; font-size: clamp(1.8rem, 8.2vw, 2.6rem); }
+    .headline { max-width: none; justify-items: start; margin: 0; font-size: clamp(2rem, 9.4vw, 3rem); }
     .headline .p-init { font-size: 1.75em; }
     .hero .sub, .hero .ctas { display: none; }       /* sub copy moves to the outro; no CTA up top */
     .hl-caret { display: none; }

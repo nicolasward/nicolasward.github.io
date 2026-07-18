@@ -128,27 +128,38 @@
     font-size: 2.1em;                   /* a statement: towers over the sans caps */
     line-height: 0;
     letter-spacing: 0;
-    /* WebKit doesn't track glyph ink painted beyond the advance width, so when
-       iOS composites the animated letter it clips the P's bowl at the span's
-       right edge. Grow the box rightward with padding and hand the space back
-       with a negative margin — layout unchanged, ink contained. */
+    /* WebKit clips glyph ink beyond the advance width; grow the box rightward
+       with padding and hand the space back with a negative margin so the P's
+       flourish isn't sliced. */
     padding-right: 0.6em;
     margin-right: calc(0.05em - 0.6em);
   }
-  /* The typing caret — a blinking underscore sitting on the baseline. Appears
-     with the carve and blinks while the tail rotates. */
+  /* The P writes itself in on entrance: a soft diagonal mask sweeps across the
+     glyph (roughly the pen's direction) so the script letter appears drawn. */
+  html.js .headline .p-init {
+    -webkit-mask-image: linear-gradient(118deg, #000 38%, rgba(0,0,0,0) 56%);
+            mask-image: linear-gradient(118deg, #000 38%, rgba(0,0,0,0) 56%);
+    -webkit-mask-size: 300% 100%; mask-size: 300% 100%;
+    -webkit-mask-position: 100% 0; mask-position: 100% 0;   /* start: glyph masked out */
+  }
+  html.draw-p .headline .p-init { animation: p-draw 1.05s cubic-bezier(0.6, 0, 0.2, 1) forwards; }
+  @keyframes p-draw {
+    from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+    to   { -webkit-mask-position: 0% 0;   mask-position: 0% 0; }
+  }
+  /* The typing caret — a blinking underscore; shown once typing begins. */
   .hl-caret {
     display: inline-block;
     margin-left: 0.03em;
     font-weight: 700;
     opacity: 0;
   }
-  html.carve .hl-caret { opacity: 1; animation: caret-blink 1.06s steps(1, end) infinite; }
+  html.typing .hl-caret { opacity: 1; animation: caret-blink 1.06s steps(1, end) infinite; }
   @keyframes caret-blink { 50% { opacity: 0; } }
-  /* The tail's letters are laid out in full but invisible; "typing" only
-     reveals them, so wrap points never shift mid-phrase (no line jumping). */
-  .hl-tail .tch { visibility: hidden; }
-  .hl-tail .tch.on { visibility: visible; }
+  /* Typed letters are laid out in full but invisible; "typing" only reveals
+     them, so wrap points never shift mid-word (no line jumping). */
+  .hl-typed .tch { visibility: hidden; }
+  .hl-typed .tch.on { visibility: visible; }
   .sub {
     max-width: 34rem;
     margin: 0;
@@ -196,35 +207,6 @@
     .btn--solid:hover svg { transform: translateX(3px); }
   }
 
-  /* ---------------- Logo strip ----------------
-     Typographic stand-ins for the partner marks — one white horizontal strip,
-     each wordmark set to echo its brand's logo. Swap for real SVGs when we
-     have the files. */
-  .logos {
-    position: absolute;                  /* its own band along the bottom of the screen */
-    left: var(--gutter);
-    right: var(--gutter);
-    bottom: clamp(2.2rem, 6vh, 3.6rem);
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;      /* stretch the marks across the full width */
-    flex-wrap: wrap;
-    gap: 1rem clamp(1.6rem, 3vw, 2.8rem);
-    font-size: 1rem;                     /* one dial — every mark scales in em */
-  }
-  .logo {
-    color: var(--ink);
-    opacity: 0.85;
-    white-space: nowrap;
-    font-family: "Figtree", system-ui, -apple-system, sans-serif;
-  }
-  .logo--huel   { font-weight: 800; font-size: 1.55em; letter-spacing: 0.05em; }
-  .logo--healf  { font-family: Georgia, "Times New Roman", serif; font-weight: 500; font-size: 1.6em; }
-  .logo--danone { font-weight: 700; font-size: 1.46em; letter-spacing: 0.09em; }
-  .logo--thorne { font-weight: 500; font-size: 1.35em; letter-spacing: 0.34em; }
-  .logo--dirtea { font-weight: 700; font-size: 1.4em;  letter-spacing: 0.22em; }
-  .logo--wild   { font-weight: 800; font-size: 1.62em; letter-spacing: 0.02em; }
-  .logo--candy  { font-weight: 800; font-size: 1.32em; letter-spacing: 0.14em; }
 
   /* ---------------- Services object ----------------
      A real 3D can (GLB) on the right half of the pin. Scroll flips it between
@@ -312,7 +294,6 @@
   }
   @media (max-width: 760px) {
     .cosimo-mark { font-size: 21vw; }   /* matches the old teaser's mobile size */
-    .logos { font-size: 0.72rem; justify-content: flex-start; bottom: 1.8rem; }
   }
   @media (max-width: 900px) {
     .can-stage { display: none; }
@@ -383,49 +364,21 @@
   .scroll-in { opacity: 0; transform: translateY(16px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
   .scroll-in.in { opacity: 1; transform: none; }
 
-  /* Act II — type carved from light. Each glyph condenses out of the field: it
-     starts as a soft, blurred bloom of light and resolves to a solid letter,
-     one after another. Words stay intact (inline-block) so the line still wraps;
-     the per-letter split is done in JS. Gated on html.carve so it can replay. */
+  /* Words stay intact (inline-block) so the typed line wraps whole-word. */
   .headline .word { display: inline-block; }
-  .headline .ch {
-    display: inline-block;
-    will-change: transform, filter, opacity;
-  }
-  html.js .headline .ch { opacity: 0; }
-  html.carve .headline .ch {
-    animation: carve 0.62s cubic-bezier(0.2, 0.8, 0.25, 1) both;
-    animation-delay: calc(var(--i) * 0.035s);   /* only "Power to" carves — 7 letters */
-  }
-  @keyframes carve {
-    0% {
-      opacity: 0;
-      filter: blur(14px);
-      transform: translateY(0.22em) scale(1.06);
-      text-shadow: 0 0 26px rgba(255, 255, 255, 0.9), 0 0 62px rgba(150, 205, 255, 0.7);
-    }
-    55% { opacity: 1; }
-    100% {
-      opacity: 1;
-      filter: blur(0);
-      transform: none;
-      text-shadow: none;
-    }
-  }
 
   /* The rest of the copy fades up, staggered, once the field has bloomed and the
      type is carving in. Delays are relative to html.intro (added at ignition). */
   html.js .reveal { opacity: 0; }
   html.intro .sub.reveal   { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.35s both; }
   html.intro .ctas.reveal  { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.52s both; }
-  html.intro .logos.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.68s both; }
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1 !important; animation: none !important; transform: none !important; }
-    .headline .ch { opacity: 1 !important; transform: none !important; filter: none !important; animation: none !important; }
+    .headline .p-init { -webkit-mask: none !important; mask: none !important; animation: none !important; }
     .credo-toggle { opacity: 1 !important; transform: none !important; animation: none !important; }
     .cosimo-mark b { transform: none !important; animation: none !important; }
     .scroll-in { opacity: 1 !important; transform: none !important; }
@@ -442,7 +395,7 @@
   <main class="hero">
     <h1 class="headline" aria-label="Power to designers. Power to planners. Power to ops teams. Power to marketers. Power to those who ship.">
       <span class="hl-sizer" aria-hidden="true">Power to those who ship.</span>
-      <span class="hl-live" aria-hidden="true"><span class="hl-prefix">Power to</span> <span class="hl-tail">those who ship.</span><span class="hl-caret" aria-hidden="true">_</span></span>
+      <span class="hl-live" aria-hidden="true"><span class="p-init">P</span><span class="hl-typed"></span><span class="hl-caret" aria-hidden="true">_</span></span>
     </h1>
     <p class="sub reveal">Cosimo is an applied AI studio run by engineers, designers, and product leaders. We make the world&#8217;s most iconic brands AI-native.</p>
     <p class="sub sub--note reveal">Currently taking on a limited number of clients. London-based, operating worldwide.</p>
@@ -450,15 +403,6 @@
       <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Work with us
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
       </a>
-    </div>
-    <div class="logos reveal" aria-label="Brands we work with">
-      <span class="logo logo--huel">HUEL</span>
-      <span class="logo logo--healf">healf</span>
-      <span class="logo logo--danone">DANONE</span>
-      <span class="logo logo--thorne">THORNE</span>
-      <span class="logo logo--dirtea">DIRTEA</span>
-      <span class="logo logo--wild">Wild</span>
-      <span class="logo logo--candy">CANDY KITTENS</span>
     </div>
   </main>
 
@@ -493,107 +437,75 @@ var STATE = { reveal: 1, burst: 0, energy: 0 };
 var fieldAnim = null;
 var PALETTE_CTRL = { next: null };   // assigned by the WebGL init; called by the dot
 
-/* Split the headline's fixed prefix ("Power to") into per-letter spans (words
-   kept intact so the line still wraps) for the carve entrance. Runs
-   synchronously before first paint, so the un-split text never flashes. The
-   rotating tail is NOT split — it's driven by the typewriter below. */
+/* Typewriter. The P is drawn separately (a static swash, masked in on entrance);
+   here we type the rest: "ower to " is typed once and kept, then the trailing
+   word rotates (types, holds, backspaces to the kept prefix, types the next).
+   Letters are laid out in full but hidden and merely revealed, so the line
+   never re-wraps mid-word. Reduced motion (or no JS) shows a static line. */
 (function () {
-  var h = document.querySelector('.headline .hl-prefix');
-  if (!h) return;
-  var words = h.textContent.split(' ');
-  h.textContent = '';
-  var i = 0;
-  words.forEach(function (word, wi) {
-    var w = document.createElement('span');
-    w.className = 'word';
-    for (var c = 0; c < word.length; c++) {
-      var s = document.createElement('span');
-      s.className = 'ch';
-      s.textContent = word[c];
-      s.style.setProperty('--i', i++);
-      w.appendChild(s);
-    }
-    h.appendChild(w);
-    if (wi < words.length - 1) h.appendChild(document.createTextNode(' '));
-  });
-  var first = h.querySelector('.ch');
-  if (first) first.classList.add('p-init');   // the script-face swash initial
-})();
-
-/* The typewriter: "Power to" stays; the tail is typed out, held, backspaced
-   and retyped from a rotating list of phrases. Each phrase is laid out IN
-   FULL (hidden) from the first keystroke — typing merely reveals its letters,
-   so the browser never re-wraps mid-phrase and the line count can't jump.
-   Reduced motion (or no JS) keeps the static markup line instead. */
-(function () {
-  var tail = document.querySelector('.hl-tail');
+  var root  = document.documentElement;
+  var typed = document.querySelector('.hl-typed');
   var caret = document.querySelector('.hl-caret');
-  if (!tail || !caret) return;
-  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  var PHRASES = [
-    'designers.',
-    'planners.',
-    'ops teams.',
-    'marketers.',
-    'those who ship.'
-  ];
+  if (!typed || !caret) return;
+  var KEEP = 'ower to ';                        // typed once after the drawn P, then kept
+  var KEEPLEN = KEEP.replace(/ /g, '').length;  // letters only (spaces aren't counted chars)
+  var WORDS = ['designers.', 'planners.', 'ops teams.', 'marketers.', 'those who ship.'];
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    typed.textContent = KEEP + WORDS[0]; return;
+  }
   var chars = [];
-  function build (phrase) {                    // full phrase, every letter hidden
-    tail.textContent = '';
-    chars = [];
-    var words = phrase.split(' ');
-    words.forEach(function (word, wi) {
-      var w = document.createElement('span');
-      w.className = 'word';                    // inline-block: words wrap whole
-      for (var c = 0; c < word.length; c++) {
-        var ch = document.createElement('span');
-        ch.className = 'tch';
-        ch.textContent = word[c];
-        w.appendChild(ch);
-        chars.push(ch);
+  function build (word, shown) {               // lay out KEEP+word; first `shown` letters visible
+    typed.textContent = ''; chars = [];
+    var parts = (KEEP + word).split(' ');
+    parts.forEach(function (wd, wi) {
+      var w = document.createElement('span'); w.className = 'word';
+      for (var c = 0; c < wd.length; c++) {
+        var ch = document.createElement('span'); ch.className = 'tch';
+        ch.textContent = wd[c];
+        if (chars.length < shown) ch.classList.add('on');
+        w.appendChild(ch); chars.push(ch);
       }
-      tail.appendChild(w);
-      if (wi < words.length - 1) tail.appendChild(document.createTextNode(' '));
+      typed.appendChild(w);
+      if (wi < parts.length - 1) typed.appendChild(document.createTextNode(' '));
     });
   }
-  function setCaret (i) {                      // the caret rides after letter i
+  function setCaret (i) {                       // the caret rides after letter i
     var anchor = i > 0 ? chars[i - 1] : null;
     if (anchor) anchor.parentNode.insertBefore(caret, anchor.nextSibling);
-    else tail.insertBefore(caret, tail.firstChild);
+    else typed.insertBefore(caret, typed.firstChild);
   }
   var pi = 0, ci = 0, deleting = false;
-  build(PHRASES[0]);                           // laid out before first paint
-  setCaret(0);
+  build(WORDS[0], 0); setCaret(0);
   function step () {
-    ci += deleting ? -1 : 1;
-    chars[deleting ? ci : ci - 1].classList.toggle('on', !deleting);
+    if (!deleting) { chars[ci].classList.add('on'); ci++; }
+    else { ci--; chars[ci].classList.remove('on'); }
     setCaret(ci);
     var wait;
     if (!deleting && ci === chars.length) { deleting = true; wait = 1700; }          // hold the finished line
-    else if (deleting && ci === 0) {
-      deleting = false; pi = (pi + 1) % PHRASES.length;
-      build(PHRASES[pi]); setCaret(0); wait = 420;
+    else if (deleting && ci === KEEPLEN) {                                            // keep "ower to ", swap word
+      deleting = false; pi = (pi + 1) % WORDS.length;
+      build(WORDS[pi], KEEPLEN); setCaret(ci); wait = 420;
     }
     else wait = deleting ? 34 : 58 + Math.random() * 48;   // deletes brisk, types human
     setTimeout(step, wait);
   }
-  setTimeout(step, 3850);                      // starts as the prefix finishes carving
+  setTimeout(function () { root.classList.add('typing'); step(); }, 3500);   // after the P has drawn
 })();
 
 /* Opening sequence.
    Act I — a dot drops in from the top of the white page and bounces like a
    damped rubber ball (pure CSS on the iris clip), then irises open onto the
    field, which has been running underneath all along.
-   Act II — the headline is carved from the light as the iris settles.
+   Act II — the P writes itself in and the typewriter types the rest.
    The white dot then cycles the background palette on each click. */
 (function () {
   var root = document.documentElement;
 
-  // Act I + II — the opening. The bounce + iris are CSS (html.intro); the
-  // carve starts as the iris sweeps open (bounce 1.9s + open underway).
+  // Act I + II — the opening. The bounce + iris are CSS (html.intro); the P
+  // writes itself in as the iris settles, then the typewriter takes over.
   requestAnimationFrame(function(){ requestAnimationFrame(function(){
     root.classList.add('intro');
-    setTimeout(function(){ root.classList.add('carve'); }, 2750);   // type carves as the iris opens
+    setTimeout(function(){ root.classList.add('draw-p'); }, 2500);   // the P draws as the iris opens
   }); });
 
   // The white dot cycles the background palette (live blue -> green -> orange
@@ -1135,9 +1047,13 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     const box = new THREE.Box3().setFromObject(model);
     const center = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());
-    model.position.sub(center);                       // recentre on the origin
-    const k = 2.4 / size.y;                           // scale to a known height
-    model.scale.setScalar(k);
+    // Centre the geometry in a pivot, then scale the pivot — unit-safe whether
+    // the GLB is exported in metres or millimetres.
+    model.position.sub(center);
+    const k = 2.4 / size.y;
+    const pivot = new THREE.Group();
+    pivot.add(model);
+    pivot.scale.setScalar(k);
     modelSize.set(size.x * k, size.y * k, size.z * k);
     const maxA = renderer.capabilities.getMaxAnisotropy();
     model.traverse(function (o){
@@ -1146,7 +1062,7 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
         if (o.material.map) o.material.map.anisotropy = maxA;
       }
     });
-    group.add(model);
+    group.add(pivot);
     ready = true;
     fit();
   }, undefined, function (err){ console.error('can.glb failed to load', err); });
@@ -1159,7 +1075,7 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     const distH = (modelSize.y / 2) / Math.tan(fovV / 2);
     const fovH  = 2 * Math.atan(Math.tan(fovV / 2) * aspect);
     const distW = (modelSize.x / 2) / Math.tan(fovH / 2);
-    camera.position.z = Math.max(distH, distW) * 1.5;
+    camera.position.z = Math.max(distH, distW) * 1.75;
     camera.updateProjectionMatrix();
   }
   function resize(){
@@ -1213,26 +1129,31 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
       const i = Math.floor(sv - 0.5);
       const e = smoother(sv - (i + 0.5));
       rotY = i * TWO + e * TWO;                        // a full turn per flip
-      tilt = Math.sin(Math.PI * e) * 0.55;            // tumble forward and back
+      tilt = Math.sin(Math.PI * e) * 0.42;            // tumble forward and back
     }
     return { rotY: rotY, tilt: tilt };
   }
 
   function tick(t){
-    const sv = reduced ? 0.5 : progress() * N;
+    const pr = reduced ? 0.5 / N : progress();     // reduced: sit at the first service
+    const sv = pr * N;
     if (ready){
-      const p = pose(sv);
-      group.rotation.set(p.tilt, p.rotY, 0.03);
+      const ps = pose(sv);
+      group.rotation.set(ps.tilt, ps.rotY, 0.03);  // the can flips inside the (fixed) frame
       group.position.y = reduced ? 0 : Math.sin(t * 0.0011) * 0.02;
     }
+    // The border draws itself ONCE, clockwise, as the section is entered, then
+    // stays put for the whole scroll.
+    const border = smoother(clamp(pr / 0.06, 0, 1));
+    rect.style.strokeDashoffset = String(1 - border);
+    frame.style.opacity = String(clamp(border * 6, 0, 1));
+    // The content swaps per service: it fades out during each flip (while the
+    // can tumbles), changes, and fades back in once the next service settles.
     const nearest = clamp(Math.round(sv - 0.5), 0, N - 1);
-    if (nearest !== curIdx) setService(nearest);      // swaps while the frame is hidden (mid-flip)
+    if (nearest !== curIdx) setService(nearest);
     const dist = Math.abs(sv - (nearest + 0.5));
-    const fp   = smoother(clamp(1 - dist / 0.42, 0, 1));   // 1 at an anchor, 0 during a flip
-    const drawn = clamp(fp * 1.7, 0, 1);                   // border draws ahead of the text
-    rect.style.strokeDashoffset = String(1 - drawn);
-    frame.style.opacity = String(clamp(fp / 0.15, 0, 1));
-    elText.style.opacity = String(clamp((fp - 0.45) / 0.4, 0, 1));
+    const fp = smoother(clamp(1 - dist / 0.42, 0, 1));       // 1 at a service, 0 mid-flip
+    elText.style.opacity = String(fp * clamp((border - 0.6) / 0.4, 0, 1));
     renderer.render(scene, camera);
     requestAnimationFrame(tick);
   }

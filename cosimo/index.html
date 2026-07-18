@@ -285,35 +285,26 @@
      numbered list under the hero so nothing is lost and the page stays light. */
   .services-mobile { display: none; }
   @media (max-width: 900px) {
-    .can-stage { display: none; }
-    .scroller { min-height: auto; }
-    .pin { position: static; height: auto; overflow: visible; }
-    .services-mobile {
-      display: block;
-      list-style: none;
-      margin: 0;
-      padding: clamp(1rem, 4vw, 2rem) var(--gutter) clamp(3rem, 12vw, 4.5rem);
-      color: var(--ink);
+    /* Mobile keeps the pinned 3D can. The can/frame play centred in the upper
+       part of the screen; the hero ("Power to humans.") sits at the base; the
+       sub copy is deferred to the outro (under the conclusion title). */
+    .can-stage { width: 100%; bottom: 24vh; }        /* full-width, centred; room for the hero below */
+    .hero {
+      justify-content: flex-end;
+      align-items: center;
+      text-align: center;
+      padding: 0 var(--gutter) 7vh;
     }
-    .bigfoot { position: static; padding-top: 2.5rem; }
-    .cosimo-mark { transform: none; }
-    .conclusion { display: none; }
+    .headline { max-width: none; justify-items: center; margin: 0; font-size: clamp(2.5rem, 12vw, 4rem); }
+    .hero .sub, .hero .ctas { display: none; }       /* sub copy moves to the outro; no CTA up top */
+    .hl-caret { display: none; }
+    .services-mobile { display: none; }
+    .concl-sub { display: block; }
     .colophon {
       position: static; left: auto; transform: none; opacity: 1 !important;
       text-align: center; padding: 1.5rem var(--gutter) 2.5rem;
       font-size: 0.8rem; color: rgba(255, 255, 255, 0.7);
     }
-    .services-mobile li {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      column-gap: 1rem; row-gap: 0.25rem;
-      padding: 1.25rem 0;
-      border-top: 1px solid rgba(255, 255, 255, 0.28);
-    }
-    .services-mobile li:last-child { border-bottom: 1px solid rgba(255, 255, 255, 0.28); }
-    .sm-num  { grid-row: 1 / span 2; font-family: var(--mono); font-size: 0.8rem; opacity: 0.7; padding-top: 0.3rem; }
-    .sm-name { font-family: "Figtree", system-ui, sans-serif; font-weight: 700; font-size: 1.4rem; }
-    .sm-desc { font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.02em; opacity: 0.72; }
   }
 
   /* Colophon — set vertically up the right edge, above the theme dot, reading
@@ -355,6 +346,7 @@
   }
   .conclusion .btn { pointer-events: auto; padding: 1.05rem 2rem; font-size: 1.06rem; }
   .concl-title { margin: 0; font-family: "Figtree", system-ui, sans-serif; font-weight: 700; font-size: clamp(2.6rem, 6.2vw, 5rem); letter-spacing: -0.03em; line-height: 1.0; max-width: 15ch; text-wrap: balance; }
+  .concl-sub { display: none; margin: 0; font-family: "Figtree", system-ui, sans-serif; font-size: 1rem; font-weight: 500; line-height: 1.5; color: var(--ink-dim); max-width: 34ch; }
 
   /* ---------------- Scroll cue ----------------
      A small "Scroll" label with a travelling tick, so the pinned can reads as
@@ -464,8 +456,8 @@
 <div class="scroller">
   <div class="pin">
   <main class="hero">
-    <h1 class="headline" aria-label="Power to designers. Power to planners. Power to ops teams. Power to marketers. Power to those who ship.">
-      <span class="hl-sizer" aria-hidden="true">Power to those who ship.</span>
+    <h1 class="headline" aria-label="Power to designers. Power to planners. Power to ops teams. Power to marketers. Power to humans.">
+      <span class="hl-sizer" aria-hidden="true">Power to designers.</span>
       <span class="hl-live" aria-hidden="true"><span class="p-init">P</span><span class="hl-typed"></span><span class="hl-caret" aria-hidden="true">_</span></span>
     </h1>
     <p class="sub reveal">Cosimo is an applied AI studio run by engineers, designers, and product leaders. We make the world&#8217;s most iconic brands AI-native.</p>
@@ -492,6 +484,7 @@
     </div>
     <div class="conclusion" aria-hidden="true">
       <h2 class="concl-title">Let&#8217;s make you AI-native.</h2>
+      <p class="concl-sub">Cosimo is an applied AI studio run by engineers, designers, and product leaders. We make the world&#8217;s most iconic brands AI-native. Currently taking on a limited number of clients. London-based, operating worldwide.</p>
       <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Start a project
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
       </a>
@@ -535,7 +528,10 @@ var PALETTE_CTRL = { next: null };   // assigned by the WebGL init; called by th
   if (!typed || !caret) return;
   var KEEP = 'ower to ';                        // typed once after the drawn P, then kept
   var KEEPLEN = KEEP.replace(/ /g, '').length;  // letters only (spaces aren't counted chars)
-  var WORDS = ['designers.', 'planners.', 'ops teams.', 'marketers.', 'those who ship.'];
+  var WORDS = ['designers.', 'planners.', 'ops teams.', 'marketers.', 'humans.'];
+  if (window.matchMedia && matchMedia('(max-width: 900px)').matches) {   // mobile: just "Power to humans."
+    typed.textContent = KEEP + 'humans.'; caret.style.display = 'none'; return;
+  }
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
     typed.textContent = KEEP + WORDS[0]; return;
   }
@@ -616,19 +612,7 @@ var PALETTE_CTRL = { next: null };   // assigned by the WebGL init; called by th
   });
 })();
 
-/* On phones (where the scroll rig is off) reveal the footer as it enters view.
-   On desktop the pinned outro drives it from the module below. */
-(function () {
-  if (!(window.matchMedia && matchMedia('(max-width: 900px)').matches)) return;
-  var foot = document.querySelector('.bigfoot');
-  var mark = document.querySelector('.cosimo-mark');
-  if (!foot || !mark) return;
-  function on(v){ mark.classList.toggle('in', v); }
-  if (!('IntersectionObserver' in window)) { on(true); return; }
-  new IntersectionObserver(function (es){
-    es.forEach(function (e){ on(e.isIntersecting); });
-  }, { threshold: 0.3 }).observe(foot);
-})();
+/* The module's outro drives the COSIMO footer on every screen size now. */
 </script>
 
 <script>
@@ -1084,7 +1068,7 @@ const scroller = document.querySelector('.scroller');
 const canvas   = stage && stage.querySelector('.can-canvas');
 const frame    = stage && stage.querySelector('.frame');
 
-if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').matches) {
+if (stage && scroller && canvas && frame) {
   const SERVICES = [
     { name: 'Creative production', desc: 'Concept, art direction, content at scale.',  side: 'Refresh your business identity' },
     { name: 'Customer experience', desc: 'Journeys, support, retention, loyalty.',     side: 'Every touchpoint, considered' },
@@ -1196,7 +1180,7 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
   const mark   = document.querySelector('.cosimo-mark');
   const letters = mark ? Array.prototype.slice.call(mark.querySelectorAll('b')) : [];
   const hero   = document.querySelector('.hero');
-  let curIdx = -1;
+  let curIdx = -1, markState = '';
   function barcode(seed){
     let st = seed * 9301 + 49297;
     const rnd = () => { st = (st * 9301 + 49297) % 233280; return st / 233280; };
@@ -1285,7 +1269,7 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
         : 0.5 * clamp((sv - (N - 0.2)) / 0.2, 0, 1);
       const ex = smoother(exr);
       if (ex > 0){                                     // leave in a backflip
-        _spinQ.setFromAxisAngle(_flip, -ex * TWO * 1.5);
+        _spinQ.setFromAxisAngle(_flip, -ex * TWO * 1.0);
         group.quaternion.premultiply(_spinQ);
       }
       const bob = reduced ? 0 : Math.sin(t * 0.0011) * 0.02;
@@ -1311,16 +1295,25 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
       hero.style.transform = 'translateX(' + (-hf * 5) + 'vw)';
     }
     if (concl) concl.style.opacity = String(smoother(clamp((op - 0.32) / 0.42, 0, 1)));
-    // The half-height COSIMO is scrubbed directly by scroll: each letter rises as
-    // you scroll into the outro (staggered C->O) and lowers again on the way up
-    // (the higher-staggered letters leave first, so the exit is the reverse).
+    // COSIMO: the DOWNWARD entrance plays as a self-contained staggered animation
+    // once you reach the end; the UPWARD exit is scrubbed by scroll (reverse).
     if (letters.length){
-      const base = clamp((op - 0.4) / 0.55, 0, 1);
-      const span = 0.55;                       // how far the stagger spreads across the window
-      for (let i = 0; i < letters.length; i++){
-        const start = (i / (letters.length - 1)) * span;
-        const local = smoother(clamp((base - start) / (1 - span), 0, 1));
-        letters[i].style.transform = 'translateY(' + ((1 - local) * 115).toFixed(1) + '%)';
+      const T = 0.5;
+      if (op >= T){
+        if (markState !== 'in'){                 // trigger the staggered rise once
+          markState = 'in';
+          for (let i = 0; i < letters.length; i++) letters[i].style.transform = '';
+          mark.classList.add('in');
+        }
+      } else {
+        if (markState !== 'out'){ markState = 'out'; mark.classList.remove('in'); }
+        const base = clamp(op / T, 0, 1);        // 1 at the threshold, 0 at the top
+        const span = 0.55;
+        for (let i = 0; i < letters.length; i++){
+          const start = (i / (letters.length - 1)) * span;
+          const local = smoother(clamp((base - start) / (1 - span), 0, 1));
+          letters[i].style.transform = 'translateY(' + ((1 - local) * 115).toFixed(1) + '%)';
+        }
       }
     }
 

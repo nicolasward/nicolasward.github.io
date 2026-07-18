@@ -1145,12 +1145,33 @@ if (stage && scroller && canvas && frame) {
   // on the aluminium. A light neutral gradient lights the can until the HDR
   // finishes decoding, then we swap it in.
   const pmrem = new THREE.PMREMGenerator(renderer);
+  /* Shown until the HDR lands (a long chain on mobile: three.js from the CDN,
+     then the module, then a 1.4MB fetch). A flat gradient made the metal read as
+     matte white, so this is a proper little studio — dark stage, one bright
+     overhead softbox and a few highlight bars — close enough to the HDR that the
+     swap isn't jarring. */
   function fallbackEnv(){
     const w = 256, h = 256, c = document.createElement('canvas'); c.width = w; c.height = h;
     const x = c.getContext('2d');
     const g = x.createLinearGradient(0, 0, 0, h);
-    g.addColorStop(0, '#f4f7fb'); g.addColorStop(0.55, '#9fb0c6'); g.addColorStop(1, '#20262f');
+    g.addColorStop(0.00, '#c8d2e0');   // dim sky
+    g.addColorStop(0.30, '#8b98ab');
+    g.addColorStop(0.55, '#3c4654');
+    g.addColorStop(0.80, '#161c25');
+    g.addColorStop(1.00, '#05070b');   // dark floor
     x.fillStyle = g; x.fillRect(0, 0, w, h);
+    x.fillStyle = 'rgba(255,255,255,0.95)';           // overhead softbox band
+    x.fillRect(0, h * 0.06, w, h * 0.05);
+    function bar(cx, wd, a){
+      const gg = x.createLinearGradient(cx - wd, 0, cx + wd, 0);
+      gg.addColorStop(0, 'rgba(255,255,255,0)');
+      gg.addColorStop(0.5, 'rgba(255,255,255,' + a + ')');
+      gg.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = gg; x.fillRect(cx - wd, 0, 2 * wd, h);
+    }
+    bar(w * 0.20, w * 0.030, 1.0);                    // crisp softboxes at different azimuths
+    bar(w * 0.52, w * 0.020, 0.85);
+    bar(w * 0.78, w * 0.050, 0.6);
     const t = new THREE.CanvasTexture(c); t.mapping = THREE.EquirectangularReflectionMapping; return t;
   }
   scene.environment = pmrem.fromEquirectangular(fallbackEnv()).texture;

@@ -321,7 +321,7 @@
   .colophon {
     position: fixed;
     left: calc(100vw - 1.45rem);      /* column centred over the dot */
-    bottom: 2.9rem;                    /* the © end sits just above the dot; the line grows up */
+    bottom: 3.7rem;                    /* the © end sits above the dot with a little breathing room */
     z-index: 6;
     transform-origin: left bottom;
     transform: rotate(-90deg);
@@ -1252,7 +1252,7 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     REL.push({ axis: axis, angle: angle });
   }
   const _qt = new THREE.Quaternion(), _spinQ = new THREE.Quaternion();
-  const _up = new THREE.Vector3(0, 1, 0), _flip = new THREE.Vector3(1, 0, 0);
+  const _flip = new THREE.Vector3(1, 0, 0);
   function poseQ(sv){
     if (sv <= 0.5) return REST[0];
     if (sv >= N - 0.5) return REST[N - 1];
@@ -1272,8 +1272,8 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     if (ready){
       group.quaternion.copy(poseQ(sv));
       const en = smoother(clamp(sv / 0.6, 0, 1));    // a controlled arrival over the first ~0.6 of a service
-      if (en < 1){                                    // spin around the vertical axis as it flies in
-        _spinQ.setFromAxisAngle(_up, (en - 1) * TWO * 1.25);   // same (+) sense as the flips — no reversal
+      if (en < 1){                                    // arrive in a front flip — the mirror of the exit backflip
+        _spinQ.setFromAxisAngle(_flip, (en - 1) * TWO * 1.5);
         group.quaternion.premultiply(_spinQ);
       }
       const ex = smoother(clamp(op / 0.5, 0, 1));     // exits over the first half of the outro

@@ -185,7 +185,9 @@
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
     font-size: 1rem;
     text-decoration: none;
-    transition: background 0.25s ease, color 0.25s ease, opacity 0.2s ease, transform 0.2s ease;
+    transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease,
+                -webkit-backdrop-filter 0.25s ease, backdrop-filter 0.25s ease,
+                opacity 0.2s ease, transform 0.2s ease;
   }
   /* The chevron is a dot, sitting inline after the label so the pair centres in
      the pill. On hover the label decrypts (wired up in the module below). */
@@ -205,7 +207,14 @@
     border-radius: 999px;
   }
   @media (hover: hover) {
-    .btn--solid:hover { transform: translateY(-1px); }
+    .btn--solid:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.12);     /* frosted, letting the field through */
+      color: var(--ink);                          /* the dot follows via currentColor */
+      -webkit-backdrop-filter: blur(12px);
+              backdrop-filter: blur(12px);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);   /* keeps the pill's edge readable */
+    }
   }
 
 
@@ -1329,16 +1338,17 @@ if (stage && scroller && canvas && frame) {
     for (let i = 0; i < c.length; i++) c[i].textContent = rnd();
   }
   const DECRYPT_MS = 26, DECRYPT_RATE = 1.15;   // tick length, characters locked per tick
-  function decrypt(el){                      // resolve left to right
+  function decrypt(el, ms, rate){            // resolve left to right; pace is optional
     const c = el._chars, p = el._plain; if (!c) return;
+    ms = ms || DECRYPT_MS; rate = rate || DECRYPT_RATE;
     clearInterval(el._st);
     let step = 0;
     el._st = setInterval(function (){
       step++;
-      const locked = Math.min(c.length, Math.floor(step * DECRYPT_RATE));   // ~1 character every 23ms
+      const locked = Math.min(c.length, Math.floor(step * rate));
       for (let i = 0; i < c.length; i++) c[i].textContent = i < locked ? p[i] : rnd();
       if (locked >= c.length) clearInterval(el._st);
-    }, DECRYPT_MS);
+    }, ms);
   }
   function barcode(seed){
     let st = seed * 9301 + 49297;
@@ -1381,7 +1391,7 @@ if (stage && scroller && canvas && frame) {
       (function (el){
         lockText(el, el.textContent.trim());
         const btn = el.parentNode;
-        btn.addEventListener('mouseenter', function (){ decrypt(el); });
+        btn.addEventListener('mouseenter', function (){ decrypt(el, 38, 0.7); });   // slower than the cards
       })(labels[i]);
     }
   };

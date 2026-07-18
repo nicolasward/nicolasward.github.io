@@ -1232,26 +1232,33 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     [-0.30, -0.28, -0.10],
     [ 0.05,  0.40,  0.00]
   ].map(function (e){ return new THREE.Quaternion().setFromEuler(new THREE.Euler(e[0], e[1], e[2], 'XYZ')); });
-  const AX = function (x, y, z){ return new THREE.Vector3(x, y, z).normalize(); };
-  // Every tumble turns the SAME rotational sense (all +1) so the can never
-  // reverses direction — that read as clunky. Variety comes only from the axis
-  // and the resting pose it settles into.
-  const SEG = [
-    { axis: AX(1, 0.00, 0), turns: 1 },   // vertical flip
-    { axis: AX(0.35, 1, 0), turns: 1 },   // mostly-horizontal, slight tilt
-    { axis: AX(1, 0.55, 0), turns: 1 },   // diagonal tumble
-    { axis: AX(0.15, 1, 0), turns: 1 },   // near-horizontal spin
-    { axis: AX(1, 0.85, 0), turns: 1 }    // steep diagonal
-  ];
-  const _qb = new THREE.Quaternion(), _qt = new THREE.Quaternion();
-  const _spinQ = new THREE.Quaternion(), _up = new THREE.Vector3(0, 1, 0);
+  // Whole extra turns per service->service flip (all the same sense, so the can
+  // never reverses direction).
+  const TURNS = [1, 1, 1, 1, 1];
+  // Precompute, per segment, the SINGLE axis+angle that rotates REST[i] exactly
+  // onto REST[i+1] the short way. Spinning REST[i] about this one axis for the
+  // whole segment (plus the whole turns) is inherently smooth. The old code
+  // blended a fixed tumble axis against an independent pose slerp, which made
+  // some transitions (04->05) wobble.
+  const REL = [];
+  for (let i = 0; i < N - 1; i++){
+    const rel = REST[i + 1].clone().multiply(REST[i].clone().invert());
+    rel.normalize();
+    let angle = 2 * Math.acos(Math.max(-1, Math.min(1, rel.w)));
+    const sh = Math.sqrt(Math.max(0, 1 - rel.w * rel.w));
+    const axis = sh < 1e-4 ? new THREE.Vector3(0, 1, 0)
+                           : new THREE.Vector3(rel.x, rel.y, rel.z).multiplyScalar(1 / sh);
+    if (angle > Math.PI){ angle = TWO - angle; axis.negate(); }   // always the short way
+    REL.push({ axis: axis, angle: angle });
+  }
+  const _qt = new THREE.Quaternion(), _spinQ = new THREE.Quaternion();
+  const _up = new THREE.Vector3(0, 1, 0), _flip = new THREE.Vector3(1, 0, 0);
   function poseQ(sv){
     if (sv <= 0.5) return REST[0];
     if (sv >= N - 0.5) return REST[N - 1];
     const i = Math.floor(sv - 0.5), u = smoother(sv - (i + 0.5));
-    _qb.slerpQuaternions(REST[i], REST[i + 1], u);              // reorient rest i -> i+1
-    _qt.setFromAxisAngle(SEG[i].axis, SEG[i].turns * TWO * u);  // + a full tumble on a varied axis
-    return _qt.multiply(_qb);
+    _qt.setFromAxisAngle(REL[i].axis, (REL[i].angle + TURNS[i] * TWO) * u);
+    return _qt.multiply(REST[i]);   // one clean axis, REST[i] -> REST[i+1]
   }
 
   // Timeline: the scroll is split into N service segments + 1 outro segment.
@@ -1269,10 +1276,14 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
         _spinQ.setFromAxisAngle(_up, (en - 1) * TWO * 1.25);   // same (+) sense as the flips — no reversal
         group.quaternion.premultiply(_spinQ);
       }
-      const ex = smoother(op);                        // exit in the outro
+      const ex = smoother(clamp(op / 0.5, 0, 1));     // exits over the first half of the outro
+      if (ex > 0){                                     // leave in a backflip, not just a fly-out
+        _spinQ.setFromAxisAngle(_flip, -ex * TWO * 1.5);   // ~1.5 backward tumbles
+        group.quaternion.premultiply(_spinQ);
+      }
       const bob = reduced ? 0 : Math.sin(t * 0.0011) * 0.02;
-      group.position.y = (1 - en) * -3.2 + ex * 3.6 + bob;   // rises up into place, later rises out of shot
-      group.scale.setScalar((0.7 + 0.3 * en) * (1 - 0.5 * ex));
+      group.position.y = (1 - en) * -3.2 + ex * 3.4 + bob;   // rises up into place, later flips up out of shot
+      group.scale.setScalar((0.7 + 0.3 * en) * (1 - 0.62 * ex));
     }
 
     // ---- the frame: draws once on entry, holds, then UNDRAWS through the outro ----

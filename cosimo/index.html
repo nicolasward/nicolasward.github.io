@@ -1284,16 +1284,17 @@ if (stage && scroller && canvas && frame) {
     const c = el._chars; if (!c) return;
     for (let i = 0; i < c.length; i++) c[i].textContent = rnd();
   }
+  const DECRYPT_MS = 26, DECRYPT_RATE = 1.15;   // tick length, characters locked per tick
   function decrypt(el){                      // resolve left to right
     const c = el._chars, p = el._plain; if (!c) return;
     clearInterval(el._st);
     let step = 0;
     el._st = setInterval(function (){
       step++;
-      const locked = Math.min(c.length, Math.floor(step * 0.62));   // ~1 character every 53ms
+      const locked = Math.min(c.length, Math.floor(step * DECRYPT_RATE));   // ~1 character every 23ms
       for (let i = 0; i < c.length; i++) c[i].textContent = i < locked ? p[i] : rnd();
       if (locked >= c.length) clearInterval(el._st);
-    }, 33);
+    }, DECRYPT_MS);
   }
   function barcode(seed){
     let st = seed * 9301 + 49297;

@@ -284,28 +284,6 @@
   /* On phones the 3D can + scroll rig are dropped; the services become a plain
      numbered list under the hero so nothing is lost and the page stays light. */
   .services-mobile { display: none; }
-  @media (max-width: 900px) {
-    /* Mobile keeps the pinned 3D can. The can/frame play centred in the upper
-       part of the screen; the hero ("Power to humans.") sits at the base; the
-       sub copy is deferred to the outro (under the conclusion title). */
-    .can-stage { width: 100%; bottom: 24vh; }        /* full-width, centred; room for the hero below */
-    .hero {
-      justify-content: flex-end;
-      align-items: center;
-      text-align: center;
-      padding: 0 var(--gutter) 7vh;
-    }
-    .headline { max-width: none; justify-items: center; margin: 0; font-size: clamp(2.5rem, 12vw, 4rem); }
-    .hero .sub, .hero .ctas { display: none; }       /* sub copy moves to the outro; no CTA up top */
-    .hl-caret { display: none; }
-    .services-mobile { display: none; }
-    .concl-sub { display: block; }
-    .colophon {
-      position: static; left: auto; transform: none; opacity: 1 !important;
-      text-align: center; padding: 1.5rem var(--gutter) 2.5rem;
-      font-size: 0.8rem; color: rgba(255, 255, 255, 0.7);
-    }
-  }
 
   /* Colophon — set vertically up the right edge, above the theme dot, reading
      bottom to top. */
@@ -446,6 +424,33 @@
     .cosimo-mark b { transform: none !important; animation: none !important; }
     .scroll-in { opacity: 1 !important; transform: none !important; }
     html.intro .iris { animation: none; clip-path: circle(150vmax at 50% 50%); }
+  }
+  /* ---------------- Mobile ----------------
+     Kept LAST so these overrides win over the base rules above (equal
+     specificity = source order decides). Mobile keeps the pinned 3D can: the
+     can/frame play centred in the upper screen, the hero ("Power to humans.")
+     sits left-aligned at the base, and the sub copy is deferred to the outro
+     under the conclusion title. */
+  @media (max-width: 900px) {
+    .can-stage { width: 100%; bottom: 24vh; }        /* full-width, centred; room for the hero below */
+    .hero {
+      justify-content: flex-end;
+      align-items: flex-start;
+      text-align: left;
+      padding: 0 var(--gutter) 7vh;
+    }
+    .headline { max-width: none; justify-items: start; margin: 0; font-size: clamp(2.5rem, 12vw, 4rem); }
+    .hero .sub, .hero .ctas { display: none; }       /* sub copy moves to the outro; no CTA up top */
+    .hl-caret { display: none; }
+    .services-mobile { display: none; }
+    .concl-sub { display: block; }                   /* the sub copy, under the conclusion title */
+    .conclusion { align-items: flex-start; text-align: left; }
+    .colophon {                                      /* plain horizontal line at the page foot */
+      position: static; left: auto; right: auto; bottom: auto;
+      transform: none; opacity: 1 !important;
+      text-align: left; padding: 1.5rem var(--gutter) 2.5rem;
+      font-size: 0.8rem; color: rgba(255, 255, 255, 0.7);
+    }
   }
 </style>
 
@@ -1273,7 +1278,7 @@ if (stage && scroller && canvas && frame) {
         group.quaternion.premultiply(_spinQ);
       }
       const bob = reduced ? 0 : Math.sin(t * 0.0011) * 0.02;
-      group.position.y = (1 - en) * -3.2 + ex * 3.4 + bob;   // rises up into place, later flips up out of shot
+      group.position.y = (1 - en) * -5.0 + ex * 3.4 + bob * en;   // parked well clear below (no tip peeking), bobs only once arrived
       group.scale.setScalar((0.7 + 0.3 * en) * (1 - 0.62 * ex));
     }
 

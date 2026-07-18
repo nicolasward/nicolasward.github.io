@@ -602,26 +602,22 @@ var PALETTE_CTRL = { next: null };   // assigned by the WebGL init; called by th
     if (anchor) anchor.parentNode.insertBefore(caret, anchor.nextSibling);
     else typed.insertBefore(caret, typed.firstChild);
   }
-  var pi = 0, ci = 0, deleting = false, scrolling = false, scrollT = 0;
-  // While the user is actively scrolling (the can is flipping), hold the type —
-  // so there's one thing moving at a time, not two competing animations.
-  window.addEventListener('scroll', function () {
-    scrolling = true; clearTimeout(scrollT);
-    scrollT = setTimeout(function () { scrolling = false; }, 160);
-  }, { passive: true });
+  var pi = 0, ci = 0, deleting = false;
   build(WORDS[0], 0); setCaret(0);
   function step () {
-    if (scrolling) { setTimeout(step, 180); return; }        // frozen while scrolling
     if (!deleting) { chars[ci].classList.add('on'); ci++; }
     else { ci--; chars[ci].classList.remove('on'); }
     setCaret(ci);
     var wait;
-    if (!deleting && ci === chars.length) { deleting = true; wait = 2600; }          // longer hold on the finished line
-    else if (deleting && ci === KEEPLEN) {
-      deleting = false; pi = (pi + 1) % WORDS.length;
-      build(WORDS[pi], KEEPLEN); setCaret(ci); wait = 560;
+    if (!deleting && ci === chars.length) {
+      if (pi === WORDS.length - 1) return;                   // runs once and rests on "humans."
+      deleting = true; wait = 1500;                          // hold the finished line
     }
-    else wait = deleting ? 42 : 94 + Math.random() * 72;     // calmer, more human cadence
+    else if (deleting && ci === KEEPLEN) {
+      deleting = false; pi++;
+      build(WORDS[pi], KEEPLEN); setCaret(ci); wait = 420;
+    }
+    else wait = deleting ? 28 : 62 + Math.random() * 46;     // quicker cadence
     setTimeout(step, wait);
   }
   setTimeout(function () { root.classList.add('typing'); step(); }, 2800);   // as the field opens

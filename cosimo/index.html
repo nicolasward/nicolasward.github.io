@@ -1009,13 +1009,20 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
   camera.position.set(0, 0.15, 6);
 
-  // Studio environment: gradient + two soft highlight bars, so the aluminium
-  // catches moving streaks of light as it tumbles.
+  // Studio environment: a bright overhead softbox fading to a dark floor, with a
+  // few crisp vertical light bars and one dark reflected block. That contrast is
+  // what makes the aluminium read as metal (sharp bright highlights against
+  // darker reflections) instead of flat matte — we don't touch the model's
+  // materials, only what they reflect.
   function envTexture(){
-    const w = 256, h = 256, c = document.createElement('canvas'); c.width = w; c.height = h;
+    const w = 512, h = 512, c = document.createElement('canvas'); c.width = w; c.height = h;
     const x = c.getContext('2d');
     const g = x.createLinearGradient(0, 0, 0, h);
-    g.addColorStop(0, '#ffffff'); g.addColorStop(0.5, '#a9c6ec'); g.addColorStop(1, '#12294a');
+    g.addColorStop(0.00, '#ffffff');   // overhead softbox
+    g.addColorStop(0.34, '#e7f0fb');
+    g.addColorStop(0.55, '#6f97cb');
+    g.addColorStop(0.80, '#16345c');
+    g.addColorStop(1.00, '#050c18');   // dark floor
     x.fillStyle = g; x.fillRect(0, 0, w, h);
     function bar(cx, wd, a){
       const gg = x.createLinearGradient(cx - wd, 0, cx + wd, 0);
@@ -1024,14 +1031,18 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
       gg.addColorStop(1, 'rgba(255,255,255,0)');
       x.fillStyle = gg; x.fillRect(cx - wd, 0, 2 * wd, h);
     }
-    bar(w * 0.24, w * 0.05, 0.9); bar(w * 0.66, w * 0.08, 0.55);
+    bar(w * 0.16, w * 0.028, 1.0);      // crisp softboxes at different azimuths
+    bar(w * 0.42, w * 0.020, 0.9);
+    bar(w * 0.72, w * 0.05,  0.6);
+    x.fillStyle = 'rgba(3,10,22,0.55)'; // a dark block, so rims catch a defined edge
+    x.fillRect(w * 0.52, h * 0.30, w * 0.14, h * 0.5);
     const t = new THREE.CanvasTexture(c); t.mapping = THREE.EquirectangularReflectionMapping; return t;
   }
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromEquirectangular(envTexture()).texture;
 
   scene.add(new THREE.HemisphereLight(0xeaf3ff, 0x0a2748, 0.4));
-  const key = new THREE.DirectionalLight(0xffffff, 2.0); key.position.set(-2.4, 3.0, 3.2); scene.add(key);
+  const key = new THREE.DirectionalLight(0xffffff, 1.5); key.position.set(-2.4, 3.0, 3.2); scene.add(key);
   const rim = new THREE.DirectionalLight(0xcfe6ff, 1.3); rim.position.set(3.0, 0.4, -2.2); scene.add(rim);
 
   // ---------- load the can ----------
@@ -1058,7 +1069,7 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     const maxA = renderer.capabilities.getMaxAnisotropy();
     model.traverse(function (o){
       if (o.isMesh && o.material){
-        o.material.envMapIntensity = 1.15;
+        o.material.envMapIntensity = 1.35;   // reflect the studio env more (material unchanged)
         if (o.material.map) o.material.map.anisotropy = maxA;
       }
     });
@@ -1075,7 +1086,7 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     const distH = (modelSize.y / 2) / Math.tan(fovV / 2);
     const fovH  = 2 * Math.atan(Math.tan(fovV / 2) * aspect);
     const distW = (modelSize.x / 2) / Math.tan(fovH / 2);
-    camera.position.z = Math.max(distH, distW) * 1.75;
+    camera.position.z = Math.max(distH, distW) * 2.0;
     camera.updateProjectionMatrix();
   }
   function resize(){
@@ -1120,18 +1131,15 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     if (total <= 0) return 0;
     return clamp(-scroller.getBoundingClientRect().top / total, 0, 1);
   }
-  // Anchors at i+0.5 (settled, facing front); one full tumble between them.
+  // Anchors at i+0.5 (settled, upright, facing front). Between services the can
+  // does a full VERTICAL flip — end over end about its horizontal axis — so you
+  // glimpse the lid and the base as it turns.
   function pose(sv){
-    let rotY, tilt;
-    if (sv <= 0.5) { rotY = 0; tilt = 0; }
-    else if (sv >= N - 0.5) { rotY = (N - 1) * TWO; tilt = 0; }
-    else {
-      const i = Math.floor(sv - 0.5);
-      const e = smoother(sv - (i + 0.5));
-      rotY = i * TWO + e * TWO;                        // a full turn per flip
-      tilt = Math.sin(Math.PI * e) * 0.42;            // tumble forward and back
-    }
-    return { rotY: rotY, tilt: tilt };
+    let rotX;
+    if (sv <= 0.5) rotX = 0;
+    else if (sv >= N - 0.5) rotX = (N - 1) * TWO;
+    else { const i = Math.floor(sv - 0.5); rotX = i * TWO + smoother(sv - (i + 0.5)) * TWO; }
+    return { rotX: rotX };
   }
 
   function tick(t){
@@ -1139,7 +1147,7 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     const sv = pr * N;
     if (ready){
       const ps = pose(sv);
-      group.rotation.set(ps.tilt, ps.rotY, 0.03);  // the can flips inside the (fixed) frame
+      group.rotation.set(ps.rotX, 0, 0);           // vertical flip, end over end, inside the fixed frame
       group.position.y = reduced ? 0 : Math.sin(t * 0.0011) * 0.02;
     }
     // The border draws itself ONCE, clockwise, as the section is entered, then

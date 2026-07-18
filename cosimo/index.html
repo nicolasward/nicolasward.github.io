@@ -5,7 +5,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Bonheur+Royale&display=swap" rel="stylesheet">
 
 <!-- js flips the page into "start as a dot, then iris open" mode. Without it
      (or under reduced motion) the gradient is simply full-screen from the off. -->
@@ -86,7 +86,7 @@
      screen tall): the hero copy holds on the left while, on the right, the can
      flips between services and each service's editorial frame draws itself in.
      ~80vh of scroll per service. */
-  .scroller { position: relative; z-index: 1; min-height: calc(100vh + 480vh); }
+  .scroller { position: relative; z-index: 1; min-height: calc(100vh + 560vh); }   /* 6 services + 1 outro */
   .pin { position: sticky; top: 0; height: 100vh; overflow: hidden; }
 
   /* ---------------- Hero ----------------
@@ -122,27 +122,31 @@
   /* The swash initial — a script P set against the sans, like an illuminated
      drop cap. line-height 0 keeps the larger glyph from inflating the line
      box; its flourish is allowed to spill below the baseline. */
-  /* The swash P is a hand-drawn inline SVG (a monoline script capital), stroked
-     so it can literally write itself on entrance — the stem first, then the
-     bowl. Sits like an illuminated initial ahead of the typed "ower to". */
+  /* The swash P — Bonheur Royale, set larger than the sans caps like an
+     illuminated initial. It writes itself in via a diagonal mask that sweeps in
+     two strokes (stem, lift, bowl). */
   .headline .p-init {
-    display: inline-block;
+    font-family: "Bonheur Royale", cursive;
+    font-weight: 400;
+    font-size: 2.1em;
     line-height: 0;
-    margin-left: -0.14em;               /* pull the glyph's left whitespace back to the line start */
-    margin-right: 0.02em;
+    letter-spacing: 0;
+    padding-right: 0.6em;               /* keep the P's overhanging flourish from being clipped */
+    margin-right: calc(0.05em - 0.6em);
   }
-  .p-svg {
-    display: inline-block;
-    height: 1.62em;
-    width: auto;
-    overflow: visible;
-    transform: translateY(0.34em);      /* drop onto the baseline, flourish overhanging below */
+  html.js .headline .p-init {
+    -webkit-mask-image: linear-gradient(112deg, #000 45%, rgba(0,0,0,0) 53%);
+            mask-image: linear-gradient(112deg, #000 45%, rgba(0,0,0,0) 53%);
+    -webkit-mask-size: 320% 100%; mask-size: 320% 100%;
+    -webkit-mask-position: 100% 0; mask-position: 100% 0;
   }
-  .p-stroke { stroke-dasharray: 1; stroke-dashoffset: 0; }   /* default (no-JS / reduced): fully drawn */
-  html.js .p-stroke { stroke-dashoffset: 1; }                /* JS: start hidden, then draw */
-  html.draw-p .p-stem { animation: p-draw 1.05s cubic-bezier(0.4, 0.05, 0.25, 1) forwards; }
-  html.draw-p .p-bowl { animation: p-draw 1.0s  cubic-bezier(0.4, 0.05, 0.25, 1) 1.05s forwards; }
-  @keyframes p-draw { to { stroke-dashoffset: 0; } }
+  html.draw-p .headline .p-init { animation: p-draw 2.2s cubic-bezier(0.42, 0.04, 0.22, 1) forwards; }
+  @keyframes p-draw {
+    0%   { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+    44%  { -webkit-mask-position: 52% 0;  mask-position: 52% 0; }
+    56%  { -webkit-mask-position: 52% 0;  mask-position: 52% 0; }
+    100% { -webkit-mask-position: 0% 0;   mask-position: 0% 0; }
+  }
   /* The typing caret — a blinking underscore; shown once typing begins. */
   .hl-caret {
     display: inline-block;
@@ -305,6 +309,8 @@
       padding: clamp(1rem, 4vw, 2rem) var(--gutter) clamp(3rem, 12vw, 4.5rem);
       color: var(--ink);
     }
+    .bigfoot { position: static; padding-top: 2.5rem; }
+    .conclusion { display: none; }
     .services-mobile li {
       display: grid;
       grid-template-columns: auto 1fr;
@@ -329,6 +335,24 @@
     white-space: nowrap;
   }
   .colophon .sep { margin: 0 0.3em; opacity: 0.7; }
+
+  /* ---------------- Conclusion ----------------
+     After the last service the frame undraws, the can rises out of shot and this
+     conversion card takes the window: a short line + a prominent CTA. Its opacity
+     is driven by the outro scroll from JS. */
+  .conclusion {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+    gap: 1.1rem;
+    padding: 0 8% 8% 7%;
+    color: var(--ink);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .conclusion .btn { pointer-events: auto; margin-top: 0.4rem; }
+  .concl-kicker { margin: 0; font-family: var(--mono); font-size: clamp(0.62rem, 1.1vw, 0.74rem); letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255, 255, 255, 0.7); }
+  .concl-title { margin: 0; font-family: "Figtree", system-ui, sans-serif; font-weight: 700; font-size: clamp(2rem, 4vw, 3.1rem); letter-spacing: -0.02em; line-height: 1.02; }
+  .concl-mail { margin: 0.2rem 0 0; font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.04em; color: rgba(255, 255, 255, 0.72); }
 
   /* ---------------- Scroll cue ----------------
      A small "Scroll" label with a travelling tick, so the pinned can reads as
@@ -362,14 +386,15 @@
      spanning the page, its letters rising into place when the footer scrolls
      into view. */
   .bigfoot {
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
+    position: absolute;               /* pinned inside the frame — the page never scrolls past it */
+    left: 0; right: 0; bottom: 0;
+    z-index: 5;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    gap: clamp(1.6rem, 5vh, 3rem);
+    gap: clamp(1rem, 3vh, 1.8rem);
     padding: 0 var(--gutter) clamp(1rem, 3vh, 2.2rem);
+    pointer-events: none;
   }
   .cosimo-mark {
     display: flex;
@@ -422,7 +447,7 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1 !important; animation: none !important; transform: none !important; }
-    .p-stroke { stroke-dashoffset: 0 !important; animation: none !important; }
+    .headline .p-init { -webkit-mask: none !important; mask: none !important; animation: none !important; }
     .credo-toggle { opacity: 1 !important; transform: none !important; animation: none !important; }
     .cosimo-mark b { transform: none !important; animation: none !important; }
     .scroll-in { opacity: 1 !important; transform: none !important; }
@@ -439,7 +464,7 @@
   <main class="hero">
     <h1 class="headline" aria-label="Power to designers. Power to planners. Power to ops teams. Power to marketers. Power to those who ship.">
       <span class="hl-sizer" aria-hidden="true">Power to those who ship.</span>
-      <span class="hl-live" aria-hidden="true"><span class="p-init"><svg class="p-svg" viewBox="0 0 100 150" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path class="p-stroke p-stem" pathLength="1" d="M44 20 C30 12 22 22 26 34 C30 66 24 98 22 120 C20 134 32 140 46 130"/><path class="p-stroke p-bowl" pathLength="1" d="M27 36 C58 20 88 30 84 55 C80 78 50 78 28 64"/></svg></span><span class="hl-typed"></span><span class="hl-caret" aria-hidden="true">_</span></span>
+      <span class="hl-live" aria-hidden="true"><span class="p-init">P</span><span class="hl-typed"></span><span class="hl-caret" aria-hidden="true">_</span></span>
     </h1>
     <p class="sub reveal">Cosimo is an applied AI studio run by engineers, designers, and product leaders. We make the world&#8217;s most iconic brands AI-native.</p>
     <p class="sub sub--note reveal">Currently taking on a limited number of clients. London-based, operating worldwide.</p>
@@ -462,6 +487,14 @@
           <div class="frame-code"><span class="frame-bars"></span><span class="frame-vol">330ML</span></div>
         </div>
       </div>
+      <div class="conclusion" aria-hidden="true">
+        <p class="concl-kicker">Six ways in &mdash; one studio</p>
+        <h2 class="concl-title">Let&#8217;s build yours.</h2>
+        <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Start a project
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </a>
+        <p class="concl-mail">hello@cosimo.studio</p>
+      </div>
     </div>
     <ul class="services-mobile" aria-label="Services">
       <li><span class="sm-num">01</span><span class="sm-name">Creative production</span><span class="sm-desc">Concept, art direction, content at scale.</span></li>
@@ -471,13 +504,12 @@
       <li><span class="sm-num">05</span><span class="sm-name">Automations</span><span class="sm-desc">Workflows that run themselves.</span></li>
       <li><span class="sm-num">06</span><span class="sm-name">A/B testing</span><span class="sm-desc">Experiment, measure, compound the wins.</span></li>
     </ul>
+    <footer class="bigfoot">
+      <p class="colophon scroll-in"><span class="c-part">&copy; 2026 Cosimo</span><span class="sep" aria-hidden="true">&middot;</span><span class="c-part">Based in London, operating worldwide.</span></p>
+      <div class="cosimo-mark" aria-hidden="true"><span><b>C</b></span><span><b>O</b></span><span><b>S</b></span><span><b>I</b></span><span><b>M</b></span><span><b>O</b></span></div>
+    </footer>
   </div><!-- .pin -->
   </div><!-- .scroller -->
-
-  <footer class="bigfoot">
-    <p class="colophon scroll-in"><span class="c-part">&copy; 2026 Cosimo</span><span class="sep" aria-hidden="true">&middot;</span><span class="c-part">Based in London, operating worldwide.</span></p>
-    <div class="cosimo-mark" aria-hidden="true"><span><b>C</b></span><span><b>O</b></span><span><b>S</b></span><span><b>I</b></span><span><b>M</b></span><span><b>O</b></span></div>
-  </footer>
 
 <button class="credo-toggle" type="button" aria-label="Change the colour theme" title="Change the colour theme"></button>
 <div class="scroll-cue" aria-hidden="true"><span>Scroll</span><span class="scroll-cue-line"></span></div>
@@ -582,18 +614,19 @@ var PALETTE_CTRL = { next: null };   // assigned by the WebGL init; called by th
   });
 })();
 
-/* Reveal the footer (colophon + the big COSIMO) when it scrolls into view. */
+/* On phones (where the scroll rig is off) reveal the footer as it enters view.
+   On desktop the pinned outro drives it from the module below. */
 (function () {
+  if (!(window.matchMedia && matchMedia('(max-width: 900px)').matches)) return;
   var foot = document.querySelector('.bigfoot');
   var mark = document.querySelector('.cosimo-mark');
   var col  = document.querySelector('.colophon');
   if (!foot || !mark) return;
   function on(v){ mark.classList.toggle('in', v); if (col) col.classList.toggle('in', v); }
   if (!('IntersectionObserver' in window)) { on(true); return; }
-  var io = new IntersectionObserver(function (es){
+  new IntersectionObserver(function (es){
     es.forEach(function (e){ on(e.isIntersecting); });
-  }, { threshold: 0.35 });
-  io.observe(foot);
+  }, { threshold: 0.3 }).observe(foot);
 })();
 </script>
 
@@ -1158,7 +1191,10 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
   const elSide = frame.querySelector('.frame-side');
   const elBars = frame.querySelector('.frame-bars');
   const elText = frame.querySelector('.frame-text');
-  let curIdx = -1;
+  const concl  = document.querySelector('.conclusion');
+  const mark   = document.querySelector('.cosimo-mark');
+  const colo   = document.querySelector('.colophon');
+  let curIdx = -1, footIn = false;
   function barcode(seed){
     let st = seed * 9301 + 49297;
     const rnd = () => { st = (st * 9301 + 49297) % 233280; return st / 233280; };
@@ -1212,25 +1248,41 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     return _qt.multiply(_qb);
   }
 
+  // Timeline: the scroll is split into N service segments + 1 outro segment.
+  const SVC = N / (N + 1);                          // fraction of scroll spent on services
   function tick(t){
-    const pr = reduced ? 0.5 / N : progress();     // reduced: sit at the first service
-    const sv = pr * N;
+    const pr = reduced ? 0.5 / (N + 1) : progress();
+    const sv = clamp(pr / SVC, 0, 1) * N;           // 0..N across the service segments
+    const op = clamp((pr - SVC) / (1 - SVC), 0, 1); // 0..1 across the outro segment
+
+    // ---- the can: tumble through the services, then rise out of shot in the outro ----
     if (ready){
-      group.quaternion.copy(poseQ(sv));            // varied tumble inside the fixed frame
-      group.position.y = reduced ? 0 : Math.sin(t * 0.0011) * 0.02;
+      group.quaternion.copy(poseQ(sv));
+      const ex = smoother(op);                      // exit amount
+      group.position.y = (reduced ? 0 : Math.sin(t * 0.0011) * 0.02) + ex * 3.6;
+      group.scale.setScalar(1 - 0.5 * ex);
     }
-    // The border draws itself ONCE, clockwise, as the section is entered, then
-    // stays put for the whole scroll.
-    const border = smoother(clamp(pr / 0.06, 0, 1));
+
+    // ---- the frame: draws once on entry, holds, then UNDRAWS through the outro ----
+    const undraw = smoother(clamp(op / 0.4, 0, 1));
+    const border = smoother(clamp(pr / 0.05, 0, 1)) * (1 - undraw);
     rect.style.strokeDashoffset = String(1 - border);
     frame.style.opacity = String(clamp(border * 6, 0, 1));
-    // The content swaps per service: it fades out during each flip (while the
-    // can tumbles), changes, and fades back in once the next service settles.
     const nearest = clamp(Math.round(sv - 0.5), 0, N - 1);
     if (nearest !== curIdx) setService(nearest);
     const dist = Math.abs(sv - (nearest + 0.5));
-    const fp = smoother(clamp(1 - dist / 0.42, 0, 1));       // 1 at a service, 0 mid-flip
-    elText.style.opacity = String(fp * clamp((border - 0.6) / 0.4, 0, 1));
+    const fp = smoother(clamp(1 - dist / 0.42, 0, 1));
+    elText.style.opacity = String(fp * clamp((border - 0.6) / 0.4, 0, 1) * (1 - undraw));
+
+    // ---- the outro: conversion card fades in, the big COSIMO rises at the base ----
+    if (concl) concl.style.opacity = String(smoother(clamp((op - 0.35) / 0.4, 0, 1)));
+    const showFoot = op > 0.5;
+    if (showFoot !== footIn){
+      footIn = showFoot;
+      if (mark) mark.classList.toggle('in', showFoot);
+      if (colo) colo.classList.toggle('in', showFoot);
+    }
+
     renderer.render(scene, camera);
     requestAnimationFrame(tick);
   }

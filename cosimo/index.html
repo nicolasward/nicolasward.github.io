@@ -29,8 +29,7 @@
 
   body {
     background: #ffffff;           /* the white the dot drops onto */
-    height: 100%;
-    overflow: hidden;              /* a single screen — the page never scrolls */
+    overflow-x: hidden;            /* scrolls vertically through the services */
   }
 
   /* ---------------- Field ----------------
@@ -82,13 +81,13 @@
     background: var(--fallback);   /* shown if WebGL is unavailable */
   }
 
-  /* The UI layer (hero + footer) sits over the fixed field and fades as one
-     when the field collapses. */
-  .ui {
-    position: relative;
-    z-index: 2;
-    transition: opacity 0.55s ease;
-  }
+  /* ---------------- Scroll rig ----------------
+     The page scrolls vertically. A tall .scroller drives a sticky .pin (one
+     screen tall): the hero copy holds on the left while, on the right, the can
+     flips between services and each service's editorial frame draws itself in.
+     ~80vh of scroll per service. */
+  .scroller { position: relative; z-index: 1; min-height: calc(100vh + 480vh); }
+  .pin { position: sticky; top: 0; height: 100vh; overflow: hidden; }
 
   /* ---------------- Hero ----------------
      Left-anchored copy over the gradient, filling the single screen; the footer
@@ -106,9 +105,6 @@
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* When the footer rolls in, JS lifts the hero by the footer's height —
-       the page gets pushed up a fixed amount, not scrolled. */
-    transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .headline {
     display: grid;                      /* the live line overlays an invisible sizer */
@@ -231,11 +227,11 @@
   .logo--candy  { font-weight: 800; font-size: 1.32em; letter-spacing: 0.14em; }
 
   /* ---------------- Services object ----------------
-     A 3D drink-can (three.js) on the right, slowly turning, ringed by callout
-     labels for each service. Decorative — sits above the field, below the copy,
-     and never intercepts pointer events. Hidden on narrow screens. */
+     A real 3D can (GLB) on the right half of the pin. Scroll flips it between
+     services; each service's editorial frame draws itself around it. Hidden on
+     narrow screens. */
   .can-stage {
-    position: fixed;
+    position: absolute;
     top: 0; right: 0; bottom: 0;
     width: 46vw;
     z-index: 1;
@@ -245,27 +241,45 @@
     position: absolute; inset: 0;
     width: 100%; height: 100%;
     display: block;
-    pointer-events: auto;            /* the can is draggable / tappable */
-    cursor: grab;
-    touch-action: pan-y;
   }
-  .can-canvas:active { cursor: grabbing; }
-  /* The caption reveals whichever service is currently facing the viewer. */
-  .can-caption {
+  /* The editorial "spec-sheet" frame that draws itself around the can — one per
+     service. JS sets its opacity, the border's stroke-dashoffset (the draw), and
+     the inner text opacity from the scroll position each frame. */
+  .frame {
     position: absolute;
-    left: 50%; bottom: 11%;
-    transform: translateX(-50%);
+    inset: 6% 7%;
+    color: var(--ink);
     font-family: var(--mono);
-    font-size: clamp(0.78rem, 1.5vw, 1.02rem);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: #ffffff;
-    white-space: nowrap;
-    text-align: center;
-    pointer-events: none;
     opacity: 0;
-    transition: opacity 0.28s ease;
+    pointer-events: none;
   }
+  .frame-border { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .frame-border rect { fill: none; stroke: rgba(255, 255, 255, 0.85); stroke-width: 1.25; }
+  .frame-num {
+    position: absolute; top: 3%; left: 5%;
+    font-weight: 500; font-size: clamp(1.3rem, 2.8vw, 2.2rem); letter-spacing: 0.02em;
+  }
+  .frame-side {
+    position: absolute; top: 50%; right: 2.4%;
+    transform-origin: right center; transform: translateY(-50%) rotate(90deg);
+    font-size: clamp(0.5rem, 1vw, 0.66rem); letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72); white-space: nowrap;
+  }
+  .frame-name {
+    position: absolute; left: 5%; bottom: 15%;
+    font-family: "Figtree", system-ui, sans-serif; font-weight: 700;
+    font-size: clamp(1.4rem, 3.2vw, 2.4rem); letter-spacing: -0.01em; line-height: 1.02; max-width: 82%;
+  }
+  .frame-desc {
+    position: absolute; left: 5%; bottom: 10.5%;
+    font-size: clamp(0.6rem, 1.2vw, 0.75rem); letter-spacing: 0.03em;
+    color: rgba(255, 255, 255, 0.72); max-width: 72%;
+  }
+  .frame-code { position: absolute; left: 5%; bottom: 4.5%; display: flex; align-items: flex-end; gap: 0.7rem; }
+  .frame-bars { display: flex; align-items: stretch; gap: 2px; height: 30px; }
+  .frame-bars i { display: block; background: var(--ink); }
+  .frame-vol { font-size: 0.7rem; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.82); }
+  .frame-text { position: absolute; inset: 0; }
   html.js .can-stage     { opacity: 0; }
   html.intro .can-stage  { opacity: 1; transition: opacity 1.2s ease 2.9s; }
 
@@ -300,7 +314,11 @@
     .cosimo-mark { font-size: 21vw; }   /* matches the old teaser's mobile size */
     .logos { font-size: 0.72rem; justify-content: flex-start; bottom: 1.8rem; }
   }
-  @media (max-width: 900px) { .can-stage { display: none; } }
+  @media (max-width: 900px) {
+    .can-stage { display: none; }
+    .scroller { min-height: auto; }
+    .pin { position: static; height: auto; overflow: visible; }
+  }
 
   /* Colophon — copyright + location, bottom-left. */
   .colophon {
@@ -315,20 +333,18 @@
   .colophon .sep { margin: 0 0.3em; opacity: 0.7; }
 
   /* ---------------- Footer ----------------
-     Pinned to the bottom of the (non-scrolling) viewport: a giant all-caps
-     COSIMO spanning the page. Downward scroll INTENT (wheel / swipe / keys)
-     rolls the letters up into place; upward intent rolls them back out. The
-     page itself never moves. */
+     A full-height end section after the scroll rig: a giant all-caps COSIMO
+     spanning the page, its letters rising into place when the footer scrolls
+     into view. */
   .bigfoot {
-    position: fixed;
-    left: 0; right: 0; bottom: 0;
-    z-index: 5;
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     gap: clamp(1.6rem, 5vh, 3rem);
     padding: 0 var(--gutter) clamp(1rem, 3vh, 2.2rem);
-    pointer-events: none;          /* never block the hero CTAs beneath */
   }
   .cosimo-mark {
     display: flex;
@@ -413,8 +429,6 @@
     .credo-toggle { opacity: 1 !important; transform: none !important; animation: none !important; }
     .cosimo-mark b { transform: none !important; animation: none !important; }
     .scroll-in { opacity: 1 !important; transform: none !important; }
-    .ui { transition: none !important; }
-    .hero { transition: none !important; }
     html.intro .iris { animation: none; clip-path: circle(150vmax at 50% 50%); }
   }
 </style>
@@ -423,12 +437,8 @@
   <canvas id="gradient"></canvas>
 </div>
 
-<div class="can-stage">
-  <canvas class="can-canvas"></canvas>
-  <div class="can-caption" aria-hidden="true"></div>
-</div>
-
-<div class="ui">
+<div class="scroller">
+  <div class="pin">
   <main class="hero">
     <h1 class="headline" aria-label="Power to designers. Power to planners. Power to ops teams. Power to marketers. Power to those who ship.">
       <span class="hl-sizer" aria-hidden="true">Power to those who ship.</span>
@@ -452,11 +462,26 @@
     </div>
   </main>
 
+    <div class="can-stage">
+      <canvas class="can-canvas"></canvas>
+      <div class="frame" aria-hidden="true">
+        <svg class="frame-border" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="1" y="1" width="98" height="98" rx="3" pathLength="1" vector-effect="non-scaling-stroke"/></svg>
+        <div class="frame-text">
+          <div class="frame-num">#01</div>
+          <div class="frame-side">Refresh your business identity</div>
+          <div class="frame-name">Creative production</div>
+          <div class="frame-desc">Concept, art direction, content at scale.</div>
+          <div class="frame-code"><span class="frame-bars"></span><span class="frame-vol">330ML</span></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- .pin -->
+  </div><!-- .scroller -->
+
   <footer class="bigfoot">
     <p class="colophon scroll-in"><span class="c-part">&copy; 2026 Cosimo</span><span class="sep" aria-hidden="true">&middot;</span><span class="c-part">Based in London, operating worldwide.</span></p>
     <div class="cosimo-mark" aria-hidden="true"><span><b>C</b></span><span><b>O</b></span><span><b>S</b></span><span><b>I</b></span><span><b>M</b></span><span><b>O</b></span></div>
   </footer>
-</div>
 
 <button class="credo-toggle" type="button" aria-label="Change the colour theme" title="Change the colour theme"></button>
 
@@ -580,55 +605,18 @@ var PALETTE_CTRL = { next: null };   // assigned by the WebGL init; called by th
   });
 })();
 
-/* Reveal the footer (colophon + the big COSIMO) on downward scroll INTENT.
-   The page itself never scrolls: a wheel-down / swipe-up / key-down gesture
-   rolls the letters up into place exactly as the old scrolled-to reveal did,
-   and the opposite gesture rolls them back out. */
+/* Reveal the footer (colophon + the big COSIMO) when it scrolls into view. */
 (function () {
+  var foot = document.querySelector('.bigfoot');
   var mark = document.querySelector('.cosimo-mark');
   var col  = document.querySelector('.colophon');
-  var hero = document.querySelector('.hero');
-  var foot = document.querySelector('.bigfoot');
-  var hl   = document.querySelector('.headline');
-  if (!mark) return;
-  var shown = false;
-  function show () {
-    if (shown) return; shown = true;
-    mark.classList.remove('out');
-    void mark.offsetWidth;               // reflow so the rise can replay
-    mark.classList.add('in');
-    if (col) col.classList.add('in');
-    // The footer pushes the page up by its own height — a fixed lift, not a
-    // scroll — capped so the headline can never leave the screen.
-    if (hero && foot && hl) {
-      var headroom = Math.max(0, hl.getBoundingClientRect().top - 24);
-      var lift = Math.min(foot.offsetHeight, headroom);
-      hero.style.transform = 'translateY(-' + Math.round(lift) + 'px)';
-    }
-  }
-  function hide () {
-    if (!shown) return; shown = false;
-    mark.classList.remove('in');
-    void mark.offsetWidth;
-    mark.classList.add('out');
-    if (col) col.classList.remove('in');
-    if (hero) hero.style.transform = '';
-  }
-  window.addEventListener('wheel', function (e) {
-    if (e.deltaY > 0) show(); else if (e.deltaY < 0) hide();
-  }, { passive: true });
-  var y0 = null;
-  window.addEventListener('touchstart', function (e) { y0 = e.touches[0].clientY; }, { passive: true });
-  window.addEventListener('touchmove', function (e) {
-    if (y0 === null) return;
-    var dy = y0 - e.touches[0].clientY;          // finger up = scroll down
-    if (dy > 24) { show(); y0 = null; }
-    else if (dy < -24) { hide(); y0 = null; }
-  }, { passive: true });
-  window.addEventListener('keydown', function (e) {
-    if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === 'End' || e.key === ' ') show();
-    else if (e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'Home') hide();
-  });
+  if (!foot || !mark) return;
+  function on(v){ mark.classList.toggle('in', v); if (col) col.classList.toggle('in', v); }
+  if (!('IntersectionObserver' in window)) { on(true); return; }
+  var io = new IntersectionObserver(function (es){
+    es.forEach(function (e){ on(e.isIntersecting); });
+  }, { threshold: 0.35 });
+  io.observe(foot);
 })();
 </script>
 
@@ -1058,189 +1046,196 @@ const GRAINS = [GRAIN, GRAIN, GRAIN, GRAIN];   // all share the live blue's grai
 </script>
 
 <!-- ============================================================
-     Services object — a realistic 3D drink-can (three.js) on the right. Six
-     services are printed around the can's label; spinning brings each to the
-     front and the caption reveals it. Drag to spin, tap to advance; it also
-     auto-cycles when idle. FIRST-PASS PROTOTYPE, three.js from a pinned CDN.
+     Services showcase — a real 3D can (GLB via three.js modules + Draco),
+     pinned on the right. Scroll choreographs it: the can flips on itself
+     between services, and each service's editorial frame draws itself around
+     it. FIRST-PASS PROTOTYPE; three.js + decoder from a pinned CDN.
      ============================================================ -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" defer></script>
-<script>
-window.addEventListener('load', function () {
-  var stage = document.querySelector('.can-stage');
-  var THREE = window.THREE;
-  if (!stage || !THREE) return;                 // three.js unavailable — skip silently
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
-  var canvas  = stage.querySelector('.can-canvas');
-  var caption = stage.querySelector('.can-caption');
+try { history.scrollRestoration = 'manual'; } catch (e) {}
+window.scrollTo(0, 0);
 
-  var SERVICES = ['Creative production', 'Customer experience', 'Demand forecasting',
-                  'Analytics', 'Automations', 'A/B testing'];
-  var N = SERVICES.length;
+const stage    = document.querySelector('.can-stage');
+const scroller = document.querySelector('.scroller');
+const canvas   = stage && stage.querySelector('.can-canvas');
+const frame    = stage && stage.querySelector('.frame');
 
-  var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').matches) {
+  const SERVICES = [
+    { name: 'Creative production', desc: 'Concept, art direction, content at scale.',  side: 'Refresh your business identity' },
+    { name: 'Customer experience', desc: 'Journeys, support, retention, loyalty.',     side: 'Every touchpoint, considered' },
+    { name: 'Demand forecasting',  desc: 'Predict demand, plan stock and spend.',      side: 'Plan with confidence' },
+    { name: 'Analytics',           desc: 'Dashboards, attribution, clear decisions.',  side: 'See the whole picture' },
+    { name: 'Automations',         desc: 'Workflows that run themselves.',             side: 'Let the busywork disappear' },
+    { name: 'A/B testing',         desc: 'Experiment, measure, compound the wins.',    side: 'Ship, measure, repeat' }
+  ];
+  const N = SERVICES.length;
+  const TWO = Math.PI * 2;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const smoother = t => { t = clamp(t, 0, 1); return t * t * t * (t * (t * 6 - 15) + 10); };
+
+  // ---------- renderer / scene ----------
+  const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.1;
-  var maxAniso = renderer.capabilities.getMaxAnisotropy();
+  renderer.toneMappingExposure = 1.05;
 
-  var scene  = new THREE.Scene();
-  var camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
-  camera.position.set(0, 0.28, 3.6);
-  camera.lookAt(0, 0, 0);
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+  camera.position.set(0, 0.15, 6);
 
-  /* Studio environment: a vertical gradient plus two soft vertical highlight
-     bars, so the aluminium catches moving streaks of light as it turns. */
+  // Studio environment: gradient + two soft highlight bars, so the aluminium
+  // catches moving streaks of light as it tumbles.
   function envTexture(){
-    var w = 256, h = 256, c = document.createElement('canvas'); c.width = w; c.height = h;
-    var x = c.getContext('2d');
-    var g = x.createLinearGradient(0, 0, 0, h);
-    g.addColorStop(0.0, '#f3f8ff'); g.addColorStop(0.45, '#8fb6e8'); g.addColorStop(1.0, '#0c2748');
+    const w = 256, h = 256, c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, '#ffffff'); g.addColorStop(0.5, '#a9c6ec'); g.addColorStop(1, '#12294a');
     x.fillStyle = g; x.fillRect(0, 0, w, h);
     function bar(cx, wd, a){
-      var gg = x.createLinearGradient(cx - wd, 0, cx + wd, 0);
+      const gg = x.createLinearGradient(cx - wd, 0, cx + wd, 0);
       gg.addColorStop(0, 'rgba(255,255,255,0)');
       gg.addColorStop(0.5, 'rgba(255,255,255,' + a + ')');
       gg.addColorStop(1, 'rgba(255,255,255,0)');
       x.fillStyle = gg; x.fillRect(cx - wd, 0, 2 * wd, h);
     }
-    bar(w * 0.22, w * 0.06, 0.85);
-    bar(w * 0.63, w * 0.09, 0.55);
-    var t = new THREE.CanvasTexture(c);
-    t.mapping = THREE.EquirectangularReflectionMapping;
-    return t;
+    bar(w * 0.24, w * 0.05, 0.9); bar(w * 0.66, w * 0.08, 0.55);
+    const t = new THREE.CanvasTexture(c); t.mapping = THREE.EquirectangularReflectionMapping; return t;
   }
-  var pmrem = new THREE.PMREMGenerator(renderer);
+  const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromEquirectangular(envTexture()).texture;
 
-  scene.add(new THREE.HemisphereLight(0xeaf3ff, 0x0a2748, 0.35));
-  var key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(-2.2, 2.8, 3.0); scene.add(key);
-  var rim = new THREE.DirectionalLight(0xbfe0ff, 1.2); rim.position.set(2.8, 0.6, -2.0); scene.add(rim);
+  scene.add(new THREE.HemisphereLight(0xeaf3ff, 0x0a2748, 0.4));
+  const key = new THREE.DirectionalLight(0xffffff, 2.0); key.position.set(-2.4, 3.0, 3.2); scene.add(key);
+  const rim = new THREE.DirectionalLight(0xcfe6ff, 1.3); rim.position.set(3.0, 0.4, -2.2); scene.add(rim);
 
-  /* Can label textures. The body is a blue print band with the six service
-     names spaced around it; top and bottom are bare aluminium. Three canvases
-     drive albedo, metalness and roughness so the metal and the matte print
-     read differently. Canvas top maps to the lid (v = 1). */
-  function drawWrapped(x, text, cx, cy, maxw, lh){
-    x.font = "700 62px 'Figtree', Arial, sans-serif";
-    var words = text.split(' '), lines = [], cur = '';
-    for (var i = 0; i < words.length; i++){
-      var tt = cur ? cur + ' ' + words[i] : words[i];
-      if (x.measureText(tt).width > maxw && cur){ lines.push(cur); cur = words[i]; }
-      else cur = tt;
-    }
-    if (cur) lines.push(cur);
-    var y0 = cy - (lines.length - 1) * lh / 2;
-    for (var j = 0; j < lines.length; j++) x.fillText(lines[j], cx, y0 + j * lh);
-  }
-  function label(kind){
-    var w = 2400, h = 1200, c = document.createElement('canvas'); c.width = w; c.height = h;
-    var x = c.getContext('2d');
-    var topEnd = 0.30 * h, botStart = 0.80 * h;
-    if (kind === 'map'){
-      x.fillStyle = '#dfe3e8'; x.fillRect(0, 0, w, h);
-      var sg = x.createLinearGradient(0, 0, w, 0);
-      sg.addColorStop(0, '#cbd0d7'); sg.addColorStop(0.5, '#eef1f4'); sg.addColorStop(1, '#cbd0d7');
-      x.fillStyle = sg; x.fillRect(0, 0, w, topEnd); x.fillRect(0, botStart, w, h - botStart);
-      x.fillStyle = '#1f6fd0'; x.fillRect(0, topEnd, w, botStart - topEnd);            // blue label
-      x.fillStyle = 'rgba(255,255,255,0.85)'; x.fillRect(0, topEnd, w, 5); x.fillRect(0, botStart - 5, w, 5);
-      x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#ffffff';
-      for (var i = 0; i < N; i++){
-        drawWrapped(x, SERVICES[i].toUpperCase(), ((i + 0.5) / N) * w, (topEnd + botStart) / 2, (w / N) * 0.82, 74);
+  // ---------- load the can ----------
+  const group = new THREE.Group(); scene.add(group);
+  const modelSize = new THREE.Vector3(1, 2.4, 1);
+  let ready = false;
+
+  const draco = new DRACOLoader();
+  draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
+  const loader = new GLTFLoader(); loader.setDRACOLoader(draco);
+  loader.load('can.glb', function (gltf){
+    const model = gltf.scene;
+    const box = new THREE.Box3().setFromObject(model);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    model.position.sub(center);                       // recentre on the origin
+    const k = 2.4 / size.y;                           // scale to a known height
+    model.scale.setScalar(k);
+    modelSize.set(size.x * k, size.y * k, size.z * k);
+    const maxA = renderer.capabilities.getMaxAnisotropy();
+    model.traverse(function (o){
+      if (o.isMesh && o.material){
+        o.material.envMapIntensity = 1.15;
+        if (o.material.map) o.material.map.anisotropy = maxA;
       }
-    } else if (kind === 'metal'){
-      x.fillStyle = '#ffffff'; x.fillRect(0, 0, w, h);                                  // metal = 1
-      x.fillStyle = '#1c1c1c'; x.fillRect(0, topEnd, w, botStart - topEnd);             // print ~0.11
-    } else {
-      x.fillStyle = '#2e2e2e'; x.fillRect(0, 0, w, h);                                  // shiny metal
-      x.fillStyle = '#8f8f8f'; x.fillRect(0, topEnd, w, botStart - topEnd);             // matte print
-    }
-    var t = new THREE.CanvasTexture(c);
-    t.anisotropy = maxAniso; t.wrapS = THREE.RepeatWrapping;
-    if (kind === 'map') t.colorSpace = THREE.SRGBColorSpace;
-    return t;
-  }
+    });
+    group.add(model);
+    ready = true;
+    fit();
+  }, undefined, function (err){ console.error('can.glb failed to load', err); });
 
-  // Lathed can profile: base dome, straight body, shoulder taper, rim, recessed lid.
-  var profile = [
-    [0.00, -0.50], [0.11, -0.50], [0.25, -0.485], [0.29, -0.45], [0.30, -0.42],
-    [0.30, 0.40], [0.29, 0.44], [0.24, 0.478], [0.205, 0.492],
-    [0.205, 0.505], [0.183, 0.508], [0.172, 0.498], [0.00, 0.500]
-  ].map(function (v){ return new THREE.Vector2(v[0], v[1]); });
-  var geo = new THREE.LatheGeometry(profile, 160);
-  geo.computeVertexNormals();
-  var mat = new THREE.MeshPhysicalMaterial({
-    map: label('map'), metalnessMap: label('metal'), roughnessMap: label('rough'),
-    metalness: 1.0, roughness: 1.0, clearcoat: 0.35, clearcoatRoughness: 0.35,
-    envMapIntensity: 1.15
-  });
-  var can = new THREE.Mesh(geo, mat);
-  can.rotation.z = 0.04;                          // a touch of tilt, more lifelike
-  var group = new THREE.Group(); group.add(can); scene.add(group);
-
-  /* Rotation state. Station i (service i) faces the viewer at
-     rotY = -(i + 0.5)/N * 2π — the same meridian its text is printed on. */
-  var TWO = Math.PI * 2;
-  function stationRot(i){ return -((i + 0.5) / N) * TWO; }
-  function nearestTargetFor(i){                   // the multiple of 2π nearest current rotation
-    var base = stationRot(i);
-    return base + Math.round((group.rotation.y - base) / TWO) * TWO;
+  // ---------- fit the camera to the model within the stage aspect ----------
+  function fit(){
+    const w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return;
+    const aspect = w / h;
+    const fovV = camera.fov * Math.PI / 180;
+    const distH = (modelSize.y / 2) / Math.tan(fovV / 2);
+    const fovH  = 2 * Math.atan(Math.tan(fovV / 2) * aspect);
+    const distW = (modelSize.x / 2) / Math.tan(fovH / 2);
+    camera.position.z = Math.max(distH, distW) * 1.5;
+    camera.updateProjectionMatrix();
   }
-  var idx = 0, targetY = stationRot(0), dragging = false, userT = 0;
-  group.rotation.y = targetY;
-
-  function setCaption(i){
-    caption.style.opacity = 0;
-    setTimeout(function (){ caption.textContent = SERVICES[i]; caption.style.opacity = 1; }, 160);
-  }
-  function poke(){ userT = performance.now(); }
-  function advance(dir){                           // keep spinning one direction
-    idx = ((idx + dir) % N + N) % N;
-    targetY += dir * (-TWO / N);
-    setCaption(idx); poke();
-  }
-  function snapNearest(){                           // after a free drag, settle on a station
-    var i = Math.round(-group.rotation.y / TWO * N - 0.5);
-    idx = ((i % N) + N) % N;
-    targetY = nearestTargetFor(idx);
-    setCaption(idx);
-  }
-  setCaption(idx);
-
-  // Interaction: drag to spin freely, tap to advance to the next service.
-  var lastX = 0, moved = 0;
-  canvas.addEventListener('pointerdown', function (e){
-    dragging = true; lastX = e.clientX; moved = 0; poke();
-    try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
-  });
-  canvas.addEventListener('pointermove', function (e){
-    if (!dragging) return;
-    var dx = e.clientX - lastX; lastX = e.clientX; moved += Math.abs(dx);
-    group.rotation.y += dx * 0.008; poke();
-  });
-  function endDrag(){
-    if (!dragging) return; dragging = false;
-    if (moved < 6) advance(1); else snapNearest();
-  }
-  canvas.addEventListener('pointerup', endDrag);
-  canvas.addEventListener('pointercancel', endDrag);
-
   function resize(){
-    var w = stage.clientWidth, h = stage.clientHeight;
-    if (!w || !h) return;
+    const w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return;
     renderer.setSize(w, h, false);
     camera.aspect = w / h; camera.updateProjectionMatrix();
+    fit();
   }
   window.addEventListener('resize', resize); resize();
 
-  var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var AUTO = 3600;                                 // idle time before auto-advancing
-  function frame(now){
-    if (!dragging) group.rotation.y += (targetY - group.rotation.y) * 0.10;   // ease to target
-    if (!reduced && !dragging && (now - userT) > AUTO && Math.abs(targetY - group.rotation.y) < 0.02) advance(1);
-    group.position.y = reduced ? 0 : Math.sin(now / 1000 * 0.7) * 0.02;
-    renderer.render(scene, camera);
-    requestAnimationFrame(frame);
+  // ---------- the editorial frame ----------
+  const rect  = frame.querySelector('.frame-border rect');
+  rect.style.strokeDasharray = '1';
+  const elNum  = frame.querySelector('.frame-num');
+  const elName = frame.querySelector('.frame-name');
+  const elDesc = frame.querySelector('.frame-desc');
+  const elSide = frame.querySelector('.frame-side');
+  const elBars = frame.querySelector('.frame-bars');
+  const elText = frame.querySelector('.frame-text');
+  let curIdx = -1;
+  function barcode(seed){
+    let st = seed * 9301 + 49297;
+    const rnd = () => { st = (st * 9301 + 49297) % 233280; return st / 233280; };
+    let html = '';
+    for (let i = 0; i < 38; i++) html += '<i style="width:' + (rnd() < 0.5 ? 1 : 3) + 'px"></i>';
+    return html;
   }
-  requestAnimationFrame(frame);
-});
+  function setService(i){
+    const svc = SERVICES[i];
+    elNum.textContent  = '#' + String(i + 1).padStart(2, '0');
+    elName.textContent = svc.name;
+    elDesc.textContent = svc.desc;
+    elSide.textContent = svc.side;
+    elBars.innerHTML   = barcode(i + 1);
+    curIdx = i;
+  }
+  setService(0);
+
+  // ---------- scroll -> pose + frame ----------
+  function progress(){
+    const total = scroller.offsetHeight - window.innerHeight;
+    if (total <= 0) return 0;
+    return clamp(-scroller.getBoundingClientRect().top / total, 0, 1);
+  }
+  // Anchors at i+0.5 (settled, facing front); one full tumble between them.
+  function pose(sv){
+    let rotY, tilt;
+    if (sv <= 0.5) { rotY = 0; tilt = 0; }
+    else if (sv >= N - 0.5) { rotY = (N - 1) * TWO; tilt = 0; }
+    else {
+      const i = Math.floor(sv - 0.5);
+      const e = smoother(sv - (i + 0.5));
+      rotY = i * TWO + e * TWO;                        // a full turn per flip
+      tilt = Math.sin(Math.PI * e) * 0.55;            // tumble forward and back
+    }
+    return { rotY: rotY, tilt: tilt };
+  }
+
+  function tick(t){
+    const sv = reduced ? 0.5 : progress() * N;
+    if (ready){
+      const p = pose(sv);
+      group.rotation.set(p.tilt, p.rotY, 0.03);
+      group.position.y = reduced ? 0 : Math.sin(t * 0.0011) * 0.02;
+    }
+    const nearest = clamp(Math.round(sv - 0.5), 0, N - 1);
+    if (nearest !== curIdx) setService(nearest);      // swaps while the frame is hidden (mid-flip)
+    const dist = Math.abs(sv - (nearest + 0.5));
+    const fp   = smoother(clamp(1 - dist / 0.42, 0, 1));   // 1 at an anchor, 0 during a flip
+    const drawn = clamp(fp * 1.7, 0, 1);                   // border draws ahead of the text
+    rect.style.strokeDashoffset = String(1 - drawn);
+    frame.style.opacity = String(clamp(fp / 0.15, 0, 1));
+    elText.style.opacity = String(clamp((fp - 0.45) / 0.4, 0, 1));
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
 </script>

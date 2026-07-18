@@ -123,8 +123,7 @@
      drop cap. line-height 0 keeps the larger glyph from inflating the line
      box; its flourish is allowed to spill below the baseline. */
   /* The swash P — Bonheur Royale, set larger than the sans caps like an
-     illuminated initial. It writes itself in via a diagonal mask that sweeps in
-     two strokes (stem, lift, bowl). */
+     illuminated initial. */
   .headline .p-init {
     font-family: "Bonheur Royale", cursive;
     font-weight: 400;
@@ -133,19 +132,6 @@
     letter-spacing: 0;
     padding-right: 0.6em;               /* keep the P's overhanging flourish from being clipped */
     margin-right: calc(0.05em - 0.6em);
-  }
-  html.js .headline .p-init {
-    -webkit-mask-image: linear-gradient(112deg, #000 45%, rgba(0,0,0,0) 53%);
-            mask-image: linear-gradient(112deg, #000 45%, rgba(0,0,0,0) 53%);
-    -webkit-mask-size: 320% 100%; mask-size: 320% 100%;
-    -webkit-mask-position: 100% 0; mask-position: 100% 0;
-  }
-  html.draw-p .headline .p-init { animation: p-draw 2.2s cubic-bezier(0.42, 0.04, 0.22, 1) forwards; }
-  @keyframes p-draw {
-    0%   { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
-    44%  { -webkit-mask-position: 52% 0;  mask-position: 52% 0; }
-    56%  { -webkit-mask-position: 52% 0;  mask-position: 52% 0; }
-    100% { -webkit-mask-position: 0% 0;   mask-position: 0% 0; }
   }
   /* The typing caret — a blinking underscore; shown once typing begins. */
   .hl-caret {
@@ -188,7 +174,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    font-family: inherit;
+    font-family: "Figtree", system-ui, -apple-system, sans-serif;
     font-size: 1rem;
     text-decoration: none;
     transition: background 0.25s ease, color 0.25s ease, opacity 0.2s ease, transform 0.2s ease;
@@ -310,7 +296,13 @@
       color: var(--ink);
     }
     .bigfoot { position: static; padding-top: 2.5rem; }
+    .cosimo-mark { transform: none; }
     .conclusion { display: none; }
+    .colophon {
+      position: static; transform: none; opacity: 1 !important;
+      text-align: center; padding: 1.5rem var(--gutter) 2.5rem;
+      font-size: 0.8rem; color: rgba(255, 255, 255, 0.7);
+    }
     .services-mobile li {
       display: grid;
       grid-template-columns: auto 1fr;
@@ -324,17 +316,26 @@
     .sm-desc { font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.02em; opacity: 0.72; }
   }
 
-  /* Colophon — copyright + location, bottom-left. */
+  /* Colophon — set vertically up the right edge, above the theme dot, reading
+     bottom to top. */
   .colophon {
+    position: fixed;
+    right: 1.1rem; bottom: 3.4rem;
+    z-index: 6;
+    transform-origin: right bottom;
+    transform: rotate(-90deg);
     margin: 0;
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
-    font-size: clamp(0.7rem, 2.6vw, 0.9rem);
+    font-size: 0.72rem;
     font-weight: 500;
-    letter-spacing: 0.01em;
-    color: rgba(255, 255, 255, 0.72);
+    letter-spacing: 0.02em;
+    color: rgba(255, 255, 255, 0.6);
     white-space: nowrap;
+    pointer-events: none;
   }
-  .colophon .sep { margin: 0 0.3em; opacity: 0.7; }
+  .colophon .sep { margin: 0 0.34em; opacity: 0.7; }
+  html.js .colophon { opacity: 0; }
+  html.intro .colophon { opacity: 1; transition: opacity 0.8s ease 4.4s; }
 
   /* ---------------- Conclusion ----------------
      After the last service the frame undraws, the can rises out of shot and this
@@ -342,17 +343,16 @@
      is driven by the outro scroll from JS. */
   .conclusion {
     position: absolute; inset: 0;
-    display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
-    gap: 1.1rem;
-    padding: 0 8% 8% 7%;
+    z-index: 4;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; gap: 1.8rem;
+    padding: 0 var(--gutter);
     color: var(--ink);
     opacity: 0;
     pointer-events: none;
   }
-  .conclusion .btn { pointer-events: auto; margin-top: 0.4rem; }
-  .concl-kicker { margin: 0; font-family: var(--mono); font-size: clamp(0.62rem, 1.1vw, 0.74rem); letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255, 255, 255, 0.7); }
-  .concl-title { margin: 0; font-family: "Figtree", system-ui, sans-serif; font-weight: 700; font-size: clamp(2rem, 4vw, 3.1rem); letter-spacing: -0.02em; line-height: 1.02; }
-  .concl-mail { margin: 0.2rem 0 0; font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.04em; color: rgba(255, 255, 255, 0.72); }
+  .conclusion .btn { pointer-events: auto; padding: 1.05rem 2rem; font-size: 1.06rem; }
+  .concl-title { margin: 0; font-family: "Figtree", system-ui, sans-serif; font-weight: 700; font-size: clamp(2.6rem, 6.2vw, 5rem); letter-spacing: -0.03em; line-height: 1.0; max-width: 15ch; text-wrap: balance; }
 
   /* ---------------- Scroll cue ----------------
      A small "Scroll" label with a travelling tick, so the pinned can reads as
@@ -393,7 +393,7 @@
     flex-direction: column;
     justify-content: flex-end;
     gap: clamp(1rem, 3vh, 1.8rem);
-    padding: 0 var(--gutter) clamp(1rem, 3vh, 2.2rem);
+    padding: 0 var(--gutter);
     pointer-events: none;
   }
   .cosimo-mark {
@@ -408,6 +408,7 @@
     letter-spacing: -0.02em;
     color: var(--ink);
     user-select: none;
+    transform: translateY(52%);       /* only the top half of each letter shows above the fold */
   }
   .cosimo-mark span { display: block; clip-path: inset(-35% -8% 0 -8%); }  /* clip only the bottom */
   .cosimo-mark b { display: block; font: inherit; }
@@ -447,7 +448,6 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1 !important; animation: none !important; transform: none !important; }
-    .headline .p-init { -webkit-mask: none !important; mask: none !important; animation: none !important; }
     .credo-toggle { opacity: 1 !important; transform: none !important; animation: none !important; }
     .cosimo-mark b { transform: none !important; animation: none !important; }
     .scroll-in { opacity: 1 !important; transform: none !important; }
@@ -487,14 +487,12 @@
           <div class="frame-code"><span class="frame-bars"></span><span class="frame-vol">330ML</span></div>
         </div>
       </div>
-      <div class="conclusion" aria-hidden="true">
-        <p class="concl-kicker">Six ways in &mdash; one studio</p>
-        <h2 class="concl-title">Let&#8217;s build yours.</h2>
-        <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Start a project
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-        </a>
-        <p class="concl-mail">hello@cosimo.studio</p>
-      </div>
+    </div>
+    <div class="conclusion" aria-hidden="true">
+      <h2 class="concl-title">Let&#8217;s make you AI-native.</h2>
+      <a class="btn btn--solid" href="mailto:hello@cosimo.studio">Start a project
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
     </div>
     <ul class="services-mobile" aria-label="Services">
       <li><span class="sm-num">01</span><span class="sm-name">Creative production</span><span class="sm-desc">Concept, art direction, content at scale.</span></li>
@@ -505,11 +503,12 @@
       <li><span class="sm-num">06</span><span class="sm-name">A/B testing</span><span class="sm-desc">Experiment, measure, compound the wins.</span></li>
     </ul>
     <footer class="bigfoot">
-      <p class="colophon scroll-in"><span class="c-part">&copy; 2026 Cosimo</span><span class="sep" aria-hidden="true">&middot;</span><span class="c-part">Based in London, operating worldwide.</span></p>
       <div class="cosimo-mark" aria-hidden="true"><span><b>C</b></span><span><b>O</b></span><span><b>S</b></span><span><b>I</b></span><span><b>M</b></span><span><b>O</b></span></div>
     </footer>
   </div><!-- .pin -->
   </div><!-- .scroller -->
+
+  <p class="colophon"><span class="c-part">&copy; 2026 Cosimo</span><span class="sep" aria-hidden="true">&middot;</span><span class="c-part">Based in London, operating worldwide.</span></p>
 
 <button class="credo-toggle" type="button" aria-label="Change the colour theme" title="Change the colour theme"></button>
 <div class="scroll-cue" aria-hidden="true"><span>Scroll</span><span class="scroll-cue-line"></span></div>
@@ -581,7 +580,7 @@ var PALETTE_CTRL = { next: null };   // assigned by the WebGL init; called by th
     else wait = deleting ? 42 : 94 + Math.random() * 72;     // calmer, more human cadence
     setTimeout(step, wait);
   }
-  setTimeout(function () { root.classList.add('typing'); step(); }, 4200);   // after the P has drawn
+  setTimeout(function () { root.classList.add('typing'); step(); }, 2800);   // as the field opens
 })();
 
 /* Opening sequence.
@@ -597,7 +596,6 @@ var PALETTE_CTRL = { next: null };   // assigned by the WebGL init; called by th
   // writes itself in as the iris settles, then the typewriter takes over.
   requestAnimationFrame(function(){ requestAnimationFrame(function(){
     root.classList.add('intro');
-    setTimeout(function(){ root.classList.add('draw-p'); }, 2500);   // the P draws as the iris opens
   }); });
 
   // The cue disappears for good once the user scrolls.
@@ -620,9 +618,8 @@ var PALETTE_CTRL = { next: null };   // assigned by the WebGL init; called by th
   if (!(window.matchMedia && matchMedia('(max-width: 900px)').matches)) return;
   var foot = document.querySelector('.bigfoot');
   var mark = document.querySelector('.cosimo-mark');
-  var col  = document.querySelector('.colophon');
   if (!foot || !mark) return;
-  function on(v){ mark.classList.toggle('in', v); if (col) col.classList.toggle('in', v); }
+  function on(v){ mark.classList.toggle('in', v); }
   if (!('IntersectionObserver' in window)) { on(true); return; }
   new IntersectionObserver(function (es){
     es.forEach(function (e){ on(e.isIntersecting); });
@@ -1193,7 +1190,7 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
   const elText = frame.querySelector('.frame-text');
   const concl  = document.querySelector('.conclusion');
   const mark   = document.querySelector('.cosimo-mark');
-  const colo   = document.querySelector('.colophon');
+  const hero   = document.querySelector('.hero');
   let curIdx = -1, footIn = false;
   function barcode(seed){
     let st = seed * 9301 + 49297;
@@ -1274,14 +1271,15 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     const fp = smoother(clamp(1 - dist / 0.42, 0, 1));
     elText.style.opacity = String(fp * clamp((border - 0.6) / 0.4, 0, 1) * (1 - undraw));
 
-    // ---- the outro: conversion card fades in, the big COSIMO rises at the base ----
-    if (concl) concl.style.opacity = String(smoother(clamp((op - 0.35) / 0.4, 0, 1)));
-    const showFoot = op > 0.5;
-    if (showFoot !== footIn){
-      footIn = showFoot;
-      if (mark) mark.classList.toggle('in', showFoot);
-      if (colo) colo.classList.toggle('in', showFoot);
+    // ---- the outro: the left (hero) clears, the centred CTA takes over, COSIMO rises ----
+    if (hero){
+      const hf = smoother(clamp(op / 0.42, 0, 1));
+      hero.style.opacity = String(1 - hf);
+      hero.style.transform = 'translateX(' + (-hf * 5) + 'vw)';
     }
+    if (concl) concl.style.opacity = String(smoother(clamp((op - 0.32) / 0.42, 0, 1)));
+    const showFoot = op > 0.5;
+    if (showFoot !== footIn){ footIn = showFoot; if (mark) mark.classList.toggle('in', showFoot); }
 
     renderer.render(scene, camera);
     requestAnimationFrame(tick);

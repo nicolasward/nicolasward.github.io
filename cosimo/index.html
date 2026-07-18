@@ -222,7 +222,7 @@
     pointer-events: none;
   }
   .frame-border { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-  .frame-border rect { fill: none; stroke: rgba(255, 255, 255, 0.85); stroke-width: 1.25; }
+  .frame-border path { fill: none; stroke: rgba(255, 255, 255, 0.85); stroke-width: 1.25; stroke-linejoin: round; }
   /* The card number is an odometer: "#0" is fixed and the units digit rolls up
      one step per service. It lives OUTSIDE .frame-text so it doesn't fade out
      and back in with the rest of the card copy — it just rolls. */
@@ -497,7 +497,7 @@
     <div class="can-stage">
       <canvas class="can-canvas"></canvas>
       <div class="frame" aria-hidden="true">
-        <svg class="frame-border" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="1" y="1" width="98" height="98" rx="3" pathLength="1" vector-effect="non-scaling-stroke"/></svg>
+        <svg class="frame-border"><path class="frame-outline" d=""/></svg>
         <div class="frame-num"><span class="num-hash">#0</span><span class="num-roll"><span class="num-col"><b>1</b><b>2</b><b>3</b><b>4</b><b>5</b><b>6</b></span></span></div>
         <div class="frame-text">
           <div class="frame-side">Refresh your business identity</div>
@@ -1192,13 +1192,36 @@ if (stage && scroller && canvas && frame) {
     const w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return;
     renderer.setSize(w, h, false);
     camera.aspect = w / h; camera.updateProjectionMatrix();
+    measureOutline();
     fit();
   }
-  window.addEventListener('resize', resize); resize();
+  window.addEventListener('resize', resize);   // first call happens below, once the outline refs exist
 
   // ---------- the editorial frame ----------
-  const rect  = frame.querySelector('.frame-border rect');
-  rect.style.strokeDasharray = '1';
+  const svgEl   = frame.querySelector('.frame-border');
+  const outline = frame.querySelector('.frame-outline');
+  let outlineLen = 0;
+  // Build the rounded rectangle in real pixels, clockwise from the top-left, and
+  // measure it. Sizing it 1:1 (rather than stretching a 100x100 viewBox) is what
+  // makes the dash maths reliable, so the outline actually closes.
+  function outlinePath(w, h){
+    const p = 1, r = Math.max(0, Math.min(14, (w - 2 * p) / 2, (h - 2 * p) / 2));
+    const x0 = p, y0 = p, x1 = w - p, y1 = h - p;
+    return 'M ' + (x0 + r) + ' ' + y0 +
+           ' H ' + (x1 - r) + ' A ' + r + ' ' + r + ' 0 0 1 ' + x1 + ' ' + (y0 + r) +
+           ' V ' + (y1 - r) + ' A ' + r + ' ' + r + ' 0 0 1 ' + (x1 - r) + ' ' + y1 +
+           ' H ' + (x0 + r) + ' A ' + r + ' ' + r + ' 0 0 1 ' + x0 + ' ' + (y1 - r) +
+           ' V ' + (y0 + r) + ' A ' + r + ' ' + r + ' 0 0 1 ' + (x0 + r) + ' ' + y0 + ' Z';
+  }
+  function measureOutline(){
+    const w = frame.clientWidth, h = frame.clientHeight;
+    if (!w || !h) return;
+    svgEl.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    outline.setAttribute('d', outlinePath(w, h));
+    outlineLen = outline.getTotalLength();
+    outline.style.strokeDasharray = String(outlineLen);
+  }
+  resize();                                   // initial sizing + outline measure
   const numCol = frame.querySelector('.num-col');
   const elName = frame.querySelector('.frame-name');
   const elDesc = frame.querySelector('.frame-desc');
@@ -1211,6 +1234,25 @@ if (stage && scroller && canvas && frame) {
   const hero   = document.querySelector('.hero');
   const colo   = document.querySelector('.colophon');
   let curIdx = -1, markState = '', markAt = 0, lastOp = 0;
+  // Titles "decrypt" into place: each character flickers through random glyphs
+  // and then locks in, left to right.
+  const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/#$%&*+=<>';
+  let scrambleTimer = 0, pendingScramble = false;
+  function scrambleTo(el, text){
+    clearInterval(scrambleTimer);
+    let step = 0;
+    scrambleTimer = setInterval(function (){
+      step++;
+      const locked = step * 0.62;              // roughly one character every 53ms
+      let out = '';
+      for (let i = 0; i < text.length; i++){
+        const ch = text[i];
+        out += (ch === ' ' || i < locked) ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0];
+      }
+      el.textContent = out;
+      if (locked >= text.length){ clearInterval(scrambleTimer); el.textContent = text; }
+    }, 33);
+  }
   function barcode(seed){
     let st = seed * 9301 + 49297;
     const rnd = () => { st = (st * 9301 + 49297) % 233280; return st / 233280; };
@@ -1222,6 +1264,7 @@ if (stage && scroller && canvas && frame) {
     const svc = SERVICES[i];
     if (numCol) numCol.style.transform = 'translateY(' + (-i) + 'em)';   // roll the units digit
     elName.textContent = svc.name;
+    pendingScramble = true;                    // played once the card is visible again
     elDesc.textContent = svc.desc;
     elSide.textContent = svc.side;
     elBars.innerHTML   = barcode(i + 1);
@@ -1314,13 +1357,17 @@ if (stage && scroller && canvas && frame) {
     // ---- the frame: draws once on entry, holds, then UNDRAWS through the outro ----
     const undraw = smoother(clamp(op / 0.4, 0, 1));
     const border = smoother(clamp(pr / 0.05, 0, 1)) * (1 - undraw);
-    rect.style.strokeDashoffset = String(1 - border);
+    outline.style.strokeDashoffset = String(outlineLen * (1 - border));
     frame.style.opacity = String(clamp(border * 6, 0, 1));
     const nearest = clamp(Math.round(sv - 0.5), 0, N - 1);
     if (nearest !== curIdx) setService(nearest);
     const dist = Math.abs(sv - (nearest + 0.5));
     const fp = smoother(clamp(1 - dist / 0.42, 0, 1));
     elText.style.opacity = String(fp * clamp((border - 0.6) / 0.4, 0, 1) * (1 - undraw));
+    if (pendingScramble && fp > 0.2 && curIdx >= 0){   // decrypt as the card comes into view
+      pendingScramble = false;
+      scrambleTo(elName, SERVICES[curIdx].name);
+    }
 
     // ---- the outro: the left (hero) clears, the centred CTA takes over, COSIMO rises ----
     if (hero){

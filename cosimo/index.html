@@ -137,15 +137,19 @@
   /* The P writes itself in on entrance: a soft diagonal mask sweeps across the
      glyph (roughly the pen's direction) so the script letter appears drawn. */
   html.js .headline .p-init {
-    -webkit-mask-image: linear-gradient(118deg, #000 38%, rgba(0,0,0,0) 56%);
-            mask-image: linear-gradient(118deg, #000 38%, rgba(0,0,0,0) 56%);
-    -webkit-mask-size: 300% 100%; mask-size: 300% 100%;
+    -webkit-mask-image: linear-gradient(112deg, #000 45%, rgba(0,0,0,0) 53%);
+            mask-image: linear-gradient(112deg, #000 45%, rgba(0,0,0,0) 53%);
+    -webkit-mask-size: 320% 100%; mask-size: 320% 100%;
     -webkit-mask-position: 100% 0; mask-position: 100% 0;   /* start: glyph masked out */
   }
-  html.draw-p .headline .p-init { animation: p-draw 1.05s cubic-bezier(0.6, 0, 0.2, 1) forwards; }
+  /* Slow and calligraphic, drawn in two strokes: the nib sweeps to lay the stem,
+     lifts briefly, then sweeps again to lay the bowl. */
+  html.draw-p .headline .p-init { animation: p-draw 2.2s cubic-bezier(0.42, 0.04, 0.22, 1) forwards; }
   @keyframes p-draw {
-    from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
-    to   { -webkit-mask-position: 0% 0;   mask-position: 0% 0; }
+    0%   { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+    44%  { -webkit-mask-position: 52% 0;  mask-position: 52% 0; }   /* stem laid */
+    56%  { -webkit-mask-position: 52% 0;  mask-position: 52% 0; }   /* nib lifts */
+    100% { -webkit-mask-position: 0% 0;   mask-position: 0% 0; }    /* bowl laid */
   }
   /* The typing caret — a blinking underscore; shown once typing begins. */
   .hl-caret {
@@ -295,10 +299,31 @@
   @media (max-width: 760px) {
     .cosimo-mark { font-size: 21vw; }   /* matches the old teaser's mobile size */
   }
+  /* On phones the 3D can + scroll rig are dropped; the services become a plain
+     numbered list under the hero so nothing is lost and the page stays light. */
+  .services-mobile { display: none; }
   @media (max-width: 900px) {
     .can-stage { display: none; }
     .scroller { min-height: auto; }
     .pin { position: static; height: auto; overflow: visible; }
+    .services-mobile {
+      display: block;
+      list-style: none;
+      margin: 0;
+      padding: clamp(1rem, 4vw, 2rem) var(--gutter) clamp(3rem, 12vw, 4.5rem);
+      color: var(--ink);
+    }
+    .services-mobile li {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 1rem; row-gap: 0.25rem;
+      padding: 1.25rem 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.28);
+    }
+    .services-mobile li:last-child { border-bottom: 1px solid rgba(255, 255, 255, 0.28); }
+    .sm-num  { grid-row: 1 / span 2; font-family: var(--mono); font-size: 0.8rem; opacity: 0.7; padding-top: 0.3rem; }
+    .sm-name { font-family: "Figtree", system-ui, sans-serif; font-weight: 700; font-size: 1.4rem; }
+    .sm-desc { font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.02em; opacity: 0.72; }
   }
 
   /* Colophon — copyright + location, bottom-left. */
@@ -419,6 +444,14 @@
         </div>
       </div>
     </div>
+    <ul class="services-mobile" aria-label="Services">
+      <li><span class="sm-num">01</span><span class="sm-name">Creative production</span><span class="sm-desc">Concept, art direction, content at scale.</span></li>
+      <li><span class="sm-num">02</span><span class="sm-name">Customer experience</span><span class="sm-desc">Journeys, support, retention, loyalty.</span></li>
+      <li><span class="sm-num">03</span><span class="sm-name">Demand forecasting</span><span class="sm-desc">Predict demand, plan stock and spend.</span></li>
+      <li><span class="sm-num">04</span><span class="sm-name">Analytics</span><span class="sm-desc">Dashboards, attribution, clear decisions.</span></li>
+      <li><span class="sm-num">05</span><span class="sm-name">Automations</span><span class="sm-desc">Workflows that run themselves.</span></li>
+      <li><span class="sm-num">06</span><span class="sm-name">A/B testing</span><span class="sm-desc">Experiment, measure, compound the wins.</span></li>
+    </ul>
   </div><!-- .pin -->
   </div><!-- .scroller -->
 
@@ -474,22 +507,29 @@ var PALETTE_CTRL = { next: null };   // assigned by the WebGL init; called by th
     if (anchor) anchor.parentNode.insertBefore(caret, anchor.nextSibling);
     else typed.insertBefore(caret, typed.firstChild);
   }
-  var pi = 0, ci = 0, deleting = false;
+  var pi = 0, ci = 0, deleting = false, scrolling = false, scrollT = 0;
+  // While the user is actively scrolling (the can is flipping), hold the type —
+  // so there's one thing moving at a time, not two competing animations.
+  window.addEventListener('scroll', function () {
+    scrolling = true; clearTimeout(scrollT);
+    scrollT = setTimeout(function () { scrolling = false; }, 160);
+  }, { passive: true });
   build(WORDS[0], 0); setCaret(0);
   function step () {
+    if (scrolling) { setTimeout(step, 180); return; }        // frozen while scrolling
     if (!deleting) { chars[ci].classList.add('on'); ci++; }
     else { ci--; chars[ci].classList.remove('on'); }
     setCaret(ci);
     var wait;
-    if (!deleting && ci === chars.length) { deleting = true; wait = 1700; }          // hold the finished line
-    else if (deleting && ci === KEEPLEN) {                                            // keep "ower to ", swap word
+    if (!deleting && ci === chars.length) { deleting = true; wait = 2600; }          // longer hold on the finished line
+    else if (deleting && ci === KEEPLEN) {
       deleting = false; pi = (pi + 1) % WORDS.length;
-      build(WORDS[pi], KEEPLEN); setCaret(ci); wait = 420;
+      build(WORDS[pi], KEEPLEN); setCaret(ci); wait = 560;
     }
-    else wait = deleting ? 34 : 58 + Math.random() * 48;   // deletes brisk, types human
+    else wait = deleting ? 42 : 94 + Math.random() * 72;     // calmer, more human cadence
     setTimeout(step, wait);
   }
-  setTimeout(function () { root.classList.add('typing'); step(); }, 3500);   // after the P has drawn
+  setTimeout(function () { root.classList.add('typing'); step(); }, 4200);   // after the P has drawn
 })();
 
 /* Opening sequence.
@@ -1009,21 +1049,23 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
   camera.position.set(0, 0.15, 6);
 
-  // Studio environment: a bright overhead softbox fading to a dark floor, with a
-  // few crisp vertical light bars and one dark reflected block. That contrast is
-  // what makes the aluminium read as metal (sharp bright highlights against
-  // darker reflections) instead of flat matte — we don't touch the model's
-  // materials, only what they reflect.
+  // Studio environment for a DARK chrome look: a mostly dark stage with one
+  // bright overhead softbox band and a few crisp vertical light bars. The metal
+  // reflects mostly dark with sharp bright streaks (like a car-studio shot),
+  // which is what reads as brushed/polished aluminium. The model's materials are
+  // untouched — this is only what they reflect.
   function envTexture(){
     const w = 512, h = 512, c = document.createElement('canvas'); c.width = w; c.height = h;
     const x = c.getContext('2d');
     const g = x.createLinearGradient(0, 0, 0, h);
-    g.addColorStop(0.00, '#ffffff');   // overhead softbox
-    g.addColorStop(0.34, '#e7f0fb');
-    g.addColorStop(0.55, '#6f97cb');
-    g.addColorStop(0.80, '#16345c');
-    g.addColorStop(1.00, '#050c18');   // dark floor
+    g.addColorStop(0.00, '#c2ccd8');   // dim sky
+    g.addColorStop(0.24, '#78859a');
+    g.addColorStop(0.50, '#313c49');
+    g.addColorStop(0.76, '#12171f');
+    g.addColorStop(1.00, '#04060a');   // near-black floor
     x.fillStyle = g; x.fillRect(0, 0, w, h);
+    // one bright overhead softbox band -> the crisp highlight line across the metal
+    x.fillStyle = 'rgba(255,255,255,0.95)'; x.fillRect(0, h * 0.07, w, h * 0.05);
     function bar(cx, wd, a){
       const gg = x.createLinearGradient(cx - wd, 0, cx + wd, 0);
       gg.addColorStop(0, 'rgba(255,255,255,0)');
@@ -1031,18 +1073,16 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
       gg.addColorStop(1, 'rgba(255,255,255,0)');
       x.fillStyle = gg; x.fillRect(cx - wd, 0, 2 * wd, h);
     }
-    bar(w * 0.16, w * 0.028, 1.0);      // crisp softboxes at different azimuths
-    bar(w * 0.42, w * 0.020, 0.9);
-    bar(w * 0.72, w * 0.05,  0.6);
-    x.fillStyle = 'rgba(3,10,22,0.55)'; // a dark block, so rims catch a defined edge
-    x.fillRect(w * 0.52, h * 0.30, w * 0.14, h * 0.5);
+    bar(w * 0.20, w * 0.026, 1.0);      // crisp softboxes at different azimuths
+    bar(w * 0.50, w * 0.016, 0.85);
+    bar(w * 0.78, w * 0.045, 0.65);
     const t = new THREE.CanvasTexture(c); t.mapping = THREE.EquirectangularReflectionMapping; return t;
   }
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromEquirectangular(envTexture()).texture;
 
-  scene.add(new THREE.HemisphereLight(0xeaf3ff, 0x0a2748, 0.4));
-  const key = new THREE.DirectionalLight(0xffffff, 1.5); key.position.set(-2.4, 3.0, 3.2); scene.add(key);
+  scene.add(new THREE.HemisphereLight(0xd6e4f5, 0x05080e, 0.28));
+  const key = new THREE.DirectionalLight(0xffffff, 1.1); key.position.set(-2.4, 3.0, 3.2); scene.add(key);
   const rim = new THREE.DirectionalLight(0xcfe6ff, 1.3); rim.position.set(3.0, 0.4, -2.2); scene.add(rim);
 
   // ---------- load the can ----------
@@ -1069,7 +1109,7 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     const maxA = renderer.capabilities.getMaxAnisotropy();
     model.traverse(function (o){
       if (o.isMesh && o.material){
-        o.material.envMapIntensity = 1.35;   // reflect the studio env more (material unchanged)
+        o.material.envMapIntensity = 1.6;    // reflect the studio env strongly (material unchanged)
         if (o.material.map) o.material.map.anisotropy = maxA;
       }
     });
@@ -1131,23 +1171,40 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     if (total <= 0) return 0;
     return clamp(-scroller.getBoundingClientRect().top / total, 0, 1);
   }
-  // Anchors at i+0.5 (settled, upright, facing front). Between services the can
-  // does a full VERTICAL flip — end over end about its horizontal axis — so you
-  // glimpse the lid and the base as it turns.
-  function pose(sv){
-    let rotX;
-    if (sv <= 0.5) rotX = 0;
-    else if (sv >= N - 0.5) rotX = (N - 1) * TWO;
-    else { const i = Math.floor(sv - 0.5); rotX = i * TWO + smoother(sv - (i + 0.5)) * TWO; }
-    return { rotX: rotX };
+  // Each service rests at a distinct orientation — some 3/4, one showing the
+  // lid, one showing the base — and the tumble BETWEEN services varies its axis,
+  // direction and turn count, so the six moves never feel repetitive.
+  const REST = [
+    [ 0.10,  0.26,  0.00],
+    [-1.18,  0.14,  0.05],   // tilted back: the lid faces you
+    [ 0.16, -0.46,  0.08],   // 3/4 from the other side
+    [ 1.16,  0.10, -0.05],   // tilted forward: the base faces you
+    [-0.30, -0.28, -0.10],
+    [ 0.05,  0.40,  0.00]
+  ].map(function (e){ return new THREE.Quaternion().setFromEuler(new THREE.Euler(e[0], e[1], e[2], 'XYZ')); });
+  const AX = function (x, y, z){ return new THREE.Vector3(x, y, z).normalize(); };
+  const SEG = [
+    { axis: AX(1, 0, 0),    turns:  1 },   // vertical flip
+    { axis: AX(0, 1, 0),    turns: -1 },   // horizontal spin, the other way
+    { axis: AX(1, 0.6, 0),  turns:  1 },   // diagonal tumble
+    { axis: AX(1, 0, 0),    turns: -1 },   // vertical flip, reversed
+    { axis: AX(0.3, 1, 0.2),turns:  1 }    // mostly-horizontal diagonal
+  ];
+  const _qb = new THREE.Quaternion(), _qt = new THREE.Quaternion();
+  function poseQ(sv){
+    if (sv <= 0.5) return REST[0];
+    if (sv >= N - 0.5) return REST[N - 1];
+    const i = Math.floor(sv - 0.5), u = smoother(sv - (i + 0.5));
+    _qb.slerpQuaternions(REST[i], REST[i + 1], u);              // reorient rest i -> i+1
+    _qt.setFromAxisAngle(SEG[i].axis, SEG[i].turns * TWO * u);  // + a full tumble on a varied axis
+    return _qt.multiply(_qb);
   }
 
   function tick(t){
     const pr = reduced ? 0.5 / N : progress();     // reduced: sit at the first service
     const sv = pr * N;
     if (ready){
-      const ps = pose(sv);
-      group.rotation.set(ps.rotX, 0, 0);           // vertical flip, end over end, inside the fixed frame
+      group.quaternion.copy(poseQ(sv));            // varied tumble inside the fixed frame
       group.position.y = reduced ? 0 : Math.sin(t * 0.0011) * 0.02;
     }
     // The border draws itself ONCE, clockwise, as the section is entered, then

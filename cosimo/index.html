@@ -5,7 +5,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Bonheur+Royale&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <!-- js flips the page into "start as a dot, then iris open" mode. Without it
      (or under reduced motion) the gradient is simply full-screen from the off. -->
@@ -122,35 +122,27 @@
   /* The swash initial — a script P set against the sans, like an illuminated
      drop cap. line-height 0 keeps the larger glyph from inflating the line
      box; its flourish is allowed to spill below the baseline. */
+  /* The swash P is a hand-drawn inline SVG (a monoline script capital), stroked
+     so it can literally write itself on entrance — the stem first, then the
+     bowl. Sits like an illuminated initial ahead of the typed "ower to". */
   .headline .p-init {
-    font-family: "Bonheur Royale", cursive;
-    font-weight: 400;
-    font-size: 2.1em;                   /* a statement: towers over the sans caps */
+    display: inline-block;
     line-height: 0;
-    letter-spacing: 0;
-    /* WebKit clips glyph ink beyond the advance width; grow the box rightward
-       with padding and hand the space back with a negative margin so the P's
-       flourish isn't sliced. */
-    padding-right: 0.6em;
-    margin-right: calc(0.05em - 0.6em);
+    margin-left: -0.14em;               /* pull the glyph's left whitespace back to the line start */
+    margin-right: 0.02em;
   }
-  /* The P writes itself in on entrance: a soft diagonal mask sweeps across the
-     glyph (roughly the pen's direction) so the script letter appears drawn. */
-  html.js .headline .p-init {
-    -webkit-mask-image: linear-gradient(112deg, #000 45%, rgba(0,0,0,0) 53%);
-            mask-image: linear-gradient(112deg, #000 45%, rgba(0,0,0,0) 53%);
-    -webkit-mask-size: 320% 100%; mask-size: 320% 100%;
-    -webkit-mask-position: 100% 0; mask-position: 100% 0;   /* start: glyph masked out */
+  .p-svg {
+    display: inline-block;
+    height: 1.62em;
+    width: auto;
+    overflow: visible;
+    transform: translateY(0.34em);      /* drop onto the baseline, flourish overhanging below */
   }
-  /* Slow and calligraphic, drawn in two strokes: the nib sweeps to lay the stem,
-     lifts briefly, then sweeps again to lay the bowl. */
-  html.draw-p .headline .p-init { animation: p-draw 2.2s cubic-bezier(0.42, 0.04, 0.22, 1) forwards; }
-  @keyframes p-draw {
-    0%   { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
-    44%  { -webkit-mask-position: 52% 0;  mask-position: 52% 0; }   /* stem laid */
-    56%  { -webkit-mask-position: 52% 0;  mask-position: 52% 0; }   /* nib lifts */
-    100% { -webkit-mask-position: 0% 0;   mask-position: 0% 0; }    /* bowl laid */
-  }
+  .p-stroke { stroke-dasharray: 1; stroke-dashoffset: 0; }   /* default (no-JS / reduced): fully drawn */
+  html.js .p-stroke { stroke-dashoffset: 1; }                /* JS: start hidden, then draw */
+  html.draw-p .p-stem { animation: p-draw 1.05s cubic-bezier(0.4, 0.05, 0.25, 1) forwards; }
+  html.draw-p .p-bowl { animation: p-draw 1.0s  cubic-bezier(0.4, 0.05, 0.25, 1) 1.05s forwards; }
+  @keyframes p-draw { to { stroke-dashoffset: 0; } }
   /* The typing caret — a blinking underscore; shown once typing begins. */
   .hl-caret {
     display: inline-block;
@@ -338,6 +330,33 @@
   }
   .colophon .sep { margin: 0 0.3em; opacity: 0.7; }
 
+  /* ---------------- Scroll cue ----------------
+     A small "Scroll" label with a travelling tick, so the pinned can reads as
+     something to scroll through, not a static image. Fades in after the intro
+     and disappears for good on the first scroll. */
+  .scroll-cue {
+    position: fixed;
+    left: 50%; bottom: 1.5rem;
+    transform: translateX(-50%);
+    z-index: 6;
+    display: flex; flex-direction: column; align-items: center; gap: 0.55rem;
+    font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72);
+    pointer-events: none;
+    opacity: 0;
+  }
+  .scroll-cue > span:first-child { text-indent: 0.28em; }
+  .scroll-cue-line { position: relative; width: 1px; height: 34px; background: rgba(255, 255, 255, 0.28); overflow: hidden; }
+  .scroll-cue-line::after {
+    content: ""; position: absolute; left: 0; top: 0;
+    width: 100%; height: 45%; background: rgba(255, 255, 255, 0.92);
+    animation: cue 1.9s cubic-bezier(0.6, 0, 0.4, 1) infinite;
+  }
+  @keyframes cue { 0% { transform: translateY(-110%); } 65%, 100% { transform: translateY(230%); } }
+  html.intro .scroll-cue { opacity: 1; transition: opacity 0.8s ease 4.8s; }
+  html.scrolled .scroll-cue { opacity: 0 !important; transition: opacity 0.4s ease; }
+  @media (max-width: 900px) { .scroll-cue { display: none; } }
+
   /* ---------------- Footer ----------------
      A full-height end section after the scroll rig: a giant all-caps COSIMO
      spanning the page, its letters rising into place when the footer scrolls
@@ -403,7 +422,7 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1 !important; animation: none !important; transform: none !important; }
-    .headline .p-init { -webkit-mask: none !important; mask: none !important; animation: none !important; }
+    .p-stroke { stroke-dashoffset: 0 !important; animation: none !important; }
     .credo-toggle { opacity: 1 !important; transform: none !important; animation: none !important; }
     .cosimo-mark b { transform: none !important; animation: none !important; }
     .scroll-in { opacity: 1 !important; transform: none !important; }
@@ -420,7 +439,7 @@
   <main class="hero">
     <h1 class="headline" aria-label="Power to designers. Power to planners. Power to ops teams. Power to marketers. Power to those who ship.">
       <span class="hl-sizer" aria-hidden="true">Power to those who ship.</span>
-      <span class="hl-live" aria-hidden="true"><span class="p-init">P</span><span class="hl-typed"></span><span class="hl-caret" aria-hidden="true">_</span></span>
+      <span class="hl-live" aria-hidden="true"><span class="p-init"><svg class="p-svg" viewBox="0 0 100 150" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path class="p-stroke p-stem" pathLength="1" d="M44 20 C30 12 22 22 26 34 C30 66 24 98 22 120 C20 134 32 140 46 130"/><path class="p-stroke p-bowl" pathLength="1" d="M27 36 C58 20 88 30 84 55 C80 78 50 78 28 64"/></svg></span><span class="hl-typed"></span><span class="hl-caret" aria-hidden="true">_</span></span>
     </h1>
     <p class="sub reveal">Cosimo is an applied AI studio run by engineers, designers, and product leaders. We make the world&#8217;s most iconic brands AI-native.</p>
     <p class="sub sub--note reveal">Currently taking on a limited number of clients. London-based, operating worldwide.</p>
@@ -461,6 +480,7 @@
   </footer>
 
 <button class="credo-toggle" type="button" aria-label="Change the colour theme" title="Change the colour theme"></button>
+<div class="scroll-cue" aria-hidden="true"><span>Scroll</span><span class="scroll-cue-line"></span></div>
 
 <script>
 /* Shared field state, read every frame by the WebGL draw loop in the next
@@ -547,6 +567,11 @@ var PALETTE_CTRL = { next: null };   // assigned by the WebGL init; called by th
     root.classList.add('intro');
     setTimeout(function(){ root.classList.add('draw-p'); }, 2500);   // the P draws as the iris opens
   }); });
+
+  // The cue disappears for good once the user scrolls.
+  window.addEventListener('scroll', function once(){
+    root.classList.add('scrolled'); window.removeEventListener('scroll', once);
+  }, { passive: true });
 
   // The white dot cycles the background palette (live blue -> green -> orange
   // -> plus -> …). The colour crossfade and the liquid warp-bump are driven by
@@ -1015,6 +1040,7 @@ const GRAINS = [GRAIN, GRAIN, GRAIN, GRAIN];   // all share the live blue's grai
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
 try { history.scrollRestoration = 'manual'; } catch (e) {}
 window.scrollTo(0, 0);
@@ -1049,41 +1075,27 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
   camera.position.set(0, 0.15, 6);
 
-  // Studio environment for a DARK chrome look: a mostly dark stage with one
-  // bright overhead softbox band and a few crisp vertical light bars. The metal
-  // reflects mostly dark with sharp bright streaks (like a car-studio shot),
-  // which is what reads as brushed/polished aluminium. The model's materials are
-  // untouched — this is only what they reflect.
-  function envTexture(){
-    const w = 512, h = 512, c = document.createElement('canvas'); c.width = w; c.height = h;
+  // Environment: a real, self-hosted studio HDR drives photographic reflections
+  // on the aluminium. A light neutral gradient lights the can until the HDR
+  // finishes decoding, then we swap it in.
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  function fallbackEnv(){
+    const w = 256, h = 256, c = document.createElement('canvas'); c.width = w; c.height = h;
     const x = c.getContext('2d');
     const g = x.createLinearGradient(0, 0, 0, h);
-    g.addColorStop(0.00, '#c2ccd8');   // dim sky
-    g.addColorStop(0.24, '#78859a');
-    g.addColorStop(0.50, '#313c49');
-    g.addColorStop(0.76, '#12171f');
-    g.addColorStop(1.00, '#04060a');   // near-black floor
+    g.addColorStop(0, '#f4f7fb'); g.addColorStop(0.55, '#9fb0c6'); g.addColorStop(1, '#20262f');
     x.fillStyle = g; x.fillRect(0, 0, w, h);
-    // one bright overhead softbox band -> the crisp highlight line across the metal
-    x.fillStyle = 'rgba(255,255,255,0.95)'; x.fillRect(0, h * 0.07, w, h * 0.05);
-    function bar(cx, wd, a){
-      const gg = x.createLinearGradient(cx - wd, 0, cx + wd, 0);
-      gg.addColorStop(0, 'rgba(255,255,255,0)');
-      gg.addColorStop(0.5, 'rgba(255,255,255,' + a + ')');
-      gg.addColorStop(1, 'rgba(255,255,255,0)');
-      x.fillStyle = gg; x.fillRect(cx - wd, 0, 2 * wd, h);
-    }
-    bar(w * 0.20, w * 0.026, 1.0);      // crisp softboxes at different azimuths
-    bar(w * 0.50, w * 0.016, 0.85);
-    bar(w * 0.78, w * 0.045, 0.65);
     const t = new THREE.CanvasTexture(c); t.mapping = THREE.EquirectangularReflectionMapping; return t;
   }
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromEquirectangular(envTexture()).texture;
+  scene.environment = pmrem.fromEquirectangular(fallbackEnv()).texture;
+  new RGBELoader().load('studio.hdr', function (hdr){
+    hdr.mapping = THREE.EquirectangularReflectionMapping;
+    scene.environment = pmrem.fromEquirectangular(hdr).texture;
+    hdr.dispose();
+  }, undefined, function (e){ console.warn('studio.hdr failed; keeping fallback', e); });
 
-  scene.add(new THREE.HemisphereLight(0xd6e4f5, 0x05080e, 0.28));
-  const key = new THREE.DirectionalLight(0xffffff, 1.1); key.position.set(-2.4, 3.0, 3.2); scene.add(key);
-  const rim = new THREE.DirectionalLight(0xcfe6ff, 1.3); rim.position.set(3.0, 0.4, -2.2); scene.add(rim);
+  // A gentle key light for an extra specular kick; the HDR does the rest.
+  const key = new THREE.DirectionalLight(0xffffff, 0.6); key.position.set(-2.4, 3.0, 3.2); scene.add(key);
 
   // ---------- load the can ----------
   const group = new THREE.Group(); scene.add(group);
@@ -1109,7 +1121,7 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     const maxA = renderer.capabilities.getMaxAnisotropy();
     model.traverse(function (o){
       if (o.isMesh && o.material){
-        o.material.envMapIntensity = 1.6;    // reflect the studio env strongly (material unchanged)
+        o.material.envMapIntensity = 1.15;   // balanced against the real HDR (material unchanged)
         if (o.material.map) o.material.map.anisotropy = maxA;
       }
     });

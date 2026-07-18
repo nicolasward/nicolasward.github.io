@@ -1233,12 +1233,15 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
     [ 0.05,  0.40,  0.00]
   ].map(function (e){ return new THREE.Quaternion().setFromEuler(new THREE.Euler(e[0], e[1], e[2], 'XYZ')); });
   const AX = function (x, y, z){ return new THREE.Vector3(x, y, z).normalize(); };
+  // Every tumble turns the SAME rotational sense (all +1) so the can never
+  // reverses direction — that read as clunky. Variety comes only from the axis
+  // and the resting pose it settles into.
   const SEG = [
-    { axis: AX(1, 0, 0),    turns:  1 },   // vertical flip
-    { axis: AX(0, 1, 0),    turns: -1 },   // horizontal spin, the other way
-    { axis: AX(1, 0.6, 0),  turns:  1 },   // diagonal tumble
-    { axis: AX(1, 0, 0),    turns: -1 },   // vertical flip, reversed
-    { axis: AX(0.3, 1, 0.2),turns:  1 }    // mostly-horizontal diagonal
+    { axis: AX(1, 0.00, 0), turns: 1 },   // vertical flip
+    { axis: AX(0.35, 1, 0), turns: 1 },   // mostly-horizontal, slight tilt
+    { axis: AX(1, 0.55, 0), turns: 1 },   // diagonal tumble
+    { axis: AX(0.15, 1, 0), turns: 1 },   // near-horizontal spin
+    { axis: AX(1, 0.85, 0), turns: 1 }    // steep diagonal
   ];
   const _qb = new THREE.Quaternion(), _qt = new THREE.Quaternion();
   const _spinQ = new THREE.Quaternion(), _up = new THREE.Vector3(0, 1, 0);
@@ -1263,7 +1266,7 @@ if (stage && scroller && canvas && frame && !matchMedia('(max-width: 900px)').ma
       group.quaternion.copy(poseQ(sv));
       const en = smoother(clamp(sv / 0.6, 0, 1));    // a controlled arrival over the first ~0.6 of a service
       if (en < 1){                                    // spin around the vertical axis as it flies in
-        _spinQ.setFromAxisAngle(_up, (1 - en) * TWO * 1.25);
+        _spinQ.setFromAxisAngle(_up, (en - 1) * TWO * 1.25);   // same (+) sense as the flips — no reversal
         group.quaternion.premultiply(_spinQ);
       }
       const ex = smoother(op);                        // exit in the outro

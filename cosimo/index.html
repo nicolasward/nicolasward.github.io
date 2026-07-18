@@ -259,6 +259,11 @@
     font-size: clamp(0.78rem, 1.6vw, 1rem); letter-spacing: 0.02em; line-height: 1.45;
     color: rgba(255, 255, 255, 0.78);
   }
+  /* Decrypt scaffolding: words stay whole (so wrapping is unchanged) and each
+     character sits in its own fixed-width box, so swapping in a cipher glyph
+     can't change the line width. */
+  .tword { display: inline-block; }
+  .tchar { display: inline-block; text-align: center; }
   .frame-code { position: absolute; right: 5%; bottom: 4.5%; display: flex; align-items: flex-end; gap: 0.7rem; }
   .frame-bars { display: flex; align-items: stretch; gap: 2px; height: 30px; }
   .frame-bars i { display: block; background: var(--ink); }
@@ -1259,30 +1264,45 @@ if (stage && scroller && canvas && frame) {
   let curIdx = -1, markState = '', markAt = 0, lastOp = 0;
   // Titles "decrypt" into place: each character flickers through random glyphs
   // and then locks in, left to right.
-  let scrambleTimer = 0, pendingScramble = false;
+  let pendingScramble = false;
   const decrypted = [];                      // services already decrypted once
-  /* The cipher is a PERMUTATION of the title's own characters, with spaces left
-     in place. Same glyphs and same word lengths means the scrambled line is
-     always exactly as wide as the final one, so it can never spill onto a
-     second line and then snap back. */
-  function cipher(text, from){
-    const pool = [];
-    for (let i = from; i < text.length; i++) if (text[i] !== ' ') pool.push(text[i]);
-    for (let i = pool.length - 1; i > 0; i--){        // Fisher-Yates
-      const j = (Math.random() * (i + 1)) | 0, t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+  const CIPHER = ['1', '0', '#', '<', '>', '{', '}', '/', '\\', '[', ']'];
+  const rnd = function (){ return CIPHER[(Math.random() * CIPHER.length) | 0]; };
+  /* Rebuild a line as whole words containing per-character boxes, then freeze
+     each box at the width of its real character. Cipher glyphs are narrower or
+     wider than letters, so without this the scrambled line changes width and
+     spills onto a second line before snapping back. */
+  function lockText(el, text){
+    el.textContent = '';
+    const spans = [], plain = [], words = text.split(' ');
+    words.forEach(function (word, wi){
+      const w = document.createElement('span'); w.className = 'tword';
+      for (let i = 0; i < word.length; i++){
+        const sp = document.createElement('span'); sp.className = 'tchar';
+        sp.textContent = word[i];
+        w.appendChild(sp); spans.push(sp); plain.push(word[i]);
+      }
+      el.appendChild(w);
+      if (wi < words.length - 1) el.appendChild(document.createTextNode(' '));
+    });
+    for (let i = 0; i < spans.length; i++){
+      spans[i].style.width = spans[i].getBoundingClientRect().width.toFixed(2) + 'px';
     }
-    let out = text.slice(0, from), k = 0;
-    for (let i = from; i < text.length; i++) out += (text[i] === ' ') ? ' ' : pool[k++];
-    return out;
+    el._chars = spans; el._plain = plain;
   }
-  function scrambleTo(el, text){
-    clearInterval(scrambleTimer);
+  function setCipher(el){                    // the fully-scrambled resting state
+    const c = el._chars; if (!c) return;
+    for (let i = 0; i < c.length; i++) c[i].textContent = rnd();
+  }
+  function decrypt(el){                      // resolve left to right
+    const c = el._chars, p = el._plain; if (!c) return;
+    clearInterval(el._st);
     let step = 0;
-    scrambleTimer = setInterval(function (){
+    el._st = setInterval(function (){
       step++;
-      const locked = Math.min(text.length, Math.floor(step * 0.62));   // ~1 character every 53ms
-      el.textContent = cipher(text, locked);
-      if (locked >= text.length){ clearInterval(scrambleTimer); el.textContent = text; }
+      const locked = Math.min(c.length, Math.floor(step * 0.62));   // ~1 character every 53ms
+      for (let i = 0; i < c.length; i++) c[i].textContent = i < locked ? p[i] : rnd();
+      if (locked >= c.length) clearInterval(el._st);
     }, 33);
   }
   function barcode(seed){
@@ -1295,9 +1315,10 @@ if (stage && scroller && canvas && frame) {
   function setService(i){
     const svc = SERVICES[i];
     if (numCol) numCol.style.transform = 'translateY(' + (-i) + 'em)';   // roll the units digit
-    clearInterval(scrambleTimer);              // stop any decrypt still running
+    clearInterval(elName._st);                 // stop any decrypt still running
+    lockText(elName, svc.name);                // per-character boxes, widths frozen
     const fresh = decrypted.indexOf(i) === -1; // only the FIRST pass decrypts
-    elName.textContent = fresh ? cipher(svc.name, 0) : svc.name;
+    if (fresh) setCipher(elName);
     pendingScramble = fresh;                   // decrypt plays once the card is visible again
     elDesc.textContent = svc.desc;
     elSide.textContent = svc.side;
@@ -1305,6 +1326,21 @@ if (stage && scroller && canvas && frame) {
     curIdx = i;
   }
   setService(0);
+
+  // The closing line decrypts in the same way when the outro arrives. Widths are
+  // frozen once the webfont is ready, otherwise the boxes would be measured
+  // against the fallback face.
+  const conclTitle = document.querySelector('.concl-title');
+  let conclDone = false;
+  if (conclTitle){
+    const conclText = conclTitle.textContent.trim();
+    const armConcl = function (){ lockText(conclTitle, conclText); setCipher(conclTitle); };
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(armConcl); else armConcl();
+  }
+  // Re-measure the current card once the webfont has landed.
+  if (document.fonts && document.fonts.ready){
+    document.fonts.ready.then(function (){ if (curIdx >= 0) setService(curIdx); });
+  }
 
   // ---------- scroll -> pose + frame ----------
   function progress(){
@@ -1429,7 +1465,7 @@ if (stage && scroller && canvas && frame) {
     if (pendingScramble && fp > 0.2 && curIdx >= 0){   // decrypt as the card comes into view
       pendingScramble = false;
       decrypted.push(curIdx);                          // ...once only
-      scrambleTo(elName, SERVICES[curIdx].name);
+      decrypt(elName);
     }
 
     // ---- the outro: the left (hero) clears, the centred CTA takes over, COSIMO rises ----
@@ -1439,6 +1475,7 @@ if (stage && scroller && canvas && frame) {
       hero.style.transform = 'translateX(' + (-hf * 5) + 'vw)';
     }
     if (concl) concl.style.opacity = String(smoother(clamp((op - 0.32) / 0.42, 0, 1)));
+    if (conclTitle && !conclDone && op > 0.36){ conclDone = true; decrypt(conclTitle); }
     // COSIMO: the DOWNWARD entrance plays as a self-contained staggered animation,
     // triggered only after the conclusion title + button have fully faded in
     // (they finish at op 0.74), so the letters are the last thing to land. The

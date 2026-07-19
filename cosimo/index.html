@@ -1133,8 +1133,6 @@ const GRAINS = [GRAIN, GRAIN, GRAIN, GRAIN];   // all share the live blue's grai
 </script>
 <script type="module">
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
 try { history.scrollRestoration = 'manual'; } catch (e) {}
@@ -1214,38 +1212,66 @@ if (stage && scroller && canvas && frame) {
   // A gentle key light for an extra specular kick; the HDR does the rest.
   const key = new THREE.DirectionalLight(0xffffff, 0.6); key.position.set(-2.4, 3.0, 3.2); scene.add(key);
 
-  // ---------- load the can ----------
+  // ---------- the object: a tuning fork ----------
+  // Built procedurally rather than loaded: the form is simple enough that it's a
+  // few KB of geometry instead of a download, it carries no licence, and the
+  // proportions can be tuned to read in silhouette at card size.
   const group = new THREE.Group(); scene.add(group);
   const modelSize = new THREE.Vector3(1, 2.4, 1);
   let ready = false;
 
-  const draco = new DRACOLoader();
-  draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
-  const loader = new GLTFLoader(); loader.setDRACOLoader(draco);
-  loader.load('can.glb', function (gltf){
-    const model = gltf.scene;
+  function buildTuningFork(){
+    const g = new THREE.Group();
+    const steel = new THREE.MeshStandardMaterial({
+      color: 0xcfd5db, metalness: 1.0, roughness: 0.19, envMapIntensity: 1.15
+    });
+    const L = 1.0;        // tine length
+    const sp = 0.085;     // half the gap between the tines
+    const r = 0.042;      // tine radius
+    const stem = 0.44;    // stem length below the bend
+
+    // One continuous path: down the left tine, round the U, up the right tine.
+    const pts = [];
+    for (let i = 0; i <= 8; i++)  pts.push(new THREE.Vector3(-sp, L - (L * i) / 8, 0));
+    for (let i = 1; i <= 24; i++){            // the bend, a semicircle of radius sp
+      const a = Math.PI + (Math.PI * i) / 24;
+      pts.push(new THREE.Vector3(Math.cos(a) * sp, Math.sin(a) * sp, 0));
+    }
+    for (let i = 1; i <= 8; i++)  pts.push(new THREE.Vector3(sp, (L * i) / 8, 0));
+    const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.0);
+    g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 220, r, 22, false), steel));
+
+    // Rounded tips so the tines don't read as cut pipe.
+    [-sp, sp].forEach(function (x){
+      const cap = new THREE.Mesh(new THREE.SphereGeometry(r, 22, 16), steel);
+      cap.position.set(x, L, 0); g.add(cap);
+    });
+
+    // Stem hanging from the base of the bend, with a small foot.
+    const st = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.12, r * 1.12, stem, 26), steel);
+    st.position.set(0, -sp - stem / 2 + 0.01, 0); g.add(st);
+    const foot = new THREE.Mesh(new THREE.SphereGeometry(r * 1.7, 26, 18), steel);
+    foot.position.set(0, -sp - stem, 0); foot.scale.set(1, 0.55, 1); g.add(foot);
+
+    return g;
+  }
+
+  (function placeObject(){
+    const model = buildTuningFork();
     const box = new THREE.Box3().setFromObject(model);
     const center = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());
-    // Centre the geometry in a pivot, then scale the pivot — unit-safe whether
-    // the GLB is exported in metres or millimetres.
+    // Same pipeline as a loaded model: centre in a pivot, then scale the pivot.
     model.position.sub(center);
     const k = 2.4 / size.y;
     const pivot = new THREE.Group();
     pivot.add(model);
     pivot.scale.setScalar(k);
     modelSize.set(size.x * k, size.y * k, size.z * k);
-    const maxA = renderer.capabilities.getMaxAnisotropy();
-    model.traverse(function (o){
-      if (o.isMesh && o.material){
-        o.material.envMapIntensity = 1.15;   // balanced against the real HDR (material unchanged)
-        if (o.material.map) o.material.map.anisotropy = maxA;
-      }
-    });
     group.add(pivot);
     ready = true;
     fit();
-  }, undefined, function (err){ console.error('can.glb failed to load', err); });
+  })();
 
   // ---------- fit the camera to the model within the stage aspect ----------
   function fit(){

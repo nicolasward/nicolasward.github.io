@@ -185,9 +185,6 @@
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
     font-size: 1rem;
     text-decoration: none;
-    transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease,
-                -webkit-backdrop-filter 0.25s ease, backdrop-filter 0.25s ease,
-                opacity 0.2s ease, transform 0.2s ease;
   }
   /* The chevron is a dot, sitting inline after the label so the pair centres in
      the pill. On hover the label decrypts (wired up in the module below). */
@@ -198,22 +195,18 @@
     background: currentColor;
   }
   /* Primary: a solid white pill with bold dark text and a chevron. */
+  /* Knockout contents: the pill stays solid white, but the label and dot are
+     black and the whole button is screen-blended — black reads as a hole onto the
+     animated field behind, so the text and dot take the background's colour and
+     shift with the palette. (screen keeps white as white and turns black into the
+     backdrop.) The label still decrypts on hover. */
   .btn--solid {
-    position: relative;
     padding: 0.95rem 1.7rem;
     background: #FFFFFF;
-    color: var(--deep);
+    color: #000;
     font-weight: 700;
     border-radius: 999px;
-  }
-  @media (hover: hover) {
-    .btn--solid:hover {
-      background: rgba(255, 255, 255, 0.12);     /* frosted, letting the field through */
-      color: var(--ink);                          /* the dot follows via currentColor */
-      -webkit-backdrop-filter: blur(12px);
-              backdrop-filter: blur(12px);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);   /* keeps the pill's edge readable */
-    }
+    mix-blend-mode: screen;
   }
 
 

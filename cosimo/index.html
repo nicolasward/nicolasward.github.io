@@ -116,7 +116,11 @@
   .headline {
     display: grid;                      /* the live line overlays an invisible sizer */
     max-width: 24ch;
-    margin: 0 0 1.5rem;
+    /* Optical margin alignment: the swash P's large left side-bearing makes the
+       headline read as indented against a margin-flush sub-line. Hang it left (in
+       em, so it tracks the headline's own size) until the swash's leftmost stroke
+       meets the page margin — one clean left edge, flourish over the gutter. */
+    margin: 0 0 1.5rem -0.3em;
     font-size: clamp(2.5rem, 6.4vw, 5rem);
     font-weight: 700;
     line-height: 1.02;
@@ -157,12 +161,11 @@
      sub-hero (desktop). Prominent — larger and brighter than the right-column
      caption, but subordinate to the typed statement above it. */
   .hero-lede {
-    max-width: 32ch;
-    /* Optically align the sub-line to the headline's VISIBLE left edge: the swash
-       P carries a large left side-bearing, so the headline reads as indented
-       relative to a box-flush sub-line. The small left nudge pulls the lede under
-       the P; text-wrap: balance evens the two lines so neither orphans a word. */
-    margin: 0 0 0 0.4rem;
+    max-width: 30ch;
+    /* Flush on the page's left margin — the headline's swash is hung out to meet
+       it, so both share one clean left edge. text-wrap: balance evens the two
+       lines so neither orphans a word. */
+    margin: 0;
     font-size: clamp(1.2rem, 1.95vw, 1.65rem);
     font-weight: 500;
     line-height: 1.3;

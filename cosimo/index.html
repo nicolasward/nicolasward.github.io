@@ -399,33 +399,6 @@
   @media (hover: hover) {
     .credo-toggle:hover { transform: scale(1.15); }
   }
-  /* Hint that the dot is holdable: a tiny label on hover, and a ring that fills
-     as you press-and-hold toward opening the palette menu. */
-  .credo-toggle::after {
-    content: "hold";
-    position: absolute; right: calc(100% + 0.65rem); top: 50%;
-    transform: translateY(-50%);
-    font-family: "Figtree", system-ui, -apple-system, sans-serif;
-    font-size: 0.64rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.8); white-space: nowrap;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.2s ease;
-  }
-  @media (hover: hover) { .credo-toggle:hover::after { opacity: 1; } }
-  html.theme-open .credo-toggle::after,
-  html.theme-holding .credo-toggle::after { opacity: 0 !important; }
-  .credo-toggle::before {
-    content: ""; position: absolute; inset: -6px;
-    border-radius: 50%;
-    border: 1.5px solid rgba(255, 255, 255, 0.85);
-    opacity: 0; transform: scale(0.55);
-    pointer-events: none;
-  }
-  html.theme-holding .credo-toggle::before { animation: hold-ring 0.42s linear forwards; }
-  @keyframes hold-ring {
-    from { opacity: 0.12; transform: scale(0.5); }
-    to   { opacity: 0.85; transform: scale(1); }
-  }
   /* The dot is the last thing to arrive, after all the hero copy has settled. */
   html.js .credo-toggle { opacity: 0; }
   html.intro .credo-toggle { animation: dot-in 0.5s cubic-bezier(0.34, 1.45, 0.5, 1) 4.0s both; }
@@ -833,23 +806,12 @@ var PALETTE_CTRL = { next: null, set: null, swatches: null };   // assigned by t
     function openMenu(){ if (open) return; open = true; if (!swatchEls.length) buildMenu(); markActive(); root.classList.add('theme-open'); }
     function closeMenu(){ if (!open) return; open = false; root.classList.remove('theme-open'); }
 
-    var pressT = 0, longFired = false;
-    dot.addEventListener('pointerdown', function(e){
-      longFired = false;
-      root.classList.add('theme-holding');           // the ring fills as you hold
-      pressT = setTimeout(function(){ longFired = true; root.classList.remove('theme-holding'); openMenu(); }, 420);
+    // A plain click toggles the palette menu (desktop and mobile).
+    dot.addEventListener('click', function(e){
+      e.stopPropagation();
+      if (open) closeMenu(); else openMenu();
     });
-    function endPress(){ clearTimeout(pressT); root.classList.remove('theme-holding'); }
-    dot.addEventListener('pointerup', function(e){
-      clearTimeout(pressT); root.classList.remove('theme-holding');
-      if (longFired) return;                         // the long press already opened the menu
-      if (open) closeMenu();
-      else if (PALETTE_CTRL.next) PALETTE_CTRL.next();
-    });
-    dot.addEventListener('pointerleave', endPress);
-    dot.addEventListener('pointercancel', endPress);
-    dot.addEventListener('contextmenu', function(e){ e.preventDefault(); openMenu(); });   // right-click / long-press desktop
-    // click anywhere else closes it
+    // A click anywhere else closes it.
     document.addEventListener('pointerdown', function(e){
       if (open && !menu.contains(e.target) && e.target !== dot) closeMenu();
     });

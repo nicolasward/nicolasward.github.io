@@ -622,7 +622,7 @@
       justify-content: flex-start;
       align-items: flex-start;
       text-align: left;
-      padding: 9vh var(--gutter) 5vh;
+      padding: 8vh var(--gutter) 11vh;   /* bottom room reserves a lane for the scroll cue below the CTA */
     }
     /* No typewriter animation on mobile, so drop the sizer and let the line size
        itself. */
@@ -635,7 +635,7 @@
     .headline .p-init { font-size: 1.7em; }
     .hero-lede { display: none; }                    /* the sentence lives inside the paragraph below */
     .sub-lede { display: block; margin-bottom: 0.5em; }   /* break the paragraph after "superpowers." */
-    .hero .ctas { display: none; }                   /* no CTA up top on mobile */
+    .hero .ctas { display: flex; margin: 1.6rem 0 0; }   /* the CTA IS shown on the mobile landing, under the paragraph */
     .hero-sub {                                      /* the body paragraph that fills the page */
       order: 2;
       position: static; top: auto; right: auto; width: auto;
@@ -643,7 +643,7 @@
     }
     .hero-sub .sub {
       max-width: none;
-      font-size: clamp(1.8rem, 6.3vw, 2.4rem);
+      font-size: clamp(1.75rem, 6vw, 2.3rem);
       font-weight: 600;                              /* semibold */
       line-height: 1.4;                              /* breathable, but a touch tighter */
       letter-spacing: -0.01em;
@@ -673,7 +673,7 @@
   <div class="pin">
   <main class="hero">
     <div class="hero-sub">
-      <p class="sub reveal"><span class="sub-lede">AI shouldn't replace your  people, it should hand them superpowers. </span>We're an applied AI studio building bespoke software instruments - custom-made tools that fit your team better than any off the shelf AI or subscription ever. Currently taking on a small number of clients to keep output quality high.</p>
+      <p class="sub reveal"><span class="sub-lede">AI shouldn't replace your  people, it should give them superpowers. </span>We're an applied AI studio building bespoke &ldquo;instruments&rdquo; - interfaces that fit your team better than any off the shelf AI or subscription ever could. We're currently taking on a small, curated cohort of clients to ensure the highest output quality.</p>
       <div class="ctas reveal">
         <a class="btn btn--solid" href="mailto:hello@cosimo.studio"><span class="btn-label">Work with us</span><span class="btn-dot" aria-hidden="true"></span></a>
       </div>
@@ -682,7 +682,7 @@
       <span class="hl-sizer" aria-hidden="true">Power to designers.</span>
       <span class="hl-live" aria-hidden="true"><span class="p-init">P</span><span class="hl-typed"></span><span class="hl-caret" aria-hidden="true">_</span></span>
     </h1>
-    <p class="hero-lede reveal">AI shouldn't replace your  people, it should hand them superpowers.</p>
+    <p class="hero-lede reveal">AI shouldn't replace your  people, it should give them superpowers.</p>
   </main>
 
     <div class="can-stage">
@@ -702,7 +702,7 @@
     </div>
     <div class="conclusion" aria-hidden="true">
       <h2 class="concl-title">Let&#8217;s make you AI-native.</h2>
-      <p class="concl-sub">AI shouldn't replace your  people, it should hand them superpowers. We're an applied AI studio building bespoke software instruments - custom-made tools that fit your team better than any off the shelf AI or subscription ever. Currently taking on a small number of clients to keep output quality high.</p>
+      <p class="concl-sub">AI shouldn't replace your  people, it should give them superpowers. We're an applied AI studio building bespoke &ldquo;instruments&rdquo; - interfaces that fit your team better than any off the shelf AI or subscription ever could. We're currently taking on a small, curated cohort of clients to ensure the highest output quality.</p>
       <a class="btn btn--solid" href="mailto:hello@cosimo.studio"><span class="btn-label">Start a project</span><span class="btn-dot" aria-hidden="true"></span></a>
     </div>
     <ul class="services-mobile" aria-label="Services">
@@ -1767,8 +1767,10 @@ if (stage && scroller && canvas && frame) {
       if (mobile){
         // The full-page text landing clears as the first card flies up (sv 0->0.45)
         // and, redundantly, in the outro. No horizontal slide on mobile.
-        hero.style.opacity = String((1 - hf) * (1 - smoother(clamp(sv / 0.45, 0, 1))));
+        const ho = (1 - hf) * (1 - smoother(clamp(sv / 0.45, 0, 1)));
+        hero.style.opacity = String(ho);
         hero.style.transform = '';
+        hero.style.pointerEvents = ho < 0.05 ? 'none' : '';   // faded hero (incl. the CTA) must not swallow taps over the cards
       } else {
         hero.style.opacity = String(1 - hf);
         hero.style.transform = 'translateX(' + (-hf * 5) + 'vw)';

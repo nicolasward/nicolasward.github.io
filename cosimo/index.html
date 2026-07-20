@@ -529,7 +529,7 @@
   @keyframes cue { 0% { transform: translateY(-110%); } 65%, 100% { transform: translateY(230%); } }
   .scroll-cue { transition: opacity 0.5s ease, filter 0.45s ease; }
   html.cue-on:not(.scrolled) .scroll-cue { opacity: 1; }
-  @media (max-width: 900px) { .scroll-cue { display: none; } }
+  @media (max-width: 900px) { .scroll-cue { bottom: 2.6vh; } }   /* shown on mobile, clear of the browser bar */
 
   /* ---------------- Footer ----------------
      A full-height end section after the scroll rig: a giant all-caps COSIMO
@@ -634,7 +634,7 @@
     }
     .headline .p-init { font-size: 1.7em; }
     .hero-lede { display: none; }                    /* the sentence lives inside the paragraph below */
-    .sub-lede { display: inline; }
+    .sub-lede { display: block; margin-bottom: 0.5em; }   /* break the paragraph after "superpowers." */
     .hero .ctas { display: none; }                   /* no CTA up top on mobile */
     .hero-sub {                                      /* the body paragraph that fills the page */
       order: 2;
@@ -645,7 +645,7 @@
       max-width: none;
       font-size: clamp(1.8rem, 6.3vw, 2.4rem);
       font-weight: 600;                              /* semibold */
-      line-height: 1.5;                              /* breathable */
+      line-height: 1.4;                              /* breathable, but a touch tighter */
       letter-spacing: -0.01em;
       color: rgba(255, 255, 255, 0.72);              /* softer / more transparent */
     }

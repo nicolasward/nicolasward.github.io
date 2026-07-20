@@ -307,7 +307,7 @@
   /* Scale the gradient up while blurred so its soft (transparent) edges fall
      off-screen — otherwise blur bleeds to nothing and the page body shows as a
      white halo round the edge. */
-  html.theme-open .iris { filter: blur(20px); transform: scale(1.08); }
+  html.theme-open .iris { filter: blur(20px); transform: scale(1.2); }
   html.theme-open .pin,
   html.theme-open .bigfoot,
   html.theme-open .colophon,
@@ -1249,7 +1249,7 @@ document.documentElement.style.setProperty('--pal-ink', INKS[0]);   // initial C
     var from = PALETTES[curIdx], fromG = GRAINS[curIdx];
     curIdx = i;
     sw = { from: from, to: PALETTES[curIdx], fromG: fromG, toG: GRAINS[curIdx],
-           t0: performance.now(), dur: 1400 };
+           t0: performance.now(), dur: 1050 };
     document.documentElement.style.setProperty('--pal-ink', INKS[curIdx]);
     if (PALETTE_CTRL.onchange) PALETTE_CTRL.onchange(curIdx);
   };

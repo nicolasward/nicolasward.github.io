@@ -302,10 +302,14 @@
   /* When the picker is open, the whole page blurs back — everything except the
      dot and the menu, which stay sharp on top. (We blur the pin, not .scroller,
      so the sticky positioning isn't disturbed.) */
-  .iris, .pin, .bigfoot { transition: filter 0.4s ease; }
-  html.theme-open .iris,
+  .iris { transition: filter 0.45s ease, transform 0.45s ease; }
+  .pin, .bigfoot { transition: filter 0.45s ease; }
+  /* Scale the gradient up while blurred so its soft (transparent) edges fall
+     off-screen — otherwise blur bleeds to nothing and the page body shows as a
+     white halo round the edge. */
+  html.theme-open .iris { filter: blur(20px); transform: scale(1.08); }
   html.theme-open .pin,
-  html.theme-open .bigfoot { filter: blur(11px); }
+  html.theme-open .bigfoot { filter: blur(20px); }
 
   /* The palette picker: a rounded panel that grows out of the dot on long press. */
   .theme-menu {

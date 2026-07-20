@@ -289,6 +289,32 @@
   html.js .can-stage     { opacity: 0; }
   html.intro .can-stage  { opacity: 1; transition: opacity 1.2s ease 2.9s; }
 
+  /* The palette picker: a rounded panel that grows out of the dot on long press. */
+  .theme-menu {
+    position: fixed;
+    right: 1.5rem; bottom: 3.2rem;
+    z-index: 7;
+    display: flex; flex-direction: column-reverse; align-items: center; gap: 0.6rem;
+    padding: 0.65rem 0.55rem;
+    border-radius: 1.1rem;
+    background: rgba(10, 30, 60, 0.28);
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 10px 30px rgba(4, 16, 40, 0.28);
+    transform-origin: bottom center;
+    transform: translateY(8px) scale(0.6);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.28s cubic-bezier(0.34, 1.3, 0.5, 1);
+  }
+  html.theme-open .theme-menu { opacity: 1; transform: none; pointer-events: auto; }
+  .theme-swatch {
+    width: 20px; height: 20px; padding: 0; border: none; border-radius: 50%;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  @media (hover: hover) { .theme-swatch:hover { transform: scale(1.14); } }
+  .theme-swatch.on { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.95); }
+
   /* ---------------- Theme dot ----------------
      A small white dot at the bottom-right; clicking it cycles the background
      palette (the crossfade lives in the WebGL loop). */
@@ -595,7 +621,7 @@
    the CSS iris drop-and-bounce); the credo-dot collapse animates it. */
 var STATE = { reveal: 1, burst: 0, energy: 0 };
 var fieldAnim = null;
-var PALETTE_CTRL = { next: null };   // assigned by the WebGL init; called by the dot
+var PALETTE_CTRL = { next: null, set: null, swatches: null };   // assigned by the WebGL init
 
 /* Typewriter. The P is drawn separately (a static swash, masked in on entrance);
    here we type the rest: "ower to " is typed once and kept, then the trailing
@@ -680,13 +706,58 @@ var PALETTE_CTRL = { next: null };   // assigned by the WebGL init; called by th
     root.classList.toggle('scrolled', window.scrollY > 40);
   }, { passive: true });
 
-  // The white dot cycles the background palette (live blue -> green -> orange
-  // -> plus -> …). The colour crossfade and the liquid warp-bump are driven by
-  // the WebGL loop; here we just advance the palette on each click.
+  // The white dot: a short press cycles the background palette; a long press
+  // (or right-click) opens a picker menu of all the palettes.
   var dot = document.querySelector('.credo-toggle');
-  if (dot) dot.addEventListener('click', function(){
-    if (PALETTE_CTRL.next) PALETTE_CTRL.next();
-  });
+  if (dot){
+    var menu = document.createElement('div');
+    menu.className = 'theme-menu'; menu.setAttribute('role', 'menu');
+    document.body.appendChild(menu);
+    var swatchEls = [];
+    function buildMenu(){
+      var sw = (PALETTE_CTRL.swatches) || [];
+      menu.innerHTML = ''; swatchEls = [];
+      sw.forEach(function(col, i){
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'theme-swatch'; b.style.background = col;
+        b.setAttribute('aria-label', 'Background ' + (i + 1));
+        b.addEventListener('click', function(e){
+          e.stopPropagation();
+          if (PALETTE_CTRL.set) PALETTE_CTRL.set(i);
+          markActive(); closeMenu();
+        });
+        menu.appendChild(b); swatchEls.push(b);
+      });
+    }
+    function markActive(){
+      var cur = PALETTE_CTRL.current ? PALETTE_CTRL.current() : 0;
+      swatchEls.forEach(function(b, i){ b.classList.toggle('on', i === cur); });
+    }
+    var open = false;
+    function openMenu(){ if (open) return; open = true; if (!swatchEls.length) buildMenu(); markActive(); root.classList.add('theme-open'); }
+    function closeMenu(){ if (!open) return; open = false; root.classList.remove('theme-open'); }
+
+    var pressT = 0, longFired = false;
+    dot.addEventListener('pointerdown', function(e){
+      longFired = false;
+      pressT = setTimeout(function(){ longFired = true; openMenu(); }, 420);
+    });
+    function endPress(){ clearTimeout(pressT); }
+    dot.addEventListener('pointerup', function(e){
+      clearTimeout(pressT);
+      if (longFired) return;                         // the long press already opened the menu
+      if (open) closeMenu();
+      else if (PALETTE_CTRL.next) PALETTE_CTRL.next();
+    });
+    dot.addEventListener('pointerleave', endPress);
+    dot.addEventListener('pointercancel', endPress);
+    dot.addEventListener('contextmenu', function(e){ e.preventDefault(); openMenu(); });   // right-click / long-press desktop
+    // click anywhere else closes it
+    document.addEventListener('pointerdown', function(e){
+      if (open && !menu.contains(e.target) && e.target !== dot) closeMenu();
+    });
+    PALETTE_CTRL.onchange = markActive;   // keep the active ring in sync when cycling
+  }
 })();
 
 /* The module's outro drives the COSIMO footer on every screen size now. */
@@ -973,6 +1044,7 @@ function hueAtLuma(hueDeg, sat, targetLuma){
 }
 
 const PALETTE = LUMAS.map(l => hueAtLuma(HUE, SAT_HSL, l));
+/* swatches are wired to the control once PALETTES exists (below) */
 
 /* The four background palettes the white dot cycles through. The live blue is
    PALETTE (above); the other three are ported from the design-elements mesh
@@ -995,9 +1067,13 @@ const PALETTES = [
   PALETTE,                                                                     // live blue (poster)
   buildConst(145, 0.30, [0.277, 0.363, 0.423, 0.476]),                         // monochrome green
   buildPath([9.6, 13.2], [0.79, 0.56], [0.150, 0.271, 0.326, 0.596], 0.6),     // orange
-  buildPath([219.9, 220.7], [0.48, 0.21], [0.208, 0.274, 0.357, 0.447], 1.5)   // "plus" blue
+  buildPath([219.9, 220.7], [0.48, 0.21], [0.208, 0.274, 0.357, 0.447], 1.5),  // "plus" blue
+  buildPath([38.0, 52.0], [0.90, 1.00], [0.42, 0.60, 0.74, 0.88], 1.0)         // kill-bill yellow
 ];
-const GRAINS = [GRAIN, GRAIN, GRAIN, GRAIN];   // all share the live blue's grain
+// A representative swatch per palette, for the picker menu.
+const SWATCHES = ['#3f86d6', '#6f9b82', '#c25a2f', '#48597f', '#f0c221'];
+const GRAINS = PALETTES.map(function(){ return GRAIN; });   // all share the live blue's grain
+PALETTE_CTRL.swatches = SWATCHES;
 
 /* ============================================================
    Boilerplate: compile, link, resize, draw.
@@ -1058,13 +1134,17 @@ const GRAINS = [GRAIN, GRAIN, GRAIN, GRAIN];   // all share the live blue's grai
      the current palette to the next while the warp briefly bulges — the field
      liquifies, reshuffles and settles into the new colour. */
   var curIdx = 0, sw = null;
-  PALETTE_CTRL.next = function(){
-    if (sw) return;                                  // ignore clicks mid-transition
+  PALETTE_CTRL.count = PALETTES.length;
+  PALETTE_CTRL.current = function(){ return curIdx; };
+  PALETTE_CTRL.set = function(i){
+    if (sw || i === curIdx || i < 0 || i >= PALETTES.length) return;
     var from = PALETTES[curIdx], fromG = GRAINS[curIdx];
-    curIdx = (curIdx + 1) % PALETTES.length;
+    curIdx = i;
     sw = { from: from, to: PALETTES[curIdx], fromG: fromG, toG: GRAINS[curIdx],
            t0: performance.now(), dur: 1000 };
+    if (PALETTE_CTRL.onchange) PALETTE_CTRL.onchange(curIdx);
   };
+  PALETTE_CTRL.next = function(){ PALETTE_CTRL.set((curIdx + 1) % PALETTES.length); };
 
   function resize(){
     // Cap DPR at 2. A full-screen shader at DPR 3 on a phone is a

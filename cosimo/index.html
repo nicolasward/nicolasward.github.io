@@ -116,7 +116,7 @@
   .headline {
     display: grid;                      /* the live line overlays an invisible sizer */
     max-width: 24ch;
-    margin: 0 0 2.2rem;
+    margin: 0 0 1.5rem;
     font-size: clamp(2.5rem, 6.4vw, 5rem);
     font-weight: 700;
     line-height: 1.02;
@@ -153,6 +153,22 @@
      them, so wrap points never shift mid-word (no line jumping). */
   .hl-typed .tch { visibility: hidden; }
   .hl-typed .tch.on { visibility: visible; }
+  /* The lede: the punchline promoted to sit directly under the headline as a
+     sub-hero (desktop). Prominent — larger and brighter than the right-column
+     caption, but subordinate to the typed statement above it. */
+  .hero-lede {
+    max-width: 28ch;
+    margin: 0;
+    font-size: clamp(1.35rem, 2.4vw, 1.95rem);
+    font-weight: 600;
+    line-height: 1.24;
+    letter-spacing: -0.012em;
+    color: var(--ink);
+  }
+  /* The same sentence opens the right-column paragraph; on desktop it's hidden
+     there (it lives under the title instead) and shown again only on mobile,
+     where there's no room for a sub-hero. */
+  .sub-lede { display: none; }
   /* On the landing screen the subheader sits opposite the title, in the column
      the can later takes over; JS clears it as the can flies in. The wrapper is
      what fades — the inner .sub keeps its own intro animation, which would
@@ -565,7 +581,8 @@
   /* The rest of the copy fades up, staggered, once the field has bloomed and the
      type is carving in. Delays are relative to html.intro (added at ignition). */
   html.js .reveal { opacity: 0; }
-  html.intro .sub.reveal   { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.35s both; }
+  html.intro .hero-lede.reveal { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.35s both; }
+  html.intro .sub.reveal   { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.5s both; }
   html.intro .ctas.reveal  { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 3.52s both; }
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
@@ -598,6 +615,10 @@
     /* No typewriter on mobile, so drop the sizer and let the line size itself —
        tuned to keep "Power to humans." on ONE line. */
     .hl-sizer { display: none; }
+    /* No sub-hero on mobile (the statement anchors the base). The punchline stays
+       in the top caption, so hide the lede and reveal it inside the paragraph. */
+    .hero-lede { display: none; }
+    .sub-lede { display: inline; }
     .headline { max-width: none; justify-items: start; margin: 0; font-size: clamp(2rem, 9.4vw, 3rem); }
     .headline .p-init { font-size: 1.75em; }
     .hero .ctas { display: none; }                   /* no CTA up top on mobile */
@@ -637,7 +658,7 @@
   <div class="pin">
   <main class="hero">
     <div class="hero-sub">
-      <p class="sub reveal">AI shouldn't replace your  people, it should hand them superpowers. We're an applied AI studio building bespoke software instruments - custom-made tools that fit your team better than any off the shelf AI or subscription ever. Currently taking on a small number of clients to keep output quality high.</p>
+      <p class="sub reveal"><span class="sub-lede">AI shouldn't replace your  people, it should hand them superpowers. </span>We're an applied AI studio building bespoke software instruments - custom-made tools that fit your team better than any off the shelf AI or subscription ever. Currently taking on a small number of clients to keep output quality high.</p>
       <div class="ctas reveal">
         <a class="btn btn--solid" href="mailto:hello@cosimo.studio"><span class="btn-label">Work with us</span><span class="btn-dot" aria-hidden="true"></span></a>
       </div>
@@ -646,6 +667,7 @@
       <span class="hl-sizer" aria-hidden="true">Power to designers.</span>
       <span class="hl-live" aria-hidden="true"><span class="p-init">P</span><span class="hl-typed"></span><span class="hl-caret" aria-hidden="true">_</span></span>
     </h1>
+    <p class="hero-lede reveal">AI shouldn't replace your  people, it should hand them superpowers.</p>
   </main>
 
     <div class="can-stage">

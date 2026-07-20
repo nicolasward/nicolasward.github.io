@@ -161,14 +161,15 @@
      sub-hero (desktop). Prominent — larger and brighter than the right-column
      caption, but subordinate to the typed statement above it. */
   .hero-lede {
-    max-width: 30ch;
-    /* Flush on the page's left margin — the headline's swash is hung out to meet
-       it, so both share one clean left edge. text-wrap: balance evens the two
-       lines so neither orphans a word. */
+    /* Span the hero's width as a single line rather than a narrow stack hugging
+       the left. Sized in vw so the line grows with the column and stays roughly
+       as long as the headline above it; capped short of the right-hand column so
+       it can't collide with it. Wraps only near the mobile boundary. */
+    max-width: 47vw;
     margin: 0;
-    font-size: clamp(1.2rem, 1.95vw, 1.65rem);
+    font-size: clamp(1.15rem, 1.3vw, 1.6rem);
     font-weight: 500;
-    line-height: 1.3;
+    line-height: 1.35;
     letter-spacing: -0.006em;
     color: var(--ink-dim);
     text-wrap: balance;

@@ -623,6 +623,9 @@
        scroller, which pushed the pinned COSIMO off the bottom edge. JS fades it
        in only at the very end, so the transition is dropped here. */
     .colophon { bottom: 12vh; }        /* vertical, right edge; JS shows it only in the outro */
+    /* Drop the intro's 4.4s-delayed opacity transition on mobile — here JS drives
+       opacity, and that delay made the colophon appear ~5s after the end. */
+    html.intro .colophon { transition: opacity 0.55s ease, filter 0.45s ease; }
   }
 </style>
 
@@ -1756,8 +1759,13 @@ if (stage && scroller && canvas && frame) {
       // markState === '' -> never reached the end yet; the letters stay hidden.
     }
     lastOp = op;
-    // Mobile: the colophon shows only at the very end, not during the scroll.
-    if (mobile && colo) colo.style.opacity = String(smoother(clamp((op - 0.6) / 0.3, 0, 1)));
+    // Mobile: the colophon is the very last thing to appear — it fades in only
+    // once the COSIMO letters have finished rising (a timed 1150ms animation),
+    // and fades back out the moment they start exiting.
+    if (mobile && colo){
+      const landed = markState === 'in' && (t - markAt) >= 1150;
+      colo.style.opacity = landed ? '1' : '0';
+    }
 
     renderer.render(scene, camera);
     requestAnimationFrame(tick);

@@ -417,11 +417,14 @@
      bottom to top. */
   .colophon {
     position: fixed;
-    left: calc(100vw - 1.45rem);      /* against the right edge */
+    right: 0.6rem;                     /* against the right edge */
     bottom: 1.5rem;                    /* the © end snug in the bottom-right corner */
     z-index: 6;
-    transform-origin: left bottom;
-    transform: rotate(-90deg);
+    /* vertical writing-mode keeps the box narrow so it never extends past the
+       right edge (a rotated wide box widened the page and caused a swipe-to-reveal
+       sliver on mobile). rotate(180) makes it read bottom-to-top. */
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
     margin: 0;
     line-height: 1;
     font-family: "Figtree", system-ui, -apple-system, sans-serif;

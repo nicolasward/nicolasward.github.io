@@ -1241,7 +1241,7 @@ document.documentElement.style.setProperty('--pal-ink', INKS[0]);   // initial C
   /* Palette crossfade, advanced by the white dot. Colours and grain ease from
      the current palette to the next while the warp briefly bulges — the field
      liquifies, reshuffles and settles into the new colour. */
-  var curIdx = 0, sw = null;
+  var curIdx = 0, sw = null, flowExtra = 0, lastMs = 0;   // flowExtra: extra 'swirl' time added during a crossfade
   PALETTE_CTRL.count = PALETTES.length;
   PALETTE_CTRL.current = function(){ return curIdx; };
   PALETTE_CTRL.set = function(i){
@@ -1249,7 +1249,7 @@ document.documentElement.style.setProperty('--pal-ink', INKS[0]);   // initial C
     var from = PALETTES[curIdx], fromG = GRAINS[curIdx];
     curIdx = i;
     sw = { from: from, to: PALETTES[curIdx], fromG: fromG, toG: GRAINS[curIdx],
-           t0: performance.now(), dur: 1000 };
+           t0: performance.now(), dur: 1400 };
     document.documentElement.style.setProperty('--pal-ink', INKS[curIdx]);
     if (PALETTE_CTRL.onchange) PALETTE_CTRL.onchange(curIdx);
   };
@@ -1272,6 +1272,8 @@ document.documentElement.style.setProperty('--pal-ink', INKS[0]);   // initial C
 
   function draw(ms){
     resize();
+    if (!lastMs) lastMs = ms;
+    var dt = Math.min(0.05, (ms - lastMs) / 1000); lastMs = ms;
     // Sample the ignition/collapse timeline (driven by the orchestration script).
     if (fieldAnim) {
       var e = (ms - fieldAnim.t0) / 1000;
@@ -1288,13 +1290,18 @@ document.documentElement.style.setProperty('--pal-ink', INKS[0]);   // initial C
         gl.uniform3f(uC[ci], a[0]+(b[0]-a[0])*pe, a[1]+(b[1]-a[1])*pe, a[2]+(b[2]-a[2])*pe);
       }
       gl.uniform1f(uGrain, sw.fromG + (sw.toG - sw.fromG) * pe);
-      var bump = Math.exp(-Math.pow((pu - 0.5) / 0.28, 2));             // peaks mid-transition
-      gl.uniform1f(uWarp, WARP * (1 + bump * 0.55));
+      // A single smooth hump of warp (no bulge-and-snap-back), plus a PERSISTENT
+      // surge of flow: the noise field churns forward and reshuffles as the
+      // colour changes, so it reads as the liquid swirling into the new palette
+      // rather than the old field just fading colour through a muddy midpoint.
+      var swirl = Math.sin(pu * Math.PI);        // 0 at both ends, smooth peak in the middle
+      gl.uniform1f(uWarp, WARP * (1 + swirl * 0.75));
+      flowExtra += swirl * 0.7 * dt;             // accumulates -> never rewinds, so no snap
       if (pu >= 1) { sw = null; gl.uniform1f(uWarp, WARP); }
     }
     // Respect reduced-motion: freeze on a nice static frame rather
     // than removing the gradient entirely.
-    gl.uniform1f(uTime, reduced.matches ? 4.0 : (ms / 1000) * SPEED);
+    gl.uniform1f(uTime, reduced.matches ? 4.0 : ((ms / 1000) * SPEED + flowExtra));
     gl.uniform1f(uRawT, ms / 1000);   // unscaled, for the grain boil
     gl.uniform1f(uReveal, STATE.reveal);
     gl.uniform1f(uBurst,  STATE.burst);

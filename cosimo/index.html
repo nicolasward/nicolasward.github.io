@@ -618,34 +618,37 @@
        edge to edge. The can is parked below the frustum here, so the type owns the
        page; the JS fades the whole hero out as the first card flies up. Order
        overrides the DOM so the headline leads and the paragraph follows. */
+    /* Landing stack, top to bottom: headline, paragraph, CTA — then a clear lane
+       at the bottom for the scroll cue alone. Sized so all of it fits one screen
+       without the three colliding. */
     .hero {
       justify-content: flex-start;
       align-items: flex-start;
       text-align: left;
-      padding: 8vh var(--gutter) 11vh;   /* bottom room reserves a lane for the scroll cue below the CTA */
+      padding: 6vh var(--gutter) 12vh;   /* the 12vh bottom lane is the scroll cue's, clear of the CTA */
     }
     /* No typewriter animation on mobile, so drop the sizer and let the line size
        itself. */
     .hl-sizer { display: none; }
     .headline {
       order: 1;
-      max-width: none; justify-items: start; margin: 0 0 1rem;
-      font-size: clamp(2.3rem, 8.5vw, 2.9rem);
+      max-width: none; justify-items: start; margin: 0 0 0.9rem;
+      font-size: clamp(2.1rem, 7.6vw, 2.7rem);
     }
     .headline .p-init { font-size: 1.7em; }
     .hero-lede { display: none; }                    /* the sentence lives inside the paragraph below */
-    .sub-lede { display: block; margin-bottom: 0.5em; }   /* break the paragraph after "superpowers." */
-    .hero .ctas { display: flex; margin: 1.6rem 0 0; }   /* the CTA IS shown on the mobile landing, under the paragraph */
-    .hero-sub {                                      /* the body paragraph that fills the page */
+    .sub-lede { display: block; margin-bottom: 0.4em; }   /* break the paragraph after "superpowers." */
+    .hero .ctas { display: flex; margin: 1.5rem 0 0; }   /* the CTA IS shown on the mobile landing, under the paragraph */
+    .hero-sub {                                      /* the body paragraph */
       order: 2;
       position: static; top: auto; right: auto; width: auto;
       transform: none; padding: 0; margin: 0;
     }
     .hero-sub .sub {
       max-width: none;
-      font-size: clamp(1.75rem, 6vw, 2.3rem);
+      font-size: clamp(1.5rem, 6.3vw, 1.95rem);      /* sized to leave room for the CTA + cue */
       font-weight: 600;                              /* semibold */
-      line-height: 1.4;                              /* breathable, but a touch tighter */
+      line-height: 1.35;
       letter-spacing: -0.01em;
       color: rgba(255, 255, 255, 0.72);              /* softer / more transparent */
     }

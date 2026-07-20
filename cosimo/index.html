@@ -309,7 +309,16 @@
      white halo round the edge. */
   html.theme-open .iris { filter: blur(20px); transform: scale(1.08); }
   html.theme-open .pin,
-  html.theme-open .bigfoot { filter: blur(20px); }
+  html.theme-open .bigfoot,
+  html.theme-open .colophon,
+  html.theme-open .scroll-cue { filter: blur(20px); }
+  /* Picking a colour snaps the blur off (no ease) so it doesn't fight the palette
+     crossfade — the colour changes on an already-sharp page. */
+  html.theme-snap .iris,
+  html.theme-snap .pin,
+  html.theme-snap .bigfoot,
+  html.theme-snap .colophon,
+  html.theme-snap .scroll-cue { transition: none !important; }
 
   /* The palette picker: a rounded panel that grows out of the dot on long press. */
   .theme-menu {
@@ -443,16 +452,17 @@
     margin: 0;
     line-height: 1;
     font-family: "Figtree", system-ui, -apple-system, sans-serif;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: 0.03em;
     color: rgba(255, 255, 255, 0.58);
     white-space: nowrap;
     pointer-events: none;
+    transition: filter 0.45s ease;
   }
   .colophon .sep { margin: 0 0.34em; opacity: 0.7; }
   html.js .colophon { opacity: 0; }
-  html.intro .colophon { opacity: 1; transition: opacity 0.8s ease 4.4s; }
+  html.intro .colophon { opacity: 1; transition: opacity 0.8s ease 4.4s, filter 0.45s ease; }
 
   /* ---------------- Conclusion ----------------
      After the last service the frame undraws, the can rises out of shot and this
@@ -516,7 +526,7 @@
     animation: cue 1.9s cubic-bezier(0.6, 0, 0.4, 1) infinite;
   }
   @keyframes cue { 0% { transform: translateY(-110%); } 65%, 100% { transform: translateY(230%); } }
-  .scroll-cue { transition: opacity 0.5s ease; }
+  .scroll-cue { transition: opacity 0.5s ease, filter 0.45s ease; }
   html.cue-on:not(.scrolled) .scroll-cue { opacity: 1; }
   @media (max-width: 900px) { .scroll-cue { display: none; } }
 
@@ -807,8 +817,10 @@ var PALETTE_CTRL = { next: null, set: null, swatches: null };   // assigned by t
         b.setAttribute('aria-label', 'Background ' + (i + 1));
         b.addEventListener('click', function(e){
           e.stopPropagation();
+          root.classList.add('theme-snap');          // unblur instantly, keep the colour swap clean
           if (PALETTE_CTRL.set) PALETTE_CTRL.set(i);
           markActive(); closeMenu();
+          requestAnimationFrame(function(){ requestAnimationFrame(function(){ root.classList.remove('theme-snap'); }); });
         });
         menu.appendChild(b); swatchEls.push(b);
       });

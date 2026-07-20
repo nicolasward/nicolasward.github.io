@@ -192,7 +192,7 @@
     flex: none;
     width: 7px; height: 7px;
     border-radius: 50%;
-    background-image: var(--pal-grad, linear-gradient(100deg, #0B4A80, #3198F4));
+    background: var(--pal-ink, #0B4A80);
   }
   /* Primary: a solid white pill with bold dark text and a chevron. */
   /* Rest: the pill is solid white and the label + dot are filled with the
@@ -207,18 +207,14 @@
     transition: background 0.25s ease, box-shadow 0.25s ease,
                 -webkit-backdrop-filter 0.25s ease, backdrop-filter 0.25s ease;
   }
-  .btn--solid .btn-label {
-    background-image: var(--pal-grad, linear-gradient(100deg, #0B4A80, #3198F4));
-    -webkit-background-clip: text; background-clip: text;
-    -webkit-text-fill-color: transparent; color: transparent;
-  }
+  .btn--solid .btn-label { color: var(--pal-ink, #0B4A80); }
   @media (hover: hover) {
     .btn--solid:hover {
       background: rgba(255, 255, 255, 0.12);
       -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
     }
-    .btn--solid:hover .btn-label { -webkit-text-fill-color: #fff; color: #fff; }
+    .btn--solid:hover .btn-label { color: #fff; }
     .btn--solid:hover .btn-dot { background-image: none; background: #fff; }
   }
 
@@ -1109,16 +1105,19 @@ const PALETTES = [
 ];
 // A representative swatch per palette, for the picker menu.
 const SWATCHES = ['#3f86d6', '#6f9b82', '#c25a2f', '#48597f', '#f0c221'];
-// A CSS gradient per palette, from that palette's own stops — used to tint the
-// CTA text + dot so they take the background's colour and change with it.
-function palGrad(pal){
+// The darkest stop of each palette, as a solid hex — used to colour the CTA
+// text + dot so they sit in the current background's darker end and change with
+// the palette.
+function palInk(pal){
   const hx = function(x){ x = Math.round(Math.max(0, Math.min(1, x)) * 255).toString(16); return x.length < 2 ? '0' + x : x; };
-  return 'linear-gradient(100deg,' + pal.map(function(c){ return '#' + hx(c[0]) + hx(c[1]) + hx(c[2]); }).join(',') + ')';
+  const lum = function(c){ return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
+  const d = pal.reduce(function(a, b){ return lum(b) < lum(a) ? b : a; });   // darkest stop
+  return '#' + hx(d[0]) + hx(d[1]) + hx(d[2]);
 }
-const GRADS = PALETTES.map(palGrad);
+const INKS = PALETTES.map(palInk);
 const GRAINS = PALETTES.map(function(){ return GRAIN; });   // all share the live blue's grain
 PALETTE_CTRL.swatches = SWATCHES;
-document.documentElement.style.setProperty('--pal-grad', GRADS[0]);   // initial CTA tint
+document.documentElement.style.setProperty('--pal-ink', INKS[0]);   // initial CTA ink
 
 /* ============================================================
    Boilerplate: compile, link, resize, draw.
@@ -1187,7 +1186,7 @@ document.documentElement.style.setProperty('--pal-grad', GRADS[0]);   // initial
     curIdx = i;
     sw = { from: from, to: PALETTES[curIdx], fromG: fromG, toG: GRAINS[curIdx],
            t0: performance.now(), dur: 1000 };
-    document.documentElement.style.setProperty('--pal-grad', GRADS[curIdx]);
+    document.documentElement.style.setProperty('--pal-ink', INKS[curIdx]);
     if (PALETTE_CTRL.onchange) PALETTE_CTRL.onchange(curIdx);
   };
   PALETTE_CTRL.next = function(){ PALETTE_CTRL.set((curIdx + 1) % PALETTES.length); };

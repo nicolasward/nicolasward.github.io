@@ -330,16 +330,19 @@
      swatches do the unfolding — and collapses outer-blob-first on close. */
   @media (min-width: 901px) {
     .theme-menu {
-      right: 3.4rem; bottom: 1.2rem;      /* just left of the dot, on its centreline */
+      right: 3.1rem; bottom: 0.95rem;     /* the pill sits just left of the dot */
       flex-direction: row-reverse;
-      gap: 0.62rem; padding: 0;
-      background: none; box-shadow: none;
-      -webkit-backdrop-filter: none; backdrop-filter: none;
-      opacity: 1; transform: none;
-      pointer-events: none;
-      transition: none;
+      gap: 0.55rem; padding: 0.5rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(9, 24, 48, 0.36);  /* a dark backing lifts every swatch off the field */
+      -webkit-backdrop-filter: blur(16px) saturate(1.25); backdrop-filter: blur(16px) saturate(1.25);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 10px 28px rgba(4, 16, 40, 0.3);
+      transform-origin: right center;
+      transform: translateX(6px) scale(0.88);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.3s cubic-bezier(0.34, 1.3, 0.5, 1);
     }
-    html.theme-open .theme-menu { pointer-events: auto; transform: none; }
+    html.theme-open .theme-menu { opacity: 1; transform: none; pointer-events: auto; }
     .theme-swatch {
       transform: translateX(14px) scale(0);
       opacity: 0;
@@ -374,6 +377,32 @@
   }
   @media (hover: hover) {
     .credo-toggle:hover { transform: scale(1.15); }
+  }
+  /* Hint that the dot is holdable: a tiny label on hover, and a ring that fills
+     as you press-and-hold toward opening the palette menu. */
+  .credo-toggle::after {
+    content: "hold";
+    position: absolute; right: calc(100% + 0.65rem); top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.82); white-space: nowrap;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  @media (hover: hover) { .credo-toggle:hover::after { opacity: 1; } }
+  html.theme-open .credo-toggle::after,
+  html.theme-holding .credo-toggle::after { opacity: 0 !important; }
+  .credo-toggle::before {
+    content: ""; position: absolute; inset: -6px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.85);
+    opacity: 0; transform: scale(0.55);
+    pointer-events: none;
+  }
+  html.theme-holding .credo-toggle::before { animation: hold-ring 0.42s linear forwards; }
+  @keyframes hold-ring {
+    from { opacity: 0.12; transform: scale(0.5); }
+    to   { opacity: 0.85; transform: scale(1); }
   }
   /* The dot is the last thing to arrive, after all the hero copy has settled. */
   html.js .credo-toggle { opacity: 0; }
@@ -781,11 +810,12 @@ var PALETTE_CTRL = { next: null, set: null, swatches: null };   // assigned by t
     var pressT = 0, longFired = false;
     dot.addEventListener('pointerdown', function(e){
       longFired = false;
-      pressT = setTimeout(function(){ longFired = true; openMenu(); }, 420);
+      root.classList.add('theme-holding');           // the ring fills as you hold
+      pressT = setTimeout(function(){ longFired = true; root.classList.remove('theme-holding'); openMenu(); }, 420);
     });
-    function endPress(){ clearTimeout(pressT); }
+    function endPress(){ clearTimeout(pressT); root.classList.remove('theme-holding'); }
     dot.addEventListener('pointerup', function(e){
-      clearTimeout(pressT);
+      clearTimeout(pressT); root.classList.remove('theme-holding');
       if (longFired) return;                         // the long press already opened the menu
       if (open) closeMenu();
       else if (PALETTE_CTRL.next) PALETTE_CTRL.next();

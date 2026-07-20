@@ -25,7 +25,14 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  html { height: 100%; }
+  /* Registered so the CTA ink can transition — a plain custom property can't.
+     Fades over the same ~1s as the background palette crossfade. */
+  @property --pal-ink {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #0B4A80;
+  }
+  html { height: 100%; transition: --pal-ink 1s ease; }
 
   body {
     background: #ffffff;           /* the white the dot drops onto */
@@ -193,6 +200,7 @@
     width: 7px; height: 7px;
     border-radius: 50%;
     background: var(--pal-ink, #0B4A80);
+    transition: background-color 0.25s ease;
   }
   /* Primary: a solid white pill with bold dark text and a chevron. */
   /* Rest: the pill is solid white and the label + dot are filled with the
@@ -207,7 +215,7 @@
     transition: background 0.25s ease, box-shadow 0.25s ease,
                 -webkit-backdrop-filter 0.25s ease, backdrop-filter 0.25s ease;
   }
-  .btn--solid .btn-label { color: var(--pal-ink, #0B4A80); }
+  .btn--solid .btn-label { color: var(--pal-ink, #0B4A80); transition: color 0.25s ease; }
   @media (hover: hover) {
     .btn--solid:hover {
       background: rgba(255, 255, 255, 0.12);

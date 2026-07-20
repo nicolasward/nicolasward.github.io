@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "site",
+      "runtimeExecutable": "zsh",
+      "runtimeArgs": ["-c", "cd /private/tmp/claude-501/-Users-nw-Desktop-nicolasward-github-io/fe61337e-af44-48e1-bf39-a9afb6f69c15/scratchpad/serve && exec python3 -m http.server 8000"],
+      "port": 8000
+    }
+  ]
+}

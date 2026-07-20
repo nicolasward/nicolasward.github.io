@@ -323,7 +323,7 @@
   /* The palette picker: a rounded panel that grows out of the dot on long press. */
   .theme-menu {
     position: fixed;
-    right: 1.5rem; top: 3.2rem;
+    right: 0.73rem; top: 3.2rem;        /* centred under the dot */
     z-index: 7;
     display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
     padding: 0.65rem 0.55rem;
@@ -454,7 +454,6 @@
   .conclusion .btn { pointer-events: auto; padding: 1.05rem 2rem; font-size: 1.06rem; }
   .concl-title { margin: 0; font-family: "Figtree", system-ui, sans-serif; font-weight: 700; font-size: clamp(2.6rem, 6.2vw, 5rem); letter-spacing: -0.03em; line-height: 1.0; max-width: 15ch; text-wrap: balance; }
   .concl-sub { display: none; margin: 0; font-family: "Figtree", system-ui, sans-serif; font-size: 1rem; font-weight: 500; line-height: 1.5; color: var(--ink-dim); max-width: 34ch; }
-  .concl-note { display: none; margin: 0.6rem 0 0; font-family: "Figtree", system-ui, sans-serif; font-size: 0.72rem; letter-spacing: 0.02em; color: rgba(255, 255, 255, 0.55); }
 
   /* ---------------- Progress ----------------
      A stack of bars, one per service: shows where you are in the sequence and
@@ -583,7 +582,7 @@
      sits left-aligned at the base, and the sub copy is deferred to the outro
      under the conclusion title. */
   @media (max-width: 900px) {
-    .can-stage { width: 100%; right: 0; bottom: 20vh; }   /* full-width; taller, with room for the hero below */
+    .can-stage { width: 100%; right: 0; top: 6vh; bottom: 20vh; }   /* full-width; lowered to clear the dot, room for the hero below */
     .frame { inset: 3.5% 6%; }                            /* a longer card on mobile */
     /* Poster composition: a quiet caption at the top, the statement anchored at
        the base, and the space between reserved for the can. */
@@ -620,8 +619,7 @@
        letters. It stays fixed — a static one added page height below the
        scroller, which pushed the pinned COSIMO off the bottom edge. JS fades it
        in only at the very end, so the transition is dropped here. */
-    .colophon { display: none; }
-    .concl-note { display: block; }
+    .colophon { bottom: 12vh; }        /* vertical, right edge; JS shows it only in the outro */
   }
 </style>
 
@@ -663,7 +661,6 @@
       <h2 class="concl-title">Let&#8217;s make you AI-native.</h2>
       <p class="concl-sub">AI shouldn't replace your  people, it should hand them superpowers. We're an applied AI studio building bespoke software instruments - custom-made tools that fit your team better than any off the shelf AI or subscription ever. Currently taking on a small number of clients to keep output quality high.</p>
       <a class="btn btn--solid" href="mailto:hello@cosimo.studio"><span class="btn-label">Start a project</span><span class="btn-dot" aria-hidden="true"></span></a>
-      <p class="concl-note">&copy; 2026 Cosimo &middot; Based in London, operating worldwide.</p>
     </div>
     <ul class="services-mobile" aria-label="Services">
       <li><span class="sm-num">01</span><span class="sm-name">Creative production</span><span class="sm-desc">Concept, art direction, content at scale.</span></li>

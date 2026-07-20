@@ -613,45 +613,41 @@
   @media (max-width: 900px) {
     .can-stage { width: 100%; right: 0; top: 6vh; bottom: 20vh; }   /* full-width; lowered to clear the dot, room for the hero below */
     .frame { inset: 3.5% 6%; }                            /* a longer card on mobile */
-    /* Text-forward landing: the hero and its sub-hero fill the top of the page,
-       big. The can is parked below the frustum here (invisible until scroll), so
-       the type owns the screen; the JS then fades the whole hero out as the first
-       card flies up. Order overrides the DOM: headline, then lede, then caption. */
+    /* Full-page statement: the headline sits at the top and the sub-hero paragraph
+       (the punchline + studio copy as one big body) fills the rest of the screen,
+       edge to edge. The can is parked below the frustum here, so the type owns the
+       page; the JS fades the whole hero out as the first card flies up. Order
+       overrides the DOM so the headline leads and the paragraph follows. */
     .hero {
       justify-content: flex-start;
       align-items: flex-start;
       text-align: left;
-      padding: 11vh var(--gutter) 8vh;
+      padding: 9vh var(--gutter) 5vh;
     }
     /* No typewriter animation on mobile, so drop the sizer and let the line size
        itself. */
     .hl-sizer { display: none; }
     .headline {
       order: 1;
-      max-width: none; justify-items: start; margin: 0;
-      font-size: clamp(2.8rem, 14vw, 4.4rem);        /* big — the statement of the page */
+      max-width: none; justify-items: start; margin: 0 0 1rem;
+      font-size: clamp(2.3rem, 8.5vw, 2.9rem);
     }
     .headline .p-init { font-size: 1.7em; }
-    .hero-lede {                                      /* the sub-hero, directly under */
-      display: block; order: 2;
-      width: auto; max-width: none;
-      margin: 1.15rem 0 0;
-      font-size: clamp(1.5rem, 5.6vw, 2.2rem);
-      line-height: 1.28;
-      color: var(--ink-dim);
-    }
-    .sub-lede { display: none; }                     /* the punchline lives in the sub-hero now */
+    .hero-lede { display: none; }                    /* the sentence lives inside the paragraph below */
+    .sub-lede { display: inline; }
     .hero .ctas { display: none; }                   /* no CTA up top on mobile */
-    .hero-sub {                                      /* the studio caption, quiet, below */
-      order: 3;
+    .hero-sub {                                      /* the body paragraph that fills the page */
+      order: 2;
       position: static; top: auto; right: auto; width: auto;
-      transform: none; padding: 0; margin: 1.6rem 0 0;
+      transform: none; padding: 0; margin: 0;
     }
     .hero-sub .sub {
-      font-size: 0.95rem;
-      line-height: 1.5;
-      max-width: 36ch;
-      color: rgba(255, 255, 255, 0.68);
+      max-width: none;
+      font-size: clamp(1.8rem, 6.3vw, 2.4rem);
+      font-weight: 500;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      color: var(--ink-dim);
     }
     .hero-sub br { display: none; }                  /* the hard break orphans "London." at this width */
     .hl-caret { display: none; }

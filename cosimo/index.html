@@ -299,6 +299,14 @@
   html.js .can-stage     { opacity: 0; }
   html.intro .can-stage  { opacity: 1; transition: opacity 1.2s ease 2.9s; }
 
+  /* When the picker is open, the whole page blurs back — everything except the
+     dot and the menu, which stay sharp on top. (We blur the pin, not .scroller,
+     so the sticky positioning isn't disturbed.) */
+  .iris, .pin, .bigfoot { transition: filter 0.4s ease; }
+  html.theme-open .iris,
+  html.theme-open .pin,
+  html.theme-open .bigfoot { filter: blur(11px); }
+
   /* The palette picker: a rounded panel that grows out of the dot on long press. */
   .theme-menu {
     position: fixed;

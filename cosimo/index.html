@@ -1418,24 +1418,26 @@ if (stage && scroller && canvas && frame) {
   const redMat    = new THREE.MeshStandardMaterial({ color: 0xd6483f, metalness: 0.25, roughness: 0.4 });
   const ACCENTS   = [0x3f86d6, 0x6f9b82, 0xee6416, 0x48597f, 0xf0c221];
 
-  function buildPalette(){                     // 0 — creative production
+  function buildBrush(){                        // 0 — creative production
     const g = new THREE.Group();
-    const shape = new THREE.Shape();
-    shape.absellipse(0, 0, 0.98, 0.72, 0, Math.PI * 2, false, 0);
-    const hole = new THREE.Path();
-    hole.absellipse(0.46, -0.2, 0.15, 0.15, 0, Math.PI * 2, true, 0);   // the thumb hole
-    shape.holes.push(hole);
-    const geo = new THREE.ExtrudeGeometry(shape, { depth: 0.11, bevelEnabled: true, bevelThickness: 0.04, bevelSize: 0.04, bevelSegments: 3, curveSegments: 56 });
-    geo.center();
-    g.add(new THREE.Mesh(geo, boardMat));
-    const spots = [[-0.52, 0.32], [-0.14, 0.46], [0.22, 0.4], [0.52, 0.14], [-0.46, -0.14]];
-    ACCENTS.forEach(function (c, i){
-      const dab = new THREE.Mesh(new THREE.SphereGeometry(0.15, 22, 16),
-        new THREE.MeshStandardMaterial({ color: c, metalness: 0.0, roughness: 0.3 }));
-      dab.scale.set(1, 1, 0.5);
-      dab.position.set(spots[i][0], spots[i][1], 0.12);
-      g.add(dab);
-    });
+    const lacquer = new THREE.MeshStandardMaterial({ color: 0x23222a, metalness: 0.3, roughness: 0.28 });
+    const bristle = new THREE.MeshStandardMaterial({ color: 0xcbb088, metalness: 0.0, roughness: 0.62 });
+    const paint   = new THREE.MeshStandardMaterial({ color: 0xee6416, metalness: 0.0, roughness: 0.4 });
+    // handle — a long, gently tapered lacquered shaft with a rounded end
+    const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.088, 1.5, 40), lacquer);
+    handle.position.y = 0.55; g.add(handle);
+    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.05, 22, 16), lacquer);
+    cap.position.y = 1.3; g.add(cap);
+    // ferrule — the polished metal band gripping the bristles
+    const ferrule = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 0.36, 40), steel);
+    ferrule.position.y = -0.35; g.add(ferrule);
+    const crimp = new THREE.Mesh(new THREE.TorusGeometry(0.098, 0.014, 12, 40), steelDark);
+    crimp.position.y = -0.27; crimp.rotation.x = Math.PI / 2; g.add(crimp);
+    // bristles — a flat tuft tapering to a paint-dipped point
+    const tuft = new THREE.Mesh(new THREE.CylinderGeometry(0.092, 0.03, 0.52, 40), bristle);
+    tuft.position.y = -0.79; tuft.scale.set(1, 1, 0.55); g.add(tuft);
+    const tip = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.3, 28), paint);
+    tip.rotation.z = Math.PI; tip.position.y = -1.16; tip.scale.set(1, 1, 0.55); g.add(tip);
     return g;
   }
 
@@ -1451,7 +1453,7 @@ if (stage && scroller && canvas && frame) {
     }
     const geo = new THREE.ExtrudeGeometry(shape, { depth: 0.24, bevelEnabled: true, bevelThickness: 0.15, bevelSize: 0.13, bevelSegments: 4, curveSegments: 1 });
     geo.center();
-    g.add(new THREE.Mesh(geo, gold));
+    g.add(new THREE.Mesh(geo, steel));       // silver, not gold
     return g;
   }
 
@@ -1519,7 +1521,7 @@ if (stage && scroller && canvas && frame) {
     return pivot;
   }
 
-  addObject(buildPalette(), 0);
+  addObject(buildBrush(), 0);
   addObject(buildStar(), 1);
   // slot 2 (demand forecasting) is the can, loaded below
   addObject(buildCompass(), 3);
@@ -1529,17 +1531,17 @@ if (stage && scroller && canvas && frame) {
   objects[0].visible = true;
   fit();
 
-  // The white can for demand forecasting — repainted plain white to strip the label.
+  // The can for demand forecasting — the supplied blank-grey model, kept with its
+  // own texture (no repaint) so it matches the attached asset exactly.
   const draco = new DRACOLoader();
   draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
   const gltf = new GLTFLoader(); gltf.setDRACOLoader(draco);
-  gltf.load('can.glb', function (res){
+  gltf.load('can_blank_grey.glb', function (res){
     const can = res.scene;
-    const white = new THREE.MeshStandardMaterial({ color: 0xf2f1ee, metalness: 0.5, roughness: 0.32, envMapIntensity: 1.0 });
-    can.traverse(function (o){ if (o.isMesh) o.material = white; });
+    can.traverse(function (o){ if (o.isMesh && o.material) o.material.envMapIntensity = 1.0; });
     addObject(can, 2);
     if (curIdx === 2) objects[2].visible = true;         // in case that card is already showing
-  }, undefined, function (e){ console.warn('can.glb failed', e); });
+  }, undefined, function (e){ console.warn('can_blank_grey.glb failed', e); });
 
   // ---------- fit the camera to the model within the stage aspect ----------
   function fit(){
@@ -1787,13 +1789,14 @@ if (stage && scroller && canvas && frame) {
         ? 0.5 + 0.5 * clamp(op / 0.3, 0, 1)
         : 0.5 * clamp((sv - (N - 0.2)) / 0.2, 0, 1);
       const ex = smoother(exr);
-      if (ex > 0){                                     // leave in a backflip
-        _spinQ.setFromAxisAngle(_flip, -ex * TWO * 1.0);
+      if (ex > 0){                                     // leave with the SAME spin direction as the entrance (no reverse)
+        _spinQ.setFromAxisAngle(_flip, ex * TWO * 1.0);
         group.quaternion.premultiply(_spinQ);
       }
       const bob = reduced ? 0 : Math.sin(t * 0.0011) * 0.02;
-      group.position.y = (1 - en) * -5.0 + ex * 3.4 + bob * en;   // parked well clear below (no tip peeking), bobs only once arrived
+      group.position.y = (1 - en) * -5.0 + ex * 6.0 + bob * en;   // parked below on entry, flung well clear above on exit
       group.scale.setScalar((0.7 + 0.3 * en) * (1 - 0.62 * ex));
+      group.visible = op < 0.5;                                   // fully gone once the outro takes over — nothing peeking at the top
     }
 
     // The landing subheader clears as the can flies into its column.

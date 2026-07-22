@@ -113,7 +113,6 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  .landing-hint { display: none; }   /* mobile-only: a faded colour wheel behind the landing (see the mobile block) */
   .headline {
     display: grid;                      /* the live line overlays an invisible sizer */
     max-width: 24ch;
@@ -279,7 +278,7 @@
   .frame-head {
     position: absolute; top: 3%; left: 5%;
     display: flex; flex-direction: column; align-items: flex-start;
-    gap: 1rem; text-align: left; max-width: 78%;   /* wider measure + more air under the title */
+    gap: 1rem; text-align: left; max-width: 68%;   /* contained measure + more air under the title */
   }
   .frame-name {
     margin: 0;
@@ -616,21 +615,6 @@
       align-items: flex-start;
       text-align: left;
       padding: 6vh var(--gutter) 12vh;   /* the 12vh bottom lane is the scroll cue's, clear of the CTA */
-      isolation: isolate;                /* own stacking context, so the hint can sit behind the text */
-    }
-    /* A faded colour wheel floating up from the bottom — a hint of the objects to
-       come. It lives inside the hero, so it fades out with the text on scroll. */
-    .landing-hint {
-      display: block;
-      position: absolute; left: 50%; bottom: -24vh;
-      width: 88vw; height: 88vw;
-      transform: translateX(-50%);
-      border-radius: 50%;
-      background: conic-gradient(from -90deg,
-        #3f86d6 0deg 72deg, #6f9b82 72deg 144deg, #ee6416 144deg 216deg,
-        #48597f 216deg 288deg, #f0c221 288deg 360deg);
-      opacity: 0.2; filter: blur(3px);
-      z-index: -1; pointer-events: none;
     }
     /* No typewriter animation on mobile, so drop the sizer and let the line size
        itself. */
@@ -678,7 +662,6 @@
 <div class="scroller">
   <div class="pin">
   <main class="hero">
-    <div class="landing-hint" aria-hidden="true"></div>
     <div class="hero-sub">
       <p class="sub reveal">AI shouldn't replace your people, it should give them superpowers. We're an applied AI studio building custom-made interfaces to enable your team to do their best work. We're currently taking on a small, curated cohort of clients to ensure the highest output quality.</p>
       <div class="ctas reveal">

@@ -550,6 +550,13 @@
   .cosimo-mark.in span:nth-child(5) b { animation-delay: 0.30s; }
   .cosimo-mark.in span:nth-child(6) b { animation-delay: 0.37s; }
   @keyframes mark-rise { to { transform: translateY(0); } }
+  /* Headline entrance (mobile): the letters rise from a baseline mask, like the
+     COSIMO mark; the swash P fades in beneath them (a clip would cut its flourish). */
+  .hl-rise { display: inline-block; clip-path: inset(-35% -8% 0 -8%); }
+  .hl-rise > b { display: inline-block; font-weight: inherit; transform: translateY(115%); }
+  html.hl-in .hl-rise > b { animation: mark-rise 0.62s cubic-bezier(0.2, 0.85, 0.25, 1) both; animation-delay: var(--d, 0s); }
+  .hl-prise { opacity: 0; }
+  html.hl-in .hl-prise { opacity: 1; transition: opacity 0.6s ease 0.1s; }
   /* Upward scroll intent: the letters sink back below the clip, same stagger. */
   .cosimo-mark.out b { animation: mark-sink 0.55s cubic-bezier(0.55, 0, 0.75, 0.4) both; }
   .cosimo-mark.out span:nth-child(6) b { animation-delay: 0.02s; }
@@ -600,7 +607,7 @@
        at the bottom for the scroll cue alone. Sized so all of it fits one screen
        without the three colliding. */
     .hero {
-      justify-content: flex-start;
+      justify-content: center;           /* centre the block vertically — brought down from the top */
       align-items: flex-start;
       text-align: left;
       padding: 6vh var(--gutter) 12vh;   /* the 12vh bottom lane is the scroll cue's, clear of the CTA */
@@ -723,8 +730,24 @@ var PALETTE_CTRL = { next: null, set: null, swatches: null };   // assigned by t
   var KEEP = 'ower to ';                        // typed once after the drawn P, then kept
   var KEEPLEN = KEEP.replace(/ /g, '').length;  // letters only (spaces aren't counted chars)
   var WORDS = ['designers.', 'planners.', 'ops teams.', 'marketers.', 'humans.'];
-  if (window.matchMedia && matchMedia('(max-width: 900px)').matches) {   // mobile: just "Power to humans."
-    typed.textContent = KEEP + 'humans.'; caret.style.display = 'none'; return;
+  if (window.matchMedia && matchMedia('(max-width: 900px)').matches) {   // mobile: static "Power to humans.", risen in like the COSIMO letters
+    caret.style.display = 'none';
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      typed.textContent = KEEP + 'humans.'; return;
+    }
+    var pInit = document.querySelector('.p-init');
+    if (pInit) pInit.classList.add('hl-prise');                          // the swash P fades in
+    typed.textContent = '';
+    var full = KEEP + 'humans.', k = 0;
+    full.split('').forEach(function (ch) {
+      if (ch === ' ') { typed.appendChild(document.createTextNode(' ')); return; }
+      var wrap = document.createElement('span'); wrap.className = 'hl-rise';
+      var b = document.createElement('b'); b.textContent = ch;
+      b.style.setProperty('--d', (0.2 + k * 0.04).toFixed(3) + 's');     // staggered, just after the P
+      wrap.appendChild(b); typed.appendChild(wrap); k++;
+    });
+    setTimeout(function () { root.classList.add('hl-in'); }, 2700);      // rise once the iris has opened
+    return;
   }
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
     typed.textContent = KEEP + WORDS[0]; return;

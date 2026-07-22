@@ -93,7 +93,7 @@
      screen tall): the hero copy holds on the left while, on the right, the can
      flips between services and each service's editorial frame draws itself in.
      ~80vh of scroll per service. */
-  .scroller { position: relative; z-index: 1; min-height: calc(100vh + 1000vh); }   /* 6 services + 1 outro — longer so each card lingers */
+  .scroller { position: relative; z-index: 1; min-height: calc(100vh + 1000vh); }   /* 5 services + 1 outro — longer so each card lingers */
   .pin { position: sticky; top: 0; height: 100vh; overflow: hidden; }
 
   /* ---------------- Hero ----------------
@@ -597,7 +597,11 @@
      under the conclusion title. */
   @media (max-width: 900px) {
     .can-stage { width: 100%; right: 0; top: 0; bottom: 0; }   /* full-screen card on mobile — no blank space below */
-    .frame { inset: 6vh 6vw 4vh; }                        /* fills the screen; the top margin clears the dot */
+    .frame { inset: 6vh 6vw 9vh; }                        /* fills the screen; deeper bottom margin clears the URL bar on scroll-up */
+    .frame-name { font-size: 2.1rem; }                    /* bigger card copy on mobile */
+    .frame-desc { font-size: 1.25rem; line-height: 1.4; }
+    .frame-num  { font-size: 1.9rem; }
+    .frame-head { max-width: 66%; }
     /* Full-page statement: the headline sits at the top and the sub-hero paragraph
        (the punchline + studio copy as one big body) fills the rest of the screen,
        edge to edge. The can is parked below the frustum here, so the type owns the
@@ -1357,12 +1361,11 @@ const frame    = stage && stage.querySelector('.frame');
 
 if (stage && scroller && canvas && frame) {
   const SERVICES = [
-    { name: 'Creative production', desc: 'Concept, art direction, content at scale.' },
-    { name: 'Customer experience', desc: 'Journeys, support, retention, loyalty.' },
-    { name: 'Demand forecasting',  desc: 'Predict demand, plan stock and spend.' },
-    { name: 'Analytics',           desc: 'Dashboards, attribution, clear decisions.' },
-    { name: 'Automations',         desc: 'Workflows that run themselves.' },
-    { name: 'A/B testing',         desc: 'Experiment, measure, compound the wins.' }
+    { name: 'Creative production', desc: 'Instruments to enable your teams to design and create more ambitiously.' },
+    { name: 'Customer experience', desc: 'Interfaces to understand customer journeys, support, loyalty, and retention.' },
+    { name: 'Demand forecasting',  desc: 'Tools for predicting demand, stock, and planning spend.' },
+    { name: 'Analytics',           desc: 'Dashboards, simulations, and indicators for better decision-making.' },
+    { name: 'Automations',         desc: 'Reclaim your team\'s headspace with workflows that run themselves.' }
   ];
   const N = SERVICES.length;
   const TWO = Math.PI * 2;
@@ -1458,22 +1461,6 @@ if (stage && scroller && canvas && frame) {
     return g;
   }
 
-  function buildStar(){                        // 1 — customer experience
-    const g = new THREE.Group();
-    const shape = new THREE.Shape();
-    const outer = 0.98, inner = 0.44, spikes = 5;
-    for (let i = 0; i <= spikes * 2; i++){
-      const r = (i % 2 === 0) ? outer : inner;
-      const a = (i / (spikes * 2)) * Math.PI * 2 - Math.PI / 2;
-      const x = Math.cos(a) * r, y = Math.sin(a) * r;
-      if (i === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
-    }
-    const geo = new THREE.ExtrudeGeometry(shape, { depth: 0.24, bevelEnabled: true, bevelThickness: 0.15, bevelSize: 0.13, bevelSegments: 4, curveSegments: 1 });
-    geo.center();
-    g.add(new THREE.Mesh(geo, steel));       // silver, not gold
-    return g;
-  }
-
   function buildCompass(){                     // 3 — analytics
     const g = new THREE.Group();
     const body = new THREE.Mesh(new THREE.CylinderGeometry(0.92, 0.92, 0.22, 56), steel);
@@ -1526,8 +1513,7 @@ if (stage && scroller && canvas && frame) {
   }
 
   addObject(buildWheel(), 0);
-  addObject(buildStar(), 1);
-  // slot 2 (demand forecasting) is the can, and slot 5 (A/B testing) is the basket — both loaded below
+  // slot 1 (customer experience) is the basket, slot 2 (demand forecasting) is the can — both loaded below
   addObject(buildCompass(), 3);
   addObject(buildGear(), 4);
   ready = true;
@@ -1545,12 +1531,13 @@ if (stage && scroller && canvas && frame) {
     addObject(can, 2);
     if (curIdx === 2) objects[2].visible = true;         // in case that card is already showing
   }, undefined, function (e){ console.warn('can_blank_grey.glb failed', e); });
-  // The shopping basket for A/B testing — supplied model, kept with its own material.
+  // The shopping basket for customer experience — repainted metallic (was matte).
   gltf.load('basket_c.glb', function (res){
     const basket = res.scene;
-    basket.traverse(function (o){ if (o.isMesh && o.material) o.material.envMapIntensity = 1.0; });
-    addObject(basket, 5);
-    if (curIdx === 5) objects[5].visible = true;
+    const metal = new THREE.MeshStandardMaterial({ color: 0xdfe3e7, metalness: 1.0, roughness: 0.28, envMapIntensity: 1.15 });
+    basket.traverse(function (o){ if (o.isMesh) o.material = metal; });
+    addObject(basket, 1);
+    if (curIdx === 1) objects[1].visible = true;
   }, undefined, function (e){ console.warn('basket_c.glb failed', e); });
 
   // ---------- fit the camera to the model within the stage aspect ----------

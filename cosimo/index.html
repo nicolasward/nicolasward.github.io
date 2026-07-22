@@ -589,8 +589,8 @@
      sits left-aligned at the base, and the sub copy is deferred to the outro
      under the conclusion title. */
   @media (max-width: 900px) {
-    .can-stage { width: 100%; right: 0; top: 6vh; bottom: 20vh; }   /* full-width; lowered to clear the dot, room for the hero below */
-    .frame { inset: 3.5% 6%; }                            /* a longer card on mobile */
+    .can-stage { width: 100%; right: 0; top: 0; bottom: 0; }   /* full-screen card on mobile — no blank space below */
+    .frame { inset: 6vh 6vw 4vh; }                        /* fills the screen; the top margin clears the dot */
     /* Full-page statement: the headline sits at the top and the sub-hero paragraph
        (the punchline + studio copy as one big body) fills the rest of the screen,
        edge to edge. The can is parked below the frustum here, so the type owns the
@@ -1538,7 +1538,7 @@ if (stage && scroller && canvas && frame) {
     const distH = (modelSize.y / 2) / Math.tan(fovV / 2);
     const fovH  = 2 * Math.atan(Math.tan(fovV / 2) * aspect);
     const distW = (modelSize.x / 2) / Math.tan(fovH / 2);
-    camera.position.z = Math.max(distH, distW) * 2.0;
+    camera.position.z = Math.max(distH, distW) * (mobile ? 1.7 : 2.0);   // a touch closer on mobile so the object fills the full-screen card
     camera.updateProjectionMatrix();
   }
   function resize(){

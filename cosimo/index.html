@@ -666,7 +666,7 @@
     <div class="hero-sub">
       <p class="sub reveal">AI shouldn't replace your people, it should give them superpowers.</p>
       <p class="sub reveal">We're an applied AI studio building custom-made interfaces to enable your team to do their best work.</p>
-      <p class="sub reveal">Currently taking on a small, curated number of projects to ensure the highest output quality.</p>
+      <p class="sub reveal">Currently taking on a small, curated number of projects to ensure world-class outputs.</p>
       <div class="ctas reveal">
         <a class="btn btn--solid" href="mailto:hello@cosimo.studio"><span class="btn-label">Work with us</span><span class="btn-dot" aria-hidden="true"></span></a>
       </div>
@@ -1381,7 +1381,7 @@ if (stage && scroller && canvas && frame) {
   const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 1.22;   /* brighter stage so the metals read punchier */
 
   const scene  = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
@@ -1428,7 +1428,9 @@ if (stage && scroller && canvas && frame) {
   }, undefined, function (e){ console.warn('studio.hdr failed; keeping fallback', e); });
 
   // A gentle key light for an extra specular kick; the HDR does the rest.
-  const key = new THREE.DirectionalLight(0xffffff, 0.6); key.position.set(-2.4, 3.0, 3.2); scene.add(key);
+  const key = new THREE.DirectionalLight(0xffffff, 1.0); key.position.set(-2.4, 3.0, 3.2); scene.add(key);
+  // A rim light from behind/right rakes the edges so the metal catches a bright specular line.
+  const rim = new THREE.DirectionalLight(0xffffff, 0.55); rim.position.set(3.2, 1.4, -2.4); scene.add(rim);
 
   // ---------- the objects: one per service ----------
   // Built procedurally (except the can, loaded from can.glb): a few KB of geometry
@@ -1439,8 +1441,8 @@ if (stage && scroller && canvas && frame) {
   const modelSize = new THREE.Vector3(2.4, 2.4, 2.4);
   let ready = false;
 
-  const steel     = new THREE.MeshStandardMaterial({ color: 0xcfd5db, metalness: 1.0, roughness: 0.2,  envMapIntensity: 1.15 });
-  const steelDark = new THREE.MeshStandardMaterial({ color: 0x9aa2ab, metalness: 1.0, roughness: 0.34, envMapIntensity: 1.05 });
+  const steel     = new THREE.MeshStandardMaterial({ color: 0xd7dde3, metalness: 1.0, roughness: 0.13, envMapIntensity: 1.8 });
+  const steelDark = new THREE.MeshStandardMaterial({ color: 0x99a1aa, metalness: 1.0, roughness: 0.22, envMapIntensity: 1.6 });
   const gold      = new THREE.MeshStandardMaterial({ color: 0xf0c221, metalness: 0.9, roughness: 0.24, envMapIntensity: 1.1  });
   const boardMat  = new THREE.MeshStandardMaterial({ color: 0xe9e3d6, metalness: 0.0, roughness: 0.58 });
   const faceMat   = new THREE.MeshStandardMaterial({ color: 0xf4f1ea, metalness: 0.1, roughness: 0.5  });
@@ -1530,14 +1532,14 @@ if (stage && scroller && canvas && frame) {
   const gltf = new GLTFLoader(); gltf.setDRACOLoader(draco);
   gltf.load('can_blank_grey.glb', function (res){
     const can = res.scene;
-    can.traverse(function (o){ if (o.isMesh && o.material) o.material.envMapIntensity = 1.0; });
+    can.traverse(function (o){ if (o.isMesh && o.material){ o.material.metalness = 0.92; o.material.roughness = 0.3; o.material.envMapIntensity = 1.55; } });
     addObject(can, 2);
     if (curIdx === 2) objects[2].visible = true;         // in case that card is already showing
   }, undefined, function (e){ console.warn('can_blank_grey.glb failed', e); });
   // The shopping basket for customer experience — repainted metallic (was matte).
   gltf.load('basket_c.glb', function (res){
     const basket = res.scene;
-    const metal = new THREE.MeshStandardMaterial({ color: 0xdfe3e7, metalness: 1.0, roughness: 0.28, envMapIntensity: 1.15 });
+    const metal = new THREE.MeshStandardMaterial({ color: 0xe3e7eb, metalness: 1.0, roughness: 0.17, envMapIntensity: 1.8 });
     basket.traverse(function (o){ if (o.isMesh) o.material = metal; });
     addObject(basket, 1);
     if (curIdx === 1) objects[1].visible = true;

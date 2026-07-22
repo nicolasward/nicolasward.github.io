@@ -1536,7 +1536,7 @@ if (stage && scroller && canvas && frame) {
   const gltf = new GLTFLoader(); gltf.setDRACOLoader(draco);
   gltf.load('can_blank_grey.glb', function (res){
     const can = res.scene;
-    can.traverse(function (o){ if (o.isMesh && o.material){ o.material.metalness = 0.92; o.material.roughness = 0.3; o.material.envMapIntensity = 1.55; } });
+    can.traverse(function (o){ if (o.isMesh && o.material) o.material.envMapIntensity = 1.0; });   // keep the can's own matte label texture — not metallic
     addObject(can, 2);
     if (curIdx === 2) objects[2].visible = true;         // in case that card is already showing
   }, undefined, function (e){ console.warn('can_blank_grey.glb failed', e); });

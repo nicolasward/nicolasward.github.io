@@ -93,7 +93,7 @@
      screen tall): the hero copy holds on the left while, on the right, the can
      flips between services and each service's editorial frame draws itself in.
      ~80vh of scroll per service. */
-  .scroller { position: relative; z-index: 1; min-height: calc(100vh + 560vh); }   /* 6 services + 1 outro */
+  .scroller { position: relative; z-index: 1; min-height: calc(100vh + 800vh); }   /* 6 services + 1 outro — longer so each card lingers */
   .pin { position: sticky; top: 0; height: 100vh; overflow: hidden; }
 
   /* ---------------- Hero ----------------
@@ -1418,26 +1418,25 @@ if (stage && scroller && canvas && frame) {
   const redMat    = new THREE.MeshStandardMaterial({ color: 0xd6483f, metalness: 0.25, roughness: 0.4 });
   const ACCENTS   = [0x3f86d6, 0x6f9b82, 0xee6416, 0x48597f, 0xf0c221];
 
-  function buildBrush(){                        // 0 — creative production
+  function buildPencil(){                       // 0 — creative production
     const g = new THREE.Group();
-    const lacquer = new THREE.MeshStandardMaterial({ color: 0x23222a, metalness: 0.3, roughness: 0.28 });
-    const bristle = new THREE.MeshStandardMaterial({ color: 0xcbb088, metalness: 0.0, roughness: 0.62 });
-    const paint   = new THREE.MeshStandardMaterial({ color: 0xee6416, metalness: 0.0, roughness: 0.4 });
-    // handle — a long, gently tapered lacquered shaft with a rounded end
-    const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.088, 1.5, 40), lacquer);
-    handle.position.y = 0.55; g.add(handle);
-    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.05, 22, 16), lacquer);
-    cap.position.y = 1.3; g.add(cap);
-    // ferrule — the polished metal band gripping the bristles
-    const ferrule = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 0.36, 40), steel);
-    ferrule.position.y = -0.35; g.add(ferrule);
-    const crimp = new THREE.Mesh(new THREE.TorusGeometry(0.098, 0.014, 12, 40), steelDark);
-    crimp.position.y = -0.27; crimp.rotation.x = Math.PI / 2; g.add(crimp);
-    // bristles — a flat tuft tapering to a paint-dipped point
-    const tuft = new THREE.Mesh(new THREE.CylinderGeometry(0.092, 0.03, 0.52, 40), bristle);
-    tuft.position.y = -0.79; tuft.scale.set(1, 1, 0.55); g.add(tuft);
-    const tip = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.3, 28), paint);
-    tip.rotation.z = Math.PI; tip.position.y = -1.16; tip.scale.set(1, 1, 0.55); g.add(tip);
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0xe6a63c, metalness: 0.08, roughness: 0.38 });
+    const wood    = new THREE.MeshStandardMaterial({ color: 0xdcc39a, metalness: 0.0, roughness: 0.6 });
+    const lead    = new THREE.MeshStandardMaterial({ color: 0x2a2a30, metalness: 0.25, roughness: 0.5 });
+    const eraser  = new THREE.MeshStandardMaterial({ color: 0xe98d8d, metalness: 0.0, roughness: 0.72 });
+    // hexagonal body — the classic pencil silhouette
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 1.5, 6), bodyMat);
+    body.position.y = 0.16; g.add(body);
+    // sharpened wood cone + graphite point (hex-aligned)
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(0.17, 0.38, 6), wood);
+    cone.rotation.z = Math.PI; cone.position.y = -0.78; g.add(cone);
+    const point = new THREE.Mesh(new THREE.ConeGeometry(0.055, 0.14, 6), lead);
+    point.rotation.z = Math.PI; point.position.y = -1.04; g.add(point);
+    // metal ferrule + eraser at the top
+    const ferrule = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.22, 24), steel);
+    ferrule.position.y = 1.02; g.add(ferrule);
+    const rub = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.17, 24), eraser);
+    rub.position.y = 1.21; g.add(rub);
     return g;
   }
 
@@ -1493,16 +1492,22 @@ if (stage && scroller && canvas && frame) {
     return g;
   }
 
-  function buildMic(){                         // 5 — A/B testing
+  function buildTube(){                         // 5 — A/B testing
     const g = new THREE.Group();
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 24), steel);
-    head.position.y = 0.72; head.scale.set(1, 0.92, 1); g.add(head);
-    const collar = new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.055, 16, 36), steelDark);
-    collar.position.y = 0.38; collar.rotation.x = Math.PI / 2; g.add(collar);
-    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.29, 1.15, 40), steel);
-    stem.position.y = -0.22; g.add(stem);
-    const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.27, 0.14, 40), steelDark);
-    cap.position.y = -0.86; g.add(cap);
+    const glass  = new THREE.MeshStandardMaterial({ color: 0xd4ecf5, metalness: 0.0, roughness: 0.06, transparent: true, opacity: 0.34, depthWrite: false, envMapIntensity: 1.35, side: THREE.DoubleSide });
+    const liquid = new THREE.MeshStandardMaterial({ color: 0x2bb6c4, metalness: 0.0, roughness: 0.28, envMapIntensity: 0.8 });
+    const R = 0.34, top = 0.86, wall = -0.5;
+    // outer glass shell: straight wall, rounded bottom, open at the top
+    const prof = [new THREE.Vector2(R, top), new THREE.Vector2(R, wall)];
+    for (let i = 1; i <= 12; i++){ const a = (Math.PI / 2) * (i / 12); prof.push(new THREE.Vector2(R * Math.cos(a), wall - R * Math.sin(a))); }
+    g.add(new THREE.Mesh(new THREE.LatheGeometry(prof, 48), glass));
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(R, 0.028, 14, 48), glass);
+    rim.position.y = top; rim.rotation.x = Math.PI / 2; g.add(rim);
+    // liquid: flat fill line at the top, rounded bottom, inset from the wall
+    const r2 = R - 0.045, lt = 0.16, lw = -0.5;
+    const lp = [new THREE.Vector2(0, lt), new THREE.Vector2(r2, lt), new THREE.Vector2(r2, lw)];
+    for (let i = 1; i <= 12; i++){ const a = (Math.PI / 2) * (i / 12); lp.push(new THREE.Vector2(r2 * Math.cos(a), lw - r2 * Math.sin(a))); }
+    g.add(new THREE.Mesh(new THREE.LatheGeometry(lp, 48), liquid));
     return g;
   }
 
@@ -1521,12 +1526,12 @@ if (stage && scroller && canvas && frame) {
     return pivot;
   }
 
-  addObject(buildBrush(), 0);
+  addObject(buildPencil(), 0);
   addObject(buildStar(), 1);
   // slot 2 (demand forecasting) is the can, loaded below
   addObject(buildCompass(), 3);
   addObject(buildGear(), 4);
-  addObject(buildMic(), 5);
+  addObject(buildTube(), 5);
   ready = true;
   objects[0].visible = true;
   fit();

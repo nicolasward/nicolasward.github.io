@@ -113,6 +113,10 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  /* On wide screens, ease the headline in from the far-left edge toward centre
+     (only where there's room — the big headline runs close to the right column
+     on narrower desktops). */
+  @media (min-width: 1600px) { .hero { padding-left: clamp(4rem, 8vw, 12rem); } }
   .headline {
     display: grid;                      /* the live line overlays an invisible sizer */
     max-width: 24ch;
@@ -664,7 +668,7 @@
   <div class="pin">
   <main class="hero">
     <div class="hero-sub">
-      <p class="sub reveal">AI shouldn't replace your people, it should give them superpowers.</p>
+      <p class="sub reveal">Artificial intelligence should not replace your people, it should give them superpowers.</p>
       <p class="sub reveal">We're an applied AI studio building custom-made interfaces to enable your team to do their best work.</p>
       <p class="sub reveal">Currently taking on a small, curated number of projects to ensure world-class outputs.</p>
       <div class="ctas reveal">

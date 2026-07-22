@@ -646,6 +646,13 @@
     }
     .hero-sub br { display: none; }                  /* the hard break orphans "London." at this width */
     .hl-caret { display: none; }
+    /* Mobile entrance cascade: the headline rises first (~2.7s), then each
+       paragraph in turn, then the CTA, then the dot. */
+    html.intro .hero-sub .sub.reveal:nth-of-type(1) { animation-delay: 3.35s; }
+    html.intro .hero-sub .sub.reveal:nth-of-type(2) { animation-delay: 3.7s; }
+    html.intro .hero-sub .sub.reveal:nth-of-type(3) { animation-delay: 4.05s; }
+    html.intro .ctas.reveal    { animation-delay: 4.45s; }
+    html.intro .credo-toggle   { animation-delay: 4.85s; }
     .services-mobile { display: none; }
     .conclusion { align-items: flex-start; text-align: left; }
     /* The colophon keeps the desktop vertical treatment on mobile (aligned to the

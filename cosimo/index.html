@@ -1346,6 +1346,8 @@ document.documentElement.style.setProperty('--pal-ink', INKS[0]);   // initial C
 <script type="module">
 import * as THREE from 'three';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 try { history.scrollRestoration = 'manual'; } catch (e) {}
 window.scrollTo(0, 0);
@@ -1424,66 +1426,145 @@ if (stage && scroller && canvas && frame) {
   // A gentle key light for an extra specular kick; the HDR does the rest.
   const key = new THREE.DirectionalLight(0xffffff, 0.6); key.position.set(-2.4, 3.0, 3.2); scene.add(key);
 
-  // ---------- the object: a tuning fork ----------
-  // Built procedurally rather than loaded: the form is simple enough that it's a
-  // few KB of geometry instead of a download, it carries no licence, and the
-  // proportions can be tuned to read in silhouette at card size.
+  // ---------- the objects: one per service ----------
+  // Built procedurally (except the can, loaded from can.glb): a few KB of geometry
+  // each, no licence, proportions tuned to read in silhouette at card size. All six
+  // share the animated `group`; only the current service's object is visible, and
+  // each is normalised into the same fixed frame so the swap never re-zooms.
   const group = new THREE.Group(); scene.add(group);
-  const modelSize = new THREE.Vector3(1, 2.4, 1);
+  const modelSize = new THREE.Vector3(2.4, 2.4, 2.4);
   let ready = false;
 
-  function buildTuningFork(){
+  const steel     = new THREE.MeshStandardMaterial({ color: 0xcfd5db, metalness: 1.0, roughness: 0.2,  envMapIntensity: 1.15 });
+  const steelDark = new THREE.MeshStandardMaterial({ color: 0x9aa2ab, metalness: 1.0, roughness: 0.34, envMapIntensity: 1.05 });
+  const gold      = new THREE.MeshStandardMaterial({ color: 0xf0c221, metalness: 0.9, roughness: 0.24, envMapIntensity: 1.1  });
+  const boardMat  = new THREE.MeshStandardMaterial({ color: 0xe9e3d6, metalness: 0.0, roughness: 0.58 });
+  const faceMat   = new THREE.MeshStandardMaterial({ color: 0xf4f1ea, metalness: 0.1, roughness: 0.5  });
+  const redMat    = new THREE.MeshStandardMaterial({ color: 0xd6483f, metalness: 0.25, roughness: 0.4 });
+  const ACCENTS   = [0x3f86d6, 0x6f9b82, 0xee6416, 0x48597f, 0xf0c221];
+
+  function buildPalette(){                     // 0 — creative production
     const g = new THREE.Group();
-    const steel = new THREE.MeshStandardMaterial({
-      color: 0xcfd5db, metalness: 1.0, roughness: 0.19, envMapIntensity: 1.15
+    const shape = new THREE.Shape();
+    shape.absellipse(0, 0, 0.98, 0.72, 0, Math.PI * 2, false, 0);
+    const hole = new THREE.Path();
+    hole.absellipse(0.46, -0.2, 0.15, 0.15, 0, Math.PI * 2, true, 0);   // the thumb hole
+    shape.holes.push(hole);
+    const geo = new THREE.ExtrudeGeometry(shape, { depth: 0.11, bevelEnabled: true, bevelThickness: 0.04, bevelSize: 0.04, bevelSegments: 3, curveSegments: 56 });
+    geo.center();
+    g.add(new THREE.Mesh(geo, boardMat));
+    const spots = [[-0.52, 0.32], [-0.14, 0.46], [0.22, 0.4], [0.52, 0.14], [-0.46, -0.14]];
+    ACCENTS.forEach(function (c, i){
+      const dab = new THREE.Mesh(new THREE.SphereGeometry(0.15, 22, 16),
+        new THREE.MeshStandardMaterial({ color: c, metalness: 0.0, roughness: 0.3 }));
+      dab.scale.set(1, 1, 0.5);
+      dab.position.set(spots[i][0], spots[i][1], 0.12);
+      g.add(dab);
     });
-    const L = 1.0;        // tine length
-    const sp = 0.085;     // half the gap between the tines
-    const r = 0.042;      // tine radius
-    const stem = 0.44;    // stem length below the bend
-
-    // One continuous path: down the left tine, round the U, up the right tine.
-    const pts = [];
-    for (let i = 0; i <= 8; i++)  pts.push(new THREE.Vector3(-sp, L - (L * i) / 8, 0));
-    for (let i = 1; i <= 24; i++){            // the bend, a semicircle of radius sp
-      const a = Math.PI + (Math.PI * i) / 24;
-      pts.push(new THREE.Vector3(Math.cos(a) * sp, Math.sin(a) * sp, 0));
-    }
-    for (let i = 1; i <= 8; i++)  pts.push(new THREE.Vector3(sp, (L * i) / 8, 0));
-    const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.0);
-    g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 220, r, 22, false), steel));
-
-    // Rounded tips so the tines don't read as cut pipe.
-    [-sp, sp].forEach(function (x){
-      const cap = new THREE.Mesh(new THREE.SphereGeometry(r, 22, 16), steel);
-      cap.position.set(x, L, 0); g.add(cap);
-    });
-
-    // Stem hanging from the base of the bend, with a small foot.
-    const st = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.12, r * 1.12, stem, 26), steel);
-    st.position.set(0, -sp - stem / 2 + 0.01, 0); g.add(st);
-    const foot = new THREE.Mesh(new THREE.SphereGeometry(r * 1.7, 26, 18), steel);
-    foot.position.set(0, -sp - stem, 0); foot.scale.set(1, 0.55, 1); g.add(foot);
-
     return g;
   }
 
-  (function placeObject(){
-    const model = buildTuningFork();
+  function buildStar(){                        // 1 — customer experience
+    const g = new THREE.Group();
+    const shape = new THREE.Shape();
+    const outer = 0.98, inner = 0.44, spikes = 5;
+    for (let i = 0; i <= spikes * 2; i++){
+      const r = (i % 2 === 0) ? outer : inner;
+      const a = (i / (spikes * 2)) * Math.PI * 2 - Math.PI / 2;
+      const x = Math.cos(a) * r, y = Math.sin(a) * r;
+      if (i === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
+    }
+    const geo = new THREE.ExtrudeGeometry(shape, { depth: 0.24, bevelEnabled: true, bevelThickness: 0.15, bevelSize: 0.13, bevelSegments: 4, curveSegments: 1 });
+    geo.center();
+    g.add(new THREE.Mesh(geo, gold));
+    return g;
+  }
+
+  function buildCompass(){                     // 3 — analytics
+    const g = new THREE.Group();
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.92, 0.92, 0.22, 56), steel);
+    body.rotation.x = Math.PI / 2; g.add(body);
+    const face = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 0.04, 56), faceMat);
+    face.rotation.x = Math.PI / 2; face.position.z = 0.11; g.add(face);
+    const nN = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.68, 4), redMat);
+    nN.position.set(0, 0.34, 0.17); g.add(nN);
+    const nS = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.68, 4), steel);
+    nS.rotation.z = Math.PI; nS.position.set(0, -0.34, 0.17); g.add(nS);
+    const pin = new THREE.Mesh(new THREE.SphereGeometry(0.1, 18, 14), steelDark);
+    pin.position.z = 0.19; g.add(pin);
+    return g;
+  }
+
+  function buildGear(){                        // 4 — automations
+    const g = new THREE.Group();
+    const teeth = 10, rOut = 0.98, rIn = 0.76, seg = teeth * 4;
+    const pts = [];
+    for (let i = 0; i < seg; i++){
+      const a = (i / seg) * Math.PI * 2;
+      const phase = i % 4;
+      const r = (phase === 1 || phase === 2) ? rOut : rIn;   // valley, rise, top, fall
+      pts.push(new THREE.Vector2(Math.cos(a) * r, Math.sin(a) * r));
+    }
+    const shape = new THREE.Shape(pts);
+    const hole = new THREE.Path(); hole.absellipse(0, 0, 0.34, 0.34, 0, Math.PI * 2, true, 0);
+    shape.holes.push(hole);
+    const geo = new THREE.ExtrudeGeometry(shape, { depth: 0.32, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.04, bevelSegments: 2, curveSegments: 3 });
+    geo.center();
+    g.add(new THREE.Mesh(geo, steel));
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.07, 16, 44), steelDark);
+    g.add(rim);                                 // a raised collar around the bore
+    return g;
+  }
+
+  function buildMic(){                         // 5 — A/B testing
+    const g = new THREE.Group();
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 24), steel);
+    head.position.y = 0.72; head.scale.set(1, 0.92, 1); g.add(head);
+    const collar = new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.055, 16, 36), steelDark);
+    collar.position.y = 0.38; collar.rotation.x = Math.PI / 2; g.add(collar);
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.29, 1.15, 40), steel);
+    stem.position.y = -0.22; g.add(stem);
+    const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.27, 0.14, 40), steelDark);
+    cap.position.y = -0.86; g.add(cap);
+    return g;
+  }
+
+  const objects = [];
+  function addObject(model, slot){
     const box = new THREE.Box3().setFromObject(model);
     const center = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());
-    // Same pipeline as a loaded model: centre in a pivot, then scale the pivot.
-    model.position.sub(center);
-    const k = 2.4 / size.y;
+    model.position.sub(center);                          // centre in a pivot, then scale the pivot
     const pivot = new THREE.Group();
     pivot.add(model);
-    pivot.scale.setScalar(k);
-    modelSize.set(size.x * k, size.y * k, size.z * k);
+    pivot.scale.setScalar(2.3 / Math.max(size.x, size.y, size.z));   // normalise to the shared frame
+    pivot.visible = false;
     group.add(pivot);
-    ready = true;
-    fit();
-  })();
+    objects[slot] = pivot;
+    return pivot;
+  }
+
+  addObject(buildPalette(), 0);
+  addObject(buildStar(), 1);
+  // slot 2 (demand forecasting) is the can, loaded below
+  addObject(buildCompass(), 3);
+  addObject(buildGear(), 4);
+  addObject(buildMic(), 5);
+  ready = true;
+  objects[0].visible = true;
+  fit();
+
+  // The white can for demand forecasting — repainted plain white to strip the label.
+  const draco = new DRACOLoader();
+  draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
+  const gltf = new GLTFLoader(); gltf.setDRACOLoader(draco);
+  gltf.load('can.glb', function (res){
+    const can = res.scene;
+    const white = new THREE.MeshStandardMaterial({ color: 0xf2f1ee, metalness: 0.5, roughness: 0.32, envMapIntensity: 1.0 });
+    can.traverse(function (o){ if (o.isMesh) o.material = white; });
+    addObject(can, 2);
+    if (curIdx === 2) objects[2].visible = true;         // in case that card is already showing
+  }, undefined, function (e){ console.warn('can.glb failed', e); });
 
   // ---------- fit the camera to the model within the stage aspect ----------
   function fit(){
@@ -1604,6 +1685,7 @@ if (stage && scroller && canvas && frame) {
     pendingScramble = fresh;                   // decrypt plays once the card is visible again
     elDesc.textContent = svc.desc;
     elBars.innerHTML   = barcode(i + 1);
+    for (let k = 0; k < objects.length; k++) if (objects[k]) objects[k].visible = (k === i);   // show this service's object
     curIdx = i;
   }
   setService(0);
